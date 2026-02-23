@@ -1,6 +1,6 @@
 import { test } from "./helpers/test_helper";
 
-test("mention app (without pro)", async ({ po }) => {
+test("mention app (default setup)", async ({ po }) => {
   await po.setUp({ autoApprove: true });
 
   await po.importApp("minimal-with-ai-rules");
@@ -10,8 +10,8 @@ test("mention app (without pro)", async ({ po }) => {
   await po.snapshotServerDump("all-messages");
 });
 
-test("mention app (with pro)", async ({ po }) => {
-  await po.setUpDyadPro();
+test("mention app (oss setup helper)", async ({ po }) => {
+  await po.setUpOss();
 
   await po.importApp("minimal-with-ai-rules");
   await po.navigation.goToAppsTab();
@@ -20,3 +20,4 @@ test("mention app (with pro)", async ({ po }) => {
 
   await po.snapshotServerDump("request");
 });
+

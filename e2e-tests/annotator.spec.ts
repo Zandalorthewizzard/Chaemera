@@ -5,7 +5,7 @@ import fs from "fs";
 testSkipIfWindows(
   "annotator - capture and submit screenshot",
   async ({ po }) => {
-    await po.setUpDyadPro({ autoApprove: true });
+    await po.setUpOss({ autoApprove: true });
 
     // Create a basic app
     await po.sendPrompt("basic");
@@ -73,3 +73,4 @@ testSkipIfWindows(
     expect(imagePart.image_url.url).toMatch(/^data:image\/png;base64,/);
   },
 );
+

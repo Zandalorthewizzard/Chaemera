@@ -115,7 +115,7 @@ export class PageObject {
     await this.modelPicker.selectTestModel();
   }
 
-  async setUpDyadPro({
+  async setUpOss({
     autoApprove = false,
     localAgent = false,
     localAgentUseAutoModel = false,
@@ -129,18 +129,14 @@ export class PageObject {
     if (autoApprove) {
       await this.settings.toggleAutoApprove();
     }
-    await this.settings.setUpDyadProvider();
+    await this.settings.setUpTestProvider();
+    await this.settings.setUpTestModel();
     await this.navigation.goToAppsTab();
     if (!localAgent) {
       await this.chatActions.selectChatMode("build");
     }
-    // Select a non-openAI model for local agent mode,
-    // since openAI models go to the responses API.
-    if (localAgent && !localAgentUseAutoModel) {
-      await this.modelPicker.selectModel({
-        provider: "Anthropic",
-        model: "Claude Opus 4.5",
-      });
+    if (!(localAgent && localAgentUseAutoModel)) {
+      await this.modelPicker.selectTestModel();
     }
   }
 
@@ -151,7 +147,7 @@ export class PageObject {
       await this.settings.toggleAutoApprove();
     }
     // Azure should already be configured via environment variables
-    // so we don't need additional setup steps like setUpDyadProvider
+    // so we don't need additional setup steps like setUpTestProvider
     await this.navigation.goToAppsTab();
   }
 

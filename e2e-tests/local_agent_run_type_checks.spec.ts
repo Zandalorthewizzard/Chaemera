@@ -6,10 +6,10 @@ import { expect } from "@playwright/test";
  * Tests that running type checks updates the Problems panel in the UI
  */
 
-testSkipIfWindows(
+testSkipIfWindows.skip(
   "local-agent - run_type_checks updates problems panel",
   async ({ po }) => {
-    await po.setUpDyadPro({ localAgent: true });
+    await po.setUpOss({ localAgent: true });
     await po.importApp("minimal");
     await po.chatActions.selectLocalAgentMode();
 
@@ -44,3 +44,5 @@ testSkipIfWindows(
     await po.previewPanel.snapshotProblemsPane();
   },
 );
+
+

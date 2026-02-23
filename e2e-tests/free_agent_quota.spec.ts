@@ -2,20 +2,20 @@ import { testSkipIfWindows, Timeout } from "./helpers/test_helper";
 import { expect } from "@playwright/test";
 
 /**
- * E2E test for Basic Agent mode quota (free users).
+ * E2E test for Basic Agent mode quota.
  *
- * Basic Agent mode is available to non-Pro users with a 5-message-per-day limit.
+ * Basic Agent mode has a 5-message-per-day limit.
  * This test verifies mode availability, quota tracking, exceeded banner, and mode switching.
  */
 
 testSkipIfWindows(
   "free agent quota - full flow: mode availability, quota tracking, exceeded banner, switch to build",
   async ({ po }) => {
-    // Set up WITHOUT Dyad Pro - use test provider instead
+    // Set up with test provider
     await po.setUp({ autoApprove: true });
     await po.importApp("minimal");
 
-    // 1. Verify Basic Agent mode is available (not Agent v2 which is Pro-only)
+    // 1. Verify Basic Agent mode is available
     await po.page.getByTestId("chat-mode-selector").click();
     await expect(
       po.page.getByRole("option", { name: /Basic Agent/ }),
@@ -49,9 +49,9 @@ testSkipIfWindows(
     await expect(po.page.getByTestId("free-agent-quota-banner")).toContainText(
       "You have used all 5 messages for the free Agent mode today",
     );
-    await expect(
-      po.page.getByRole("button", { name: "Upgrade to Dyad Pro" }),
-    ).toBeVisible();
+    await expect(po.page.getByTestId("free-agent-quota-banner")).not.toContainText(
+      "Dyad Pro",
+    );
     await expect(
       po.page.getByRole("button", { name: "Switch back to Build mode" }),
     ).toBeVisible();
@@ -86,7 +86,7 @@ testSkipIfWindows(
 testSkipIfWindows(
   "free agent quota - quota resets after 24 hours",
   async ({ po }) => {
-    // Set up WITHOUT Dyad Pro - use test provider instead
+    // Set up with test provider
     await po.setUp({ autoApprove: true });
     await po.importApp("minimal");
 

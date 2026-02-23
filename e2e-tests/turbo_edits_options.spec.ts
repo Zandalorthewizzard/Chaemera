@@ -1,7 +1,7 @@
 import { test } from "./helpers/test_helper";
 
 test("switching turbo edits saves the right setting", async ({ po }) => {
-  await po.setUpDyadPro();
+  await po.setUpOss();
   const proModesDialog = await po.openProModesDialog({
     location: "home-chat-input-container",
   });
@@ -18,3 +18,4 @@ test("switching turbo edits saves the right setting", async ({ po }) => {
   await proModesDialog.setTurboEditsMode("off");
   po.settings.snapshotSettingsDelta(beforeSettings3);
 });
+

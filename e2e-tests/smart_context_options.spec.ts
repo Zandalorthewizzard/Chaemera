@@ -1,7 +1,7 @@
 import { test } from "./helpers/test_helper";
 
 test("switching smart context mode saves the right setting", async ({ po }) => {
-  await po.setUpDyadPro();
+  await po.setUpOss();
   const proModesDialog = await po.openProModesDialog({
     location: "home-chat-input-container",
   });
@@ -18,3 +18,4 @@ test("switching smart context mode saves the right setting", async ({ po }) => {
   await proModesDialog.setSmartContextMode("deep");
   po.settings.snapshotSettingsDelta(beforeSettings3);
 });
+

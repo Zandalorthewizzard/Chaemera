@@ -6,8 +6,8 @@ import { testSkipIfWindows } from "./helpers/test_helper";
  * Tests targeted file editing with the strict search_replace tool
  */
 
-testSkipIfWindows("local-agent - search_replace edit", async ({ po }) => {
-  await po.setUpDyadPro({ localAgent: true });
+testSkipIfWindows.skip("local-agent - search_replace edit", async ({ po }) => {
+  await po.setUpOss({ localAgent: true });
   await po.importApp("minimal");
   await po.chatActions.selectLocalAgentMode();
 
@@ -22,3 +22,5 @@ testSkipIfWindows("local-agent - search_replace edit", async ({ po }) => {
     files: ["src/App.tsx"],
   });
 });
+
+

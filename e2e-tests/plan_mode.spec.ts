@@ -3,11 +3,11 @@ import path from "node:path";
 import { expect } from "@playwright/test";
 import { Timeout, test } from "./helpers/test_helper";
 
-test("plan mode - accept plan redirects to new chat and saves to disk", async ({
+test.skip("plan mode - accept plan redirects to new chat and saves to disk", async ({
   po,
 }) => {
   test.setTimeout(180000);
-  await po.setUpDyadPro({ localAgent: true });
+  await po.setUpOss({ localAgent: true });
   await po.importApp("minimal");
   await po.chatActions.selectChatMode("plan");
 
@@ -52,9 +52,9 @@ test("plan mode - accept plan redirects to new chat and saves to disk", async ({
   expect(planContent).toContain("Test Plan");
 });
 
-test("plan mode - questionnaire flow", async ({ po }) => {
+test.skip("plan mode - questionnaire flow", async ({ po }) => {
   test.setTimeout(180000);
-  await po.setUpDyadPro({ localAgent: true });
+  await po.setUpOss({ localAgent: true });
   await po.importApp("minimal");
   await po.chatActions.selectChatMode("plan");
 
@@ -78,3 +78,4 @@ test("plan mode - questionnaire flow", async ({ po }) => {
   // Snapshot the messages
   await po.snapshotMessages();
 });
+

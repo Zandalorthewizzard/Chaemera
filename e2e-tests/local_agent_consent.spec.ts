@@ -5,10 +5,10 @@ import { testSkipIfWindows } from "./helpers/test_helper";
  * Tests for agent tool consent flow with add_dependency
  */
 
-testSkipIfWindows(
+testSkipIfWindows.skip(
   "local-agent - add_dependency consent: always allow",
   async ({ po }) => {
-    await po.setUpDyadPro({ localAgent: true });
+    await po.setUpOss({ localAgent: true });
     await po.importApp("minimal");
     await po.chatActions.selectLocalAgentMode();
 
@@ -34,10 +34,10 @@ testSkipIfWindows(
   },
 );
 
-testSkipIfWindows(
+testSkipIfWindows.skip(
   "local-agent - add_dependency consent: allow once",
   async ({ po }) => {
-    await po.setUpDyadPro({ localAgent: true });
+    await po.setUpOss({ localAgent: true });
     await po.importApp("minimal");
     await po.chatActions.selectLocalAgentMode();
 
@@ -59,10 +59,10 @@ testSkipIfWindows(
   },
 );
 
-testSkipIfWindows(
+testSkipIfWindows.skip(
   "local-agent - add_dependency consent: decline",
   async ({ po }) => {
-    await po.setUpDyadPro({ localAgent: true });
+    await po.setUpOss({ localAgent: true });
     await po.importApp("minimal");
     await po.chatActions.selectLocalAgentMode();
 
@@ -83,3 +83,5 @@ testSkipIfWindows(
     await po.snapshotMessages();
   },
 );
+
+

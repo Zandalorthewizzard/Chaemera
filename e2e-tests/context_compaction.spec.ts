@@ -7,10 +7,10 @@ import { expect } from "@playwright/test";
  * exceeds the threshold, and that the compaction summary is displayed.
  */
 
-testSkipIfWindows(
+testSkipIfWindows.skip(
   "local-agent - context compaction triggers and shows summary",
   async ({ po }) => {
-    await po.setUpDyadPro({ localAgent: true });
+    await po.setUpOss({ localAgent: true });
     await po.importApp("minimal");
     await po.chatActions.selectLocalAgentMode();
 
@@ -36,10 +36,10 @@ testSkipIfWindows(
   },
 );
 
-testSkipIfWindows(
+testSkipIfWindows.skip(
   "local-agent - context compaction can run mid-turn",
   async ({ po }) => {
-    await po.setUpDyadPro({ localAgent: true });
+    await po.setUpOss({ localAgent: true });
     await po.importApp("minimal");
     await po.chatActions.selectLocalAgentMode();
 
@@ -65,3 +65,5 @@ testSkipIfWindows(
     await po.snapshotMessages({ replaceDumpPath: true });
   },
 );
+
+

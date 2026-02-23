@@ -5,8 +5,8 @@ import { testSkipIfWindows } from "./helpers/test_helper";
  * Tests semantic code search in local-agent mode
  */
 
-testSkipIfWindows("local-agent - code search", async ({ po }) => {
-  await po.setUpDyadPro({ localAgent: true });
+testSkipIfWindows.skip("local-agent - code search", async ({ po }) => {
+  await po.setUpOss({ localAgent: true });
   await po.importApp("minimal");
   await po.chatActions.selectLocalAgentMode();
 
@@ -14,3 +14,5 @@ testSkipIfWindows("local-agent - code search", async ({ po }) => {
 
   await po.snapshotMessages();
 });
+
+

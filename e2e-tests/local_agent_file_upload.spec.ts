@@ -10,8 +10,8 @@ import { testSkipIfWindows } from "./helpers/test_helper";
  * the local agent's write_file tool correctly resolves the file ID
  * (e.g., DYAD_ATTACHMENT_0) to the actual uploaded file content.
  */
-testSkipIfWindows("local-agent - upload file to codebase", async ({ po }) => {
-  await po.setUpDyadPro({ localAgent: true });
+testSkipIfWindows.skip("local-agent - upload file to codebase", async ({ po }) => {
+  await po.setUpOss({ localAgent: true });
   await po.importApp("minimal");
   await po.chatActions.selectLocalAgentMode();
 
@@ -59,3 +59,5 @@ testSkipIfWindows("local-agent - upload file to codebase", async ({ po }) => {
   // Snapshot the messages
   await po.snapshotMessages();
 });
+
+

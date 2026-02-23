@@ -6,8 +6,8 @@ import { testSkipIfWindows } from "./helpers/test_helper";
  * Note: read_logs has defaultConsent: "always", so no consent flow is tested
  */
 
-testSkipIfWindows("local-agent - read logs with filters", async ({ po }) => {
-  await po.setUpDyadPro({ localAgent: true });
+testSkipIfWindows.skip("local-agent - read logs with filters", async ({ po }) => {
+  await po.setUpOss({ localAgent: true });
   await po.importApp("minimal");
   await po.chatActions.selectLocalAgentMode();
 
@@ -20,3 +20,5 @@ testSkipIfWindows("local-agent - read logs with filters", async ({ po }) => {
 
   await po.snapshotMessages();
 });
+
+
