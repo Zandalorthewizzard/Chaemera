@@ -10,9 +10,9 @@ const STALE_TIME_MS = 30_000;
 const TEST_STALE_TIME_MS = 500;
 
 /**
- * Hook to get the free agent quota status for non-Pro users.
+ * Hook to get the free agent quota status for users without cloud access.
  *
- * - Only fetches for non-Pro users (Pro users have unlimited access)
+ * - Only fetches for non-cloud users
  * - Refetches every 30 minutes to update the UI when quota resets
  * - Returns quota status including messages used, limit, and time until reset
  */
@@ -29,7 +29,7 @@ export function useFreeAgentQuota() {
   } = useQuery<FreeAgentQuotaStatus, Error, FreeAgentQuotaStatus>({
     queryKey: queryKeys.freeAgentQuota.status,
     queryFn: () => ipc.freeAgentQuota.getFreeAgentQuotaStatus(),
-    // Only fetch for non-Pro users
+    // Only fetch for non-cloud users
     enabled: !isPro && !!settings,
     // Refetch periodically to check for quota reset
     refetchInterval: THIRTY_MINUTES_IN_MS,

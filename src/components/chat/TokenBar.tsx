@@ -132,18 +132,16 @@ export function TokenBar({ chatId }: TokenBarProps) {
       {(!settings?.enableProSmartFilesContextMode ||
         !settings?.enableDyadPro) && (
         <div className="text-xs text-center text-muted-foreground mt-2">
-          Optimize your tokens with{" "}
+          Optimize token usage with{" "}
           <a
             onClick={() =>
-              settings?.enableDyadPro
-                ? ipc.system.openExternalUrl(
-                    "https://www.dyad.sh/docs/guides/ai-models/pro-modes#smart-context",
-                  )
-                : ipc.system.openExternalUrl("https://dyad.sh/pro#ai")
+              ipc.system.openExternalUrl(
+                "https://www.dyad.sh/docs/guides/ai-models/context-management",
+              )
             }
             className="text-blue-500 dark:text-blue-400 cursor-pointer hover:underline"
           >
-            Dyad Pro's Smart Context
+            context management guidance
           </a>
         </div>
       )}

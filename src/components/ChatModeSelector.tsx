@@ -86,8 +86,7 @@ export function ChatModeSelector() {
       case "ask":
         return "Ask";
       case "local-agent":
-        // Show "Basic Agent" for non-Pro users, "Agent" for Pro users
-        return isProEnabled ? "Agent" : "Basic Agent";
+        return "Agent";
       case "plan":
         return "Plan";
       default:
@@ -153,7 +152,7 @@ export function ChatModeSelector() {
               <div className="flex flex-col items-start">
                 <div className="flex items-center gap-1.5">
                   <Bot size={14} className="text-muted-foreground" />
-                  <span className="font-medium">Agent v2</span>
+                  <span className="font-medium">Agent</span>
                   <NewBadge />
                 </div>
                 <span className="text-xs text-muted-foreground ml-[22px]">
@@ -179,7 +178,7 @@ export function ChatModeSelector() {
               <div className="flex flex-col items-start">
                 <div className="flex items-center gap-1.5">
                   <Bot size={14} className="text-muted-foreground" />
-                  <span className="font-medium">Basic Agent</span>
+                  <span className="font-medium">Agent</span>
                   <span className="text-xs text-muted-foreground">
                     ({isQuotaExceeded ? "0" : messagesRemaining}/5 remaining for
                     today)

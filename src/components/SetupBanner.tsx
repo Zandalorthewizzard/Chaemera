@@ -29,15 +29,12 @@ import { usePostHog } from "posthog-js/react";
 import { useLanguageModelProviders } from "@/hooks/useLanguageModelProviders";
 import { useScrollAndNavigateTo } from "@/hooks/useScrollAndNavigateTo";
 // @ts-ignore
-import logo from "../../assets/logo.svg";
-// @ts-ignore
 import googleIcon from "../../assets/ai-logos/google-g-icon.svg";
 // @ts-ignore
 import openrouterLogo from "../../assets/ai-logos/openrouter-logo.png";
 import { OnboardingBanner } from "./home/OnboardingBanner";
 import { showError } from "@/lib/toast";
 import { useSettings } from "@/hooks/useSettings";
-import { DyadProTrialDialog } from "./DyadProTrialDialog";
 
 type NodeInstallStep =
   | "install"
@@ -71,7 +68,6 @@ export function SetupBanner() {
   }, [setNodeSystemInfo, setNodeCheckError]);
   const [showManualConfig, setShowManualConfig] = useState(false);
   const [isSelectingPath, setIsSelectingPath] = useState(false);
-  const [showDyadProTrialDialog, setShowDyadProTrialDialog] = useState(false);
   const { updateSettings } = useSettings();
 
   // Add handler for manual path selection
@@ -121,11 +117,6 @@ export function SetupBanner() {
       params: { provider: "openrouter" },
     });
   };
-  const handleDyadProSetupClick = () => {
-    posthog.capture("setup-flow:ai-provider-setup:dyad:click");
-    setShowDyadProTrialDialog(true);
-  };
-
   const handleOtherProvidersClick = () => {
     posthog.capture("setup-flow:ai-provider-setup:other:click");
     settingsScrollAndNavigateTo(SECTION_IDS.providers);
@@ -324,17 +315,6 @@ export function SetupBanner() {
                 Not sure what to do? Watch the Get Started video above ☝️
               </p>
 
-              <SetupProviderCard
-                variant="dyad"
-                onClick={handleDyadProSetupClick}
-                tabIndex={isNodeSetupComplete ? 0 : -1}
-                leadingIcon={
-                  <img src={logo} alt="Dyad Logo" className="w-6 h-6 mr-0.5" />
-                }
-                title="Start with Dyad Pro free trial"
-                subtitle="Unlock the full power of Dyad"
-                chip={<>Recommended</>}
-              />
               <div className="mt-2 flex gap-2">
                 <SetupProviderCard
                   className="flex-1"
@@ -392,11 +372,6 @@ export function SetupBanner() {
           </AccordionItem>
         </Accordion>
       </div>
-
-      <DyadProTrialDialog
-        isOpen={showDyadProTrialDialog}
-        onClose={() => setShowDyadProTrialDialog(false)}
-      />
     </>
   );
 }

@@ -428,15 +428,15 @@ export function hasDyadProKey(settings: UserSettings): boolean {
 }
 
 /**
- * Gets the effective default chat mode based on settings, pro status, and free quota availability.
- * - If defaultChatMode is set and valid for the user's Pro status, use it
- * - If defaultChatMode is "local-agent" but user doesn't have Pro:
+ * Gets the effective default chat mode based on settings, cloud access, and free quota availability.
+ * - If defaultChatMode is set and valid for the user's cloud access status, use it
+ * - If defaultChatMode is "local-agent" but user does not have cloud access:
  *   - If free agent quota available AND OpenAI/Anthropic is set up, use "local-agent" (basic agent mode)
  *   - Otherwise, fall back to "build"
  * - If defaultChatMode is NOT set:
- *   - Pro users: use "local-agent"
- *   - Non-Pro users with quota AND OpenAI/Anthropic set up: use "local-agent" (basic agent mode)
- *   - Non-Pro users without quota or provider: use "build"
+ *   - Cloud users: use "local-agent"
+ *   - Non-cloud users with quota AND OpenAI/Anthropic set up: use "local-agent" (basic agent mode)
+ *   - Non-cloud users without quota or provider: use "build"
  */
 export function getEffectiveDefaultChatMode(
   settings: UserSettings,
@@ -453,7 +453,7 @@ export function getEffectiveDefaultChatMode(
   const hasPaidProviderSetup = isOpenAIOrAnthropicSetup(settings, envVars);
 
   if (settings.defaultChatMode) {
-    // "local-agent" requires either Pro OR (available free quota AND provider setup)
+    // "local-agent" requires either cloud access OR (available free quota AND provider setup)
     if (settings.defaultChatMode === "local-agent") {
       if (isPro) return "local-agent";
       if (freeAgentQuotaAvailable && hasPaidProviderSetup) return "local-agent";
@@ -471,7 +471,7 @@ export function getEffectiveDefaultChatMode(
 /**
  * Determines if the current session is using Basic Agent mode (free tier with quota).
  * Basic Agent mode is when:
- * - User is NOT a Pro subscriber
+ * - User does NOT have cloud access
  * - User is using local-agent chat mode
  */
 export function isBasicAgentMode(settings: UserSettings): boolean {

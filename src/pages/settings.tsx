@@ -150,7 +150,7 @@ export default function SettingsPage() {
             className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6"
           >
             <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-              Agent Permissions (Pro)
+              Agent Permissions
             </h2>
             <AgentToolsSettings />
           </div>

@@ -78,10 +78,10 @@
     "errorLoadingSettings": "Error Loading Settings",
     "couldNotLoadProvider": "Could not load provider data: {{message}}",
     "couldNotLoadSettings": "Could not load configuration data: {{message}}",
-    "enableDyadPro": "Enable Dyad Pro",
-    "toggleDyadPro": "Toggle to enable Dyad Pro",
+    "enableDyadPro": "Enable Cloud AI",
+    "toggleDyadPro": "Toggle to enable Cloud AI",
     "apiKeyEmpty": "API Key cannot be empty.",
-    "errorTogglingPro": "Error toggling Dyad Pro: {{error}}",
+    "errorTogglingPro": "Error toggling Cloud AI: {{error}}",
     "failedSaveApiKey": "Failed to save API key.",
     "failedDeleteApiKey": "Failed to delete API key."
   },
@@ -104,7 +104,7 @@
     "title": "Integrations"
   },
   "agentPermissions": {
-    "title": "Agent Permissions (Pro)",
+    "title": "Agent Permissions ",
     "description": "Configure permissions for Agent built-in tools.",
     "defaultAllowedTools": "Default allowed tools ({{count}})",
     "ask": "Ask",
@@ -262,6 +262,6 @@
     "updateProvider": "Update Provider",
     "failedCreate": "Failed to create custom provider"
   },
-  "manageDyadPro": "Manage Dyad Pro Subscription",
-  "setupDyadPro": "Setup Dyad Pro Subscription"
+  "manageDyadPro": "Manage Cloud AI Subscription",
+  "setupDyadPro": "Setup Cloud AI Subscription"
 }

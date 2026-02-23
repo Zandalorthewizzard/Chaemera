@@ -8,9 +8,7 @@ import { Button } from "@/components/ui/button";
 import logo from "../../assets/logo.svg";
 import { providerSettingsRoute } from "@/routes/settings/providers/$provider";
 import { cn } from "@/lib/utils";
-import { useDeepLink } from "@/contexts/DeepLinkContext";
-import { useCallback, useEffect, useState } from "react";
-import { DyadProSuccessDialog } from "@/components/DyadProSuccessDialog";
+import { useCallback } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { ipc } from "@/ipc/types";
 import { useSystemPlatform } from "@/hooks/useSystemPlatform";
@@ -40,26 +38,9 @@ export const TitleBar = () => {
   const selectedChatId = useAtomValue(selectedChatIdAtom);
   const { apps } = useLoadApps();
   const { navigate } = useRouter();
-  const { settings, refreshSettings } = useSettings();
-  const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
+  const { settings } = useSettings();
   const platform = useSystemPlatform();
   const showWindowControls = platform !== null && platform !== "darwin";
-
-  const showDyadProSuccessDialog = () => {
-    setIsSuccessDialogOpen(true);
-  };
-
-  const { lastDeepLink, clearLastDeepLink } = useDeepLink();
-  useEffect(() => {
-    const handleDeepLink = async () => {
-      if (lastDeepLink?.type === "dyad-pro-return") {
-        await refreshSettings();
-        showDyadProSuccessDialog();
-        clearLastDeepLink();
-      }
-    };
-    handleDeepLink();
-  }, [lastDeepLink?.timestamp]);
 
   // Get selected app name
   const selectedApp = apps.find((app) => app.id === selectedAppId);
@@ -103,11 +84,6 @@ export const TitleBar = () => {
 
         {showWindowControls && <WindowsControls />}
       </div>
-
-      <DyadProSuccessDialog
-        isOpen={isSuccessDialogOpen}
-        onClose={() => setIsSuccessDialogOpen(false)}
-      />
     </>
   );
 };
@@ -284,9 +260,9 @@ export function DyadProButton({
     >
       {isDyadProEnabled
         ? userBudget?.isTrial
-          ? "Pro Trial"
-          : "Pro"
-        : "Pro (off)"}
+          ? "Cloud (trial)"
+          : "Cloud AI"
+        : "Cloud AI (off)"}
       {userBudget && isDyadProEnabled && (
         <AICreditStatus userBudget={userBudget} />
       )}

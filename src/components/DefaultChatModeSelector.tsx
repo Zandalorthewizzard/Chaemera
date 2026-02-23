@@ -28,8 +28,8 @@ export function DefaultChatModeSelector() {
     envVars,
     freeAgentQuotaAvailable,
   );
-  // Show Basic Agent option if user is Pro OR if they have free quota available
-  const showBasicAgentOption = isProEnabled || freeAgentQuotaAvailable;
+  // Show Agent option if cloud access is enabled OR if free quota is available
+  const showAgentOption = isProEnabled || freeAgentQuotaAvailable;
 
   const handleDefaultChatModeChange = (value: ChatMode) => {
     updateSettings({ defaultChatMode: value });
@@ -40,7 +40,7 @@ export function DefaultChatModeSelector() {
       case "build":
         return "Build";
       case "local-agent":
-        return isProEnabled ? "Agent" : "Basic Agent";
+        return "Agent";
       case "ask":
         return "Ask";
       case "plan":
@@ -67,16 +67,14 @@ export function DefaultChatModeSelector() {
             <SelectValue>{getModeDisplayName(effectiveDefault)}</SelectValue>
           </SelectTrigger>
           <SelectContent>
-            {showBasicAgentOption && (
+            {showAgentOption && (
               <SelectItem value="local-agent">
                 <div className="flex flex-col items-start">
-                  <span className="font-medium">
-                    {isProEnabled ? "Agent" : "Basic Agent"}
-                  </span>
+                  <span className="font-medium">Agent</span>
                   <span className="text-xs text-muted-foreground">
                     {isProEnabled
                       ? "Better at bigger tasks"
-                      : "Free tier (5 messages/day)"}
+                      : "Daily limit: 5 messages"}
                   </span>
                 </div>
               </SelectItem>
