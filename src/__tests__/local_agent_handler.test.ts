@@ -43,7 +43,7 @@ describe("handleLocalAgentStream", () => {
       payload: {
         chatId: 1,
         error:
-          "Agent mode is not available in this open-source build yet. Please switch to Build mode.",
+          "Agent mode is temporarily unavailable in OSS. Please switch to Build mode.",
       },
     });
     expect(sentMessages[1]).toEqual({
@@ -75,7 +75,7 @@ describe("handleLocalAgentStream", () => {
       payload: {
         chatId: 2,
         error:
-          "Ask mode is not available in this open-source build yet. Please switch to Build mode.",
+          "Ask mode is temporarily unavailable in OSS. Please switch to Build mode.",
       },
     });
   });
@@ -100,7 +100,7 @@ describe("handleLocalAgentStream", () => {
       payload: {
         chatId: 3,
         error:
-          "Plan mode is not available in this open-source build yet. Please switch to Build mode.",
+          "Plan mode is temporarily unavailable in OSS. Please switch to Build mode.",
       },
     });
   });

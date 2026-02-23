@@ -31,7 +31,7 @@ export async function handleLocalAgentStream(
 
   safeSend(event.sender, "chat:response:error", {
     chatId: req.chatId,
-    error: `${modeLabel} is not available in this open-source build yet. Please switch to Build mode.`,
+    error: `${modeLabel} is temporarily unavailable in OSS. Please switch to Build mode.`,
   });
 
   safeSend(event.sender, "chat:response:end", {
