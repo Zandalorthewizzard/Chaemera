@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { Search, ArrowLeftRight } from "lucide-react";
 import { CodeHighlight } from "./CodeHighlight";
 import { CustomTagState } from "./stateTypes";
-import { parseSearchReplaceBlocks } from "@/pro/shared/search_replace_parser";
+import { parseSearchReplaceBlocks } from "@/shared/search_replace_parser";
 import {
   DyadCard,
   DyadCardHeader,

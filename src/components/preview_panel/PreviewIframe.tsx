@@ -72,7 +72,7 @@ import type { DeviceMode } from "@/lib/schemas";
 import { AnnotatorOnlyForPro } from "./AnnotatorOnlyForPro";
 import { useAttachments } from "@/hooks/useAttachments";
 import { useUserBudgetInfo } from "@/hooks/useUserBudgetInfo";
-import { Annotator } from "@/pro/ui/components/Annotator/Annotator";
+import { Annotator } from "./Annotator";
 import { VisualEditingToolbar } from "./VisualEditingToolbar";
 
 interface ErrorBannerProps {
