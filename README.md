@@ -28,6 +28,10 @@ Join our growing community of AI app builders on **Reddit**: [r/dyadbuilders](ht
 
 If you're interested in contributing to dyad, please read our [contributing](./CONTRIBUTING.md) doc.
 
+## Temporary Migration Note
+
+- Current temporary status after the first OSS cleanup commit: [docs/TEMP_POST_FIRST_COMMIT_STATUS.md](./docs/TEMP_POST_FIRST_COMMIT_STATUS.md)
+
 ## License
 
 - This repository is licensed under Apache 2.0 - see [LICENSE](./LICENSE).
