@@ -34,3 +34,15 @@ test("tauri smoke harness can deliver native event hooks to the renderer", async
   await expect(page.getByRole("alertdialog")).toBeVisible();
   await expect(page.getByText("Force Close Detected")).toBeVisible();
 });
+
+test("tauri smoke renders Leptos route shells for low-risk routes", async ({
+  page,
+}) => {
+  await page.goto("/settings");
+  await expect(page.getByTestId("leptos-route-shell")).toBeVisible();
+  await expect(page.getByText("Settings")).toBeVisible();
+
+  await page.goto("/help");
+  await expect(page.getByTestId("leptos-route-shell")).toBeVisible();
+  await expect(page.getByText("Help")).toBeVisible();
+});

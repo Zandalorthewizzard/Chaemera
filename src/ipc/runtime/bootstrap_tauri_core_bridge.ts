@@ -134,6 +134,7 @@ export function buildTauriInvokeArgs(
     case "cleanup-theme-images":
     case "apply-visual-editing-changes":
     case "analyze-component":
+    case "leptos:render-route":
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "chat:cancel":
       return typeof payload === "number" ? { chatId: payload } : undefined;
@@ -176,6 +177,7 @@ export function canInvokeViaTauri(channel: string, payload: unknown): boolean {
     case "cleanup-theme-images":
     case "apply-visual-editing-changes":
     case "analyze-component":
+    case "leptos:render-route":
       return mappedArgs !== undefined;
     default:
       return true;

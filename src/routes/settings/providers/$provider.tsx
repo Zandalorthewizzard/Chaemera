@@ -1,4 +1,5 @@
 import { createRoute } from "@tanstack/react-router";
+import { LeptosRouteHost } from "@/components/leptos/LeptosRouteHost";
 import { rootRoute } from "@/routes/root";
 import { ProviderSettingsPage } from "@/components/settings/ProviderSettingsPage";
 
@@ -17,6 +18,10 @@ export const providerSettingsRoute = createRoute({
   component: function ProviderSettingsRouteComponent() {
     const { provider } = providerSettingsRoute.useParams();
 
-    return <ProviderSettingsPage provider={provider} />;
+    return (
+      <LeptosRouteHost routeId="provider-settings" providerId={provider}>
+        <ProviderSettingsPage provider={provider} />
+      </LeptosRouteHost>
+    );
   },
 });

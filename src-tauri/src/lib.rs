@@ -1,4 +1,5 @@
 mod core_domains;
+mod leptos_shell;
 mod wave_b_domains;
 mod wave_c_domains;
 mod wave_d_domains;
@@ -55,6 +56,7 @@ pub fn run() {
             wave_e_domains::cleanup_theme_images,
             wave_e_domains::apply_visual_editing_changes,
             wave_e_domains::analyze_component,
+            leptos_shell::leptos_render_route,
         ])
         .run(tauri::generate_context!())
         .expect("error while running Tauri application");

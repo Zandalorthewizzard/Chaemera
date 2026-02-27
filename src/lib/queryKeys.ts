@@ -230,6 +230,20 @@ export const queryKeys = {
   },
 
   // ─────────────────────────────────────────────────────────────────────────────
+  // Leptos Shell
+  // ─────────────────────────────────────────────────────────────────────────────
+  leptosShell: {
+    all: ["leptos-shell"] as const,
+    route: ({
+      routeId,
+      providerId,
+    }: {
+      routeId: string;
+      providerId?: string;
+    }) => ["leptos-shell", routeId, providerId ?? null] as const,
+  },
+
+  // ─────────────────────────────────────────────────────────────────────────────
   // Vercel Deployments
   // ─────────────────────────────────────────────────────────────────────────────
   vercel: {
@@ -352,6 +366,9 @@ export type AppQueryKey =
   | QueryKeyOf<(typeof queryKeys.userBudget)[keyof typeof queryKeys.userBudget]>
   | QueryKeyOf<
       (typeof queryKeys.freeAgentQuota)[keyof typeof queryKeys.freeAgentQuota]
+    >
+  | QueryKeyOf<
+      (typeof queryKeys.leptosShell)[keyof typeof queryKeys.leptosShell]
     >
   | QueryKeyOf<(typeof queryKeys.vercel)[keyof typeof queryKeys.vercel]>
   | QueryKeyOf<

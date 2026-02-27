@@ -39,6 +39,7 @@ export const TAURI_MIGRATION_CHANNEL_TO_COMMAND = {
   "cleanup-theme-images": "cleanup_theme_images",
   "apply-visual-editing-changes": "apply_visual_editing_changes",
   "analyze-component": "analyze_component",
+  "leptos:render-route": "leptos_render_route",
 } as const;
 
 export const TAURI_MIGRATION_INVOKE_CHANNELS = Object.keys(

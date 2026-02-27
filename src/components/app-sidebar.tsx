@@ -7,6 +7,7 @@ import {
   BookOpen,
 } from "lucide-react";
 import { Link, useRouterState } from "@tanstack/react-router";
+import { useRouter } from "@tanstack/react-router";
 import { useSidebar } from "@/components/ui/sidebar"; // import useSidebar hook
 import { useEffect, useState, useRef } from "react";
 import { useAtom } from "jotai";
@@ -29,6 +30,7 @@ import { AppList } from "./AppList";
 import { HelpDialog } from "./HelpDialog"; // Import the new dialog
 import { SettingsList } from "./SettingsList";
 import { LibraryList } from "./LibraryList";
+import { hasTauriLeptosShellSupport } from "@/lib/leptos_shell";
 
 // Menu items.
 const items = [
@@ -74,6 +76,7 @@ export function AppSidebar() {
   const expandedByHover = useRef(false);
   const [isHelpDialogOpen, setIsHelpDialogOpen] = useState(false); // State for dialog
   const [isDropdownOpen] = useAtom(dropdownOpenAtom);
+  const router = useRouter();
 
   useEffect(() => {
     if (hoverState.startsWith("start-hover") && state === "collapsed") {
@@ -101,6 +104,7 @@ export function AppSidebar() {
   const isLibraryRoute =
     routerState.location.pathname.startsWith("/library") ||
     routerState.location.pathname.startsWith("/themes");
+  const isHelpRoute = routerState.location.pathname.startsWith("/help");
 
   let selectedItem: string | null = null;
   if (hoverState === "start-hover:app") {
@@ -159,8 +163,16 @@ export function AppSidebar() {
             {/* Change button to open dialog instead of linking */}
             <SidebarMenuButton
               size="sm"
-              className="font-medium w-14 flex flex-col items-center gap-1 h-14 mb-2 rounded-2xl"
-              onClick={() => setIsHelpDialogOpen(true)} // Open dialog on click
+              className={`font-medium w-14 flex flex-col items-center gap-1 h-14 mb-2 rounded-2xl ${
+                isHelpRoute ? "bg-sidebar-accent" : ""
+              }`}
+              onClick={() => {
+                if (hasTauriLeptosShellSupport()) {
+                  router.navigate({ to: "/help" });
+                  return;
+                }
+                setIsHelpDialogOpen(true);
+              }}
             >
               <HelpCircle className="h-5 w-5" />
               <span className={"text-xs"}>Help</span>

@@ -70,6 +70,7 @@ const tauriCommandToChannel = {
   cleanup_theme_images: "cleanup-theme-images",
   apply_visual_editing_changes: "apply-visual-editing-changes",
   analyze_component: "analyze-component",
+  leptos_render_route: "leptos:render-route",
 } as const;
 
 export const test = base.extend<{
@@ -238,6 +239,28 @@ export const test = base.extend<{
               return;
             case "analyze-component":
               return { isDynamic: false, hasStaticText: false };
+            case "leptos:render-route": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const routeId = String(request?.routeId ?? "settings");
+              const providerId =
+                typeof request?.providerId === "string"
+                  ? request.providerId
+                  : null;
+              const title =
+                routeId === "provider-settings" && providerId
+                  ? `Provider Setup: ${providerId}`
+                  : routeId === "library"
+                    ? "Library"
+                    : routeId === "help"
+                      ? "Help"
+                      : "Settings";
+              return {
+                routeId,
+                title,
+                html: `<section class="tauri-smoke-leptos-shell"><h1>${title}</h1><p>Leptos shell smoke route for ${routeId}.</p></section>`,
+              };
+            }
             default:
               return undefined;
           }
