@@ -1,5 +1,5 @@
 import {
-  isCoreDomainEventChannel,
+  isTauriMigrationEventChannel,
   isTauriMigrationInvokeChannel,
 } from "./core_domain_channels";
 
@@ -85,7 +85,7 @@ export function getEventTransport(channel: string): EventTransport | null {
   const tauri = getTauriCoreBridge();
   if (
     tauri?.on &&
-    isCoreDomainEventChannel(channel) &&
+    isTauriMigrationEventChannel(channel) &&
     tauriSupportsChannel(tauri, channel)
   ) {
     return {

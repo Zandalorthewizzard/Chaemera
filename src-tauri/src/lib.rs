@@ -1,5 +1,6 @@
 mod core_domains;
 mod wave_b_domains;
+mod wave_c_domains;
 
 use tauri::Manager;
 
@@ -27,6 +28,19 @@ pub fn run() {
             wave_b_domains::search_app_files,
             wave_b_domains::list_versions,
             wave_b_domains::get_current_branch,
+            wave_c_domains::chat_stream,
+            wave_c_domains::chat_cancel,
+            wave_c_domains::agent_tool_get_tools,
+            wave_c_domains::agent_tool_set_consent,
+            wave_c_domains::agent_tool_consent_response,
+            wave_c_domains::mcp_list_servers,
+            wave_c_domains::mcp_create_server,
+            wave_c_domains::mcp_update_server,
+            wave_c_domains::mcp_delete_server,
+            wave_c_domains::mcp_list_tools,
+            wave_c_domains::mcp_get_tool_consents,
+            wave_c_domains::mcp_set_tool_consent,
+            wave_c_domains::mcp_tool_consent_response,
         ])
         .run(tauri::generate_context!())
         .expect("error while running Tauri application");

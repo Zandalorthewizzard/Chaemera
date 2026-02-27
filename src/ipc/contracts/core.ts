@@ -267,8 +267,6 @@ export function createStreamClient<
   TEnd extends z.ZodType,
   TError extends z.ZodType,
 >(contract: StreamContract<TChannel, TInput, TKey, TChunk, TEnd, TError>) {
-  const getIpcRenderer = () => (window as any).electron?.ipcRenderer;
-
   type Input = z.infer<TInput>;
   // Use string | number for KeyValue to support common key types while
   // maintaining better type safety than unknown. TypeScript cannot infer
@@ -288,11 +286,13 @@ export function createStreamClient<
 
   const setupListeners = () => {
     if (listenersSetUp) return;
+    const chunkTransport = getEventTransport(contract.events.chunk.channel);
+    const endTransport = getEventTransport(contract.events.end.channel);
+    const errorTransport = getEventTransport(contract.events.error.channel);
 
-    const ipcRenderer = getIpcRenderer();
-    if (!ipcRenderer) return;
+    if (!chunkTransport || !endTransport || !errorTransport) return;
 
-    ipcRenderer.on(contract.events.chunk.channel, (data: unknown) => {
+    chunkTransport.on(contract.events.chunk.channel, (data: unknown) => {
       const parsed = contract.events.chunk.payload.safeParse(data);
       if (parsed.success) {
         const key = (parsed.data as Record<string, unknown>)[
@@ -302,7 +302,7 @@ export function createStreamClient<
       }
     });
 
-    ipcRenderer.on(contract.events.end.channel, (data: unknown) => {
+    endTransport.on(contract.events.end.channel, (data: unknown) => {
       const parsed = contract.events.end.payload.safeParse(data);
       if (parsed.success) {
         const key = (parsed.data as Record<string, unknown>)[
@@ -313,7 +313,7 @@ export function createStreamClient<
       }
     });
 
-    ipcRenderer.on(contract.events.error.channel, (data: unknown) => {
+    errorTransport.on(contract.events.error.channel, (data: unknown) => {
       const parsed = contract.events.error.payload.safeParse(data);
       if (parsed.success) {
         const key = (parsed.data as Record<string, unknown>)[
@@ -340,14 +340,23 @@ export function createStreamClient<
       },
     ): void {
       setupListeners();
-
-      const ipcRenderer = getIpcRenderer();
-      if (!ipcRenderer) {
+      if (!listenersSetUp) {
         callbacks.onError({
           [contract.keyField]: (input as Record<string, unknown>)[
             contract.keyField
           ],
-          error: "IPC renderer not available",
+          error: "Stream event transport is not available",
+        } as any);
+        return;
+      }
+
+      const invokeTransport = getInvokeTransport(contract.channel, input);
+      if (!invokeTransport) {
+        callbacks.onError({
+          [contract.keyField]: (input as Record<string, unknown>)[
+            contract.keyField
+          ],
+          error: "Stream invoke transport is not available",
         } as any);
         return;
       }
@@ -357,7 +366,7 @@ export function createStreamClient<
       ] as KeyValue;
       streams.set(key, callbacks);
 
-      ipcRenderer.invoke(contract.channel, input).catch((err: Error) => {
+      invokeTransport.invoke(contract.channel, input).catch((err: Error) => {
         callbacks.onError({
           [contract.keyField]: key,
           error: err.message,

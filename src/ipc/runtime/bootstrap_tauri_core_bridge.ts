@@ -1,5 +1,6 @@
 import {
   TAURI_MIGRATION_CHANNEL_TO_COMMAND,
+  TAURI_MIGRATION_EVENT_CHANNELS,
   TAURI_MIGRATION_INVOKE_CHANNELS,
 } from "./core_domain_channels";
 import { getResolvedAppPath } from "./app_path_registry";
@@ -12,6 +13,10 @@ type TauriListenFn = (
   event: string,
   handler: (payload: unknown) => void,
 ) => Promise<() => void> | (() => void);
+
+type TauriEventEnvelope = {
+  payload?: unknown;
+};
 
 export interface TauriCoreBridge {
   supportedChannels: readonly string[];
@@ -52,6 +57,13 @@ function getRawTauriListen(): TauriListenFn | null {
     window.__TAURI_INTERNALS__?.event?.listen ??
     null
   );
+}
+
+function normalizeTauriEventPayload(payload: unknown): unknown {
+  if (typeof payload === "object" && payload !== null && "payload" in payload) {
+    return (payload as TauriEventEnvelope).payload;
+  }
+  return payload;
 }
 
 export function buildTauriInvokeArgs(
@@ -106,6 +118,20 @@ export function buildTauriInvokeArgs(
       }
       return { appPath };
     }
+    case "chat:stream":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "agent-tool:set-consent":
+    case "agent-tool:consent-response":
+    case "mcp:create-server":
+    case "mcp:update-server":
+    case "mcp:set-tool-consent":
+    case "mcp:tool-consent-response":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "chat:cancel":
+      return typeof payload === "number" ? { chatId: payload } : undefined;
+    case "mcp:delete-server":
+    case "mcp:list-tools":
+      return typeof payload === "number" ? { serverId: payload } : undefined;
     default:
       return undefined;
   }
@@ -124,6 +150,16 @@ export function canInvokeViaTauri(channel: string, payload: unknown): boolean {
     case "search-app-files":
     case "list-versions":
     case "get-current-branch":
+    case "chat:stream":
+    case "chat:cancel":
+    case "agent-tool:set-consent":
+    case "agent-tool:consent-response":
+    case "mcp:create-server":
+    case "mcp:update-server":
+    case "mcp:delete-server":
+    case "mcp:list-tools":
+    case "mcp:set-tool-consent":
+    case "mcp:tool-consent-response":
       return mappedArgs !== undefined;
     default:
       return true;
@@ -140,7 +176,10 @@ export function bootstrapTauriCoreBridge(): void {
   const listen = getRawTauriListen();
 
   window.__CHAEMERA_TAURI_CORE__ = {
-    supportedChannels: TAURI_MIGRATION_INVOKE_CHANNELS,
+    supportedChannels: [
+      ...TAURI_MIGRATION_INVOKE_CHANNELS,
+      ...TAURI_MIGRATION_EVENT_CHANNELS,
+    ],
     supportsInvoke: (channel, payload) => canInvokeViaTauri(channel, payload),
     invoke: async (channel, payload) => {
       const command =
@@ -159,7 +198,9 @@ export function bootstrapTauriCoreBridge(): void {
     },
     on: listen
       ? (channel, handler) => {
-          const unlisten = listen(channel, handler);
+          const unlisten = listen(channel, (eventPayload) => {
+            handler(normalizeTauriEventPayload(eventPayload));
+          });
           if (typeof unlisten === "function") {
             return unlisten;
           }
