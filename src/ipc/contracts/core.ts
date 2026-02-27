@@ -1,5 +1,9 @@
 import { z } from "zod";
-import { getEventTransport, getInvokeTransport } from "../runtime/desktop_runtime";
+import {
+  getEventTransport,
+  getInvokeTransport,
+} from "../runtime/desktop_runtime";
+import { trackResolvedAppPathFromIpc } from "../runtime/app_path_registry";
 
 // =============================================================================
 // Contract Type Definitions
@@ -158,13 +162,15 @@ export function createClient<
   const client = {} as ClientFromContracts<T>;
   for (const [methodName, contract] of Object.entries(contracts)) {
     (client as any)[methodName] = async (input: unknown) => {
-      const transport = getInvokeTransport(contract.channel);
+      const transport = getInvokeTransport(contract.channel, input);
       if (!transport) {
         throw new Error(
           `[${contract.channel}] No desktop invoke transport is available. Expected Electron preload IPC or Tauri core bridge.`,
         );
       }
-      return transport.invoke(contract.channel, input);
+      const result = await transport.invoke(contract.channel, input);
+      trackResolvedAppPathFromIpc(contract.channel, input, result);
+      return result;
     };
   }
   return client;

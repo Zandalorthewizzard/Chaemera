@@ -1,9 +1,13 @@
 import {
-  SPRINT_3_TAURI_CHANNEL_TO_COMMAND,
-  SPRINT_3_TAURI_INVOKE_CHANNELS,
+  TAURI_MIGRATION_CHANNEL_TO_COMMAND,
+  TAURI_MIGRATION_INVOKE_CHANNELS,
 } from "./core_domain_channels";
+import { getResolvedAppPath } from "./app_path_registry";
 
-type TauriInvokeFn = (command: string, args?: Record<string, unknown>) => Promise<unknown>;
+type TauriInvokeFn = (
+  command: string,
+  args?: Record<string, unknown>,
+) => Promise<unknown>;
 type TauriListenFn = (
   event: string,
   handler: (payload: unknown) => void,
@@ -11,6 +15,7 @@ type TauriListenFn = (
 
 export interface TauriCoreBridge {
   supportedChannels: readonly string[];
+  supportsInvoke?: (channel: string, payload: unknown) => boolean;
   invoke: (channel: string, payload: unknown) => Promise<unknown>;
   on?: (channel: string, handler: (payload: unknown) => void) => () => void;
 }
@@ -37,9 +42,7 @@ declare global {
 
 function getRawTauriInvoke(): TauriInvokeFn | null {
   return (
-    window.__TAURI__?.core?.invoke ??
-    window.__TAURI_INTERNALS__?.invoke ??
-    null
+    window.__TAURI__?.core?.invoke ?? window.__TAURI_INTERNALS__?.invoke ?? null
   );
 }
 
@@ -51,12 +54,79 @@ function getRawTauriListen(): TauriListenFn | null {
   );
 }
 
-function mapTauriArgs(channel: string, payload: unknown): Record<string, unknown> | undefined {
+export function buildTauriInvokeArgs(
+  channel: string,
+  payload: unknown,
+): Record<string, unknown> | undefined {
+  const payloadRecord =
+    typeof payload === "object" && payload !== null
+      ? (payload as Record<string, unknown>)
+      : null;
+
   switch (channel) {
     case "set-user-settings":
-      return { patch: payload as Record<string, unknown> };
+      return payloadRecord ? { patch: payloadRecord } : undefined;
+    case "select-app-location":
+      return payloadRecord?.defaultPath
+        ? { defaultPath: payloadRecord.defaultPath }
+        : undefined;
+    case "check-ai-rules":
+      return payloadRecord?.path ? { path: payloadRecord.path } : undefined;
+    case "read-app-file": {
+      const appId =
+        typeof payloadRecord?.appId === "number" ? payloadRecord.appId : null;
+      const filePath =
+        typeof payloadRecord?.filePath === "string"
+          ? payloadRecord.filePath
+          : null;
+      const appPath = appId !== null ? getResolvedAppPath(appId) : null;
+      if (!appPath || !filePath) {
+        return undefined;
+      }
+      return { appPath, filePath };
+    }
+    case "search-app-files": {
+      const appId =
+        typeof payloadRecord?.appId === "number" ? payloadRecord.appId : null;
+      const query =
+        typeof payloadRecord?.query === "string" ? payloadRecord.query : null;
+      const appPath = appId !== null ? getResolvedAppPath(appId) : null;
+      if (!appPath || !query) {
+        return undefined;
+      }
+      return { appPath, query };
+    }
+    case "list-versions":
+    case "get-current-branch": {
+      const appId =
+        typeof payloadRecord?.appId === "number" ? payloadRecord.appId : null;
+      const appPath = appId !== null ? getResolvedAppPath(appId) : null;
+      if (!appPath) {
+        return undefined;
+      }
+      return { appPath };
+    }
     default:
       return undefined;
+  }
+}
+
+export function canInvokeViaTauri(channel: string, payload: unknown): boolean {
+  if (!(channel in TAURI_MIGRATION_CHANNEL_TO_COMMAND)) {
+    return false;
+  }
+
+  const mappedArgs = buildTauriInvokeArgs(channel, payload);
+  switch (channel) {
+    case "set-user-settings":
+    case "check-ai-rules":
+    case "read-app-file":
+    case "search-app-files":
+    case "list-versions":
+    case "get-current-branch":
+      return mappedArgs !== undefined;
+    default:
+      return true;
   }
 }
 
@@ -70,11 +140,12 @@ export function bootstrapTauriCoreBridge(): void {
   const listen = getRawTauriListen();
 
   window.__CHAEMERA_TAURI_CORE__ = {
-    supportedChannels: SPRINT_3_TAURI_INVOKE_CHANNELS,
+    supportedChannels: TAURI_MIGRATION_INVOKE_CHANNELS,
+    supportsInvoke: (channel, payload) => canInvokeViaTauri(channel, payload),
     invoke: async (channel, payload) => {
       const command =
-        SPRINT_3_TAURI_CHANNEL_TO_COMMAND[
-          channel as keyof typeof SPRINT_3_TAURI_CHANNEL_TO_COMMAND
+        TAURI_MIGRATION_CHANNEL_TO_COMMAND[
+          channel as keyof typeof TAURI_MIGRATION_CHANNEL_TO_COMMAND
         ];
 
       if (!command) {
@@ -83,7 +154,8 @@ export function bootstrapTauriCoreBridge(): void {
         );
       }
 
-      return invoke(command, mapTauriArgs(channel, payload));
+      const args = buildTauriInvokeArgs(channel, payload);
+      return invoke(command, args);
     },
     on: listen
       ? (channel, handler) => {
@@ -108,4 +180,3 @@ export function bootstrapTauriCoreBridge(): void {
       : undefined,
   };
 }
-

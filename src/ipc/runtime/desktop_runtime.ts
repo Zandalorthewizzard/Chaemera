@@ -1,6 +1,6 @@
 import {
   isCoreDomainEventChannel,
-  isSprint3TauriInvokeChannel,
+  isTauriMigrationInvokeChannel,
 } from "./core_domain_channels";
 
 type ElectronIpcRenderer = {
@@ -21,9 +21,10 @@ type EventTransport = {
 };
 
 function getElectronIpcRenderer(): ElectronIpcRenderer | null {
-  return ((window as unknown as { electron?: { ipcRenderer?: ElectronIpcRenderer } })
-    .electron?.ipcRenderer ??
-    null);
+  return (
+    (window as unknown as { electron?: { ipcRenderer?: ElectronIpcRenderer } })
+      .electron?.ipcRenderer ?? null
+  );
 }
 
 function getTauriCoreBridge(): TauriBridge | null {
@@ -34,9 +35,28 @@ function tauriSupportsChannel(bridge: TauriBridge, channel: string): boolean {
   return bridge.supportedChannels.includes(channel);
 }
 
-export function getInvokeTransport(channel: string): InvokeTransport | null {
+function tauriCanInvoke(
+  bridge: TauriBridge,
+  channel: string,
+  payload: unknown,
+): boolean {
+  if (typeof bridge.supportsInvoke === "function") {
+    return bridge.supportsInvoke(channel, payload);
+  }
+  return true;
+}
+
+export function getInvokeTransport(
+  channel: string,
+  payload: unknown,
+): InvokeTransport | null {
   const tauri = getTauriCoreBridge();
-  if (tauri && isSprint3TauriInvokeChannel(channel) && tauriSupportsChannel(tauri, channel)) {
+  if (
+    tauri &&
+    isTauriMigrationInvokeChannel(channel) &&
+    tauriSupportsChannel(tauri, channel) &&
+    tauriCanInvoke(tauri, channel, payload)
+  ) {
     return {
       kind: "tauri",
       invoke: (targetChannel, payload) => tauri.invoke(targetChannel, payload),
@@ -47,11 +67,12 @@ export function getInvokeTransport(channel: string): InvokeTransport | null {
   if (electron) {
     return {
       kind: "electron",
-      invoke: (targetChannel, payload) => electron.invoke(targetChannel, payload),
+      invoke: (targetChannel, payload) =>
+        electron.invoke(targetChannel, payload),
     };
   }
 
-  if (tauri && isSprint3TauriInvokeChannel(channel)) {
+  if (tauri && isTauriMigrationInvokeChannel(channel)) {
     throw new Error(
       `[${channel}] Tauri core bridge is present but this channel is not marked as supported yet.`,
     );
@@ -62,7 +83,11 @@ export function getInvokeTransport(channel: string): InvokeTransport | null {
 
 export function getEventTransport(channel: string): EventTransport | null {
   const tauri = getTauriCoreBridge();
-  if (tauri?.on && isCoreDomainEventChannel(channel) && tauriSupportsChannel(tauri, channel)) {
+  if (
+    tauri?.on &&
+    isCoreDomainEventChannel(channel) &&
+    tauriSupportsChannel(tauri, channel)
+  ) {
     return {
       kind: "tauri",
       on: (targetChannel, handler) => tauri.on!(targetChannel, handler),
@@ -79,4 +104,3 @@ export function getEventTransport(channel: string): EventTransport | null {
 
   return null;
 }
-
