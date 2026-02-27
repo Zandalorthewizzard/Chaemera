@@ -32,6 +32,13 @@ export const TAURI_MIGRATION_CHANNEL_TO_COMMAND = {
   "vercel:is-project-available": "vercel_is_project_available",
   "local-models:list-ollama": "local_models_list_ollama",
   "local-models:list-lmstudio": "local_models_list_lmstudio",
+  "get-themes": "get_themes",
+  "generate-theme-prompt": "generate_theme_prompt",
+  "generate-theme-from-url": "generate_theme_from_url",
+  "save-theme-image": "save_theme_image",
+  "cleanup-theme-images": "cleanup_theme_images",
+  "apply-visual-editing-changes": "apply_visual_editing_changes",
+  "analyze-component": "analyze_component",
 } as const;
 
 export const TAURI_MIGRATION_INVOKE_CHANNELS = Object.keys(

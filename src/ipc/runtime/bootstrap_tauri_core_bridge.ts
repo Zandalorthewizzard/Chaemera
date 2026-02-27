@@ -128,6 +128,12 @@ export function buildTauriInvokeArgs(
     case "mcp:tool-consent-response":
     case "vercel:save-token":
     case "vercel:is-project-available":
+    case "generate-theme-prompt":
+    case "generate-theme-from-url":
+    case "save-theme-image":
+    case "cleanup-theme-images":
+    case "apply-visual-editing-changes":
+    case "analyze-component":
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "chat:cancel":
       return typeof payload === "number" ? { chatId: payload } : undefined;
@@ -164,6 +170,12 @@ export function canInvokeViaTauri(channel: string, payload: unknown): boolean {
     case "mcp:tool-consent-response":
     case "vercel:save-token":
     case "vercel:is-project-available":
+    case "generate-theme-prompt":
+    case "generate-theme-from-url":
+    case "save-theme-image":
+    case "cleanup-theme-images":
+    case "apply-visual-editing-changes":
+    case "analyze-component":
       return mappedArgs !== undefined;
     default:
       return true;

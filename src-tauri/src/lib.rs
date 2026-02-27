@@ -2,6 +2,7 @@ mod core_domains;
 mod wave_b_domains;
 mod wave_c_domains;
 mod wave_d_domains;
+mod wave_e_domains;
 
 use tauri::Manager;
 
@@ -47,6 +48,13 @@ pub fn run() {
             wave_d_domains::vercel_is_project_available,
             wave_d_domains::local_models_list_ollama,
             wave_d_domains::local_models_list_lmstudio,
+            wave_e_domains::get_themes,
+            wave_e_domains::generate_theme_prompt,
+            wave_e_domains::generate_theme_from_url,
+            wave_e_domains::save_theme_image,
+            wave_e_domains::cleanup_theme_images,
+            wave_e_domains::apply_visual_editing_changes,
+            wave_e_domains::analyze_component,
         ])
         .run(tauri::generate_context!())
         .expect("error while running Tauri application");
