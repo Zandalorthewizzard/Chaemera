@@ -1,5 +1,6 @@
 import { StrictMode, useEffect } from "react";
 import { createRoot } from "react-dom/client";
+import { bootstrapTauriCoreBridge } from "./ipc/runtime/bootstrap_tauri_core_bridge";
 import { router } from "./router";
 import { RouterProvider } from "@tanstack/react-router";
 import { PostHogProvider } from "posthog-js/react";
@@ -29,6 +30,8 @@ import { queryKeys } from "./lib/queryKeys";
 
 // @ts-ignore
 console.log("Running in mode:", import.meta.env.MODE);
+
+bootstrapTauriCoreBridge();
 
 interface MyMeta extends Record<string, unknown> {
   showErrorToast: boolean;

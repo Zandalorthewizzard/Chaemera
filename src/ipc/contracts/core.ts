@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { getEventTransport, getInvokeTransport } from "../runtime/desktop_runtime";
 
 // =============================================================================
 // Contract Type Definitions
@@ -154,19 +155,16 @@ type ClientFromContracts<
 export function createClient<
   T extends Record<string, IpcContract<string, z.ZodType, z.ZodType>>,
 >(contracts: T): ClientFromContracts<T> {
-  // Access ipcRenderer from the window.electron exposed by preload
-  const getIpcRenderer = () => (window as any).electron?.ipcRenderer;
-
   const client = {} as ClientFromContracts<T>;
   for (const [methodName, contract] of Object.entries(contracts)) {
     (client as any)[methodName] = async (input: unknown) => {
-      const ipcRenderer = getIpcRenderer();
-      if (!ipcRenderer) {
+      const transport = getInvokeTransport(contract.channel);
+      if (!transport) {
         throw new Error(
-          `[${contract.channel}] IPC renderer not available. Make sure this is called from the renderer process.`,
+          `[${contract.channel}] No desktop invoke transport is available. Expected Electron preload IPC or Tauri core bridge.`,
         );
       }
-      return ipcRenderer.invoke(contract.channel, input);
+      return transport.invoke(contract.channel, input);
     };
   }
   return client;
@@ -204,17 +202,15 @@ type EventClientFromContracts<
 export function createEventClient<
   T extends Record<string, EventContract<string, z.ZodType>>,
 >(events: T): EventClientFromContracts<T> {
-  const getIpcRenderer = () => (window as any).electron?.ipcRenderer;
-
   const client = {} as EventClientFromContracts<T>;
 
   for (const [key, event] of Object.entries(events)) {
     const methodName = `on${key.charAt(0).toUpperCase()}${key.slice(1)}`;
     (client as any)[methodName] = (handler: (payload: unknown) => void) => {
-      const ipcRenderer = getIpcRenderer();
-      if (!ipcRenderer) {
+      const transport = getEventTransport(event.channel);
+      if (!transport) {
         console.error(
-          `[${event.channel}] IPC renderer not available. Make sure this is called from the renderer process.`,
+          `[${event.channel}] No desktop event transport is available. Expected Electron preload IPC or Tauri core bridge.`,
         );
         return () => {};
       }
@@ -231,7 +227,7 @@ export function createEventClient<
         }
       };
 
-      const unsubscribe = ipcRenderer.on(event.channel, listener);
+      const unsubscribe = transport.on(event.channel, listener);
       return unsubscribe;
     };
   }
