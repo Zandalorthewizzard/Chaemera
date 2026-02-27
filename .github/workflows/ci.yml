@@ -187,6 +187,7 @@ jobs:
           name: build-${{ matrix.os.name }}
           path: |
             out-macos.tar
+            .tauri-smoke-dist/
             scaffold/
             testing/fake-llm-server/
           retention-days: 1
@@ -197,6 +198,7 @@ jobs:
           name: build-${{ matrix.os.name }}
           path: |
             out/
+            .tauri-smoke-dist/
             scaffold/
             testing/fake-llm-server/
           retention-days: 1

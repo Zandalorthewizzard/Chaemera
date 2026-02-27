@@ -24,6 +24,12 @@ function generateWebServerConfigs(): PlaywrightTestConfig["webServer"] {
     });
   }
 
+  configs.push({
+    command: "npm run serve:tauri-smoke",
+    url: "http://127.0.0.1:4173",
+    reuseExistingServer: !process.env.CI,
+  });
+
   return configs;
 }
 
@@ -71,6 +77,22 @@ const config: PlaywrightTestConfig = {
     // screenshot: "on",
     // video: "retain-on-failure",
   },
+
+  projects: [
+    {
+      name: "electron-regression",
+      testIgnore: /tauri-smoke\.spec\.ts$/,
+    },
+    {
+      name: "tauri-smoke",
+      testMatch: /tauri-smoke\.spec\.ts$/,
+      use: {
+        browserName: "chromium",
+        baseURL: "http://127.0.0.1:4173",
+      },
+      workers: 1,
+    },
+  ],
 
   webServer: generateWebServerConfigs(),
 };
