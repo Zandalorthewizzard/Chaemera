@@ -4,7 +4,7 @@ use std::path::PathBuf;
 use tauri::{AppHandle, Manager, WebviewWindow};
 use uuid::Uuid;
 
-fn settings_file_path(app: &AppHandle) -> Result<PathBuf, String> {
+pub(crate) fn settings_file_path(app: &AppHandle) -> Result<PathBuf, String> {
     let app_dir = app
         .path()
         .app_data_dir()
@@ -16,7 +16,7 @@ fn settings_file_path(app: &AppHandle) -> Result<PathBuf, String> {
     Ok(app_dir.join("user-settings.json"))
 }
 
-fn default_settings() -> Value {
+pub(crate) fn default_settings() -> Value {
     json!({
         "selectedModel": {
             "name": "auto",
@@ -42,7 +42,7 @@ fn default_settings() -> Value {
     })
 }
 
-fn merge_json(base: &mut Value, patch: &Value) {
+pub(crate) fn merge_json(base: &mut Value, patch: &Value) {
     match (base, patch) {
         (Value::Object(base_map), Value::Object(patch_map)) => {
             for (key, patch_value) in patch_map {
@@ -60,7 +60,7 @@ fn merge_json(base: &mut Value, patch: &Value) {
     }
 }
 
-fn read_settings(app: &AppHandle) -> Result<Value, String> {
+pub(crate) fn read_settings(app: &AppHandle) -> Result<Value, String> {
     let file_path = settings_file_path(app)?;
     if !file_path.exists() {
         let defaults = default_settings();
@@ -81,7 +81,7 @@ fn read_settings(app: &AppHandle) -> Result<Value, String> {
     Ok(merged)
 }
 
-fn write_settings(app: &AppHandle, patch: Value) -> Result<Value, String> {
+pub(crate) fn write_settings(app: &AppHandle, patch: Value) -> Result<Value, String> {
     let file_path = settings_file_path(app)?;
     let mut current = read_settings(app)?;
     merge_json(&mut current, &patch);
@@ -134,4 +134,3 @@ pub fn get_user_settings(app: AppHandle) -> Result<Value, String> {
 pub fn set_user_settings(app: AppHandle, patch: Value) -> Result<Value, String> {
     write_settings(&app, patch)
 }
-

@@ -126,6 +126,8 @@ export function buildTauriInvokeArgs(
     case "mcp:update-server":
     case "mcp:set-tool-consent":
     case "mcp:tool-consent-response":
+    case "vercel:save-token":
+    case "vercel:is-project-available":
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "chat:cancel":
       return typeof payload === "number" ? { chatId: payload } : undefined;
@@ -160,6 +162,8 @@ export function canInvokeViaTauri(channel: string, payload: unknown): boolean {
     case "mcp:list-tools":
     case "mcp:set-tool-consent":
     case "mcp:tool-consent-response":
+    case "vercel:save-token":
+    case "vercel:is-project-available":
       return mappedArgs !== undefined;
     default:
       return true;

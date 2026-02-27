@@ -27,6 +27,11 @@ export const TAURI_MIGRATION_CHANNEL_TO_COMMAND = {
   "mcp:get-tool-consents": "mcp_get_tool_consents",
   "mcp:set-tool-consent": "mcp_set_tool_consent",
   "mcp:tool-consent-response": "mcp_tool_consent_response",
+  "vercel:save-token": "vercel_save_token",
+  "vercel:list-projects": "vercel_list_projects",
+  "vercel:is-project-available": "vercel_is_project_available",
+  "local-models:list-ollama": "local_models_list_ollama",
+  "local-models:list-lmstudio": "local_models_list_lmstudio",
 } as const;
 
 export const TAURI_MIGRATION_INVOKE_CHANNELS = Object.keys(

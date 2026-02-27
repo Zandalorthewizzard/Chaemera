@@ -1,6 +1,7 @@
 mod core_domains;
 mod wave_b_domains;
 mod wave_c_domains;
+mod wave_d_domains;
 
 use tauri::Manager;
 
@@ -41,6 +42,11 @@ pub fn run() {
             wave_c_domains::mcp_get_tool_consents,
             wave_c_domains::mcp_set_tool_consent,
             wave_c_domains::mcp_tool_consent_response,
+            wave_d_domains::vercel_save_token,
+            wave_d_domains::vercel_list_projects,
+            wave_d_domains::vercel_is_project_available,
+            wave_d_domains::local_models_list_ollama,
+            wave_d_domains::local_models_list_lmstudio,
         ])
         .run(tauri::generate_context!())
         .expect("error while running Tauri application");
