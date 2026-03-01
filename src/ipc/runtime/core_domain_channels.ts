@@ -81,6 +81,9 @@ export const TAURI_MIGRATION_CHANNEL_TO_COMMAND = {
   "supabase:unset-app-project": "supabase_unset_app_project",
   "supabase:fake-connect-and-set-project":
     "supabase_fake_connect_and_set_project",
+  "neon:create-project": "neon_create_project",
+  "neon:get-project": "neon_get_project",
+  "neon:fake-connect": "neon_fake_connect",
   "local-models:list-ollama": "local_models_list_ollama",
   "local-models:list-lmstudio": "local_models_list_lmstudio",
   "get-themes": "get_themes",

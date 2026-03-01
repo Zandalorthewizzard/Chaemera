@@ -741,3 +741,34 @@ Then continue the migration plan from `Sprint 11`, unless the smoke suite or Win
 5. `npx vitest run src/__tests__/tauri_wave_z_bridge.test.ts` passed.
 6. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe check --manifest-path src-tauri/Cargo.toml` passed.
 7. A fresh contract audit reduced the remaining unmapped contract count to `51`.
+
+## Sprint 11 Wave 24
+
+1. Added a dedicated Tauri `neon` wave covering the remaining Neon IPC contract surface:
+   - `neon:create-project`
+   - `neon:get-project`
+   - `neon:fake-connect`
+2. The new Rust module keeps the existing Neon product flow intact instead of replacing it with an MCP-style abstraction:
+   - obtains the first available Neon organization for project creation
+   - creates the Neon project
+   - creates a `preview` branch with a `read_only` endpoint
+   - persists `neon_project_id`, `neon_development_branch_id`, and `neon_preview_branch_id` in `sqlite.db`
+   - loads project + branch state back into the same `GetNeonProjectResponse` shape used by the renderer
+3. The Tauri smoke harness now has deterministic Neon coverage:
+   - fake OAuth return event for `neon:fake-connect`
+   - in-memory app linkage for Neon project/branch IDs
+   - deterministic `neon:get-project` branch payloads for future smoke coverage
+4. The Tauri settings path now writes the full `neon` settings object exactly when refreshing or faking tokens, instead of merge-patching nested token objects. This avoids carrying stale `encryptionType` metadata forward accidentally.
+5. Important known limitation:
+   - if Neon credentials were previously written through Electron `safeStorage` (`encryptionType: electron-safe-storage`), the Tauri path now fails explicitly instead of silently using undecipherable token data
+   - this mirrors the existing Tauri limitation already documented for encrypted Supabase secrets and keeps the failure mode honest
+
+## Sprint 11 Wave 24 Validation
+
+1. `npx oxfmt --write src/ipc/runtime/core_domain_channels.ts src/ipc/runtime/bootstrap_tauri_core_bridge.ts e2e-tests/helpers/tauri_smoke_fixtures.ts src/__tests__/tauri_wave_aa_bridge.test.ts` passed.
+2. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe fmt --manifest-path src-tauri/Cargo.toml` passed.
+3. `npm run ts` passed.
+4. `npm run lint` passed.
+5. `npx vitest run src/__tests__/tauri_wave_aa_bridge.test.ts` passed.
+6. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe check --manifest-path src-tauri/Cargo.toml` passed.
+7. A fresh contract audit reduced the remaining unmapped contract count to `48`.

@@ -194,6 +194,10 @@ export function buildTauriInvokeArgs(
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "supabase:fake-connect-and-set-project":
       return payloadRecord ? { request: payloadRecord } : undefined;
+    case "neon:create-project":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "neon:get-project":
+      return payloadRecord ? { request: payloadRecord } : undefined;
     case "create-custom-theme":
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "update-custom-theme":
@@ -401,6 +405,8 @@ export function canInvokeViaTauri(channel: string, payload: unknown): boolean {
     case "supabase:set-app-project":
     case "supabase:unset-app-project":
     case "supabase:fake-connect-and-set-project":
+    case "neon:create-project":
+    case "neon:get-project":
     case "create-custom-theme":
     case "update-custom-theme":
     case "delete-custom-theme":

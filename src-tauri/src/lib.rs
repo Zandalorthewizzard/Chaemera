@@ -1,6 +1,7 @@
 mod core_domains;
 mod leptos_shell;
 mod sqlite_support;
+mod wave_aa_domains;
 mod wave_b_domains;
 mod wave_c_domains;
 mod wave_d_domains;
@@ -175,6 +176,9 @@ pub fn run() {
             wave_z_domains::supabase_set_app_project,
             wave_z_domains::supabase_unset_app_project,
             wave_z_domains::supabase_fake_connect_and_set_project,
+            wave_aa_domains::neon_create_project,
+            wave_aa_domains::neon_get_project,
+            wave_aa_domains::neon_fake_connect,
             wave_d_domains::local_models_list_ollama,
             wave_d_domains::local_models_list_lmstudio,
             wave_e_domains::get_themes,

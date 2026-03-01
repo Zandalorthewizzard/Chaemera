@@ -142,6 +142,9 @@ const tauriCommandToChannel = {
   supabase_unset_app_project: "supabase:unset-app-project",
   supabase_fake_connect_and_set_project:
     "supabase:fake-connect-and-set-project",
+  neon_create_project: "neon:create-project",
+  neon_get_project: "neon:get-project",
+  neon_fake_connect: "neon:fake-connect",
   get_themes: "get-themes",
   set_app_theme: "set-app-theme",
   get_app_theme: "get-app-theme",
@@ -189,9 +192,9 @@ export const test = base.extend<{
             supabaseProjectId: string | null;
             supabaseParentProjectId: string | null;
             supabaseOrganizationSlug: string | null;
-            neonProjectId: null;
-            neonDevelopmentBranchId: null;
-            neonPreviewBranchId: null;
+            neonProjectId: string | null;
+            neonDevelopmentBranchId: string | null;
+            neonPreviewBranchId: string | null;
             vercelProjectId: string | null;
             vercelProjectName: string | null;
             vercelDeploymentUrl: string | null;
@@ -503,6 +506,16 @@ export const test = base.extend<{
             ],
           ],
         ]);
+        const neonProjectsByAppId = new Map<
+          number,
+          {
+            projectId: string;
+            projectName: string;
+            orgId: string;
+            developmentBranchId: string;
+            previewBranchId: string;
+          }
+        >();
         const plansById = new Map<
           string,
           {
@@ -1895,6 +1908,87 @@ export const test = base.extend<{
               });
               return;
             }
+            case "neon:create-project": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const appId = Number(request?.appId ?? 0);
+              const app = appsById.get(appId);
+              if (!app) {
+                throw new Error("App not found");
+              }
+              const projectName = String(request?.name ?? "").trim();
+              if (!projectName) {
+                throw new Error("Project name is required.");
+              }
+              const projectId = `test-neon-project-${appId}`;
+              const developmentBranchId = `test-neon-branch-${appId}`;
+              const previewBranchId = `test-neon-preview-${appId}`;
+              app.neonProjectId = projectId;
+              app.neonDevelopmentBranchId = developmentBranchId;
+              app.neonPreviewBranchId = previewBranchId;
+              appsById.set(appId, { ...app });
+              neonProjectsByAppId.set(appId, {
+                projectId,
+                projectName,
+                orgId: "test-org-id",
+                developmentBranchId,
+                previewBranchId,
+              });
+              return {
+                id: projectId,
+                name: projectName,
+                connectionString: "postgresql://test:test@test.neon.tech/test",
+                branchId: developmentBranchId,
+              };
+            }
+            case "neon:get-project": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const appId = Number(request?.appId ?? 0);
+              const app = appsById.get(appId);
+              if (!app) {
+                throw new Error("App not found");
+              }
+              const neonProject = neonProjectsByAppId.get(appId);
+              if (!app.neonProjectId || !neonProject) {
+                throw new Error("No Neon project found for this app");
+              }
+              return {
+                projectId: neonProject.projectId,
+                projectName: neonProject.projectName,
+                orgId: neonProject.orgId,
+                branches: [
+                  {
+                    type: "production",
+                    branchId: neonProject.developmentBranchId,
+                    branchName: "main",
+                    lastUpdated: "2026-03-01T00:00:00Z",
+                    parentBranchId: null,
+                    parentBranchName: undefined,
+                  },
+                  {
+                    type: "preview",
+                    branchId: neonProject.previewBranchId,
+                    branchName: "preview",
+                    lastUpdated: "2026-03-01T00:01:00Z",
+                    parentBranchId: neonProject.developmentBranchId,
+                    parentBranchName: "main",
+                  },
+                ],
+              };
+            }
+            case "neon:fake-connect":
+              state.settings.neon = {
+                accessToken: { value: "fake-neon-access-token" },
+                refreshToken: { value: "fake-neon-refresh-token" },
+                expiresIn: 3600,
+                tokenTimestamp: Date.now() / 1000,
+              };
+              emit("deep-link-received", {
+                type: "neon-oauth-return",
+                url: "https://oauth.dyad.sh/api/integrations/neon/login",
+              });
+              return;
             case "does-release-note-exist":
               return { exists: false };
             case "nodejs-status":
