@@ -1169,3 +1169,11 @@ Current lock:
    - the legacy release verifier now targets the Chaemera repo and Chaemera asset naming
 2. Intentionally preserved the `dyad://` deep-link scheme in `forge.config.ts` for runtime compatibility during migration.
 3. Added a regression-style metadata test so the fork identity and legacy release metadata do not drift back.
+
+## Sprint 11 Wave 41
+
+1. Explicitly isolated the remaining Electron release path as legacy instead of letting it masquerade as the default release route:
+   - `package`, `make`, and `publish` now delegate to named `*:electron` scripts
+   - `.github/workflows/release.yml` is now labeled `Release Electron Legacy`
+2. This keeps the fallback path available for regression purposes while making the Tauri preview workflow the clear migration direction.
+3. Extended the metadata test so the legacy Electron release naming stays explicit.

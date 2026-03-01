@@ -1,11 +1,14 @@
 # .github/workflows/release.yml
-
+#
+# Legacy Electron/Forge release path kept as a fallback during the Tauri cutover.
+# The Tauri-first packaging checkpoint currently lives in `release-tauri-preview.yml`.
+#
 # Need to write to repo contents to upload the app to GitHub Release
 # See: https://www.electronforge.io/config/publishers/github#authentication
 permissions:
   contents: write
 
-name: Release app
+name: Release Electron Legacy
 on:
   workflow_dispatch:
 jobs:
@@ -96,12 +99,12 @@ jobs:
           echo "AZURE_METADATA_JSON=$PWD\signing-metadata.json" >> $env:GITHUB_ENV
 
       # Build (dry-run) - does NOT publish
-      - name: Build app (dry-run)
+      - name: Build Electron app (dry-run)
         uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
         with:
           timeout_minutes: 30
           max_attempts: 3
-          command: npm run publish -- --dry-run
+          command: npm run publish:electron -- --dry-run
         env:
           DEBUG: "@electron/*,electron-forge:*,electron-osx-sign*,electron-notarize*,electron-windows-installer:main,electron-windows-sign"
           NODE_OPTIONS: "--max-old-space-size=4096"

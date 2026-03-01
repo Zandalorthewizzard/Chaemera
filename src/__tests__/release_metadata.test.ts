@@ -40,11 +40,26 @@ describe("release metadata", () => {
       path.join(process.cwd(), "scripts/verify-release-assets.js"),
       "utf8",
     );
+    const packageJson = readJson<{
+      scripts: Record<string, string>;
+    }>("package.json");
+    const releaseWorkflow = fs.readFileSync(
+      path.join(process.cwd(), ".github/workflows/release.yml"),
+      "utf8",
+    );
 
     expect(forgeConfig).toContain('name: "Chaemera"');
     expect(forgeConfig).toContain('owner: "Zandalorthewizzard"');
     expect(forgeConfig).toContain('name: "Chaemera"');
     expect(forgeConfig).toContain('schemes: ["dyad"]');
+    expect(packageJson.scripts.package).toBe("npm run package:electron");
+    expect(packageJson.scripts.make).toBe("npm run make:electron");
+    expect(packageJson.scripts.publish).toBe("npm run publish:electron");
+    expect(packageJson.scripts["publish:electron"]).toContain(
+      "electron-forge publish",
+    );
+    expect(releaseWorkflow).toContain("name: Release Electron Legacy");
+    expect(releaseWorkflow).toContain("npm run publish:electron -- --dry-run");
     expect(releaseVerifier).toContain('const owner = "Zandalorthewizzard";');
     expect(releaseVerifier).toContain('const repo = "Chaemera";');
     expect(releaseVerifier).toContain('"chaemera-release-verifier"');
