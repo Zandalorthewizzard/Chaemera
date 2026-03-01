@@ -48,11 +48,14 @@ const tauriCommandToChannel = {
   get_system_platform: "get-system-platform",
   get_system_debug_info: "get-system-debug-info",
   get_app_version: "get-app-version",
+  get_app: "get-app",
+  list_apps: "list-apps",
   nodejs_status: "nodejs-status",
   select_node_folder: "select-node-folder",
   get_node_path: "get-node-path",
   get_user_settings: "get-user-settings",
   set_user_settings: "set-user-settings",
+  check_app_name: "check-app-name",
   show_item_in_folder: "show-item-in-folder",
   clear_session_data: "clear-session-data",
   reset_all: "reset-all",
@@ -61,6 +64,8 @@ const tauriCommandToChannel = {
   get_user_budget: "get-user-budget",
   upload_to_signed_url: "upload-to-signed-url",
   restart_dyad: "restart-dyad",
+  add_to_favorite: "add-to-favorite",
+  update_app_commands: "update-app-commands",
   plan_create: "plan:create",
   plan_get: "plan:get",
   plan_get_for_chat: "plan:get-for-chat",
@@ -89,6 +94,67 @@ export const test = base.extend<{
         commandToChannel: Record<string, string>;
       }) => {
         const listeners = new Map<string, Set<(payload: unknown) => void>>();
+        const appsById = new Map<
+          number,
+          {
+            id: number;
+            name: string;
+            path: string;
+            createdAt: string;
+            updatedAt: string;
+            githubOrg: null;
+            githubRepo: null;
+            githubBranch: null;
+            supabaseProjectId: null;
+            supabaseParentProjectId: null;
+            supabaseOrganizationSlug: null;
+            neonProjectId: null;
+            neonDevelopmentBranchId: null;
+            neonPreviewBranchId: null;
+            vercelProjectId: null;
+            vercelProjectName: null;
+            vercelDeploymentUrl: null;
+            vercelTeamId: null;
+            installCommand: string | null;
+            startCommand: string | null;
+            isFavorite: boolean;
+            resolvedPath: string;
+            files: string[];
+            supabaseProjectName: null;
+            vercelTeamSlug: null;
+          }
+        >([
+          [
+            1,
+            {
+              id: 1,
+              name: "smoke-app",
+              path: "smoke-app",
+              createdAt: "2026-03-01T00:00:00Z",
+              updatedAt: "2026-03-01T00:00:00Z",
+              githubOrg: null,
+              githubRepo: null,
+              githubBranch: null,
+              supabaseProjectId: null,
+              supabaseParentProjectId: null,
+              supabaseOrganizationSlug: null,
+              neonProjectId: null,
+              neonDevelopmentBranchId: null,
+              neonPreviewBranchId: null,
+              vercelProjectId: null,
+              vercelProjectName: null,
+              vercelDeploymentUrl: null,
+              vercelTeamId: null,
+              installCommand: null,
+              startCommand: null,
+              isFavorite: false,
+              resolvedPath: "C:/Apps/smoke-app",
+              files: ["src/main.tsx", "package.json"],
+              supabaseProjectName: null,
+              vercelTeamSlug: null,
+            },
+          ],
+        ]);
         const plansById = new Map<
           string,
           {
@@ -187,6 +253,77 @@ export const test = base.extend<{
               };
             case "get-node-path":
               return "C:/Program Files/nodejs/node.exe";
+            case "list-apps":
+              return {
+                apps: Array.from(appsById.values()).map((app) => ({
+                  ...app,
+                  files: undefined,
+                  supabaseProjectName: undefined,
+                  vercelTeamSlug: undefined,
+                })),
+              };
+            case "get-app": {
+              const appId =
+                typeof payload === "object" &&
+                payload !== null &&
+                "appId" in payload
+                  ? Number((payload as { appId?: unknown }).appId ?? 0)
+                  : Number(payload ?? 0);
+              return (
+                appsById.get(appId) ?? {
+                  ...appsById.get(1),
+                  id: appId,
+                }
+              );
+            }
+            case "check-app-name": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const name = String(request?.appName ?? "");
+              return {
+                exists: Array.from(appsById.values()).some(
+                  (app) => app.name === name,
+                ),
+              };
+            }
+            case "add-to-favorite": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const appId = Number(request?.appId ?? 0);
+              const existing = appsById.get(appId);
+              if (!existing) {
+                return { isFavorite: false };
+              }
+              const next = {
+                ...existing,
+                isFavorite: !existing.isFavorite,
+                updatedAt: new Date().toISOString(),
+              };
+              appsById.set(appId, next);
+              return { isFavorite: next.isFavorite };
+            }
+            case "update-app-commands": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const appId = Number(request?.appId ?? 0);
+              const existing = appsById.get(appId);
+              if (!existing) {
+                return;
+              }
+              appsById.set(appId, {
+                ...existing,
+                installCommand:
+                  typeof request?.installCommand === "string"
+                    ? request.installCommand
+                    : null,
+                startCommand:
+                  typeof request?.startCommand === "string"
+                    ? request.startCommand
+                    : null,
+                updatedAt: new Date().toISOString(),
+              });
+              return;
+            }
             case "get-user-budget":
               return null;
             case "free-agent-quota:get-status":

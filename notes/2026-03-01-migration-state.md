@@ -190,3 +190,26 @@ Then continue the migration plan from `Sprint 11`, unless the smoke suite or Win
 3. `cargo fmt` passed in `src-tauri`.
 4. `cargo check` passed in `src-tauri`.
 5. Invoke coverage moved from `117` missing channels to `112` missing channels.
+
+## Sprint 11 Wave 7
+
+1. Added a focused Tauri app-domain read/update wave backed by direct SQLite access from Rust using `rusqlite`.
+2. Newly bridged invoke channels:
+   - `get-app`
+   - `list-apps`
+   - `check-app-name`
+   - `add-to-favorite`
+   - `update-app-commands`
+3. The Tauri app wave reuses the existing workspace assumptions instead of porting the entire DB stack:
+   - in dev, SQLite reads `userData/sqlite.db` from the repo workspace
+   - app paths still resolve through the existing `dyad-apps` workspace layout
+   - `supabaseProjectName` and `vercelTeamSlug` are intentionally returned as `null` in this wave
+4. The smoke harness now includes an in-memory app registry for the new app commands so bridge expectations stay coherent in Tauri smoke mode.
+
+## Sprint 11 Wave 7 Validation
+
+1. `npx vitest run src/__tests__/tauri_wave_j_bridge.test.ts src/__tests__/tauri_wave_i_bridge.test.ts` passed.
+2. `npm run ts` passed.
+3. `cargo fmt` passed in `src-tauri`.
+4. `cargo check` passed in `src-tauri`.
+5. Invoke coverage moved from `112` missing channels to `106` missing channels.

@@ -8,6 +8,7 @@ mod wave_f_domains;
 mod wave_g_domains;
 mod wave_h_domains;
 mod wave_i_domains;
+mod wave_j_domains;
 
 use tauri::Manager;
 
@@ -26,6 +27,8 @@ pub fn run() {
             core_domains::get_system_platform,
             wave_g_domains::get_system_debug_info,
             core_domains::get_app_version,
+            wave_j_domains::get_app,
+            wave_j_domains::list_apps,
             wave_g_domains::nodejs_status,
             wave_g_domains::select_node_folder,
             wave_g_domains::get_node_path,
@@ -34,6 +37,7 @@ pub fn run() {
             wave_b_domains::select_app_folder,
             wave_b_domains::select_app_location,
             wave_b_domains::check_ai_rules,
+            wave_j_domains::check_app_name,
             wave_b_domains::get_templates,
             wave_b_domains::read_app_file,
             wave_b_domains::search_app_files,
@@ -55,6 +59,8 @@ pub fn run() {
             wave_g_domains::get_user_budget,
             wave_g_domains::upload_to_signed_url,
             wave_g_domains::restart_dyad,
+            wave_j_domains::add_to_favorite,
+            wave_j_domains::update_app_commands,
             wave_i_domains::plan_create,
             wave_i_domains::plan_get,
             wave_i_domains::plan_get_for_chat,

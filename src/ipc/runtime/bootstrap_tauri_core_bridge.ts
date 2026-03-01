@@ -76,6 +76,8 @@ export function buildTauriInvokeArgs(
       : null;
 
   switch (channel) {
+    case "get-app":
+      return typeof payload === "number" ? { appId: payload } : undefined;
     case "set-user-settings":
       return payloadRecord ? { patch: payloadRecord } : undefined;
     case "show-item-in-folder":
@@ -138,6 +140,12 @@ export function buildTauriInvokeArgs(
       }
       return { request: { ...payloadRecord, appId, appPath } };
     }
+    case "add-to-favorite":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "update-app-commands":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "check-app-name":
+      return payloadRecord ? { request: payloadRecord } : undefined;
     case "search-app-files": {
       const appId =
         typeof payloadRecord?.appId === "number" ? payloadRecord.appId : null;
@@ -230,8 +238,12 @@ export function canInvokeViaTauri(channel: string, payload: unknown): boolean {
   const mappedArgs = buildTauriInvokeArgs(channel, payload);
   switch (channel) {
     case "set-user-settings":
+    case "get-app":
     case "show-item-in-folder":
     case "check-ai-rules":
+    case "add-to-favorite":
+    case "update-app-commands":
+    case "check-app-name":
     case "read-app-file":
     case "edit-app-file":
     case "check-problems":
