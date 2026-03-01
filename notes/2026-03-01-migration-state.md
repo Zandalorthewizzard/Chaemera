@@ -285,3 +285,50 @@ Then continue the migration plan from `Sprint 11`, unless the smoke suite or Win
 3. Integration-heavy domains remain the largest untouched Electron-only block:
    - GitHub flow/repo/git operations
    - Supabase/Neon/Vercel mutation flows
+
+## Sprint 11 Wave 10
+
+1. Added a Tauri-native app CRUD wave covering the remaining core app-management operations:
+   - `create-app`
+   - `delete-app`
+   - `copy-app`
+   - `rename-app`
+   - `change-app-location`
+   - `rename-branch`
+2. `create-app` now works in the Tauri path with the existing template-selection logic:
+   - local `react` scaffold is copied from `scaffold/`
+   - non-local templates resolve through the existing template catalog and clone from the configured GitHub repository
+   - a first git commit is created with Chaemera-branded metadata instead of the original Dyad commit identity
+3. `copy-app`, `rename-app`, and `change-app-location` reuse a shared Rust directory-copy helper and preserve the important Electron semantics:
+   - `node_modules` is never copied during app moves/copies
+   - `copy-app` can preserve or reset git history depending on `withHistory`
+   - `rename-app` still rejects absolute new folder paths and keeps absolute-path apps inside their current parent directory
+   - `change-app-location` still rewrites the stored path to an absolute location
+4. `delete-app` now stops tracked Tauri runtime processes, clears log-store state, deletes the DB row, and then deletes the workspace directory.
+5. Extended the Tauri smoke harness with app CRUD command mappings and an in-memory app/chat store so this new surface stays coherent with the bridge.
+6. Updated the renderer-side app path registry so successful `rename-app` calls refresh cached `resolvedPath` metadata for downstream path-dependent channels.
+
+## Sprint 11 Wave 10 Validation
+
+1. `npx oxfmt --write src/ipc/runtime/core_domain_channels.ts src/ipc/runtime/bootstrap_tauri_core_bridge.ts src/ipc/runtime/app_path_registry.ts src/__tests__/tauri_wave_m_bridge.test.ts e2e-tests/helpers/tauri_smoke_fixtures.ts` passed.
+2. `npm run lint` passed.
+3. `npm run ts` passed.
+4. `npx vitest run src/__tests__/tauri_wave_m_bridge.test.ts src/__tests__/tauri_wave_b_bridge.test.ts src/__tests__/tauri_wave_f_bridge.test.ts` passed.
+5. `cargo fmt` passed in `src-tauri`.
+6. `cargo check` passed in `src-tauri`.
+7. Invoke coverage moved from `89` missing channels to `83` missing channels.
+
+## Next Resume Point After Wave 10
+
+1. Remaining workspace-adjacent runtime gap is no longer CRUD-heavy; the next high-value local cutover is:
+   - `search-app`
+   - `chat:count-tokens`
+   - `help:chat:start`
+2. The largest remaining Electron-only block is now GitHub/git orchestration:
+   - branch listing/switch/create/delete
+   - fetch/pull/push/rebase/merge controls
+   - repo creation/connection flows
+3. Cloud mutation surfaces remain intentionally outside the migrated core path:
+   - Supabase
+   - Neon
+   - Vercel

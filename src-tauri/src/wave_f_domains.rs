@@ -459,6 +459,10 @@ fn stop_running_app(app_id: i64) -> Result<(), String> {
     Ok(())
 }
 
+pub(crate) fn stop_app_by_id(app_id: i64) -> Result<(), String> {
+    stop_running_app(app_id)
+}
+
 pub(crate) fn stop_all_running_apps() -> Result<(), String> {
     let app_ids = {
         let guard = running_apps()
@@ -472,6 +476,12 @@ pub(crate) fn stop_all_running_apps() -> Result<(), String> {
     }
 
     Ok(())
+}
+
+pub(crate) fn clear_logs_for_app(app_id: i64) {
+    if let Ok(mut guard) = log_store().lock() {
+        guard.remove(&app_id);
+    }
 }
 
 fn remove_node_modules_if_requested(app_path: &str, should_remove: bool) -> Result<(), String> {
@@ -737,10 +747,7 @@ pub fn add_log(request: ConsoleLogEntry) -> Result<(), String> {
 
 #[tauri::command]
 pub fn clear_logs(request: AppIdRequest) -> Result<(), String> {
-    let mut guard = log_store()
-        .lock()
-        .map_err(|_| "log store mutex poisoned".to_string())?;
-    guard.remove(&request.app_id);
+    clear_logs_for_app(request.app_id);
     Ok(())
 }
 

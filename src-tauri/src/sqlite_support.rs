@@ -5,6 +5,13 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 use tauri::{AppHandle, Manager};
 use time::{format_description::well_known::Rfc3339, OffsetDateTime};
+use walkdir::WalkDir;
+
+#[derive(Debug, Clone, Copy, Default)]
+pub struct CopyDirOptions {
+    pub exclude_node_modules: bool,
+    pub exclude_git: bool,
+}
 
 pub fn workspace_root() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR"))
@@ -91,4 +98,68 @@ pub fn run_git(app_path: &Path, args: &[&str]) -> Result<String, String> {
     }
 
     Ok(String::from_utf8_lossy(&output.stdout).trim().to_string())
+}
+
+fn should_skip_entry(path: &Path, options: CopyDirOptions) -> bool {
+    path.components().any(|component| match component {
+        std::path::Component::Normal(part) => {
+            let part = part.to_string_lossy();
+            (options.exclude_node_modules && part == "node_modules")
+                || (options.exclude_git && part == ".git")
+        }
+        _ => false,
+    })
+}
+
+pub fn copy_dir_recursive(
+    source: &Path,
+    destination: &Path,
+    options: CopyDirOptions,
+) -> Result<(), String> {
+    if !source.exists() {
+        return Err(format!(
+            "source path does not exist: {}",
+            source.to_string_lossy()
+        ));
+    }
+
+    fs::create_dir_all(destination)
+        .map_err(|error| format!("failed to create destination directory: {error}"))?;
+
+    for entry in WalkDir::new(source)
+        .into_iter()
+        .filter_entry(|entry| !should_skip_entry(entry.path(), options))
+    {
+        let entry = entry.map_err(|error| format!("failed to walk source directory: {error}"))?;
+        let path = entry.path();
+
+        if should_skip_entry(path, options) {
+            continue;
+        }
+
+        let relative = path
+            .strip_prefix(source)
+            .map_err(|error| format!("failed to build relative path: {error}"))?;
+
+        if relative.as_os_str().is_empty() {
+            continue;
+        }
+
+        let target = destination.join(relative);
+        if entry.file_type().is_dir() {
+            fs::create_dir_all(&target)
+                .map_err(|error| format!("failed to create directory during copy: {error}"))?;
+            continue;
+        }
+
+        if let Some(parent) = target.parent() {
+            fs::create_dir_all(parent).map_err(|error| {
+                format!("failed to create parent directory during copy: {error}")
+            })?;
+        }
+
+        fs::copy(path, &target).map_err(|error| format!("failed to copy file: {error}"))?;
+    }
+
+    Ok(())
 }

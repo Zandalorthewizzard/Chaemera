@@ -76,8 +76,16 @@ export function buildTauriInvokeArgs(
       : null;
 
   switch (channel) {
+    case "create-app":
+      return payloadRecord ? { request: payloadRecord } : undefined;
     case "get-app":
       return typeof payload === "number" ? { appId: payload } : undefined;
+    case "delete-app":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "copy-app":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "rename-app":
+      return payloadRecord ? { request: payloadRecord } : undefined;
     case "get-chat":
       return typeof payload === "number" ? { chatId: payload } : undefined;
     case "get-chats":
@@ -187,6 +195,8 @@ export function buildTauriInvokeArgs(
       }
       return { appPath, query };
     }
+    case "change-app-location":
+      return payloadRecord ? { request: payloadRecord } : undefined;
     case "list-versions":
     case "get-current-branch": {
       const appId =
@@ -197,6 +207,8 @@ export function buildTauriInvokeArgs(
       }
       return { appPath };
     }
+    case "rename-branch":
+      return payloadRecord ? { request: payloadRecord } : undefined;
     case "run-app":
     case "restart-app": {
       const appId =
@@ -268,7 +280,11 @@ export function canInvokeViaTauri(channel: string, payload: unknown): boolean {
   const mappedArgs = buildTauriInvokeArgs(channel, payload);
   switch (channel) {
     case "set-user-settings":
+    case "create-app":
     case "get-app":
+    case "delete-app":
+    case "copy-app":
+    case "rename-app":
     case "get-chat":
     case "create-chat":
     case "show-item-in-folder":
@@ -297,8 +313,10 @@ export function canInvokeViaTauri(channel: string, payload: unknown): boolean {
     case "plan:update-plan":
     case "plan:delete":
     case "search-app-files":
+    case "change-app-location":
     case "list-versions":
     case "get-current-branch":
+    case "rename-branch":
     case "run-app":
     case "restart-app":
     case "chat:stream":

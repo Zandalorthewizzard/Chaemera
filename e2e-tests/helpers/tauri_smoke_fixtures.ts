@@ -48,8 +48,12 @@ const tauriCommandToChannel = {
   get_system_platform: "get-system-platform",
   get_system_debug_info: "get-system-debug-info",
   get_app_version: "get-app-version",
+  create_app: "create-app",
   get_app: "get-app",
   list_apps: "list-apps",
+  delete_app: "delete-app",
+  copy_app: "copy-app",
+  rename_app: "rename-app",
   get_chat: "get-chat",
   get_chats: "get-chats",
   create_chat: "create-chat",
@@ -73,6 +77,8 @@ const tauriCommandToChannel = {
   restart_dyad: "restart-dyad",
   add_to_favorite: "add-to-favorite",
   update_app_commands: "update-app-commands",
+  change_app_location: "change-app-location",
+  rename_branch: "rename-branch",
   plan_create: "plan:create",
   plan_get: "plan:get",
   plan_get_for_chat: "plan:get-for-chat",
@@ -172,6 +178,7 @@ export const test = base.extend<{
             },
           ],
         ]);
+        let nextAppId = 2;
         const chatsById = new Map<
           number,
           {
@@ -360,6 +367,56 @@ export const test = base.extend<{
               };
             case "get-node-path":
               return "C:/Program Files/nodejs/node.exe";
+            case "create-app": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const appName = String(request?.name ?? "").trim();
+              const appId = nextAppId++;
+              const now = new Date().toISOString();
+              const app = {
+                id: appId,
+                name: appName,
+                path: appName,
+                createdAt: now,
+                updatedAt: now,
+                githubOrg: null,
+                githubRepo: null,
+                githubBranch: null,
+                supabaseProjectId: null,
+                supabaseParentProjectId: null,
+                supabaseOrganizationSlug: null,
+                neonProjectId: null,
+                neonDevelopmentBranchId: null,
+                neonPreviewBranchId: null,
+                vercelProjectId: null,
+                vercelProjectName: null,
+                vercelDeploymentUrl: null,
+                vercelTeamId: null,
+                installCommand: null,
+                startCommand: null,
+                isFavorite: false,
+                resolvedPath: `C:/Apps/${appName}`,
+                files: ["src/main.tsx", "package.json"],
+                supabaseProjectName: null,
+                vercelTeamSlug: null,
+              };
+              appsById.set(appId, app);
+
+              const chatId = nextChatId++;
+              chatsById.set(chatId, {
+                id: chatId,
+                appId,
+                title: "",
+                createdAt: now,
+                initialCommitHash: "abc123def456",
+                messages: [],
+              });
+
+              return {
+                app,
+                chatId,
+              };
+            }
             case "list-apps":
               return {
                 apps: Array.from(appsById.values()).map((app) => ({
@@ -382,6 +439,85 @@ export const test = base.extend<{
                   id: appId,
                 }
               );
+            }
+            case "delete-app": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const appId = Number(request?.appId ?? 0);
+              appsById.delete(appId);
+              for (const [chatId, chat] of chatsById.entries()) {
+                if (chat.appId === appId) {
+                  chatsById.delete(chatId);
+                }
+              }
+              return;
+            }
+            case "copy-app": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const appId = Number(request?.appId ?? 0);
+              const newAppName = String(request?.newAppName ?? "").trim();
+              const original = appsById.get(appId);
+              if (!original) {
+                throw new Error("Original app not found.");
+              }
+              const nextId = nextAppId++;
+              const now = new Date().toISOString();
+              const copiedApp = {
+                ...original,
+                id: nextId,
+                name: newAppName,
+                path: newAppName,
+                createdAt: now,
+                updatedAt: now,
+                githubOrg: null,
+                githubRepo: null,
+                githubBranch: null,
+                supabaseProjectId: null,
+                supabaseParentProjectId: null,
+                supabaseOrganizationSlug: null,
+                neonProjectId: null,
+                neonDevelopmentBranchId: null,
+                neonPreviewBranchId: null,
+                vercelProjectId: null,
+                vercelProjectName: null,
+                vercelDeploymentUrl: null,
+                vercelTeamId: null,
+                isFavorite: false,
+                resolvedPath: `C:/Apps/${newAppName}`,
+              };
+              appsById.set(nextId, copiedApp);
+              return {
+                app: copiedApp,
+              };
+            }
+            case "rename-app": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const appId = Number(request?.appId ?? 0);
+              const nextName = String(request?.appName ?? "");
+              const nextPath = String(request?.appPath ?? "");
+              const existing = appsById.get(appId);
+              if (!existing) {
+                throw new Error("App not found");
+              }
+              const currentPathIsAbsolute =
+                existing.path.includes(":") || existing.path.startsWith("/");
+              const resolvedPath =
+                nextPath === existing.path
+                  ? existing.resolvedPath
+                  : currentPathIsAbsolute
+                    ? `${existing.resolvedPath.replace(/[/\\\\][^/\\\\]*$/, "")}/${nextPath}`
+                    : `C:/Apps/${nextPath}`;
+              appsById.set(appId, {
+                ...existing,
+                name: nextName,
+                path: currentPathIsAbsolute ? resolvedPath : nextPath,
+                resolvedPath,
+              });
+              return {
+                resolvedPath,
+              };
             }
             case "get-chat": {
               const chatId =
@@ -558,6 +694,32 @@ export const test = base.extend<{
               });
               return;
             }
+            case "change-app-location": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const appId = Number(request?.appId ?? 0);
+              const parentDirectory = String(request?.parentDirectory ?? "");
+              const existing = appsById.get(appId);
+              if (!existing) {
+                throw new Error("App not found");
+              }
+              const folderName =
+                existing.path
+                  .split(/[/\\\\]/)
+                  .filter(Boolean)
+                  .pop() ?? existing.name;
+              const resolvedPath = `${parentDirectory.replace(/[\\\\]+/g, "/")}/${folderName}`;
+              appsById.set(appId, {
+                ...existing,
+                path: resolvedPath,
+                resolvedPath,
+              });
+              return {
+                resolvedPath,
+              };
+            }
+            case "rename-branch":
+              return;
             case "get-app-theme": {
               const request = (payload as { request?: Record<string, unknown> })
                 ?.request;

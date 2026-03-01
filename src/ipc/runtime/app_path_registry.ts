@@ -121,6 +121,14 @@ export function trackResolvedAppPathFromIpc(
       }
       return;
     }
+    case "rename-app": {
+      const appId = readNumber(input, "appId");
+      const resolvedPath = readString(result, "resolvedPath");
+      if (appId !== null && resolvedPath) {
+        registerResolvedAppPath(appId, resolvedPath);
+      }
+      return;
+    }
     case "delete-app": {
       const appId = readNumber(input, "appId");
       if (appId !== null) {
