@@ -91,8 +91,13 @@ const tauriCommandToChannel = {
   github_is_repo_available: "github:is-repo-available",
   github_create_repo: "github:create-repo",
   github_connect_existing_repo: "github:connect-existing-repo",
+  github_list_local_branches: "github:list-local-branches",
+  github_list_remote_branches: "github:list-remote-branches",
+  github_get_conflicts: "github:get-conflicts",
+  github_get_git_state: "github:get-git-state",
   github_list_collaborators: "github:list-collaborators",
   github_disconnect: "github:disconnect",
+  git_get_uncommitted_files: "git:get-uncommitted-files",
   get_themes: "get-themes",
   set_app_theme: "set-app-theme",
   get_app_theme: "get-app-theme",
@@ -831,6 +836,38 @@ export const test = base.extend<{
               });
               return;
             }
+            case "github:list-local-branches": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const appId = Number(request?.appId ?? 0);
+              const app = appsById.get(appId);
+              if (!app) {
+                throw new Error("App not found");
+              }
+              return {
+                branches: ["main", "feature/tauri"],
+                current: app.githubBranch ?? "main",
+              };
+            }
+            case "github:list-remote-branches": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const remote =
+                typeof request?.remote === "string" && request.remote
+                  ? request.remote
+                  : "origin";
+              if (remote !== "origin") {
+                return [];
+              }
+              return ["main", "feature/tauri"];
+            }
+            case "github:get-conflicts":
+              return [];
+            case "github:get-git-state":
+              return {
+                mergeInProgress: false,
+                rebaseInProgress: false,
+              };
             case "github:list-collaborators": {
               const request = (payload as { request?: Record<string, unknown> })
                 ?.request;
@@ -863,6 +900,8 @@ export const test = base.extend<{
               });
               return;
             }
+            case "git:get-uncommitted-files":
+              return [];
             case "check-app-name": {
               const request = (payload as { request?: Record<string, unknown> })
                 ?.request;

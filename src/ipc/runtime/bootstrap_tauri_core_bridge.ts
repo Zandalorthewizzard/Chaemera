@@ -190,6 +190,14 @@ export function buildTauriInvokeArgs(
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "github:connect-existing-repo":
       return payloadRecord ? { request: payloadRecord } : undefined;
+    case "github:list-local-branches":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "github:list-remote-branches":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "github:get-conflicts":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "github:get-git-state":
+      return payloadRecord ? { request: payloadRecord } : undefined;
     case "github:list-collaborators":
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "delete-chat":
@@ -199,6 +207,8 @@ export function buildTauriInvokeArgs(
     case "prompts:delete":
       return typeof payload === "number" ? { promptId: payload } : undefined;
     case "github:disconnect":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "git:get-uncommitted-files":
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "search-app-files": {
       const appId =
@@ -323,11 +333,16 @@ export function canInvokeViaTauri(channel: string, payload: unknown): boolean {
     case "github:is-repo-available":
     case "github:create-repo":
     case "github:connect-existing-repo":
+    case "github:list-local-branches":
+    case "github:list-remote-branches":
+    case "github:get-conflicts":
+    case "github:get-git-state":
     case "github:list-collaborators":
     case "prompts:create":
     case "prompts:update":
     case "prompts:delete":
     case "github:disconnect":
+    case "git:get-uncommitted-files":
     case "read-app-file":
     case "edit-app-file":
     case "check-problems":

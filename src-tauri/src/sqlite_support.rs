@@ -1,4 +1,4 @@
-use rusqlite::Connection;
+use rusqlite::{params, Connection, OptionalExtension};
 use std::env;
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -64,6 +64,21 @@ pub fn resolve_workspace_app_path(raw_path: &str) -> Result<PathBuf, String> {
     } else {
         Ok(dyad_apps_base_directory()?.join(candidate))
     }
+}
+
+pub fn resolve_workspace_app_path_by_id(app: &AppHandle, app_id: i64) -> Result<PathBuf, String> {
+    let connection = open_db(app)?;
+    let raw_path = connection
+        .query_row(
+            "SELECT path FROM apps WHERE id = ?1",
+            params![app_id],
+            |row| row.get::<_, String>(0),
+        )
+        .optional()
+        .map_err(|error| format!("failed to query app path: {error}"))?
+        .ok_or_else(|| "App not found".to_string())?;
+
+    resolve_workspace_app_path(&raw_path)
 }
 
 pub fn normalize_path(path: &str) -> String {

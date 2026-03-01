@@ -99,6 +99,34 @@ Then continue the migration plan from `Sprint 11`, unless the smoke suite or Win
 2. Continue the remaining Sprint 11 contract gap cleanup, especially Electron-only app/system invokes outside the preview/problems path.
 3. Revisit final Electron/Forge removal only after those remaining runtime contracts are either ported or intentionally dropped.
 
+## Sprint 11 Wave 15
+
+1. Added a Tauri-native GitHub/git read-state wave for branch-manager introspection without taking on sync/mutation risk yet.
+2. Newly bridged invoke channels:
+   - `github:list-local-branches`
+   - `github:list-remote-branches`
+   - `github:get-conflicts`
+   - `github:get-git-state`
+   - `git:get-uncommitted-files`
+3. Moved app-path lookup into shared Rust SQLite helpers so later GitHub/git waves can reuse `appId -> workspace path` resolution instead of duplicating it per module.
+4. Kept semantics aligned with the Electron implementation:
+   - local branches come from `git branch --format=%(refname:short)`
+   - remote branches are filtered by remote name and strip the `origin/`-style prefix
+   - git state only reports `mergeInProgress` and `rebaseInProgress`
+   - conflicts still come from `git diff --name-only --diff-filter=U`
+   - uncommitted files keep the existing `added | modified | deleted | renamed` status mapping
+5. Synced the Tauri smoke harness so these branch-manager read channels can be exercised in migration smoke mode before the later fetch/pull/push/rebase waves land.
+
+## Sprint 11 Wave 15 Validation
+
+1. `npm run fmt` completed, but it triggered a repository-wide CRLF rewrite on this Windows host; the worktree was cleaned back down to the intended files before continuing.
+2. `npm run lint` passed.
+3. `npm run ts` passed.
+4. `npx vitest run src/__tests__/tauri_wave_r_bridge.test.ts` passed.
+5. `cargo fmt` passed via the explicit cargo path (`C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe`) because `cargo` was not in `PATH` for this shell session.
+6. `cargo check` passed in `src-tauri`.
+7. Invoke coverage moved down to `68` missing channels while `receiveMissing` remains `0`.
+
 ## Sprint 11 Wave 3
 
 1. Added a new Tauri system utility wave for non-DB shell/runtime commands:

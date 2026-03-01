@@ -17,6 +17,7 @@ mod wave_n_domains;
 mod wave_o_domains;
 mod wave_p_domains;
 mod wave_q_domains;
+mod wave_r_domains;
 
 use tauri::Manager;
 
@@ -44,8 +45,13 @@ pub fn run() {
             wave_o_domains::github_is_repo_available,
             wave_q_domains::github_create_repo,
             wave_q_domains::github_connect_existing_repo,
+            wave_r_domains::github_list_local_branches,
+            wave_r_domains::github_list_remote_branches,
+            wave_r_domains::github_get_conflicts,
+            wave_r_domains::github_get_git_state,
             wave_o_domains::github_list_collaborators,
             wave_o_domains::github_disconnect,
+            wave_r_domains::git_get_uncommitted_files,
             wave_g_domains::nodejs_status,
             wave_g_domains::select_node_folder,
             wave_g_domains::get_node_path,
