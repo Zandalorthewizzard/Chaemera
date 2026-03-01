@@ -55,6 +55,7 @@ const tauriCommandToChannel = {
   set_user_settings: "set-user-settings",
   show_item_in_folder: "show-item-in-folder",
   clear_session_data: "clear-session-data",
+  reset_all: "reset-all",
   reload_env_path: "reload-env-path",
   does_release_note_exist: "does-release-note-exist",
   get_user_budget: "get-user-budget",
