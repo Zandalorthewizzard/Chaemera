@@ -1125,3 +1125,27 @@ Current lock:
 3. `npx vitest run src/__tests__/tauri_wave_an_bridge.test.ts` passed.
 4. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe check --manifest-path src-tauri/Cargo.toml` passed.
 5. A fresh contract audit reduced the remaining unmapped contract count to `25`.
+
+## Sprint 11 Wave 38
+
+1. Split the Tauri app shell off the legacy Electron build scripts:
+   - added `dev:renderer`
+   - added `build:renderer`
+   - rewired both `tauri.conf.json` files to use those dedicated renderer commands instead of `npm run build`
+2. This removes a real cutover blocker:
+   - the Tauri dev path no longer points at a missing `npm run dev`
+   - the Tauri build path no longer recursively depends on the Electron harness/E2E prebuild
+3. Extended CI so every build job now validates the Tauri path explicitly:
+   - installs a Rust toolchain
+   - builds `dist/` via `npm run build:renderer`
+   - runs `cargo check --manifest-path src-tauri/Cargo.toml`
+4. Added a dedicated config test to lock this behavior:
+   - `src/__tests__/tauri_build_config.test.ts`
+
+## Sprint 11 Wave 38 Validation
+
+1. `npx vitest run src/__tests__/tauri_build_config.test.ts` passed.
+2. `npm run ts` passed.
+3. `npm run lint` passed.
+4. `npm run build:renderer` passed.
+5. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe check --manifest-path src-tauri/Cargo.toml` passed.

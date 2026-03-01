@@ -4,8 +4,8 @@
   "version": "0.37.0-beta.2",
   "identifier": "io.chaemera.app",
   "build": {
-    "beforeDevCommand": "npm run dev",
-    "beforeBuildCommand": "npm run build",
+    "beforeDevCommand": "npm run dev:renderer",
+    "beforeBuildCommand": "npm run build:renderer",
     "devUrl": "http://localhost:5173",
     "frontendDist": "../dist"
   },

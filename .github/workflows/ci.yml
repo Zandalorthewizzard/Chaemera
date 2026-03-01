@@ -157,6 +157,8 @@ jobs:
         env:
           # Required for @vscode/ripgrep to download binaries without hitting GitHub API rate limits
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
       - name: Presubmit check (e.g. lint, format)
         # do not run this on Windows (it fails and not necessary)
         if: contains(matrix.os.name, 'macos')
@@ -173,6 +175,12 @@ jobs:
         env:
           NODE_OPTIONS: "--max-old-space-size=4096"
         run: npm run pre:e2e
+      - name: Build Tauri renderer dist
+        env:
+          NODE_OPTIONS: "--max-old-space-size=4096"
+        run: npm run build:renderer
+      - name: Check Tauri runtime
+        run: cargo check --manifest-path src-tauri/Cargo.toml
       - name: Prep test server
         run: cd testing/fake-llm-server && npm install && npm run build && cd -
       # macOS: Archive app bundle with tar to preserve metadata (code signatures, extended attributes)
