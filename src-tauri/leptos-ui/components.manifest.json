@@ -1,0 +1,242 @@
+{
+  "version": 1,
+  "decisionDate": "2026-03-01",
+  "strategy": {
+    "styleBaseline": "shadcn-like",
+    "integrationModel": "local-wrapper-layer",
+    "upstreamSelectionStatus": "deferred",
+    "notes": [
+      "Feature code should only use project-local Leptos UI wrappers.",
+      "Upstream Leptos UI libraries remain replaceable implementation details.",
+      "The first pass targets parity with current React primitives, not redesign."
+    ]
+  },
+  "wrapperRoot": "src-tauri/leptos-ui/primitives",
+  "priorityBuckets": {
+    "P0": [
+      "button",
+      "input",
+      "textarea",
+      "dialog",
+      "sheet",
+      "tabs",
+      "tooltip",
+      "dropdown-menu",
+      "select",
+      "checkbox"
+    ],
+    "P1": [
+      "radio-group",
+      "switch",
+      "popover",
+      "scroll-area",
+      "separator",
+      "badge",
+      "card",
+      "label"
+    ],
+    "P2": [
+      "accordion",
+      "alert",
+      "alert-dialog",
+      "command",
+      "context-menu",
+      "loading-bar",
+      "number-input",
+      "sidebar",
+      "simple-avatar",
+      "skeleton",
+      "toggle",
+      "toggle-group",
+      "color-picker"
+    ]
+  },
+  "wrappers": [
+    {
+      "name": "button",
+      "priority": "P0",
+      "currentReactSource": "src/components/ui/button.tsx",
+      "status": "planned"
+    },
+    {
+      "name": "input",
+      "priority": "P0",
+      "currentReactSource": "src/components/ui/input.tsx",
+      "status": "planned"
+    },
+    {
+      "name": "textarea",
+      "priority": "P0",
+      "currentReactSource": "src/components/ui/textarea.tsx",
+      "status": "planned"
+    },
+    {
+      "name": "dialog",
+      "priority": "P0",
+      "currentReactSource": "src/components/ui/dialog.tsx",
+      "status": "planned"
+    },
+    {
+      "name": "sheet",
+      "priority": "P0",
+      "currentReactSource": "src/components/ui/sheet.tsx",
+      "status": "planned"
+    },
+    {
+      "name": "tabs",
+      "priority": "P0",
+      "currentReactSource": "src/components/ui/tabs.tsx",
+      "status": "planned"
+    },
+    {
+      "name": "tooltip",
+      "priority": "P0",
+      "currentReactSource": "src/components/ui/tooltip.tsx",
+      "status": "planned"
+    },
+    {
+      "name": "dropdown-menu",
+      "priority": "P0",
+      "currentReactSource": "src/components/ui/dropdown-menu.tsx",
+      "status": "planned"
+    },
+    {
+      "name": "select",
+      "priority": "P0",
+      "currentReactSource": "src/components/ui/select.tsx",
+      "status": "planned"
+    },
+    {
+      "name": "checkbox",
+      "priority": "P0",
+      "currentReactSource": "src/components/ui/checkbox.tsx",
+      "status": "planned"
+    },
+    {
+      "name": "radio-group",
+      "priority": "P1",
+      "currentReactSource": "src/components/ui/radio-group.tsx",
+      "status": "planned"
+    },
+    {
+      "name": "switch",
+      "priority": "P1",
+      "currentReactSource": "src/components/ui/switch.tsx",
+      "status": "planned"
+    },
+    {
+      "name": "popover",
+      "priority": "P1",
+      "currentReactSource": "src/components/ui/popover.tsx",
+      "status": "planned"
+    },
+    {
+      "name": "scroll-area",
+      "priority": "P1",
+      "currentReactSource": "src/components/ui/scroll-area.tsx",
+      "status": "planned"
+    },
+    {
+      "name": "separator",
+      "priority": "P1",
+      "currentReactSource": "src/components/ui/separator.tsx",
+      "status": "planned"
+    },
+    {
+      "name": "badge",
+      "priority": "P1",
+      "currentReactSource": "src/components/ui/badge.tsx",
+      "status": "planned"
+    },
+    {
+      "name": "card",
+      "priority": "P1",
+      "currentReactSource": "src/components/ui/card.tsx",
+      "status": "planned"
+    },
+    {
+      "name": "label",
+      "priority": "P1",
+      "currentReactSource": "src/components/ui/label.tsx",
+      "status": "planned"
+    },
+    {
+      "name": "accordion",
+      "priority": "P2",
+      "currentReactSource": "src/components/ui/accordion.tsx",
+      "status": "planned"
+    },
+    {
+      "name": "alert",
+      "priority": "P2",
+      "currentReactSource": "src/components/ui/alert.tsx",
+      "status": "planned"
+    },
+    {
+      "name": "alert-dialog",
+      "priority": "P2",
+      "currentReactSource": "src/components/ui/alert-dialog.tsx",
+      "status": "planned"
+    },
+    {
+      "name": "command",
+      "priority": "P2",
+      "currentReactSource": "src/components/ui/command.tsx",
+      "status": "planned"
+    },
+    {
+      "name": "context-menu",
+      "priority": "P2",
+      "currentReactSource": "src/components/ui/context-menu.tsx",
+      "status": "planned"
+    },
+    {
+      "name": "loading-bar",
+      "priority": "P2",
+      "currentReactSource": "src/components/ui/LoadingBar.tsx",
+      "status": "planned"
+    },
+    {
+      "name": "number-input",
+      "priority": "P2",
+      "currentReactSource": "src/components/ui/NumberInput.tsx",
+      "status": "planned"
+    },
+    {
+      "name": "sidebar",
+      "priority": "P2",
+      "currentReactSource": "src/components/ui/sidebar.tsx",
+      "status": "planned"
+    },
+    {
+      "name": "simple-avatar",
+      "priority": "P2",
+      "currentReactSource": "src/components/ui/SimpleAvatar.tsx",
+      "status": "planned"
+    },
+    {
+      "name": "skeleton",
+      "priority": "P2",
+      "currentReactSource": "src/components/ui/skeleton.tsx",
+      "status": "planned"
+    },
+    {
+      "name": "toggle",
+      "priority": "P2",
+      "currentReactSource": "src/components/ui/toggle.tsx",
+      "status": "planned"
+    },
+    {
+      "name": "toggle-group",
+      "priority": "P2",
+      "currentReactSource": "src/components/ui/toggle-group.tsx",
+      "status": "planned"
+    },
+    {
+      "name": "color-picker",
+      "priority": "P2",
+      "currentReactSource": "src/components/ui/ColorPicker.tsx",
+      "status": "planned"
+    }
+  ]
+}
