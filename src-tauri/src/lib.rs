@@ -25,6 +25,7 @@ mod wave_v_domains;
 mod wave_w_domains;
 mod wave_x_domains;
 mod wave_y_domains;
+mod wave_z_domains;
 
 use tauri::Manager;
 
@@ -166,6 +167,14 @@ pub fn run() {
             wave_y_domains::create_custom_language_model,
             wave_y_domains::delete_custom_language_model,
             wave_y_domains::delete_custom_model,
+            wave_z_domains::supabase_list_organizations,
+            wave_z_domains::supabase_delete_organization,
+            wave_z_domains::supabase_list_all_projects,
+            wave_z_domains::supabase_list_branches,
+            wave_z_domains::supabase_get_edge_logs,
+            wave_z_domains::supabase_set_app_project,
+            wave_z_domains::supabase_unset_app_project,
+            wave_z_domains::supabase_fake_connect_and_set_project,
             wave_d_domains::local_models_list_ollama,
             wave_d_domains::local_models_list_lmstudio,
             wave_e_domains::get_themes,

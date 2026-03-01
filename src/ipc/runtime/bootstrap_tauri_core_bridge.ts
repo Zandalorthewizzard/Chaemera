@@ -182,6 +182,18 @@ export function buildTauriInvokeArgs(
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "delete-custom-model":
       return payloadRecord ? { request: payloadRecord } : undefined;
+    case "supabase:delete-organization":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "supabase:list-branches":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "supabase:get-edge-logs":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "supabase:set-app-project":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "supabase:unset-app-project":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "supabase:fake-connect-and-set-project":
+      return payloadRecord ? { request: payloadRecord } : undefined;
     case "create-custom-theme":
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "update-custom-theme":
@@ -383,6 +395,12 @@ export function canInvokeViaTauri(channel: string, payload: unknown): boolean {
     case "delete-custom-language-model-provider":
     case "create-custom-language-model":
     case "delete-custom-model":
+    case "supabase:delete-organization":
+    case "supabase:list-branches":
+    case "supabase:get-edge-logs":
+    case "supabase:set-app-project":
+    case "supabase:unset-app-project":
+    case "supabase:fake-connect-and-set-project":
     case "create-custom-theme":
     case "update-custom-theme":
     case "delete-custom-theme":

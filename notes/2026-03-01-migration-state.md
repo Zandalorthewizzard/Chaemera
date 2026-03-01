@@ -710,3 +710,34 @@ Then continue the migration plan from `Sprint 11`, unless the smoke suite or Win
 5. `npx vitest run src/__tests__/tauri_wave_y_bridge.test.ts` passed.
 6. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe check --manifest-path src-tauri/Cargo.toml` passed.
 7. A fresh contract audit reduced the remaining unmapped contract count to `59`.
+
+## Sprint 11 Wave 23
+
+1. Added a dedicated Tauri `supabase` wave covering the remaining Supabase IPC contract surface:
+   - `supabase:list-organizations`
+   - `supabase:delete-organization`
+   - `supabase:list-all-projects`
+   - `supabase:list-branches`
+   - `supabase:get-edge-logs`
+   - `supabase:set-app-project`
+   - `supabase:unset-app-project`
+   - `supabase:fake-connect-and-set-project`
+2. The new Rust module handles both local app-link state and the Supabase management API read-path:
+   - app/project association updates go straight to `sqlite.db`
+   - organization/project/branch/log queries use blocking HTTP requests from the Tauri side
+   - test builds keep the existing fake organization / fake project / fake branches behavior
+3. Added an exact settings-write helper inside the wave because the current Tauri `merge_json` settings path cannot delete nested keys cleanly; this matters for `supabase:delete-organization`.
+4. Smoke harness support was extended so future Tauri Supabase smoke flows can keep settings, organizations, projects, branches, app linkage, and fake deep-link events coherent.
+5. Important known limitation:
+   - if Supabase credentials were previously stored using Electron `safeStorage` (`encryptionType: electron-safe-storage`), the Tauri path still cannot decrypt them
+   - this means the migrated Supabase commands work cleanly for Tauri-written plaintext secrets and test-mode fake auth, but encrypted legacy Electron secrets remain a follow-up debt
+
+## Sprint 11 Wave 23 Validation
+
+1. `npx oxfmt --write src/ipc/runtime/core_domain_channels.ts src/ipc/runtime/bootstrap_tauri_core_bridge.ts e2e-tests/helpers/tauri_smoke_fixtures.ts src/__tests__/tauri_wave_z_bridge.test.ts` passed.
+2. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe fmt --manifest-path src-tauri/Cargo.toml` passed.
+3. `npm run ts` passed.
+4. `npm run lint` passed.
+5. `npx vitest run src/__tests__/tauri_wave_z_bridge.test.ts` passed.
+6. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe check --manifest-path src-tauri/Cargo.toml` passed.
+7. A fresh contract audit reduced the remaining unmapped contract count to `51`.

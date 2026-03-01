@@ -133,6 +133,15 @@ const tauriCommandToChannel = {
   create_custom_language_model: "create-custom-language-model",
   delete_custom_language_model: "delete-custom-language-model",
   delete_custom_model: "delete-custom-model",
+  supabase_list_organizations: "supabase:list-organizations",
+  supabase_delete_organization: "supabase:delete-organization",
+  supabase_list_all_projects: "supabase:list-all-projects",
+  supabase_list_branches: "supabase:list-branches",
+  supabase_get_edge_logs: "supabase:get-edge-logs",
+  supabase_set_app_project: "supabase:set-app-project",
+  supabase_unset_app_project: "supabase:unset-app-project",
+  supabase_fake_connect_and_set_project:
+    "supabase:fake-connect-and-set-project",
   get_themes: "get-themes",
   set_app_theme: "set-app-theme",
   get_app_theme: "get-app-theme",
@@ -177,9 +186,9 @@ export const test = base.extend<{
             githubOrg: string | null;
             githubRepo: string | null;
             githubBranch: string | null;
-            supabaseProjectId: null;
-            supabaseParentProjectId: null;
-            supabaseOrganizationSlug: null;
+            supabaseProjectId: string | null;
+            supabaseParentProjectId: string | null;
+            supabaseOrganizationSlug: string | null;
             neonProjectId: null;
             neonDevelopmentBranchId: null;
             neonPreviewBranchId: null;
@@ -192,7 +201,7 @@ export const test = base.extend<{
             isFavorite: boolean;
             resolvedPath: string;
             files: string[];
-            supabaseProjectName: null;
+            supabaseProjectName: string | null;
             vercelTeamSlug: string | null;
           }
         >([
@@ -420,6 +429,80 @@ export const test = base.extend<{
           ],
         ]);
         let nextCustomLanguageModelId = 1;
+        const supabaseOrganizationsBySlug = new Map<
+          string,
+          {
+            organizationSlug: string;
+            name?: string;
+            ownerEmail?: string;
+          }
+        >([
+          [
+            "fake-org-id",
+            {
+              organizationSlug: "fake-org-id",
+              name: "Fake Organization",
+              ownerEmail: "owner@example.com",
+            },
+          ],
+        ]);
+        const supabaseProjectsByOrganizationSlug = new Map<
+          string,
+          Array<{
+            id: string;
+            name: string;
+            region: string;
+            organizationSlug: string;
+          }>
+        >([
+          [
+            "fake-org-id",
+            [
+              {
+                id: "fake-project-id",
+                name: "Fake Supabase Project",
+                region: "us-east-1",
+                organizationSlug: "fake-org-id",
+              },
+              {
+                id: "test-branch-project-id",
+                name: "Test Branch Project",
+                region: "us-east-1",
+                organizationSlug: "fake-org-id",
+              },
+            ],
+          ],
+        ]);
+        const supabaseBranchesByProjectId = new Map<
+          string,
+          Array<{
+            id: string;
+            name: string;
+            isDefault: boolean;
+            projectRef: string;
+            parentProjectRef: string | null;
+          }>
+        >([
+          [
+            "fake-project-id",
+            [
+              {
+                id: "default-branch-id",
+                name: "Default Branch",
+                isDefault: true,
+                projectRef: "fake-project-id",
+                parentProjectRef: "fake-project-id",
+              },
+              {
+                id: "test-branch-id",
+                name: "Test Branch",
+                isDefault: false,
+                projectRef: "test-branch-project-id",
+                parentProjectRef: "fake-project-id",
+              },
+            ],
+          ],
+        ]);
         const plansById = new Map<
           string,
           {
@@ -1680,6 +1763,136 @@ export const test = base.extend<{
                     ),
                 ),
               );
+              return;
+            }
+            case "supabase:list-organizations":
+              return Array.from(supabaseOrganizationsBySlug.values());
+            case "supabase:delete-organization": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const organizationSlug = String(
+                request?.organizationSlug ?? "",
+              ).trim();
+              if (!supabaseOrganizationsBySlug.has(organizationSlug)) {
+                throw new Error(
+                  `Supabase organization ${organizationSlug} not found`,
+                );
+              }
+              supabaseOrganizationsBySlug.delete(organizationSlug);
+              supabaseProjectsByOrganizationSlug.delete(organizationSlug);
+              const supabaseSettings =
+                (state.settings.supabase as
+                  | { organizations?: Record<string, unknown> }
+                  | undefined) ?? {};
+              if (
+                supabaseSettings.organizations &&
+                typeof supabaseSettings.organizations === "object"
+              ) {
+                delete supabaseSettings.organizations[organizationSlug];
+              }
+              state.settings.supabase = supabaseSettings;
+              return;
+            }
+            case "supabase:list-all-projects":
+              return Array.from(
+                supabaseProjectsByOrganizationSlug.values(),
+              ).flat();
+            case "supabase:list-branches": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const projectId = String(request?.projectId ?? "").trim();
+              return supabaseBranchesByProjectId.get(projectId) ?? [];
+            }
+            case "supabase:get-edge-logs":
+              return [];
+            case "supabase:set-app-project": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const appId = Number(request?.appId ?? 0);
+              const app = appsById.get(appId);
+              if (!app) {
+                throw new Error("App not found");
+              }
+              app.supabaseProjectId =
+                typeof request?.projectId === "string"
+                  ? request.projectId
+                  : null;
+              app.supabaseParentProjectId =
+                typeof request?.parentProjectId === "string"
+                  ? request.parentProjectId
+                  : null;
+              app.supabaseOrganizationSlug =
+                typeof request?.organizationSlug === "string"
+                  ? request.organizationSlug
+                  : null;
+              app.supabaseProjectName = app.supabaseProjectId
+                ? (Array.from(supabaseProjectsByOrganizationSlug.values())
+                    .flat()
+                    .find((project) => project.id === app.supabaseProjectId)
+                    ?.name ?? null)
+                : null;
+              appsById.set(appId, { ...app });
+              return;
+            }
+            case "supabase:unset-app-project": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const appId = Number(request?.app ?? 0);
+              const app = appsById.get(appId);
+              if (!app) {
+                throw new Error("App not found");
+              }
+              app.supabaseProjectId = null;
+              app.supabaseParentProjectId = null;
+              app.supabaseOrganizationSlug = null;
+              app.supabaseProjectName = null;
+              appsById.set(appId, { ...app });
+              return;
+            }
+            case "supabase:fake-connect-and-set-project": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const appId = Number(request?.appId ?? 0);
+              const fakeProjectId = String(request?.fakeProjectId ?? "");
+              if (!supabaseOrganizationsBySlug.has("fake-org-id")) {
+                supabaseOrganizationsBySlug.set("fake-org-id", {
+                  organizationSlug: "fake-org-id",
+                  name: "Fake Organization",
+                  ownerEmail: "owner@example.com",
+                });
+              }
+              const app = appsById.get(appId);
+              if (app) {
+                app.supabaseProjectId = fakeProjectId;
+                app.supabaseParentProjectId = null;
+                app.supabaseOrganizationSlug = "fake-org-id";
+                app.supabaseProjectName =
+                  Array.from(supabaseProjectsByOrganizationSlug.values())
+                    .flat()
+                    .find((project) => project.id === fakeProjectId)?.name ??
+                  "Fake Supabase Project";
+                appsById.set(appId, { ...app });
+              }
+              state.settings.supabase = {
+                ...(state.settings.supabase as Record<string, unknown>),
+                organizations: {
+                  ...(((
+                    state.settings.supabase as {
+                      organizations?: Record<string, unknown>;
+                    }
+                  )?.organizations ?? {}) as Record<string, unknown>),
+                  "fake-org-id": {
+                    accessToken: { value: "fake-access-token" },
+                    refreshToken: { value: "fake-refresh-token" },
+                    expiresIn: 3600,
+                    tokenTimestamp: Date.now() / 1000,
+                  },
+                },
+              };
+              emit("deep-link-received", {
+                type: "supabase-oauth-return",
+                url: "https://supabase-oauth.dyad.sh/api/connect-supabase/login",
+              });
               return;
             }
             case "does-release-note-exist":
