@@ -64,4 +64,16 @@ describe("tauri build config", () => {
       "run: cargo check --manifest-path src-tauri/Cargo.toml",
     );
   });
+
+  it("keeps a dedicated Tauri preview release workflow", () => {
+    const releaseWorkflow = fs.readFileSync(
+      path.join(process.cwd(), ".github/workflows/release-tauri-preview.yml"),
+      "utf8",
+    );
+
+    expect(releaseWorkflow).toContain("name: Release Tauri Preview");
+    expect(releaseWorkflow).toContain("uses: tauri-apps/tauri-action@v1");
+    expect(releaseWorkflow).toContain("uploadWorkflowArtifacts: true");
+    expect(releaseWorkflow).toContain("--config src-tauri/tauri.conf.json");
+  });
 });

@@ -1149,3 +1149,13 @@ Current lock:
 3. `npm run lint` passed.
 4. `npm run build:renderer` passed.
 5. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe check --manifest-path src-tauri/Cargo.toml` passed.
+
+## Sprint 11 Wave 39
+
+1. Added a dedicated Tauri packaging preview workflow:
+   - `.github/workflows/release-tauri-preview.yml`
+2. This is intentionally a non-destructive cutover checkpoint:
+   - it builds Tauri bundles on Windows, Linux, macOS Intel, and macOS ARM
+   - it uploads workflow artifacts instead of replacing the existing Electron release pipeline immediately
+3. The goal is to validate real desktop packaging for the new stack before removing the legacy release path.
+4. Added a config test lock so the preview release workflow remains present and points at the Tauri config.
