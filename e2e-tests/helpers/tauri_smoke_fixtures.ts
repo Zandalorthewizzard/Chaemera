@@ -89,6 +89,7 @@ const tauriCommandToChannel = {
   execute_app_upgrade: "execute-app-upgrade",
   check_app_name: "check-app-name",
   show_item_in_folder: "show-item-in-folder",
+  take_screenshot: "take-screenshot",
   clear_session_data: "clear-session-data",
   reset_all: "reset-all",
   reload_env_path: "reload-env-path",
@@ -812,6 +813,8 @@ export const test = base.extend<{
             }
             case "get-node-path":
               return "C:/Program Files/nodejs/node.exe";
+            case "take-screenshot":
+              return;
             case "create-app": {
               const request = (payload as { request?: Record<string, unknown> })
                 ?.request;

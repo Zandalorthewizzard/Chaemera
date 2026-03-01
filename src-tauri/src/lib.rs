@@ -12,6 +12,7 @@ mod wave_ah_domains;
 mod wave_ai_domains;
 mod wave_aj_domains;
 mod wave_ak_domains;
+mod wave_al_domains;
 mod wave_b_domains;
 mod wave_c_domains;
 mod wave_d_domains;
@@ -129,6 +130,7 @@ pub fn run() {
             wave_f_domains::add_log,
             wave_f_domains::clear_logs,
             wave_g_domains::show_item_in_folder,
+            wave_al_domains::take_screenshot,
             wave_g_domains::clear_session_data,
             wave_h_domains::reset_all,
             wave_g_domains::reload_env_path,

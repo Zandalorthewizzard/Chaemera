@@ -1060,3 +1060,23 @@ Current lock:
 5. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe fmt --manifest-path src-tauri/Cargo.toml` passed.
 6. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe check --manifest-path src-tauri/Cargo.toml` passed.
 7. A fresh contract audit reduced the remaining unmapped contract count to `28`.
+
+## Sprint 11 Wave 35
+
+1. Added a focused Tauri `take-screenshot` utility wave covering:
+   - `take-screenshot`
+2. The new Tauri path is intentionally pragmatic rather than over-engineered:
+   - Windows captures the currently focused window into the clipboard via PowerShell + WinForms/GDI
+   - macOS delegates to `screencapture -c -w -x` for clipboard capture
+   - unsupported platforms currently return an explicit Tauri-path error instead of silently pretending success
+3. This keeps the bug-report screenshot affordance off the Electron-only path without introducing a new screenshot plugin layer in the middle of Sprint 11.
+
+## Sprint 11 Wave 35 Validation
+
+1. `npx oxfmt --write src/ipc/runtime/core_domain_channels.ts src/__tests__/tauri_wave_al_bridge.test.ts e2e-tests/helpers/tauri_smoke_fixtures.ts` passed.
+2. `npm run ts` passed.
+3. `npm run lint` passed.
+4. `npx vitest run src/__tests__/tauri_wave_al_bridge.test.ts` passed.
+5. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe fmt --manifest-path src-tauri/Cargo.toml` passed.
+6. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe check --manifest-path src-tauri/Cargo.toml` passed.
+7. A fresh contract audit reduced the remaining unmapped contract count to `27`.

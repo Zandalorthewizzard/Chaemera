@@ -125,6 +125,7 @@ export const TAURI_MIGRATION_CHANNEL_TO_COMMAND = {
   "analyze-component": "analyze_component",
   "check-problems": "check_problems",
   "show-item-in-folder": "show_item_in_folder",
+  "take-screenshot": "take_screenshot",
   "clear-session-data": "clear_session_data",
   "reset-all": "reset_all",
   "reload-env-path": "reload_env_path",
