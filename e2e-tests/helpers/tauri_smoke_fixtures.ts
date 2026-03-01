@@ -110,6 +110,7 @@ const tauriCommandToChannel = {
   github_list_collaborators: "github:list-collaborators",
   github_invite_collaborator: "github:invite-collaborator",
   github_remove_collaborator: "github:remove-collaborator",
+  github_clone_repo_from_url: "github:clone-repo-from-url",
   github_disconnect: "github:disconnect",
   git_get_uncommitted_files: "git:get-uncommitted-files",
   git_commit_changes: "git:commit-changes",
@@ -869,6 +870,78 @@ export const test = base.extend<{
                 githubBranch: String(request?.branch ?? "main"),
               });
               return;
+            }
+            case "github:clone-repo-from-url": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const url = String(request?.url ?? "");
+              const match = url.match(
+                /github\.com[:/]([^/]+)\/([^/]+?)(?:\.git)?\/?$/,
+              );
+              if (!match) {
+                return {
+                  error:
+                    "Invalid GitHub URL. Expected format: https://github.com/owner/repo.git",
+                };
+              }
+              const owner = match[1];
+              const repoName = match[2];
+              const appName =
+                typeof request?.appName === "string" && request.appName.trim()
+                  ? request.appName.trim()
+                  : repoName;
+              if (
+                Array.from(appsById.values()).some(
+                  (app) => app.name === appName,
+                )
+              ) {
+                return {
+                  error: `An app named "${appName}" already exists.`,
+                };
+              }
+              const now = new Date().toISOString();
+              const appId = nextAppId++;
+              const app = {
+                id: appId,
+                name: appName,
+                path: appName,
+                createdAt: now,
+                updatedAt: now,
+                githubOrg: owner,
+                githubRepo: repoName,
+                githubBranch: "main",
+                supabaseProjectId: null,
+                supabaseParentProjectId: null,
+                supabaseOrganizationSlug: null,
+                neonProjectId: null,
+                neonDevelopmentBranchId: null,
+                neonPreviewBranchId: null,
+                vercelProjectId: null,
+                vercelProjectName: null,
+                vercelDeploymentUrl: null,
+                vercelTeamId: null,
+                installCommand:
+                  typeof request?.installCommand === "string" &&
+                  request.installCommand.trim()
+                    ? request.installCommand.trim()
+                    : null,
+                startCommand:
+                  typeof request?.startCommand === "string" &&
+                  request.startCommand.trim()
+                    ? request.startCommand.trim()
+                    : null,
+                isFavorite: false,
+                resolvedPath: `C:/Apps/${appName}`,
+                files: ["package.json", "src/main.tsx"],
+                supabaseProjectName: null,
+                vercelTeamSlug: null,
+              };
+              appsById.set(appId, app);
+              collaboratorsByAppId.set(appId, []);
+              return {
+                app,
+                hasAiRules: false,
+              };
             }
             case "github:push":
             case "github:fetch":

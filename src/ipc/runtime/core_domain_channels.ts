@@ -116,6 +116,7 @@ export const TAURI_MIGRATION_CHANNEL_TO_COMMAND = {
   "github:list-collaborators": "github_list_collaborators",
   "github:invite-collaborator": "github_invite_collaborator",
   "github:remove-collaborator": "github_remove_collaborator",
+  "github:clone-repo-from-url": "github_clone_repo_from_url",
   "github:disconnect": "github_disconnect",
   "git:get-uncommitted-files": "git_get_uncommitted_files",
   "git:commit-changes": "git_commit_changes",

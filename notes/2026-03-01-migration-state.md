@@ -594,3 +594,29 @@ Then continue the migration plan from `Sprint 11`, unless the smoke suite or Win
    - conflicts/git-state helpers
 2. `github:clone-repo-from-url` can stay separate from branch/sync orchestration because it behaves more like import/onboarding than day-to-day repo control.
 3. `chat:count-tokens` remains intentionally separate from these GitHub waves.
+
+## Sprint 11 Wave 19
+
+1. Added the last GitHub onboarding/import wave to the Tauri path:
+   - `github:clone-repo-from-url`
+2. The new Rust implementation preserves the existing import contract shape:
+   - validates GitHub URL format
+   - verifies repo access when a GitHub token is present
+   - clones into the standard `~/dyad-apps/<appName>` workspace
+   - inserts the cloned app into `sqlite.db`
+   - returns `{ app, hasAiRules }` or `{ error }` rather than throwing for normal clone failures
+3. The Tauri path improves one important behavior versus the old Electron implementation:
+   - after clone it resolves the actual checked-out branch with `git branch --show-current` and only falls back to `"main"` if detection fails
+4. The Tauri smoke harness now understands clone-from-URL so GitHub import flows remain coherent in smoke mode.
+
+## Sprint 11 Wave 19 Validation
+
+1. `npx oxfmt --write src/ipc/runtime/core_domain_channels.ts src/ipc/runtime/bootstrap_tauri_core_bridge.ts src/__tests__/tauri_wave_v_bridge.test.ts e2e-tests/helpers/tauri_smoke_fixtures.ts` passed.
+2. `cargo fmt` passed in `src-tauri`.
+3. `npm run ts` passed.
+4. `npx vitest run src/__tests__/tauri_wave_v_bridge.test.ts src/__tests__/tauri_wave_u_bridge.test.ts` passed.
+5. `npm run lint` passed.
+6. `cargo check` passed in `src-tauri`.
+7. A direct contract audit confirmed the GitHub/git contract surface is now fully mapped in the Tauri bridge:
+   - `github_git_channels: 32`
+   - `github_git_missing: 0`
