@@ -91,6 +91,13 @@ const tauriCommandToChannel = {
   github_is_repo_available: "github:is-repo-available",
   github_create_repo: "github:create-repo",
   github_connect_existing_repo: "github:connect-existing-repo",
+  github_push: "github:push",
+  github_fetch: "github:fetch",
+  github_pull: "github:pull",
+  github_rebase: "github:rebase",
+  github_rebase_abort: "github:rebase-abort",
+  github_merge_abort: "github:merge-abort",
+  github_rebase_continue: "github:rebase-continue",
   github_list_local_branches: "github:list-local-branches",
   github_list_remote_branches: "github:list-remote-branches",
   github_get_conflicts: "github:get-conflicts",
@@ -834,6 +841,25 @@ export const test = base.extend<{
                 githubRepo: String(request?.repo ?? ""),
                 githubBranch: String(request?.branch ?? "main"),
               });
+              return;
+            }
+            case "github:push":
+            case "github:fetch":
+            case "github:pull":
+            case "github:rebase":
+            case "github:rebase-abort":
+            case "github:merge-abort":
+            case "github:rebase-continue": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const appId = Number(request?.appId ?? 0);
+              const app = appsById.get(appId);
+              if (!app) {
+                throw new Error("App not found");
+              }
+              if (!app.githubOrg || !app.githubRepo) {
+                throw new Error("App is not linked to a GitHub repo.");
+              }
               return;
             }
             case "github:list-local-branches": {

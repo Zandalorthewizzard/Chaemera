@@ -127,6 +127,35 @@ Then continue the migration plan from `Sprint 11`, unless the smoke suite or Win
 6. `cargo check` passed in `src-tauri`.
 7. Invoke coverage moved down to `68` missing channels while `receiveMissing` remains `0`.
 
+## Sprint 11 Wave 16
+
+1. Added a dedicated Tauri GitHub sync/rebase wave covering the existing Electron sync commands:
+   - `github:fetch`
+   - `github:pull`
+   - `github:push`
+   - `github:rebase`
+   - `github:rebase-abort`
+   - `github:rebase-continue`
+   - `github:merge-abort`
+2. The new Rust module keeps parity with the current Electron semantics instead of inventing a new sync model:
+   - auth still comes from `githubAccessToken` in user settings
+   - linked repo validation still requires `githubOrg` and `githubRepo` on the app row
+   - remote URL is refreshed before network sync operations
+   - `pull` still tolerates a missing remote branch
+   - `push` still performs a pre-push pull unless `force` or `forceWithLease` is used
+   - `rebase` still requires a clean workspace and rebases onto `origin/<branch>`
+3. `merge-abort` and `rebase-abort` now resolve by app path only, matching the original Electron behavior more closely than requiring a still-linked GitHub repo.
+4. Smoke harness coverage was extended so the sync channels exist in Tauri smoke mode even before full GitHub integration E2E coverage is added.
+
+## Sprint 11 Wave 16 Validation
+
+1. `npx oxfmt --write ...` was run only on the touched TypeScript files to avoid the repo-wide CRLF churn seen with `npm run fmt` on this Windows/autocrlf host.
+2. `cargo fmt` passed in `src-tauri`.
+3. `npm run ts` passed.
+4. `npx vitest run src/__tests__/tauri_wave_r_bridge.test.ts src/__tests__/tauri_wave_s_bridge.test.ts` passed.
+5. `npm run lint` passed.
+6. `cargo check` passed in `src-tauri`.
+
 ## Sprint 11 Wave 3
 
 1. Added a new Tauri system utility wave for non-DB shell/runtime commands:

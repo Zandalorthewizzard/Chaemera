@@ -190,6 +190,20 @@ export function buildTauriInvokeArgs(
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "github:connect-existing-repo":
       return payloadRecord ? { request: payloadRecord } : undefined;
+    case "github:push":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "github:fetch":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "github:pull":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "github:rebase":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "github:rebase-abort":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "github:merge-abort":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "github:rebase-continue":
+      return payloadRecord ? { request: payloadRecord } : undefined;
     case "github:list-local-branches":
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "github:list-remote-branches":
@@ -333,6 +347,13 @@ export function canInvokeViaTauri(channel: string, payload: unknown): boolean {
     case "github:is-repo-available":
     case "github:create-repo":
     case "github:connect-existing-repo":
+    case "github:push":
+    case "github:fetch":
+    case "github:pull":
+    case "github:rebase":
+    case "github:rebase-abort":
+    case "github:merge-abort":
+    case "github:rebase-continue":
     case "github:list-local-branches":
     case "github:list-remote-branches":
     case "github:get-conflicts":
