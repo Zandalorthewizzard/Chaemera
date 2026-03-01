@@ -3,6 +3,7 @@ import {
   buildTauriInvokeArgs,
   canInvokeViaTauri,
 } from "@/ipc/runtime/bootstrap_tauri_core_bridge";
+import { LeptosRouteIdSchema } from "@/ipc/types/leptos";
 import { hasTauriLeptosShellSupport } from "@/lib/leptos_shell";
 
 describe("tauri leptos shell bridge", () => {
@@ -25,6 +26,12 @@ describe("tauri leptos shell bridge", () => {
         routeId: "library",
       }),
     ).toBe(true);
+  });
+
+  it("accepts core workspace route ids for Leptos shell rendering", () => {
+    expect(LeptosRouteIdSchema.safeParse("apps-home").success).toBe(true);
+    expect(LeptosRouteIdSchema.safeParse("chat-workspace").success).toBe(true);
+    expect(LeptosRouteIdSchema.safeParse("app-details").success).toBe(true);
   });
 
   it("detects whether the Tauri bridge exposes the Leptos shell channel", () => {

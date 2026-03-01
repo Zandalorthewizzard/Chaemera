@@ -167,6 +167,52 @@ pub fn leptos_render_route(request: LeptosRenderRouteRequest) -> Result<Value, S
     let route_id = request.route_id.as_str();
 
     let (title, html) = match route_id {
+        "apps-home" => (
+            "Apps".to_string(),
+            render_shell(
+                "Apps".to_string(),
+                "Leptos Workspace Shell".to_string(),
+                "The top-level app workspace now has a Tauri-side Leptos route shell. Home creation, onboarding, and app-entry flows remain mounted below in the React compatibility layer while the core workspace cutover is staged.".to_string(),
+                "React Compatibility Body".to_string(),
+                "App creation, onboarding banners, prompt inspiration, and import flows still execute through the existing React implementation below this shell.".to_string(),
+                vec![
+                    "Workspace Entry".to_string(),
+                    "Onboarding".to_string(),
+                    "Import Flow".to_string(),
+                ],
+            ),
+        ),
+        "chat-workspace" => (
+            "Chat Workspace".to_string(),
+            render_shell(
+                "Chat Workspace".to_string(),
+                "Leptos Workspace Shell".to_string(),
+                "The primary chat and preview workspace now enters through a Leptos-rendered route shell inside the Tauri runtime. The current React chat panel, preview panel, and tool surfaces remain mounted below for behavior parity during migration.".to_string(),
+                "React Compatibility Body".to_string(),
+                "Chat streaming, preview orchestration, version panes, and tool-specific interactions continue to run in the established React workspace while the shell cutover lands first.".to_string(),
+                vec![
+                    "Chat".to_string(),
+                    "Preview".to_string(),
+                    "Versions".to_string(),
+                    "Tools".to_string(),
+                ],
+            ),
+        ),
+        "app-details" => (
+            "App Details".to_string(),
+            render_shell(
+                "App Details".to_string(),
+                "Leptos Workspace Shell".to_string(),
+                "App metadata, integration status, and workspace-level management now open under a Leptos route shell within the Tauri desktop runtime. Existing React cards and dialogs remain mounted below while feature parity is preserved.".to_string(),
+                "React Compatibility Body".to_string(),
+                "Rename, copy, change-location, integration connectors, and workspace administration still execute in the React compatibility layer during this migration wave.".to_string(),
+                vec![
+                    "Metadata".to_string(),
+                    "Integrations".to_string(),
+                    "Workspace Actions".to_string(),
+                ],
+            ),
+        ),
         "settings" => (
             "Settings".to_string(),
             render_shell(

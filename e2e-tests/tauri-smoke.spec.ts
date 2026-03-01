@@ -18,6 +18,39 @@ test("tauri smoke harness boots a stable Tauri route with bridge support", async
   expect(bridgeState.supportedChannels).toContain("get-themes");
 });
 
+test("tauri smoke can render core workspace Leptos shell payloads", async ({
+  page,
+}) => {
+  await page.goto("/settings");
+
+  const results = await page.evaluate(async () => {
+    const routeIds = ["apps-home", "chat-workspace", "app-details"];
+    const invoke = window.__TAURI__?.core?.invoke;
+    if (!invoke) {
+      return [];
+    }
+    const rendered = [];
+
+    for (const routeId of routeIds) {
+      const result = await invoke("leptos_render_route", {
+        request: { routeId },
+      });
+      rendered.push(result);
+    }
+
+    return rendered;
+  });
+
+  expect(results).toEqual([
+    expect.objectContaining({ routeId: "apps-home", title: "Apps" }),
+    expect.objectContaining({
+      routeId: "chat-workspace",
+      title: "Chat Workspace",
+    }),
+    expect.objectContaining({ routeId: "app-details", title: "App Details" }),
+  ]);
+});
+
 test("tauri smoke harness can deliver native event hooks to the renderer", async ({
   page,
 }) => {

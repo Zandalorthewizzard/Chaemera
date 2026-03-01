@@ -2,6 +2,9 @@ import { z } from "zod";
 import { createClient, defineContract } from "../contracts/core";
 
 export const LeptosRouteIdSchema = z.enum([
+  "apps-home",
+  "chat-workspace",
+  "app-details",
   "settings",
   "library",
   "themes",

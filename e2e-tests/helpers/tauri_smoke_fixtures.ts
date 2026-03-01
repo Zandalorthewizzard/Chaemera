@@ -244,7 +244,13 @@ export const test = base.extend<{
                   ? request.providerId
                   : null;
               const title =
-                routeId === "provider-settings" && providerId
+                routeId === "apps-home"
+                  ? "Apps"
+                  : routeId === "chat-workspace"
+                    ? "Chat Workspace"
+                    : routeId === "app-details"
+                      ? "App Details"
+                      : routeId === "provider-settings" && providerId
                   ? `Provider Setup: ${providerId}`
                   : routeId === "library"
                     ? "Library"
