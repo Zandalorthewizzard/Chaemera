@@ -1,5 +1,6 @@
 mod core_domains;
 mod leptos_shell;
+mod sqlite_support;
 mod wave_b_domains;
 mod wave_c_domains;
 mod wave_d_domains;
@@ -9,6 +10,7 @@ mod wave_g_domains;
 mod wave_h_domains;
 mod wave_i_domains;
 mod wave_j_domains;
+mod wave_k_domains;
 
 use tauri::Manager;
 
@@ -61,6 +63,16 @@ pub fn run() {
             wave_g_domains::restart_dyad,
             wave_j_domains::add_to_favorite,
             wave_j_domains::update_app_commands,
+            wave_k_domains::set_app_theme,
+            wave_k_domains::get_app_theme,
+            wave_k_domains::get_custom_themes,
+            wave_k_domains::create_custom_theme,
+            wave_k_domains::update_custom_theme,
+            wave_k_domains::delete_custom_theme,
+            wave_k_domains::prompts_list,
+            wave_k_domains::prompts_create,
+            wave_k_domains::prompts_update,
+            wave_k_domains::prompts_delete,
             wave_i_domains::plan_create,
             wave_i_domains::plan_get,
             wave_i_domains::plan_get_for_chat,

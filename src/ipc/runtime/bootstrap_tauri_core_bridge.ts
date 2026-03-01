@@ -146,6 +146,22 @@ export function buildTauriInvokeArgs(
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "check-app-name":
       return payloadRecord ? { request: payloadRecord } : undefined;
+    case "set-app-theme":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "get-app-theme":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "create-custom-theme":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "update-custom-theme":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "delete-custom-theme":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "prompts:create":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "prompts:update":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "prompts:delete":
+      return typeof payload === "number" ? { promptId: payload } : undefined;
     case "search-app-files": {
       const appId =
         typeof payloadRecord?.appId === "number" ? payloadRecord.appId : null;
@@ -244,6 +260,14 @@ export function canInvokeViaTauri(channel: string, payload: unknown): boolean {
     case "add-to-favorite":
     case "update-app-commands":
     case "check-app-name":
+    case "set-app-theme":
+    case "get-app-theme":
+    case "create-custom-theme":
+    case "update-custom-theme":
+    case "delete-custom-theme":
+    case "prompts:create":
+    case "prompts:update":
+    case "prompts:delete":
     case "read-app-file":
     case "edit-app-file":
     case "check-problems":

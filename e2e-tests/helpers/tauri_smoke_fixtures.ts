@@ -72,6 +72,16 @@ const tauriCommandToChannel = {
   plan_update: "plan:update-plan",
   plan_delete: "plan:delete",
   get_themes: "get-themes",
+  set_app_theme: "set-app-theme",
+  get_app_theme: "get-app-theme",
+  get_custom_themes: "get-custom-themes",
+  create_custom_theme: "create-custom-theme",
+  update_custom_theme: "update-custom-theme",
+  delete_custom_theme: "delete-custom-theme",
+  prompts_list: "prompts:list",
+  prompts_create: "prompts:create",
+  prompts_update: "prompts:update",
+  prompts_delete: "prompts:delete",
   generate_theme_prompt: "generate-theme-prompt",
   generate_theme_from_url: "generate-theme-from-url",
   save_theme_image: "save-theme-image",
@@ -155,6 +165,43 @@ export const test = base.extend<{
             },
           ],
         ]);
+        const appThemesById = new Map<number, string | null>([[1, "default"]]);
+        const customThemesById = new Map<
+          number,
+          {
+            id: number;
+            name: string;
+            description: string | null;
+            prompt: string;
+            createdAt: string;
+            updatedAt: string;
+          }
+        >();
+        let nextCustomThemeId = 1;
+        const promptsById = new Map<
+          number,
+          {
+            id: number;
+            title: string;
+            description: string | null;
+            content: string;
+            createdAt: string;
+            updatedAt: string;
+          }
+        >([
+          [
+            1,
+            {
+              id: 1,
+              title: "Regression sweep",
+              description: "Smoke checklist prompt",
+              content: "Verify the migrated desktop shell paths.",
+              createdAt: "2026-03-01T00:00:00Z",
+              updatedAt: "2026-03-01T00:00:00Z",
+            },
+          ],
+        ]);
+        let nextPromptId = 2;
         const plansById = new Map<
           string,
           {
@@ -324,6 +371,21 @@ export const test = base.extend<{
               });
               return;
             }
+            case "get-app-theme": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const appId = Number(request?.appId ?? 0);
+              return appThemesById.get(appId) ?? null;
+            }
+            case "set-app-theme": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const appId = Number(request?.appId ?? 0);
+              const themeId =
+                typeof request?.themeId === "string" ? request.themeId : null;
+              appThemesById.set(appId, themeId);
+              return;
+            }
             case "get-user-budget":
               return null;
             case "free-agent-quota:get-status":
@@ -343,10 +405,6 @@ export const test = base.extend<{
               return [];
             case "get-language-models-by-providers":
               return {};
-            case "list-apps":
-              return { apps: [] };
-            case "prompts:list":
-              return [];
             case "does-release-note-exist":
               return { exists: false };
             case "nodejs-status":
@@ -463,7 +521,113 @@ export const test = base.extend<{
                 },
               ];
             case "get-custom-themes":
-              return [];
+              return Array.from(customThemesById.values());
+            case "create-custom-theme": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const now = new Date().toISOString();
+              const theme = {
+                id: nextCustomThemeId++,
+                name: String(request?.name ?? ""),
+                description:
+                  typeof request?.description === "string"
+                    ? request.description
+                    : null,
+                prompt: String(request?.prompt ?? ""),
+                createdAt: now,
+                updatedAt: now,
+              };
+              customThemesById.set(theme.id, theme);
+              return theme;
+            }
+            case "update-custom-theme": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const themeId = Number(request?.id ?? 0);
+              const existing = customThemesById.get(themeId);
+              if (!existing) {
+                return undefined;
+              }
+              const updated = {
+                ...existing,
+                name:
+                  typeof request?.name === "string"
+                    ? request.name
+                    : existing.name,
+                description:
+                  typeof request?.description === "string"
+                    ? request.description
+                    : existing.description,
+                prompt:
+                  typeof request?.prompt === "string"
+                    ? request.prompt
+                    : existing.prompt,
+                updatedAt: new Date().toISOString(),
+              };
+              customThemesById.set(themeId, updated);
+              return updated;
+            }
+            case "delete-custom-theme": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              customThemesById.delete(Number(request?.id ?? 0));
+              return;
+            }
+            case "prompts:list":
+              return Array.from(promptsById.values());
+            case "prompts:create": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const now = new Date().toISOString();
+              const prompt = {
+                id: nextPromptId++,
+                title: String(request?.title ?? ""),
+                description:
+                  typeof request?.description === "string"
+                    ? request.description
+                    : null,
+                content: String(request?.content ?? ""),
+                createdAt: now,
+                updatedAt: now,
+              };
+              promptsById.set(prompt.id, prompt);
+              return prompt;
+            }
+            case "prompts:update": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const promptId = Number(request?.id ?? 0);
+              const existing = promptsById.get(promptId);
+              if (!existing) {
+                return;
+              }
+              promptsById.set(promptId, {
+                ...existing,
+                title:
+                  typeof request?.title === "string"
+                    ? request.title
+                    : existing.title,
+                description:
+                  typeof request?.description === "string"
+                    ? request.description
+                    : existing.description,
+                content:
+                  typeof request?.content === "string"
+                    ? request.content
+                    : existing.content,
+                updatedAt: new Date().toISOString(),
+              });
+              return;
+            }
+            case "prompts:delete":
+              promptsById.delete(
+                typeof payload === "object" &&
+                  payload !== null &&
+                  "promptId" in payload
+                  ? Number((payload as { promptId?: unknown }).promptId ?? 0)
+                  : Number(payload ?? 0),
+              );
+              return;
             case "generate-theme-prompt": {
               const request = (payload as { request?: Record<string, unknown> })
                 ?.request;

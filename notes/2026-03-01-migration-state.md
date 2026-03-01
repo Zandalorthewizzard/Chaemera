@@ -213,3 +213,34 @@ Then continue the migration plan from `Sprint 11`, unless the smoke suite or Win
 3. `cargo fmt` passed in `src-tauri`.
 4. `cargo check` passed in `src-tauri`.
 5. Invoke coverage moved from `112` missing channels to `106` missing channels.
+
+## Sprint 11 Wave 8
+
+1. Added a shared Rust SQLite helper layer in `src-tauri/src/sqlite_support.rs` so later DB-adjacent migration waves can reuse:
+   - dev/prod `sqlite.db` resolution
+   - workspace path normalization
+   - RFC3339 timestamp serialization
+2. Added a new Tauri content/settings wave for app themes and prompts:
+   - `set-app-theme`
+   - `get-app-theme`
+   - `get-custom-themes`
+   - `create-custom-theme`
+   - `update-custom-theme`
+   - `delete-custom-theme`
+   - `prompts:list`
+   - `prompts:create`
+   - `prompts:update`
+   - `prompts:delete`
+3. Extended the Tauri smoke harness with in-memory stores for:
+   - app theme selection
+   - custom themes
+   - saved prompts
+4. This wave deliberately stays in the SQLite/file-backed lane and avoids cloud/model/provider logic so it can shrink the remaining invoke gap without dragging in more runtime coupling.
+
+## Sprint 11 Wave 8 Validation
+
+1. `npm run ts` passed.
+2. `npx vitest run src/__tests__/tauri_wave_j_bridge.test.ts src/__tests__/tauri_wave_k_bridge.test.ts` passed.
+3. `cargo fmt` passed in `src-tauri`.
+4. `cargo check` passed in `src-tauri`.
+5. Invoke coverage moved from `106` missing channels to `96` missing channels.
