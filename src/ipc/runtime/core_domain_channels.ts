@@ -11,9 +11,14 @@ export const TAURI_MIGRATION_CHANNEL_TO_COMMAND = {
   "check-ai-rules": "check_ai_rules",
   "get-templates": "get_templates",
   "read-app-file": "read_app_file",
+  "edit-app-file": "edit_app_file",
   "search-app-files": "search_app_files",
   "list-versions": "list_versions",
   "get-current-branch": "get_current_branch",
+  "run-app": "run_app",
+  "stop-app": "stop_app",
+  "restart-app": "restart_app",
+  "respond-to-app-input": "respond_to_app_input",
   "chat:stream": "chat_stream",
   "chat:cancel": "chat_cancel",
   "agent-tool:get-tools": "agent_tool_get_tools",
@@ -39,6 +44,9 @@ export const TAURI_MIGRATION_CHANNEL_TO_COMMAND = {
   "cleanup-theme-images": "cleanup_theme_images",
   "apply-visual-editing-changes": "apply_visual_editing_changes",
   "analyze-component": "analyze_component",
+  "add-log": "add_log",
+  "clear-logs": "clear_logs",
+  "open-external-url": "open_external_url",
   "leptos:render-route": "leptos_render_route",
 } as const;
 
@@ -49,6 +57,7 @@ export const TAURI_MIGRATION_INVOKE_CHANNELS = Object.keys(
 export const TAURI_MIGRATION_EVENT_CHANNELS = [
   "telemetry:event",
   "force-close-detected",
+  "app:output",
   "chat:stream:start",
   "chat:stream:end",
   "chat:response:chunk",

@@ -2,11 +2,11 @@
 
 ## Context
 
-Leptos + Tauri 2 migration is implemented through Sprint 9. The next planned feature sprint is Sprint 10, but the current stabilization focus is migration smoke validation before pushing deeper into the cutover.
+Leptos + Tauri 2 migration is implemented through Sprint 10, and Sprint 11 has started. The current state is stabilized by build, unit, migration-smoke validation, and a real local `cargo check` pass for the Tauri layer.
 
 ## What Changed
 
-1. Sprint 3 through Sprint 9 were implemented:
+1. Sprint 3 through Sprint 10 were implemented:
    - Tauri Wave A core domains
    - Tauri Wave B files and apps
    - Tauri Wave C chat and agent transport bridge
@@ -14,8 +14,22 @@ Leptos + Tauri 2 migration is implemented through Sprint 9. The next planned fea
    - Tauri Wave E advanced utilities
    - Tauri harness migration
    - Leptos route shell for low-risk routes
+   - Leptos shell extension to core workspace routes
 2. Windows build tooling was repaired with Visual Studio Build Tools and Windows SDK so legacy Electron packaging can rebuild native modules like `better-sqlite3`.
 3. Global roadmap now explicitly reserves UI redesign for a post-migration track, cosmetic-first by default.
+4. Sprint documentation was brought back in sync with the executed migration line so `Sprint 3-10` no longer remain marked as merely planned.
+5. Migration governance now explicitly allows temporary breakage inside active migration slices and measures parity at accepted milestones/final cutover instead of every intermediate state.
+6. In-app preview is explicitly locked into the target `Tauri + Leptos` architecture instead of being treated as optional legacy behavior.
+7. Sprint 11 readiness audit showed the original final-cutover assumption was premature:
+   - `178` invoke channels exist in the contract surface,
+   - only `41` had Tauri coverage before this step,
+   - `138` invoke channels and `11` event channels were still Electron-only.
+8. Instead of deleting Electron blindly, the first Sprint 11 prerequisite wave was implemented:
+   - Tauri app runtime commands for `run-app`, `stop-app`, `restart-app`, `respond-to-app-input`, and `edit-app-file`
+   - Tauri `app:output` event path
+   - Tauri support for `add-log`, `clear-logs`, and `open-external-url`
+   - renderer-side app runtime metadata registry so Tauri can resolve `appId -> appPath/install/start` without a Rust DB port
+9. Local Rust tooling was installed and the Tauri workspace now passes `cargo check`.
 
 ## Verified State
 
@@ -24,6 +38,9 @@ Leptos + Tauri 2 migration is implemented through Sprint 9. The next planned fea
 3. `npm run test` passed.
 4. `npm run build` passed after the Windows toolchain fix.
 5. `testing/fake-llm-server` dependencies were installed with `npm ci` to unblock Playwright webServer startup.
+6. `npx vitest run src/__tests__/tauri_leptos_shell_bridge.test.ts` passed.
+7. `npx vitest run src/__tests__/tauri_wave_b_bridge.test.ts src/__tests__/tauri_wave_c_transport.test.ts src/__tests__/tauri_wave_f_bridge.test.ts` passed.
+8. `cargo check` passed in `src-tauri`.
 
 ## E2E Observations
 
@@ -33,22 +50,30 @@ Leptos + Tauri 2 migration is implemented through Sprint 9. The next planned fea
    - `e2e-tests/add_mcp_server_deep_link.spec.ts`
    - `e2e-tests/add_prompt_deep_link.spec.ts`
 2. `e2e-tests/tauri-smoke.spec.ts` is now green after stabilizing the harness and expectations around the current migration state.
-3. The stable Tauri smoke target is low-risk route shell behavior plus bridge/event transport, not the heavy `/` home surface.
-4. Root `/` in browser-style Tauri smoke currently pulls in too many home-specific query dependencies to be a good smoke anchor; that is a coverage choice, not evidence that the Tauri bridge failed.
+3. The Tauri smoke suite now covers both low-risk route-shell behavior and the core route-shell cut-in added in Sprint 10.
+4. Root `/` in browser-style Tauri smoke is no longer the anchor; the suite uses the more stable route-shell transport path instead.
+5. Preview runtime migration has now started on the Tauri side, but the full preview parity stack is not complete yet because the proxy/injection path and problem-checking path are still outside the migrated surface.
 
 ## Open Issues
 
 1. Keep the Tauri smoke suite focused on stable route-shell and transport guarantees until the core workspace cutover is further along.
 2. The Electron regression harness still produces noisy Windows `taskkill` cleanup warnings even when tests pass.
-3. Continue with Sprint 10 after this stabilization checkpoint.
+3. `Sprint 2` still exists as a documentation/planning artifact and should be reconciled before final migration archive.
+4. Final cutover work is still open in `Sprint 11`.
+5. Sprint 11 is now a real execution phase, but it is not yet at the point where Electron/Forge can be deleted safely.
+6. The next high-value gap after the new app-runtime wave is the remaining preview/tooling surface:
+   - proxy/injection workflow
+   - problems/check-problems
+   - remaining Electron-only app/system contracts
 
 ## Resume Point
 
 If resuming later, inspect:
 
-1. `e2e-tests/tauri-smoke.spec.ts`
-2. `e2e-tests/helpers/tauri_smoke_fixtures.ts`
-3. `playwright.config.ts`
-4. `e2e-tests/helpers/fixtures.ts`
+1. `src-tauri/src/wave_f_domains.rs`
+2. `src/ipc/runtime/app_path_registry.ts`
+3. `src/ipc/runtime/bootstrap_tauri_core_bridge.ts`
+4. `src/hooks/useRunApp.ts`
+5. `src/__tests__/tauri_wave_f_bridge.test.ts`
 
-Then continue the migration plan from Sprint 10, unless the smoke suite or Windows Electron cleanup behavior regresses again.
+Then continue the migration plan from `Sprint 11`, unless the smoke suite or Windows Electron cleanup behavior regresses again.

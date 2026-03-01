@@ -142,8 +142,8 @@ where
         return Ok(T::default());
     }
 
-    let raw =
-        fs::read_to_string(&path).map_err(|error| format!("failed to read {}: {error}", filename))?;
+    let raw = fs::read_to_string(&path)
+        .map_err(|error| format!("failed to read {}: {error}", filename))?;
     serde_json::from_str(&raw).map_err(|error| format!("failed to parse {}: {error}", filename))
 }
 
@@ -297,15 +297,17 @@ pub fn agent_tool_get_tools(app: AppHandle) -> Result<Value, String> {
     let consents: HashMap<String, String> = read_json_file(&app, "agent-tool-consents.json")?;
     let tools: Vec<AgentToolRecord> = get_agent_tool_definitions()
         .into_iter()
-        .map(|(name, description, is_allowed_by_default)| AgentToolRecord {
-            name: name.to_string(),
-            description: description.to_string(),
-            is_allowed_by_default,
-            consent: consents
-                .get(name)
-                .cloned()
-                .unwrap_or_else(|| "ask".to_string()),
-        })
+        .map(
+            |(name, description, is_allowed_by_default)| AgentToolRecord {
+                name: name.to_string(),
+                description: description.to_string(),
+                is_allowed_by_default,
+                consent: consents
+                    .get(name)
+                    .cloned()
+                    .unwrap_or_else(|| "ask".to_string()),
+            },
+        )
         .collect();
 
     serde_json::to_value(tools).map_err(|error| format!("failed to serialize agent tools: {error}"))
@@ -329,14 +331,12 @@ pub fn agent_tool_consent_response(_request: AgentToolConsentResponse) -> Result
 #[tauri::command]
 pub fn mcp_list_servers(app: AppHandle) -> Result<Value, String> {
     let servers: Vec<McpServerRecord> = read_json_file(&app, "mcp-servers.json")?;
-    serde_json::to_value(servers).map_err(|error| format!("failed to serialize mcp servers: {error}"))
+    serde_json::to_value(servers)
+        .map_err(|error| format!("failed to serialize mcp servers: {error}"))
 }
 
 #[tauri::command]
-pub fn mcp_create_server(
-    app: AppHandle,
-    request: McpServerCreateRequest,
-) -> Result<Value, String> {
+pub fn mcp_create_server(app: AppHandle, request: McpServerCreateRequest) -> Result<Value, String> {
     let mut servers: Vec<McpServerRecord> = read_json_file(&app, "mcp-servers.json")?;
     let next_id = servers.iter().map(|server| server.id).max().unwrap_or(0) + 1;
     let now = now_millis();
@@ -361,10 +361,7 @@ pub fn mcp_create_server(
 }
 
 #[tauri::command]
-pub fn mcp_update_server(
-    app: AppHandle,
-    request: McpServerUpdateRequest,
-) -> Result<Value, String> {
+pub fn mcp_update_server(app: AppHandle, request: McpServerUpdateRequest) -> Result<Value, String> {
     let mut servers: Vec<McpServerRecord> = read_json_file(&app, "mcp-servers.json")?;
     let server = servers
         .iter_mut()
@@ -430,9 +427,10 @@ pub fn mcp_set_tool_consent(
     let mut consents: Vec<McpToolConsentRecord> = read_json_file(&app, "mcp-tool-consents.json")?;
     let now = now_millis();
 
-    if let Some(existing) = consents.iter_mut().find(|entry| {
-        entry.server_id == request.server_id && entry.tool_name == request.tool_name
-    }) {
+    if let Some(existing) = consents
+        .iter_mut()
+        .find(|entry| entry.server_id == request.server_id && entry.tool_name == request.tool_name)
+    {
         existing.consent = request.consent;
         existing.updated_at = now;
         let result = existing.clone();

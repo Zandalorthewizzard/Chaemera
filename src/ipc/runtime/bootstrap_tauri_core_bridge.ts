@@ -3,7 +3,7 @@ import {
   TAURI_MIGRATION_EVENT_CHANNELS,
   TAURI_MIGRATION_INVOKE_CHANNELS,
 } from "./core_domain_channels";
-import { getResolvedAppPath } from "./app_path_registry";
+import { getAppRuntimeMetadata, getResolvedAppPath } from "./app_path_registry";
 
 type TauriInvokeFn = (
   command: string,
@@ -97,6 +97,23 @@ export function buildTauriInvokeArgs(
       }
       return { appPath, filePath };
     }
+    case "edit-app-file": {
+      const appId =
+        typeof payloadRecord?.appId === "number" ? payloadRecord.appId : null;
+      const filePath =
+        typeof payloadRecord?.filePath === "string"
+          ? payloadRecord.filePath
+          : null;
+      const content =
+        typeof payloadRecord?.content === "string"
+          ? payloadRecord.content
+          : null;
+      const appPath = appId !== null ? getResolvedAppPath(appId) : null;
+      if (!appPath || !filePath || content === null) {
+        return undefined;
+      }
+      return { request: { appId, appPath, filePath, content } };
+    }
     case "search-app-files": {
       const appId =
         typeof payloadRecord?.appId === "number" ? payloadRecord.appId : null;
@@ -118,6 +135,35 @@ export function buildTauriInvokeArgs(
       }
       return { appPath };
     }
+    case "run-app":
+    case "restart-app": {
+      const appId =
+        typeof payloadRecord?.appId === "number" ? payloadRecord.appId : null;
+      const metadata = appId !== null ? getAppRuntimeMetadata(appId) : null;
+      if (!metadata) {
+        return undefined;
+      }
+      return {
+        request: {
+          appId,
+          appPath: metadata.resolvedPath,
+          installCommand: metadata.installCommand,
+          startCommand: metadata.startCommand,
+          ...(channel === "restart-app"
+            ? {
+                removeNodeModules:
+                  typeof payloadRecord?.removeNodeModules === "boolean"
+                    ? payloadRecord.removeNodeModules
+                    : false,
+              }
+            : {}),
+        },
+      };
+    }
+    case "stop-app":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "respond-to-app-input":
+      return payloadRecord ? { request: payloadRecord } : undefined;
     case "chat:stream":
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "agent-tool:set-consent":
@@ -135,7 +181,11 @@ export function buildTauriInvokeArgs(
     case "apply-visual-editing-changes":
     case "analyze-component":
     case "leptos:render-route":
+    case "add-log":
+    case "clear-logs":
       return payloadRecord ? { request: payloadRecord } : undefined;
+    case "open-external-url":
+      return typeof payload === "string" ? { url: payload } : undefined;
     case "chat:cancel":
       return typeof payload === "number" ? { chatId: payload } : undefined;
     case "mcp:delete-server":
@@ -156,11 +206,16 @@ export function canInvokeViaTauri(channel: string, payload: unknown): boolean {
     case "set-user-settings":
     case "check-ai-rules":
     case "read-app-file":
+    case "edit-app-file":
     case "search-app-files":
     case "list-versions":
     case "get-current-branch":
+    case "run-app":
+    case "restart-app":
     case "chat:stream":
     case "chat:cancel":
+    case "stop-app":
+    case "respond-to-app-input":
     case "agent-tool:set-consent":
     case "agent-tool:consent-response":
     case "mcp:create-server":
@@ -178,6 +233,9 @@ export function canInvokeViaTauri(channel: string, payload: unknown): boolean {
     case "apply-visual-editing-changes":
     case "analyze-component":
     case "leptos:render-route":
+    case "add-log":
+    case "clear-logs":
+    case "open-external-url":
       return mappedArgs !== undefined;
     default:
       return true;

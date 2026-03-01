@@ -28,13 +28,13 @@ export function useAppOutputSubscription() {
 
   const processProxyServerOutput = useCallback(
     (output: AppOutput) => {
-      const matchesProxyServerStart = output.message.includes(
-        "[dyad-proxy-server]started=[",
-      );
+      const matchesProxyServerStart =
+        output.message.includes("[dyad-proxy-server]started=[") ||
+        output.message.includes("[preview-server]started=[");
       if (matchesProxyServerStart) {
         // Extract both proxy URL and original URL using regex
         const proxyUrlMatch = output.message.match(
-          /\[dyad-proxy-server\]started=\[(.*?)\]/,
+          /\[(?:dyad-proxy-server|preview-server)\]started=\[(.*?)\]/,
         );
         const originalUrlMatch = output.message.match(/original=\[(.*?)\]/);
 

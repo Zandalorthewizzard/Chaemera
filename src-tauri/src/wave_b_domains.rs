@@ -42,7 +42,8 @@ fn local_templates() -> Vec<TemplateDto> {
             id: "react",
             title: "React.js Template",
             description: "Uses React.js, Vite, Shadcn, Tailwind and TypeScript.",
-            image_url: "https://github.com/user-attachments/assets/5b700eab-b28c-498e-96de-8649b14c16d9",
+            image_url:
+                "https://github.com/user-attachments/assets/5b700eab-b28c-498e-96de-8649b14c16d9",
             github_url: None,
             is_official: true,
             is_experimental: None,
@@ -52,7 +53,8 @@ fn local_templates() -> Vec<TemplateDto> {
             id: "next",
             title: "Next.js Template",
             description: "Uses Next.js, React.js, Shadcn, Tailwind and TypeScript.",
-            image_url: "https://github.com/user-attachments/assets/96258e4f-abce-4910-a62a-a9dff77965f2",
+            image_url:
+                "https://github.com/user-attachments/assets/96258e4f-abce-4910-a62a-a9dff77965f2",
             github_url: Some("https://github.com/dyad-sh/nextjs-template"),
             is_official: true,
             is_experimental: None,
@@ -62,7 +64,8 @@ fn local_templates() -> Vec<TemplateDto> {
             id: "portal-mini-store",
             title: "Portal: Mini Store Template",
             description: "Uses Neon DB, Payload CMS, Next.js",
-            image_url: "https://github.com/user-attachments/assets/ed86f322-40bf-4fd5-81dc-3b1d8a16e12b",
+            image_url:
+                "https://github.com/user-attachments/assets/ed86f322-40bf-4fd5-81dc-3b1d8a16e12b",
             github_url: Some("https://github.com/dyad-sh/portal-mini-store-template"),
             is_official: true,
             is_experimental: Some(true),
@@ -149,7 +152,10 @@ pub fn select_app_folder() -> Result<Value, String> {
     let selected = FileDialog::new().pick_folder();
     match selected {
         Some(path) => {
-            let name = path.file_name().and_then(|part| part.to_str()).map(str::to_string);
+            let name = path
+                .file_name()
+                .and_then(|part| part.to_str())
+                .map(str::to_string);
             Ok(json!({
                 "path": path.to_string_lossy().to_string(),
                 "name": name,
@@ -254,7 +260,8 @@ pub fn search_app_files(app_path: String, query: String) -> Result<Value, String
         });
     }
 
-    serde_json::to_value(results).map_err(|error| format!("failed to serialize search results: {error}"))
+    serde_json::to_value(results)
+        .map_err(|error| format!("failed to serialize search results: {error}"))
 }
 
 #[tauri::command]

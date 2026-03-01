@@ -159,7 +159,8 @@ fn theme_images_dir() -> PathBuf {
 
 fn ensure_theme_images_dir() -> Result<PathBuf, String> {
     let dir = theme_images_dir();
-    fs::create_dir_all(&dir).map_err(|error| format!("failed to create theme image dir: {error}"))?;
+    fs::create_dir_all(&dir)
+        .map_err(|error| format!("failed to create theme image dir: {error}"))?;
     Ok(dir)
 }
 
@@ -189,7 +190,8 @@ fn extract_base64_payload(data: &str) -> &str {
 
 #[tauri::command]
 pub fn get_themes() -> Result<Value, String> {
-    serde_json::to_value(local_themes()).map_err(|error| format!("failed to serialize themes: {error}"))
+    serde_json::to_value(local_themes())
+        .map_err(|error| format!("failed to serialize themes: {error}"))
 }
 
 #[tauri::command]
@@ -245,8 +247,8 @@ pub fn save_theme_image(request: SaveThemeImageRequest) -> Result<Value, String>
 #[tauri::command]
 pub fn cleanup_theme_images(request: CleanupThemeImagesRequest) -> Result<(), String> {
     let root = ensure_theme_images_dir()?;
-    let canonical_root =
-        fs::canonicalize(&root).map_err(|error| format!("failed to resolve theme image dir: {error}"))?;
+    let canonical_root = fs::canonicalize(&root)
+        .map_err(|error| format!("failed to resolve theme image dir: {error}"))?;
 
     for candidate in request.paths {
         let candidate_path = PathBuf::from(candidate);
@@ -267,7 +269,9 @@ pub fn cleanup_theme_images(request: CleanupThemeImagesRequest) -> Result<(), St
 }
 
 #[tauri::command]
-pub fn apply_visual_editing_changes(request: ApplyVisualEditingChangesRequest) -> Result<(), String> {
+pub fn apply_visual_editing_changes(
+    request: ApplyVisualEditingChangesRequest,
+) -> Result<(), String> {
     let _ = request.app_id;
     let _ = request.changes;
     Ok(())

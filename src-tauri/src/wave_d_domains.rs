@@ -163,10 +163,7 @@ fn prettify_ollama_name(model_name: &str) -> String {
 }
 
 #[tauri::command]
-pub fn vercel_save_token(
-    app: AppHandle,
-    request: VercelSaveTokenRequest,
-) -> Result<(), String> {
+pub fn vercel_save_token(app: AppHandle, request: VercelSaveTokenRequest) -> Result<(), String> {
     let token = request.token.trim();
     if token.is_empty() {
         return Err("Access token is required.".to_string());
@@ -215,7 +212,7 @@ pub fn vercel_is_project_available(
         "error": if project_exists {
             Some("Project name is not available.")
         } else {
-            None::<String>
+            None::<&str>
         }
     }))
 }

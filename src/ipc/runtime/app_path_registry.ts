@@ -1,4 +1,10 @@
-const resolvedAppPaths = new Map<number, string>();
+type AppRuntimeMetadata = {
+  resolvedPath: string;
+  installCommand: string | null;
+  startCommand: string | null;
+};
+
+const appRuntimeMetadata = new Map<number, AppRuntimeMetadata>();
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
@@ -20,27 +26,69 @@ function registerFromAppLike(value: unknown): void {
   const appId = readNumber(value, "id");
   const resolvedPath = readString(value, "resolvedPath");
   if (appId !== null && resolvedPath) {
-    resolvedAppPaths.set(appId, resolvedPath);
+    appRuntimeMetadata.set(appId, {
+      resolvedPath,
+      installCommand: readNullableString(value, "installCommand"),
+      startCommand: readNullableString(value, "startCommand"),
+    });
   }
+}
+
+function readNullableString(value: unknown, key: string): string | null {
+  if (!isRecord(value)) return null;
+  const candidate = value[key];
+  if (candidate === null || candidate === undefined) {
+    return null;
+  }
+  return typeof candidate === "string" ? candidate : null;
 }
 
 export function registerResolvedAppPath(
   appId: number,
   resolvedPath: string,
 ): void {
-  resolvedAppPaths.set(appId, resolvedPath);
+  const existing = appRuntimeMetadata.get(appId);
+  appRuntimeMetadata.set(appId, {
+    resolvedPath,
+    installCommand: existing?.installCommand ?? null,
+    startCommand: existing?.startCommand ?? null,
+  });
 }
 
 export function getResolvedAppPath(appId: number): string | null {
-  return resolvedAppPaths.get(appId) ?? null;
+  return appRuntimeMetadata.get(appId)?.resolvedPath ?? null;
+}
+
+export function getAppRuntimeMetadata(
+  appId: number,
+): AppRuntimeMetadata | null {
+  return appRuntimeMetadata.get(appId) ?? null;
 }
 
 export function forgetResolvedAppPath(appId: number): void {
-  resolvedAppPaths.delete(appId);
+  appRuntimeMetadata.delete(appId);
 }
 
 export function clearResolvedAppPaths(): void {
-  resolvedAppPaths.clear();
+  appRuntimeMetadata.clear();
+}
+
+function updateAppCommandsFromInput(value: unknown): void {
+  const appId = readNumber(value, "appId");
+  if (appId === null) {
+    return;
+  }
+
+  const existing = appRuntimeMetadata.get(appId);
+  if (!existing) {
+    return;
+  }
+
+  appRuntimeMetadata.set(appId, {
+    resolvedPath: existing.resolvedPath,
+    installCommand: readNullableString(value, "installCommand"),
+    startCommand: readNullableString(value, "startCommand"),
+  });
 }
 
 export function trackResolvedAppPathFromIpc(
@@ -69,17 +117,20 @@ export function trackResolvedAppPathFromIpc(
       const appId = readNumber(input, "appId");
       const resolvedPath = readString(result, "resolvedPath");
       if (appId !== null && resolvedPath) {
-        resolvedAppPaths.set(appId, resolvedPath);
+        registerResolvedAppPath(appId, resolvedPath);
       }
       return;
     }
     case "delete-app": {
       const appId = readNumber(input, "appId");
       if (appId !== null) {
-        resolvedAppPaths.delete(appId);
+        appRuntimeMetadata.delete(appId);
       }
       return;
     }
+    case "update-app-commands":
+      updateAppCommandsFromInput(input);
+      return;
     default:
       return;
   }

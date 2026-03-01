@@ -4,6 +4,7 @@ mod wave_b_domains;
 mod wave_c_domains;
 mod wave_d_domains;
 mod wave_e_domains;
+mod wave_f_domains;
 
 use tauri::Manager;
 
@@ -31,6 +32,14 @@ pub fn run() {
             wave_b_domains::search_app_files,
             wave_b_domains::list_versions,
             wave_b_domains::get_current_branch,
+            wave_f_domains::run_app,
+            wave_f_domains::stop_app,
+            wave_f_domains::restart_app,
+            wave_f_domains::respond_to_app_input,
+            wave_f_domains::edit_app_file,
+            wave_f_domains::add_log,
+            wave_f_domains::clear_logs,
+            wave_f_domains::open_external_url,
             wave_c_domains::chat_stream,
             wave_c_domains::chat_cancel,
             wave_c_domains::agent_tool_get_tools,

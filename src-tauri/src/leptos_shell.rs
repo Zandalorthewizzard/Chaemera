@@ -25,13 +25,14 @@ fn ShellFrame(
     compatibility_copy: String,
     chips: Vec<String>,
 ) -> impl IntoView {
+    let title_attr = title.clone();
     let chip_views = chips
         .into_iter()
         .map(|chip| view! { <ShellChip label=chip /> })
         .collect_view();
 
     view! {
-        <section class="chaemera-leptos-shell" data-shell-title=title.clone()>
+        <section class="chaemera-leptos-shell" data-shell-title=title_attr>
             <style>
                 {r#"
                 .chaemera-leptos-shell {
