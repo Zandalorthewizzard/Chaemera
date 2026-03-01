@@ -91,6 +91,7 @@ export const TAURI_MIGRATION_CHANNEL_TO_COMMAND = {
   "plan:get-for-chat": "plan_get_for_chat",
   "plan:update-plan": "plan_update",
   "plan:delete": "plan_delete",
+  "github:start-flow": "github_start_flow",
   "github:list-repos": "github_list_repos",
   "github:get-repo-branches": "github_get_repo_branches",
   "github:is-repo-available": "github_is_repo_available",

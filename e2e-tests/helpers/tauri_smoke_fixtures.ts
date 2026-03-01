@@ -85,6 +85,7 @@ const tauriCommandToChannel = {
   plan_get_for_chat: "plan:get-for-chat",
   plan_update: "plan:update-plan",
   plan_delete: "plan:delete",
+  github_start_flow: "github:start-flow",
   github_list_repos: "github:list-repos",
   github_get_repo_branches: "github:get-repo-branches",
   github_is_repo_available: "github:is-repo-available",
@@ -729,6 +730,35 @@ export const test = base.extend<{
                   private: true,
                 },
               ];
+            case "github:start-flow": {
+              window.setTimeout(() => {
+                emit("github:flow-update", {
+                  message: "Requesting device code from GitHub...",
+                });
+                emit("github:flow-update", {
+                  userCode: "CHAEMERA-CODE",
+                  verificationUri: "https://github.com/login/device",
+                  message: "Please authorize in your browser.",
+                });
+              }, 0);
+
+              window.setTimeout(() => {
+                state.settings = {
+                  ...state.settings,
+                  githubAccessToken: {
+                    value: "tauri-smoke-github-token",
+                  },
+                  githubUser: {
+                    email: "tauri-smoke@example.com",
+                  },
+                };
+                emit("github:flow-success", {
+                  message: "Successfully connected!",
+                });
+              }, 10);
+
+              return;
+            }
             case "github:get-repo-branches": {
               const request = (payload as { request?: Record<string, unknown> })
                 ?.request;

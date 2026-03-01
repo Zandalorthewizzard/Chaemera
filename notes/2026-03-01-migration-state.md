@@ -409,3 +409,41 @@ Then continue the migration plan from `Sprint 11`, unless the smoke suite or Win
    - `GitHub branch and sync orchestration`
 2. The heaviest remaining non-GitHub workspace gap is still `chat:count-tokens`.
 3. The help bot remains intentionally undecided and must not be ported blindly.
+
+## Sprint 11 Wave 13
+
+1. Added a dedicated GitHub auth/device-flow wave instead of bundling it into the read-only GitHub API wave.
+2. Newly bridged Tauri invoke channel:
+   - `github:start-flow`
+3. The Tauri implementation preserves the Electron-side interaction model:
+   - emits `github:flow-update` when requesting a device code,
+   - emits `github:flow-update` with `userCode`, `verificationUri`, and guidance message,
+   - polls for access token in the background,
+   - emits `github:flow-success` on successful token acquisition,
+   - emits `github:flow-error` for duplicate-start, denial, expiry, and polling/network failures.
+4. Auth persistence now lands inside the Tauri-side settings path:
+   - `githubAccessToken` is written to `user-settings.json`
+   - primary GitHub email is also stored in `githubUser` when `/user/emails` succeeds
+5. The implementation intentionally keeps auth lifecycle separate from:
+   - repo creation/connection
+   - push/pull/rebase
+   - branch mutation/sync orchestration
+
+## Sprint 11 Wave 13 Validation
+
+1. `npx oxfmt --write src/ipc/runtime/core_domain_channels.ts src/ipc/runtime/bootstrap_tauri_core_bridge.ts e2e-tests/helpers/tauri_smoke_fixtures.ts src/__tests__/tauri_wave_p_bridge.test.ts` passed.
+2. `cargo fmt` passed in `src-tauri`.
+3. `npm run lint` passed.
+4. `npm run ts` passed.
+5. `npx vitest run src/__tests__/tauri_wave_p_bridge.test.ts` passed.
+6. `cargo check` passed in `src-tauri`.
+
+## Next Resume Point After Wave 13
+
+1. The next GitHub cut should probably be `repo creation/connection`, because auth is now available without needing Electron.
+2. After that, the remaining GitHub/git block is mostly branch/sync orchestration:
+   - fetch/pull/push
+   - rebase/abort/continue
+   - list/switch/create/delete/rename/merge branch
+   - conflicts/git-state helpers
+3. `chat:count-tokens` remains a separate large migration sprint and should still stay out of these GitHub waves.

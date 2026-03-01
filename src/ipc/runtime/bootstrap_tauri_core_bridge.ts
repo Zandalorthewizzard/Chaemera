@@ -180,6 +180,8 @@ export function buildTauriInvokeArgs(
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "prompts:update":
       return payloadRecord ? { request: payloadRecord } : undefined;
+    case "github:start-flow":
+      return payloadRecord ? { request: payloadRecord } : undefined;
     case "github:get-repo-branches":
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "github:is-repo-available":
@@ -312,6 +314,7 @@ export function canInvokeViaTauri(channel: string, payload: unknown): boolean {
     case "create-custom-theme":
     case "update-custom-theme":
     case "delete-custom-theme":
+    case "github:start-flow":
     case "github:get-repo-branches":
     case "github:is-repo-available":
     case "github:list-collaborators":
