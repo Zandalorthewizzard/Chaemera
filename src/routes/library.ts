@@ -8,10 +8,9 @@ export const libraryRoute = new Route({
   getParentRoute: () => rootRoute,
   path: "/library",
   component: function LibraryRouteComponent() {
-    return createElement(
-      LeptosRouteHost,
-      { routeId: "library" },
-      createElement(LibraryPage),
-    );
+    return createElement(LeptosRouteHost, {
+      routeId: "library",
+      children: createElement(LibraryPage),
+    });
   },
 });

@@ -6,7 +6,7 @@ import { testSkipIfWindows } from "./helpers/test_helper";
  * Tests searching file contents with ripgrep in local-agent mode
  */
 
-testSkipIfWindows.skip("local-agent - grep search", async ({ po }) => {
+testSkipIfWindows("local-agent - grep search", async ({ po }) => {
   await po.setUpOss({ localAgent: true });
   await po.importApp("minimal");
   await po.chatActions.selectLocalAgentMode();
@@ -19,5 +19,6 @@ testSkipIfWindows.skip("local-agent - grep search", async ({ po }) => {
   await expect(po.page.getByTestId("dyad-grep").first()).toMatchAriaSnapshot();
   await expect(po.page.getByTestId("dyad-grep").nth(1)).toMatchAriaSnapshot();
 });
+
 
 

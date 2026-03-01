@@ -11,7 +11,7 @@ import { testSkipIfWindows } from "./helpers/test_helper";
  *
  * Related to issue #2601
  */
-testSkipIfWindows.skip("local-agent - todo follow-up loop", async ({ po }) => {
+testSkipIfWindows("local-agent - todo follow-up loop", async ({ po }) => {
   await po.setUpOss({ localAgent: true });
   await po.importApp("minimal");
   await po.chatActions.selectLocalAgentMode();
@@ -35,5 +35,6 @@ testSkipIfWindows.skip("local-agent - todo follow-up loop", async ({ po }) => {
     ],
   });
 });
+
 
 

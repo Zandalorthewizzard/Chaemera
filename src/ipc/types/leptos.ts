@@ -4,6 +4,7 @@ import { createClient, defineContract } from "../contracts/core";
 export const LeptosRouteIdSchema = z.enum([
   "settings",
   "library",
+  "themes",
   "provider-settings",
   "help",
 ]);

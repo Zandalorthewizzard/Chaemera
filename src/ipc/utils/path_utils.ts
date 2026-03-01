@@ -60,5 +60,7 @@ export function safeJoin(basePath: string, ...paths: string[]): string {
     );
   }
 
-  return joinedPath;
+  // Keep joined paths stable across platforms so downstream code/tests do not
+  // depend on OS-specific separators.
+  return normalizePath(joinedPath);
 }

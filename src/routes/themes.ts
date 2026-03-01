@@ -8,10 +8,9 @@ export const themesRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/themes",
   component: function ThemesRouteComponent() {
-    return createElement(
-      LeptosRouteHost,
-      { routeId: "library" },
-      createElement(ThemesPage),
-    );
+    return createElement(LeptosRouteHost, {
+      routeId: "themes",
+      children: createElement(ThemesPage),
+    });
   },
 });

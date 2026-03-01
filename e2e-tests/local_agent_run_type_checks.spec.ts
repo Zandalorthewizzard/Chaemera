@@ -6,7 +6,7 @@ import { expect } from "@playwright/test";
  * Tests that running type checks updates the Problems panel in the UI
  */
 
-testSkipIfWindows.skip(
+testSkipIfWindows(
   "local-agent - run_type_checks updates problems panel",
   async ({ po }) => {
     await po.setUpOss({ localAgent: true });
@@ -44,5 +44,6 @@ testSkipIfWindows.skip(
     await po.previewPanel.snapshotProblemsPane();
   },
 );
+
 
 

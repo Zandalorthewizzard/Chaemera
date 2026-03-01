@@ -198,6 +198,21 @@ pub fn leptos_render_route(request: LeptosRenderRouteRequest) -> Result<Value, S
                 ],
             ),
         ),
+        "themes" => (
+            "Themes".to_string(),
+            render_shell(
+                "Themes".to_string(),
+                "Leptos Shell".to_string(),
+                "Theme browsing and generation now enters through a Leptos-rendered route shell inside the Tauri runtime. The existing React editors and asset flows remain mounted below as the compatibility body while the cutover is in progress.".to_string(),
+                "React Compatibility Body".to_string(),
+                "Theme cards, generation forms, and custom asset management continue to run in the existing React layer below this shell.".to_string(),
+                vec![
+                    "Custom Themes".to_string(),
+                    "Generation".to_string(),
+                    "Assets".to_string(),
+                ],
+            ),
+        ),
         "provider-settings" => {
             let provider_name = provider_display_name(request.provider_id.as_deref().unwrap_or("provider"));
             (

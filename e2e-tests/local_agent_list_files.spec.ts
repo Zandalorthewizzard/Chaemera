@@ -5,7 +5,7 @@ import { testSkipIfWindows } from "./helpers/test_helper";
  * E2E tests for list_files tool
  */
 
-testSkipIfWindows.skip("local-agent - list_files", async ({ po }) => {
+testSkipIfWindows("local-agent - list_files", async ({ po }) => {
   await po.setUpOss({ localAgent: true });
   await po.importApp("minimal");
   await po.chatActions.selectLocalAgentMode();
@@ -21,7 +21,7 @@ testSkipIfWindows.skip("local-agent - list_files", async ({ po }) => {
   await expect(listFiles2).toMatchAriaSnapshot();
 });
 
-testSkipIfWindows.skip("local-agent - list_files include_hidden", async ({ po }) => {
+testSkipIfWindows("local-agent - list_files include_hidden", async ({ po }) => {
   await po.setUpOss({ localAgent: true });
   await po.importApp("minimal-with-dyad");
   await po.chatActions.selectLocalAgentMode();
@@ -31,5 +31,6 @@ testSkipIfWindows.skip("local-agent - list_files include_hidden", async ({ po })
   await listFiles.click();
   await expect(listFiles).toMatchAriaSnapshot();
 });
+
 
 

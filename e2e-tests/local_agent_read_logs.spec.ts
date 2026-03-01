@@ -6,7 +6,7 @@ import { testSkipIfWindows } from "./helpers/test_helper";
  * Note: read_logs has defaultConsent: "always", so no consent flow is tested
  */
 
-testSkipIfWindows.skip("local-agent - read logs with filters", async ({ po }) => {
+testSkipIfWindows("local-agent - read logs with filters", async ({ po }) => {
   await po.setUpOss({ localAgent: true });
   await po.importApp("minimal");
   await po.chatActions.selectLocalAgentMode();
@@ -20,5 +20,6 @@ testSkipIfWindows.skip("local-agent - read logs with filters", async ({ po }) =>
 
   await po.snapshotMessages();
 });
+
 
 

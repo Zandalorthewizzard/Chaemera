@@ -11,7 +11,7 @@ export function LeptosRouteHost({
 }: {
   routeId: LeptosRouteId;
   providerId?: string;
-  children: ReactNode;
+  children?: ReactNode;
 }) {
   const supportsLeptosShell = hasTauriLeptosShellSupport();
 

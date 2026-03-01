@@ -5,7 +5,7 @@ import { testSkipIfWindows } from "./helpers/test_helper";
  * Tests multi-turn tool call conversations using the TypeScript DSL fixtures
  */
 
-testSkipIfWindows.skip("local-agent - dump request", async ({ po }) => {
+testSkipIfWindows("local-agent - dump request", async ({ po }) => {
   await po.setUpOss({ localAgent: true });
   await po.importApp("minimal");
   await po.chatActions.selectLocalAgentMode();
@@ -16,7 +16,7 @@ testSkipIfWindows.skip("local-agent - dump request", async ({ po }) => {
   await po.snapshotServerDump("all-messages");
 });
 
-testSkipIfWindows.skip("local-agent - read then edit", async ({ po }) => {
+testSkipIfWindows("local-agent - read then edit", async ({ po }) => {
   await po.setUpOss({ localAgent: true });
   await po.importApp("minimal");
   await po.chatActions.selectLocalAgentMode();
@@ -29,7 +29,7 @@ testSkipIfWindows.skip("local-agent - read then edit", async ({ po }) => {
   });
 });
 
-testSkipIfWindows.skip("local-agent - parallel tool calls", async ({ po }) => {
+testSkipIfWindows("local-agent - parallel tool calls", async ({ po }) => {
   await po.setUpOss({ localAgent: true });
   await po.importApp("minimal");
   await po.chatActions.selectLocalAgentMode();
@@ -42,5 +42,6 @@ testSkipIfWindows.skip("local-agent - parallel tool calls", async ({ po }) => {
     files: ["src/utils/math.ts", "src/utils/string.ts"],
   });
 });
+
 
 

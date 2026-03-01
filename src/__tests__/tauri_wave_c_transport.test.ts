@@ -99,12 +99,15 @@ describe("tauri Wave C transport", () => {
       capturedPayload = payload;
     });
 
-    tauriListener?.({
-      payload: {
-        chatId: 1,
-        updatedFiles: false,
-      },
-    });
+    const eventListener = tauriListener as ((payload: unknown) => void) | null;
+    if (eventListener) {
+      eventListener({
+        payload: {
+          chatId: 1,
+          updatedFiles: false,
+        },
+      });
+    }
 
     expect(capturedPayload).toEqual({
       chatId: 1,

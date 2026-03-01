@@ -9,7 +9,7 @@ import { expect } from "@playwright/test";
  * This test directly triggers summarization by sending the "Summarize from chat-id=X"
  * prompt, which is the same mechanism used by the "Summarize into new chat" button.
  */
-testSkipIfWindows.skip(
+testSkipIfWindows(
   "local-agent - summarize to new chat works",
   async ({ po }) => {
     await po.setUpOss({ localAgent: true });
@@ -40,5 +40,6 @@ testSkipIfWindows.skip(
     await po.snapshotMessages();
   },
 );
+
 
 

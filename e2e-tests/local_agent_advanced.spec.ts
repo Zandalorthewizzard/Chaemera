@@ -4,7 +4,7 @@ import { testSkipIfWindows } from "./helpers/test_helper";
 /**
  * Test for security review in local-agent mode
  */
-testSkipIfWindows.skip("local-agent - security review fix", async ({ po }) => {
+testSkipIfWindows("local-agent - security review fix", async ({ po }) => {
   await po.setUpOss({ localAgent: true });
   await po.importApp("minimal");
   await po.chatActions.selectLocalAgentMode();
@@ -19,7 +19,7 @@ testSkipIfWindows.skip("local-agent - security review fix", async ({ po }) => {
 /**
  * Test for mention apps feature in local-agent mode
  */
-testSkipIfWindows.skip("local-agent - mention apps", async ({ po }) => {
+testSkipIfWindows("local-agent - mention apps", async ({ po }) => {
   await po.setUpOss({ localAgent: true });
 
   // Import app and reference it.
@@ -36,7 +36,7 @@ testSkipIfWindows.skip("local-agent - mention apps", async ({ po }) => {
 /**
  * Test for MCP tool calls in local-agent mode
  */
-testSkipIfWindows.skip("local-agent - mcp tool call", async ({ po }) => {
+testSkipIfWindows("local-agent - mcp tool call", async ({ po }) => {
   await po.setUpOss({ localAgent: true });
   await po.navigation.goToSettingsTab();
   await po.page.getByRole("button", { name: "Tools (MCP)" }).click();
@@ -75,5 +75,6 @@ testSkipIfWindows.skip("local-agent - mcp tool call", async ({ po }) => {
 
   await po.snapshotMessages();
 });
+
 
 

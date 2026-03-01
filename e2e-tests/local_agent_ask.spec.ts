@@ -5,7 +5,7 @@ import { testSkipIfWindows } from "./helpers/test_helper";
  * Tests that Pro users in ask mode get access to read-only tools
  */
 
-testSkipIfWindows.skip("local-agent ask mode", async ({ po }) => {
+testSkipIfWindows("local-agent ask mode", async ({ po }) => {
   await po.setUpOss({ localAgent: true });
   await po.importApp("minimal");
 
@@ -20,5 +20,6 @@ testSkipIfWindows.skip("local-agent ask mode", async ({ po }) => {
   await po.sendPrompt("[dump]");
   await po.snapshotServerDump("request");
 });
+
 
 
