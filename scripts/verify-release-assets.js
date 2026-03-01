@@ -17,8 +17,8 @@ async function verifyReleaseAssets() {
     console.log(`🔍 Verifying release assets for version ${version}...`);
 
     // GitHub API configuration
-    const owner = "dyad-sh";
-    const repo = "dyad";
+    const owner = "Zandalorthewizzard";
+    const repo = "Chaemera";
     const token = process.env.GITHUB_TOKEN;
 
     if (!token) {
@@ -35,7 +35,7 @@ async function verifyReleaseAssets() {
       headers: {
         Authorization: `token ${token}`,
         Accept: "application/vnd.github.v3+json",
-        "User-Agent": "dyad-release-verifier",
+        "User-Agent": "chaemera-release-verifier",
       },
     });
 
@@ -81,13 +81,13 @@ async function verifyReleaseAssets() {
 
     // Define expected assets with platform-specific version handling
     const expectedAssets = [
-      `dyad-${normalizeVersionForPlatform(version, "rpm")}-1.x86_64.rpm`,
-      `dyad-${normalizeVersionForPlatform(version, "nupkg")}-full.nupkg`,
-      `dyad-${version}.Setup.exe`,
-      `dyad-darwin-arm64-${version}.zip`,
-      `dyad-darwin-x64-${version}.zip`,
-      `dyad_${normalizeVersionForPlatform(version, "deb")}_amd64.deb`,
-      `dyad_${version}_x86_64.AppImage`,
+      `chaemera-${normalizeVersionForPlatform(version, "rpm")}-1.x86_64.rpm`,
+      `chaemera-${normalizeVersionForPlatform(version, "nupkg")}-full.nupkg`,
+      `chaemera-${version}.Setup.exe`,
+      `chaemera-darwin-arm64-${version}.zip`,
+      `chaemera-darwin-x64-${version}.zip`,
+      `chaemera_${normalizeVersionForPlatform(version, "deb")}_amd64.deb`,
+      `chaemera_${version}_x86_64.AppImage`,
       "RELEASES",
     ];
 

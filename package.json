@@ -1,16 +1,15 @@
 {
-  "name": "dyad",
+  "name": "chaemera",
   "version": "0.37.0-beta.2",
   "description": "Free, local, open-source AI app builder",
   "keywords": [],
   "license": "Apache-2.0",
   "author": {
-    "name": "Will Chen",
-    "email": "willchen90@gmail.com"
+    "name": "Chaemera contributors"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/dyad-sh/dyad.git"
+    "url": "https://github.com/Zandalorthewizzard/Chaemera.git"
   },
   "main": ".vite/build/main.js",
   "scripts": {
@@ -191,5 +190,5 @@
   "engines": {
     "node": ">=24"
   },
-  "productName": "dyad"
+  "productName": "Chaemera"
 }

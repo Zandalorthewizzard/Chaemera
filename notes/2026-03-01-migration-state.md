@@ -1159,3 +1159,13 @@ Current lock:
    - it uploads workflow artifacts instead of replacing the existing Electron release pipeline immediately
 3. The goal is to validate real desktop packaging for the new stack before removing the legacy release path.
 4. Added a config test lock so the preview release workflow remains present and points at the Tauri config.
+
+## Sprint 11 Wave 40
+
+1. Cleaned the remaining package/release metadata branding that still pointed at Dyad:
+   - `package.json` name/product metadata now identifies the fork as `Chaemera`
+   - `package-lock.json` root package metadata now matches
+   - legacy Forge publisher metadata now points at `Zandalorthewizzard/Chaemera`
+   - the legacy release verifier now targets the Chaemera repo and Chaemera asset naming
+2. Intentionally preserved the `dyad://` deep-link scheme in `forge.config.ts` for runtime compatibility during migration.
+3. Added a regression-style metadata test so the fork identity and legacy release metadata do not drift back.
