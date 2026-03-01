@@ -204,6 +204,16 @@ export function buildTauriInvokeArgs(
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "github:rebase-continue":
       return payloadRecord ? { request: payloadRecord } : undefined;
+    case "github:create-branch":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "github:switch-branch":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "github:delete-branch":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "github:rename-branch":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "github:merge-branch":
+      return payloadRecord ? { request: payloadRecord } : undefined;
     case "github:list-local-branches":
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "github:list-remote-branches":
@@ -223,6 +233,8 @@ export function buildTauriInvokeArgs(
     case "github:disconnect":
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "git:get-uncommitted-files":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "git:commit-changes":
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "search-app-files": {
       const appId =
@@ -354,6 +366,11 @@ export function canInvokeViaTauri(channel: string, payload: unknown): boolean {
     case "github:rebase-abort":
     case "github:merge-abort":
     case "github:rebase-continue":
+    case "github:create-branch":
+    case "github:switch-branch":
+    case "github:delete-branch":
+    case "github:rename-branch":
+    case "github:merge-branch":
     case "github:list-local-branches":
     case "github:list-remote-branches":
     case "github:get-conflicts":
@@ -364,6 +381,7 @@ export function canInvokeViaTauri(channel: string, payload: unknown): boolean {
     case "prompts:delete":
     case "github:disconnect":
     case "git:get-uncommitted-files":
+    case "git:commit-changes":
     case "read-app-file":
     case "edit-app-file":
     case "check-problems":

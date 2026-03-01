@@ -19,6 +19,7 @@ mod wave_p_domains;
 mod wave_q_domains;
 mod wave_r_domains;
 mod wave_s_domains;
+mod wave_t_domains;
 
 use tauri::Manager;
 
@@ -57,9 +58,15 @@ pub fn run() {
             wave_s_domains::github_rebase_abort,
             wave_s_domains::github_rebase_continue,
             wave_s_domains::github_merge_abort,
+            wave_t_domains::github_create_branch,
+            wave_t_domains::github_switch_branch,
+            wave_t_domains::github_delete_branch,
+            wave_t_domains::github_rename_branch,
+            wave_t_domains::github_merge_branch,
             wave_o_domains::github_list_collaborators,
             wave_o_domains::github_disconnect,
             wave_r_domains::git_get_uncommitted_files,
+            wave_t_domains::git_commit_changes,
             wave_g_domains::nodejs_status,
             wave_g_domains::select_node_folder,
             wave_g_domains::get_node_path,

@@ -98,6 +98,11 @@ const tauriCommandToChannel = {
   github_rebase_abort: "github:rebase-abort",
   github_merge_abort: "github:merge-abort",
   github_rebase_continue: "github:rebase-continue",
+  github_create_branch: "github:create-branch",
+  github_switch_branch: "github:switch-branch",
+  github_delete_branch: "github:delete-branch",
+  github_rename_branch: "github:rename-branch",
+  github_merge_branch: "github:merge-branch",
   github_list_local_branches: "github:list-local-branches",
   github_list_remote_branches: "github:list-remote-branches",
   github_get_conflicts: "github:get-conflicts",
@@ -105,6 +110,7 @@ const tauriCommandToChannel = {
   github_list_collaborators: "github:list-collaborators",
   github_disconnect: "github:disconnect",
   git_get_uncommitted_files: "git:get-uncommitted-files",
+  git_commit_changes: "git:commit-changes",
   get_themes: "get-themes",
   set_app_theme: "set-app-theme",
   get_app_theme: "get-app-theme",
@@ -862,6 +868,57 @@ export const test = base.extend<{
               }
               return;
             }
+            case "github:create-branch": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const appId = Number(request?.appId ?? 0);
+              const branch = String(request?.branch ?? "");
+              const app = appsById.get(appId);
+              if (!app) {
+                throw new Error("App not found");
+              }
+              if (!branch) {
+                throw new Error(
+                  "Branch name must be between 1 and 255 characters",
+                );
+              }
+              return;
+            }
+            case "github:switch-branch": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const appId = Number(request?.appId ?? 0);
+              const branch = String(request?.branch ?? "main");
+              const app = appsById.get(appId);
+              if (!app) {
+                throw new Error("App not found");
+              }
+              appsById.set(appId, {
+                ...app,
+                githubBranch: branch,
+              });
+              return;
+            }
+            case "github:delete-branch":
+              return;
+            case "github:rename-branch": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const appId = Number(request?.appId ?? 0);
+              const app = appsById.get(appId);
+              if (!app) {
+                throw new Error("App not found");
+              }
+              if (app.githubBranch === String(request?.oldBranch ?? "")) {
+                appsById.set(appId, {
+                  ...app,
+                  githubBranch: String(request?.newBranch ?? ""),
+                });
+              }
+              return;
+            }
+            case "github:merge-branch":
+              return;
             case "github:list-local-branches": {
               const request = (payload as { request?: Record<string, unknown> })
                 ?.request;
@@ -928,6 +985,8 @@ export const test = base.extend<{
             }
             case "git:get-uncommitted-files":
               return [];
+            case "git:commit-changes":
+              return "abcdef1234567890";
             case "check-app-name": {
               const request = (payload as { request?: Record<string, unknown> })
                 ?.request;

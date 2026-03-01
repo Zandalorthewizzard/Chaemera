@@ -156,6 +156,33 @@ Then continue the migration plan from `Sprint 11`, unless the smoke suite or Win
 5. `npm run lint` passed.
 6. `cargo check` passed in `src-tauri`.
 
+## Sprint 11 Wave 17
+
+1. Added a dedicated Tauri branch-mutation wave for the remaining GitHub branch manager operations:
+   - `github:create-branch`
+   - `github:switch-branch`
+   - `github:delete-branch`
+   - `github:rename-branch`
+   - `github:merge-branch`
+   - `git:commit-changes`
+2. Preserved the important existing behavior:
+   - branch name validation matches the Electron handler constraints
+   - branch switching still blocks on merge/rebase state and dirty workspaces
+   - renaming the active branch still updates the app's stored `githubBranch`
+   - merge still prefers `origin/<branch>` when the branch is only available remotely
+   - commit still stages all changes and blocks while merge/rebase is active
+3. `merge` and `commit` now inject an explicit author identity in the Rust path so this wave does not depend on the machine's global git config.
+4. Smoke harness coverage was expanded for the new mutation channels so branch-manager commands exist coherently in Tauri smoke mode.
+
+## Sprint 11 Wave 17 Validation
+
+1. `npx oxfmt --write ...` was run only on the touched TypeScript files.
+2. `cargo fmt` passed in `src-tauri`.
+3. `npm run ts` passed.
+4. `npx vitest run src/__tests__/tauri_wave_t_bridge.test.ts src/__tests__/tauri_wave_s_bridge.test.ts` passed.
+5. `npm run lint` passed.
+6. `cargo check` passed in `src-tauri`.
+
 ## Sprint 11 Wave 3
 
 1. Added a new Tauri system utility wave for non-DB shell/runtime commands:
