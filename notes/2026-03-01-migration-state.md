@@ -1080,3 +1080,27 @@ Current lock:
 5. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe fmt --manifest-path src-tauri/Cargo.toml` passed.
 6. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe check --manifest-path src-tauri/Cargo.toml` passed.
 7. A fresh contract audit reduced the remaining unmapped contract count to `27`.
+
+## Sprint 11 Wave 36
+
+1. Added a pragmatic Tauri `revert-version` wave covering:
+   - `revert-version`
+2. The new Rust path preserves the core rollback flow:
+   - checks out `main`
+   - stages a revert-to-target state via `reset --hard <target>` followed by `reset --soft <original-head>`
+   - commits the revert if staged changes exist
+   - prunes chat messages after the selected anchor
+3. The cloud side-effects are currently explicit partial parity, not silent omission:
+   - Neon-linked apps still store a best-effort current version timestamp before reverting
+   - if the target version has a Neon DB timestamp, the Tauri path returns a warning that DB restore still needs manual follow-up
+   - Supabase-linked apps return a warning that edge-function redeploy after revert is still manual in the Tauri path
+
+## Sprint 11 Wave 36 Validation
+
+1. `npx oxfmt --write src/ipc/runtime/core_domain_channels.ts src/ipc/runtime/bootstrap_tauri_core_bridge.ts src/__tests__/tauri_wave_am_bridge.test.ts e2e-tests/helpers/tauri_smoke_fixtures.ts` passed.
+2. `npm run ts` passed.
+3. `npm run lint` passed.
+4. `npx vitest run src/__tests__/tauri_wave_am_bridge.test.ts` passed.
+5. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe fmt --manifest-path src-tauri/Cargo.toml` passed.
+6. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe check --manifest-path src-tauri/Cargo.toml` passed.
+7. A fresh contract audit reduced the remaining unmapped contract count to `26`.

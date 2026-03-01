@@ -22,6 +22,7 @@ export const TAURI_MIGRATION_CHANNEL_TO_COMMAND = {
   "import-app": "import_app",
   "get-app-upgrades": "get_app_upgrades",
   "execute-app-upgrade": "execute_app_upgrade",
+  "revert-version": "revert_version",
   "create-app": "create_app",
   "get-app": "get_app",
   "list-apps": "list_apps",

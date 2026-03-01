@@ -13,6 +13,7 @@ mod wave_ai_domains;
 mod wave_aj_domains;
 mod wave_ak_domains;
 mod wave_al_domains;
+mod wave_am_domains;
 mod wave_b_domains;
 mod wave_c_domains;
 mod wave_d_domains;
@@ -119,6 +120,7 @@ pub fn run() {
             wave_b_domains::read_app_file,
             wave_b_domains::search_app_files,
             wave_b_domains::list_versions,
+            wave_am_domains::revert_version,
             wave_ae_domains::checkout_version,
             wave_b_domains::get_current_branch,
             wave_f_domains::run_app,

@@ -87,6 +87,7 @@ const tauriCommandToChannel = {
   import_app: "import-app",
   get_app_upgrades: "get-app-upgrades",
   execute_app_upgrade: "execute-app-upgrade",
+  revert_version: "revert-version",
   check_app_name: "check-app-name",
   show_item_in_folder: "show-item-in-folder",
   take_screenshot: "take-screenshot",
@@ -2078,6 +2079,10 @@ export const test = base.extend<{
             case "execute-app-upgrade":
             case "checkout-version":
               return;
+            case "revert-version":
+              return {
+                successMessage: "Restored version",
+              };
             case "get-language-model-providers":
               return Array.from(languageModelProvidersById.values());
             case "get-language-models": {
