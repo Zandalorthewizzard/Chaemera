@@ -80,6 +80,8 @@ export function buildTauriInvokeArgs(
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "get-app":
       return typeof payload === "number" ? { appId: payload } : undefined;
+    case "get-latest-security-review":
+      return typeof payload === "number" ? { appId: payload } : undefined;
     case "delete-app":
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "copy-app":
@@ -400,6 +402,7 @@ export function canInvokeViaTauri(channel: string, payload: unknown): boolean {
     case "set-user-settings":
     case "create-app":
     case "get-app":
+    case "get-latest-security-review":
     case "search-app":
     case "delete-app":
     case "copy-app":

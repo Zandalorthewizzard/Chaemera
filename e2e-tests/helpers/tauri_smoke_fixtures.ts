@@ -48,6 +48,7 @@ const tauriCommandToChannel = {
   get_system_platform: "get-system-platform",
   get_system_debug_info: "get-system-debug-info",
   get_app_version: "get-app-version",
+  get_latest_security_review: "get-latest-security-review",
   create_app: "create-app",
   get_app: "get-app",
   list_apps: "list-apps",
@@ -1676,6 +1677,19 @@ export const test = base.extend<{
             }
             case "get-user-budget":
               return null;
+            case "get-latest-security-review":
+              return {
+                findings: [
+                  {
+                    title: "Unsanitized HTML render",
+                    level: "high",
+                    description:
+                      "User-controlled content reaches a render path without sanitization.",
+                  },
+                ],
+                timestamp: "2026-03-01T00:00:00.000Z",
+                chatId: 1,
+              };
             case "free-agent-quota:get-status":
               return {
                 messagesUsed: 0,

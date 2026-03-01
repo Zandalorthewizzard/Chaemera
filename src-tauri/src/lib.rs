@@ -6,6 +6,7 @@ mod wave_ab_domains;
 mod wave_ac_domains;
 mod wave_ad_domains;
 mod wave_ae_domains;
+mod wave_af_domains;
 mod wave_b_domains;
 mod wave_c_domains;
 mod wave_d_domains;
@@ -49,6 +50,7 @@ pub fn run() {
             core_domains::get_system_platform,
             wave_g_domains::get_system_debug_info,
             core_domains::get_app_version,
+            wave_af_domains::get_latest_security_review,
             wave_ab_domains::get_env_vars,
             wave_ab_domains::get_app_env_vars,
             wave_ab_domains::set_app_env_vars,

@@ -36,6 +36,7 @@ export const TAURI_MIGRATION_CHANNEL_TO_COMMAND = {
   "get-node-path": "get_node_path",
   "get-user-settings": "get_user_settings",
   "set-user-settings": "set_user_settings",
+  "get-latest-security-review": "get_latest_security_review",
   "select-app-folder": "select_app_folder",
   "select-app-location": "select_app_location",
   "check-ai-rules": "check_ai_rules",

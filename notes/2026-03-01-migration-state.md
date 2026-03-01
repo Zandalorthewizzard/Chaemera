@@ -895,3 +895,23 @@ Then continue the migration plan from `Sprint 11`, unless the smoke suite or Win
 5. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe fmt --manifest-path src-tauri/Cargo.toml` passed.
 6. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe check --manifest-path src-tauri/Cargo.toml` passed.
 7. This wave closes 3 more invoke channels and leaves `revert-version` as the intentional remainder of the version-management surface.
+
+## Sprint 11 Wave 29
+
+1. Added a focused Tauri `security review` wave covering:
+   - `get-latest-security-review`
+2. The new Rust implementation preserves the existing Electron-side read semantics:
+   - queries the latest assistant message in the app that contains `<dyad-security-finding>` tags
+   - parses the finding tags into the same title / level / description structure
+   - returns the originating `chatId` plus RFC3339 timestamp
+3. This wave intentionally stays read-only and avoids mixing security-review retrieval with the much heavier proposal approval/apply pipeline.
+
+## Sprint 11 Wave 29 Validation
+
+1. `npx oxfmt --write src/ipc/runtime/core_domain_channels.ts src/ipc/runtime/bootstrap_tauri_core_bridge.ts src/__tests__/tauri_wave_af_bridge.test.ts e2e-tests/helpers/tauri_smoke_fixtures.ts` passed.
+2. `npm run ts` passed.
+3. `npx vitest run src/__tests__/tauri_wave_af_bridge.test.ts` passed.
+4. `npm run lint` passed.
+5. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe fmt --manifest-path src-tauri/Cargo.toml` passed.
+6. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe check --manifest-path src-tauri/Cargo.toml` passed.
+7. This wave closes 1 more invoke channel and keeps the remaining heavy tail concentrated in `proposal/help/misc/revert-version`.
