@@ -10,6 +10,8 @@ export const TAURI_MIGRATION_CHANNEL_TO_COMMAND = {
   "set-app-env-vars": "set_app_env_vars",
   "get-context-paths": "get_context_paths",
   "set-context-paths": "set_context_paths",
+  "get-proposal": "get_proposal",
+  "reject-proposal": "reject_proposal",
   "is-capacitor": "is_capacitor",
   "sync-capacitor": "sync_capacitor",
   "open-ios": "open_ios",

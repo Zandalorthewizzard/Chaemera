@@ -915,3 +915,55 @@ Then continue the migration plan from `Sprint 11`, unless the smoke suite or Win
 5. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe fmt --manifest-path src-tauri/Cargo.toml` passed.
 6. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe check --manifest-path src-tauri/Cargo.toml` passed.
 7. This wave closes 1 more invoke channel and keeps the remaining heavy tail concentrated in `proposal/help/misc/revert-version`.
+
+## Sprint 11 Deferred Locks
+
+1. `help:chat:start`
+2. `help:chat:cancel`
+3. `help:chat:response:*`
+
+These are no longer active Sprint 11 migration backlog items. They are explicitly `DEFERRED` behind the separate help-bot OSS/product issue:
+
+- `docs-new/05-discussion-templates/discussions/2026-03-01-help-bot-oss-equivalent-issue.md`
+
+Current lock:
+
+1. keep the surface in place for now,
+2. do not port help chat to Tauri/Leptos inside Sprint 11,
+3. resolve it later as a dedicated product/licensing decision.
+
+## Sprint 11 Wave 30
+
+1. Added a focused Tauri `proposal` read/reject wave covering:
+   - `get-proposal`
+   - `reject-proposal`
+2. The new Rust implementation keeps the current proposal model shape used by the renderer:
+   - `code-proposal` when the latest assistant message has file/package/sql dyad tags and no approval state
+   - `action-proposal` otherwise
+3. The Tauri proposal parser now mirrors the current Electron tag families needed for proposal summaries:
+   - `dyad-chat-summary`
+   - `dyad-write`
+   - `dyad-search-replace`
+   - `dyad-rename`
+   - `dyad-delete`
+   - `dyad-execute-sql`
+   - `dyad-add-dependency`
+   - `dyad-command`
+4. The action-proposal path preserves the important existing UX behaviors:
+   - large write targets surface `refactor-file`
+   - raw fenced code without write tags surfaces `write-code-properly`
+   - `rebuild` / `restart` / `refresh` command tags become suggested actions
+   - high context pressure still surfaces `summarize-in-new-chat`
+   - `keep-going` remains the default continuation action
+5. `approve-proposal` remains intentionally unmigrated because it still depends on the heavier response-application pipeline.
+6. The Tauri smoke harness now knows proposal commands, but keeps them inert for smoke stability by returning `null` for `get-proposal`.
+
+## Sprint 11 Wave 30 Validation
+
+1. `npx oxfmt --write src/ipc/runtime/core_domain_channels.ts src/ipc/runtime/bootstrap_tauri_core_bridge.ts src/__tests__/tauri_wave_ag_bridge.test.ts e2e-tests/helpers/tauri_smoke_fixtures.ts` passed.
+2. `npm run ts` passed.
+3. `npm run lint` passed.
+4. `npx vitest run src/__tests__/tauri_wave_ag_bridge.test.ts` passed.
+5. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe fmt --manifest-path src-tauri/Cargo.toml` passed.
+6. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe check --manifest-path src-tauri/Cargo.toml` passed.
+7. A fresh contract audit reduced the remaining unmapped contract count to `32`.

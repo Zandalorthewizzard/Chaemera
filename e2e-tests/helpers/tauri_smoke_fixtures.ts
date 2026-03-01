@@ -49,6 +49,8 @@ const tauriCommandToChannel = {
   get_system_debug_info: "get-system-debug-info",
   get_app_version: "get-app-version",
   get_latest_security_review: "get-latest-security-review",
+  get_proposal: "get-proposal",
+  reject_proposal: "reject-proposal",
   create_app: "create-app",
   get_app: "get-app",
   list_apps: "list-apps",
@@ -675,6 +677,25 @@ export const test = base.extend<{
                 logs: "",
                 selectedLanguageModel: "auto:auto",
               };
+            case "get-proposal":
+              return null;
+            case "reject-proposal": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const chatId = Number(request?.chatId ?? 0);
+              const messageId = Number(request?.messageId ?? 0);
+              const chat = chatsById.get(chatId);
+              if (!chat) {
+                throw new Error("Chat not found");
+              }
+              chat.messages = chat.messages.map((message) =>
+                message.id === messageId
+                  ? { ...message, approvalState: "rejected" as const }
+                  : message,
+              );
+              chatsById.set(chatId, { ...chat });
+              return;
+            }
             case "get-node-path":
               return "C:/Program Files/nodejs/node.exe";
             case "create-app": {
