@@ -967,3 +967,26 @@ Current lock:
 5. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe fmt --manifest-path src-tauri/Cargo.toml` passed.
 6. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe check --manifest-path src-tauri/Cargo.toml` passed.
 7. A fresh contract audit reduced the remaining unmapped contract count to `32`.
+
+## Sprint 11 Wave 31
+
+1. Added a focused Tauri `free-agent-quota` wave covering:
+   - `free-agent-quota:get-status`
+2. The new Rust path keeps the existing quota semantics used by the UI:
+   - limit remains `5`
+   - quota window remains `23h`
+   - expired quota rows are cleared before returning fresh quota
+3. This wave is intentionally OSS-safe:
+   - it does not call the old branded time source
+   - it uses local UTC time, which matches the old Electron fallback behavior when the server time probe fails
+4. The Tauri smoke harness now maps the free-agent quota command explicitly instead of relying on the old Electron-only path.
+
+## Sprint 11 Wave 31 Validation
+
+1. `npx oxfmt --write src/ipc/runtime/core_domain_channels.ts src/__tests__/tauri_wave_ah_bridge.test.ts e2e-tests/helpers/tauri_smoke_fixtures.ts` passed.
+2. `npm run ts` passed.
+3. `npm run lint` passed.
+4. `npx vitest run src/__tests__/tauri_wave_ah_bridge.test.ts` passed.
+5. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe fmt --manifest-path src-tauri/Cargo.toml` passed.
+6. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe check --manifest-path src-tauri/Cargo.toml` passed.
+7. A fresh contract audit reduced the remaining unmapped contract count to `31`.

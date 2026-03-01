@@ -8,6 +8,7 @@ mod wave_ad_domains;
 mod wave_ae_domains;
 mod wave_af_domains;
 mod wave_ag_domains;
+mod wave_ah_domains;
 mod wave_b_domains;
 mod wave_c_domains;
 mod wave_d_domains;
@@ -54,6 +55,7 @@ pub fn run() {
             wave_af_domains::get_latest_security_review,
             wave_ag_domains::get_proposal,
             wave_ag_domains::reject_proposal,
+            wave_ah_domains::free_agent_quota_get_status,
             wave_ab_domains::get_env_vars,
             wave_ab_domains::get_app_env_vars,
             wave_ab_domains::set_app_env_vars,

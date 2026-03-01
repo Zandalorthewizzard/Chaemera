@@ -51,6 +51,7 @@ const tauriCommandToChannel = {
   get_latest_security_review: "get-latest-security-review",
   get_proposal: "get-proposal",
   reject_proposal: "reject-proposal",
+  free_agent_quota_get_status: "free-agent-quota:get-status",
   create_app: "create-app",
   get_app: "get-app",
   list_apps: "list-apps",
