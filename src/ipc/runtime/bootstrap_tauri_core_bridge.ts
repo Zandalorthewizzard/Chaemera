@@ -82,6 +82,8 @@ export function buildTauriInvokeArgs(
       return typeof payload === "number" ? { appId: payload } : undefined;
     case "get-latest-security-review":
       return typeof payload === "number" ? { appId: payload } : undefined;
+    case "get-session-debug-bundle":
+      return typeof payload === "number" ? { chatId: payload } : undefined;
     case "delete-app":
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "copy-app":
@@ -409,6 +411,7 @@ export function canInvokeViaTauri(channel: string, payload: unknown): boolean {
     case "create-app":
     case "get-app":
     case "get-latest-security-review":
+    case "get-session-debug-bundle":
     case "get-proposal":
     case "reject-proposal":
     case "search-app":

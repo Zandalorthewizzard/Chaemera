@@ -1012,3 +1012,27 @@ Current lock:
 5. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe fmt --manifest-path src-tauri/Cargo.toml` passed.
 6. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe check --manifest-path src-tauri/Cargo.toml` passed.
 7. A fresh contract audit reduced the remaining unmapped contract count to `30`.
+
+## Sprint 11 Wave 33
+
+1. Added a focused Tauri `session debug bundle` wave covering:
+   - `get-session-debug-bundle`
+2. The Rust implementation mirrors the existing Electron debug export shape closely:
+   - schema version `2`
+   - sanitized settings only
+   - app/chat/provider/MCP snapshots from SQLite
+   - stripped base64/file payloads inside `aiMessagesJson`
+   - codebase snapshot assembled from the workspace path and chat context
+   - logs and runtime metadata attached in the same top-level bundle
+3. The Tauri path intentionally reports `electronVersion: "tauri-2"` so the exported bundle makes the migrated runtime explicit instead of pretending to still be Electron.
+4. The Tauri smoke harness now returns a deterministic session-debug bundle object so this bridge exists coherently in smoke mode too.
+
+## Sprint 11 Wave 33 Validation
+
+1. `npx oxfmt --write src/ipc/runtime/core_domain_channels.ts src/ipc/runtime/bootstrap_tauri_core_bridge.ts src/__tests__/tauri_wave_aj_bridge.test.ts e2e-tests/helpers/tauri_smoke_fixtures.ts` passed.
+2. `npm run ts` passed.
+3. `npm run lint` passed.
+4. `npx vitest run src/__tests__/tauri_wave_aj_bridge.test.ts` passed.
+5. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe fmt --manifest-path src-tauri/Cargo.toml` passed.
+6. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe check --manifest-path src-tauri/Cargo.toml` passed.
+7. A fresh contract audit reduced the remaining unmapped contract count to `29`.

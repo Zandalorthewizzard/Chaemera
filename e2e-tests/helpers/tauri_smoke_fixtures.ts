@@ -49,6 +49,7 @@ const tauriCommandToChannel = {
   get_system_debug_info: "get-system-debug-info",
   get_app_version: "get-app-version",
   get_latest_security_review: "get-latest-security-review",
+  get_session_debug_bundle: "get-session-debug-bundle",
   get_proposal: "get-proposal",
   reject_proposal: "reject-proposal",
   free_agent_quota_get_status: "free-agent-quota:get-status",
@@ -679,6 +680,111 @@ export const test = base.extend<{
                 logs: "",
                 selectedLanguageModel: "auto:auto",
               };
+            case "get-session-debug-bundle": {
+              const chatId =
+                typeof payload === "object" &&
+                payload !== null &&
+                "chatId" in payload
+                  ? Number((payload as { chatId?: unknown }).chatId ?? 0)
+                  : Number(payload ?? 0);
+              const chat = chatsById.get(chatId) ?? chatsById.get(1);
+              const app = chat ? appsById.get(chat.appId) : appsById.get(1);
+              if (!chat || !app) {
+                throw new Error("Smoke debug bundle state is unavailable");
+              }
+              return {
+                schemaVersion: 2,
+                exportedAt: "2026-03-01T00:05:00Z",
+                system: {
+                  dyadVersion: "0.37.0-beta.2-tauri-smoke",
+                  platform: "tauri-smoke",
+                  architecture: "x64",
+                  nodeVersion: "v24.0.0",
+                  pnpmVersion: "9.0.0",
+                  nodePath: "C:/Program Files/nodejs/node.exe",
+                  electronVersion: "tauri-2",
+                  telemetryId: "tauri-smoke-user",
+                },
+                settings: {
+                  selectedModel: {
+                    name: "auto",
+                    provider: "auto",
+                  },
+                  selectedChatMode: "build",
+                  defaultChatMode: "build",
+                  autoApproveChanges: null,
+                  enableDyadPro: false,
+                  thinkingBudget: null,
+                  maxChatTurnsInContext: null,
+                  enableAutoFixProblems: false,
+                  enableNativeGit: true,
+                  enableAutoUpdate: true,
+                  releaseChannel: "stable",
+                  runtimeMode2: null,
+                  zoomLevel: null,
+                  previewDeviceMode: null,
+                  enableProLazyEditsMode: true,
+                  proLazyEditsMode: null,
+                  enableProSmartFilesContextMode: true,
+                  enableProWebSearch: null,
+                  proSmartContextOption: null,
+                  enableSupabaseWriteSqlMigration: null,
+                  agentToolConsents: null,
+                  experiments: {},
+                  customNodePath: null,
+                  providerSetupStatus: {},
+                },
+                app: {
+                  id: app.id,
+                  name: app.name,
+                  path: app.path,
+                  createdAt: app.createdAt,
+                  updatedAt: app.updatedAt,
+                  githubOrg: app.githubOrg,
+                  githubRepo: app.githubRepo,
+                  githubBranch: app.githubBranch,
+                  supabaseProjectId: app.supabaseProjectId,
+                  supabaseOrganizationSlug: app.supabaseOrganizationSlug,
+                  neonProjectId: app.neonProjectId,
+                  vercelProjectId: app.vercelProjectId,
+                  vercelProjectName: app.vercelProjectName,
+                  vercelDeploymentUrl: app.vercelDeploymentUrl,
+                  installCommand: app.installCommand,
+                  startCommand: app.startCommand,
+                  chatContext: chatContextsByAppId.get(app.id) ?? null,
+                  themeId: appThemesById.get(app.id) ?? null,
+                },
+                chat: {
+                  id: chat.id,
+                  appId: chat.appId,
+                  title: chat.title,
+                  initialCommitHash: chat.initialCommitHash,
+                  createdAt: chat.createdAt,
+                  messages: chat.messages.map((message) => ({
+                    id: message.id,
+                    role: message.role,
+                    content: message.content,
+                    createdAt: message.createdAt ?? chat.createdAt,
+                    aiMessagesJson: null,
+                    model: message.model ?? null,
+                    totalTokens: message.totalTokens ?? null,
+                    approvalState: message.approvalState ?? null,
+                    sourceCommitHash: message.sourceCommitHash ?? null,
+                    commitHash: message.commitHash ?? null,
+                    requestId: message.requestId ?? null,
+                    usingFreeAgentModeQuota: null,
+                  })),
+                },
+                providers: {
+                  customProviders: [],
+                  customModels: [],
+                },
+                mcpServers: [],
+                codebase:
+                  '<dyad-file path="src/main.tsx">\nexport const smoke = true;\n</dyad-file>\n\n',
+                logs: "",
+              };
+            }
             case "get-proposal":
               return null;
             case "reject-proposal": {
