@@ -89,6 +89,8 @@ const tauriCommandToChannel = {
   github_list_repos: "github:list-repos",
   github_get_repo_branches: "github:get-repo-branches",
   github_is_repo_available: "github:is-repo-available",
+  github_create_repo: "github:create-repo",
+  github_connect_existing_repo: "github:connect-existing-repo",
   github_list_collaborators: "github:list-collaborators",
   github_disconnect: "github:disconnect",
   get_themes: "get-themes",
@@ -132,9 +134,9 @@ export const test = base.extend<{
             path: string;
             createdAt: string;
             updatedAt: string;
-            githubOrg: null;
-            githubRepo: null;
-            githubBranch: null;
+            githubOrg: string | null;
+            githubRepo: string | null;
+            githubBranch: string | null;
             supabaseProjectId: null;
             supabaseParentProjectId: null;
             supabaseOrganizationSlug: null;
@@ -788,6 +790,46 @@ export const test = base.extend<{
                 available: !exists,
                 error: exists ? "Repository already exists." : undefined,
               };
+            }
+            case "github:create-repo": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const appId = Number(request?.appId ?? 0);
+              const existing = appsById.get(appId);
+              if (!existing) {
+                throw new Error("App not found");
+              }
+              const repo = String(request?.repo ?? "")
+                .trim()
+                .replace(/\s+/g, "-");
+              const owner = String(request?.org ?? "").trim() || "testuser";
+              const branch =
+                typeof request?.branch === "string" && request.branch
+                  ? request.branch
+                  : "main";
+              appsById.set(appId, {
+                ...existing,
+                githubOrg: owner,
+                githubRepo: repo,
+                githubBranch: branch,
+              });
+              return;
+            }
+            case "github:connect-existing-repo": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const appId = Number(request?.appId ?? 0);
+              const existing = appsById.get(appId);
+              if (!existing) {
+                throw new Error("App not found");
+              }
+              appsById.set(appId, {
+                ...existing,
+                githubOrg: String(request?.owner ?? ""),
+                githubRepo: String(request?.repo ?? ""),
+                githubBranch: String(request?.branch ?? "main"),
+              });
+              return;
             }
             case "github:list-collaborators": {
               const request = (payload as { request?: Record<string, unknown> })

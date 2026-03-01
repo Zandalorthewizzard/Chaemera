@@ -447,3 +447,45 @@ Then continue the migration plan from `Sprint 11`, unless the smoke suite or Win
    - list/switch/create/delete/rename/merge branch
    - conflicts/git-state helpers
 3. `chat:count-tokens` remains a separate large migration sprint and should still stay out of these GitHub waves.
+
+## Sprint 11 Wave 14
+
+1. Added the GitHub repo-setup wave on top of the new Tauri auth flow:
+   - `github:create-repo`
+   - `github:connect-existing-repo`
+2. The new Tauri path now covers the full “authenticate -> attach remote repo -> update app linkage” arc without bouncing back to Electron.
+3. The Rust implementation uses native `git` CLI orchestration for the local prep step:
+   - add or update `origin`
+   - auto-commit dirty local changes before repo attachment
+   - fetch `origin` when available
+   - create or checkout the target branch
+   - update `apps.githubOrg/githubRepo/githubBranch` in `sqlite.db`
+4. This wave intentionally stops short of the broader branch/sync control surface:
+   - no `fetch/pull/push` command migration yet
+   - no branch manager mutation handlers yet
+   - no conflict/rebase control migration yet
+
+## Sprint 11 Wave 14 Validation
+
+1. `npx oxfmt --write src/ipc/runtime/core_domain_channels.ts src/ipc/runtime/bootstrap_tauri_core_bridge.ts e2e-tests/helpers/tauri_smoke_fixtures.ts src/__tests__/tauri_wave_q_bridge.test.ts` passed.
+2. `cargo fmt` passed in `src-tauri`.
+3. `npm run lint` passed.
+4. `npm run ts` passed.
+5. `npx vitest run src/__tests__/tauri_wave_q_bridge.test.ts` passed.
+6. `cargo check` passed in `src-tauri`.
+7. During validation a `tsgo` failure surfaced in the smoke harness because `githubOrg/githubRepo/githubBranch` had been typed as `null` only; this was corrected to `string | null` so the harness remains coherent with migrated GitHub state.
+
+## Next Resume Point After Wave 14
+
+1. The remaining GitHub/git block is now mostly branch and sync orchestration:
+   - `github:fetch`
+   - `github:pull`
+   - `github:push`
+   - `github:rebase`
+   - `github:rebase-abort`
+   - `github:rebase-continue`
+   - `github:merge-abort`
+   - local/remote branch listing and mutation
+   - conflicts/git-state helpers
+2. `github:clone-repo-from-url` can stay separate from branch/sync orchestration because it behaves more like import/onboarding than day-to-day repo control.
+3. `chat:count-tokens` remains intentionally separate from these GitHub waves.

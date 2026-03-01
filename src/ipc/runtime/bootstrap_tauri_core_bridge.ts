@@ -186,6 +186,10 @@ export function buildTauriInvokeArgs(
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "github:is-repo-available":
       return payloadRecord ? { request: payloadRecord } : undefined;
+    case "github:create-repo":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "github:connect-existing-repo":
+      return payloadRecord ? { request: payloadRecord } : undefined;
     case "github:list-collaborators":
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "delete-chat":
@@ -317,6 +321,8 @@ export function canInvokeViaTauri(channel: string, payload: unknown): boolean {
     case "github:start-flow":
     case "github:get-repo-branches":
     case "github:is-repo-available":
+    case "github:create-repo":
+    case "github:connect-existing-repo":
     case "github:list-collaborators":
     case "prompts:create":
     case "prompts:update":

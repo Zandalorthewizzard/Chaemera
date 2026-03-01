@@ -95,6 +95,8 @@ export const TAURI_MIGRATION_CHANNEL_TO_COMMAND = {
   "github:list-repos": "github_list_repos",
   "github:get-repo-branches": "github_get_repo_branches",
   "github:is-repo-available": "github_is_repo_available",
+  "github:create-repo": "github_create_repo",
+  "github:connect-existing-repo": "github_connect_existing_repo",
   "github:list-collaborators": "github_list_collaborators",
   "github:disconnect": "github_disconnect",
   "add-log": "add_log",
