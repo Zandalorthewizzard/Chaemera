@@ -73,6 +73,10 @@ const tauriCommandToChannel = {
   set_app_env_vars: "set-app-env-vars",
   get_context_paths: "get-context-paths",
   set_context_paths: "set-context-paths",
+  is_capacitor: "is-capacitor",
+  sync_capacitor: "sync-capacitor",
+  open_ios: "open-ios",
+  open_android: "open-android",
   check_app_name: "check-app-name",
   show_item_in_folder: "show-item-in-folder",
   clear_session_data: "clear-session-data",
@@ -1756,6 +1760,36 @@ export const test = base.extend<{
                     }))
                   : [],
               });
+              return;
+            }
+            case "is-capacitor": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const appId = Number(request?.appId ?? 0);
+              const app = appsById.get(appId);
+              if (!app) {
+                throw new Error("App not found");
+              }
+              return app.files.some((file) =>
+                /^capacitor\.config\.(js|ts|json)$/.test(file),
+              );
+            }
+            case "sync-capacitor":
+            case "open-ios":
+            case "open-android": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const appId = Number(request?.appId ?? 0);
+              const app = appsById.get(appId);
+              if (!app) {
+                throw new Error("App not found");
+              }
+              const hasCapacitorConfig = app.files.some((file) =>
+                /^capacitor\.config\.(js|ts|json)$/.test(file),
+              );
+              if (!hasCapacitorConfig) {
+                throw new Error("Capacitor is not installed in this app");
+              }
               return;
             }
             case "get-language-model-providers":

@@ -812,3 +812,28 @@ Then continue the migration plan from `Sprint 11`, unless the smoke suite or Win
 5. `npx vitest run src/__tests__/tauri_wave_ab_bridge.test.ts` passed.
 6. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe check --manifest-path src-tauri/Cargo.toml` passed.
 7. A fresh contract audit reduced the remaining unmapped contract count to `43`.
+
+## Sprint 11 Wave 26
+
+1. Added a focused Tauri `capacitor/mobile` wave covering:
+   - `is-capacitor`
+   - `sync-capacitor`
+   - `open-ios`
+   - `open-android`
+2. The new Rust module preserves the existing product behavior instead of inventing a new mobile workflow:
+   - detects Capacitor by checking for `capacitor.config.js|ts|json`
+   - keeps the Node.js v20+ guard on `is-capacitor`
+   - `sync-capacitor` still runs the app build first and then `cap sync`
+   - `open-ios` / `open-android` still no-op in test builds
+3. Reused the existing Tauri PATH helper from `wave_g_domains` so the new mobile commands inherit the same custom-node/system-path behavior as the rest of the desktop utility layer.
+4. Smoke harness coverage now includes deterministic Capacitor command handling keyed off the app's file list, so the bridge surface stays coherent in Tauri smoke mode even before native mobile E2E exists.
+
+## Sprint 11 Wave 26 Validation
+
+1. `npx oxfmt --write src/ipc/runtime/core_domain_channels.ts src/ipc/runtime/bootstrap_tauri_core_bridge.ts e2e-tests/helpers/tauri_smoke_fixtures.ts src/__tests__/tauri_wave_ac_bridge.test.ts` passed.
+2. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe fmt --manifest-path src-tauri/Cargo.toml` passed.
+3. `npm run ts` passed.
+4. `npm run lint` passed.
+5. `npx vitest run src/__tests__/tauri_wave_ac_bridge.test.ts` passed.
+6. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe check --manifest-path src-tauri/Cargo.toml` passed.
+7. A fresh contract audit reduced the remaining unmapped contract count to `39`.

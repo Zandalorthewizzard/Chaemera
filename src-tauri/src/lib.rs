@@ -3,6 +3,7 @@ mod leptos_shell;
 mod sqlite_support;
 mod wave_aa_domains;
 mod wave_ab_domains;
+mod wave_ac_domains;
 mod wave_b_domains;
 mod wave_c_domains;
 mod wave_d_domains;
@@ -51,6 +52,10 @@ pub fn run() {
             wave_ab_domains::set_app_env_vars,
             wave_ab_domains::get_context_paths,
             wave_ab_domains::set_context_paths,
+            wave_ac_domains::is_capacitor,
+            wave_ac_domains::sync_capacitor,
+            wave_ac_domains::open_ios,
+            wave_ac_domains::open_android,
             wave_j_domains::get_app,
             wave_j_domains::list_apps,
             wave_n_domains::search_app,

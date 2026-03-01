@@ -61,7 +61,7 @@ fn system_path_from_shell() -> Option<String> {
     }
 }
 
-fn effective_path_value(app: &AppHandle) -> String {
+pub(crate) fn effective_path_value(app: &AppHandle) -> String {
     let separator = if cfg!(target_os = "windows") {
         ";"
     } else {
@@ -82,7 +82,7 @@ fn effective_path_value(app: &AppHandle) -> String {
     segments.join(separator)
 }
 
-fn refresh_process_path(app: &AppHandle) {
+pub(crate) fn refresh_process_path(app: &AppHandle) {
     env::set_var("PATH", effective_path_value(app));
 }
 

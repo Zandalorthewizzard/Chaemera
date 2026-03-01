@@ -178,6 +178,14 @@ export function buildTauriInvokeArgs(
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "set-context-paths":
       return payloadRecord ? { request: payloadRecord } : undefined;
+    case "is-capacitor":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "sync-capacitor":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "open-ios":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "open-android":
+      return payloadRecord ? { request: payloadRecord } : undefined;
     case "get-language-models":
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "create-custom-language-model-provider":
@@ -405,6 +413,10 @@ export function canInvokeViaTauri(channel: string, payload: unknown): boolean {
     case "set-app-env-vars":
     case "get-context-paths":
     case "set-context-paths":
+    case "is-capacitor":
+    case "sync-capacitor":
+    case "open-ios":
+    case "open-android":
     case "get-language-models":
     case "create-custom-language-model-provider":
     case "edit-custom-language-model-provider":
