@@ -62,6 +62,7 @@ const tauriCommandToChannel = {
   delete_chat: "delete-chat",
   delete_messages: "delete-messages",
   search_chats: "search-chats",
+  chat_count_tokens: "chat:count-tokens",
   nodejs_status: "nodejs-status",
   select_node_folder: "select-node-folder",
   get_node_path: "get-node-path",
@@ -694,6 +695,44 @@ export const test = base.extend<{
                   };
                 })
                 .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+            }
+            case "chat:count-tokens": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const chatId = Number(request?.chatId ?? 0);
+              const input = String(request?.input ?? "");
+              const chat = chatsById.get(chatId);
+              if (!chat) {
+                throw new Error(`Chat not found: ${chatId}`);
+              }
+              const messageHistory = chat.messages
+                .map((message) => message.content)
+                .join("");
+              const messageHistoryTokens = Math.ceil(messageHistory.length / 4);
+              const inputTokens = Math.ceil(input.length / 4);
+              const systemPromptTokens = 256;
+              const codebaseTokens = 512;
+              const mentionedAppsTokens = input.includes("@app:") ? 128 : 0;
+              const actualMaxTokens =
+                [...chat.messages]
+                  .reverse()
+                  .find((message) => message.role === "assistant")
+                  ?.totalTokens ?? null;
+              return {
+                estimatedTotalTokens:
+                  messageHistoryTokens +
+                  inputTokens +
+                  systemPromptTokens +
+                  codebaseTokens +
+                  mentionedAppsTokens,
+                actualMaxTokens,
+                messageHistoryTokens,
+                codebaseTokens,
+                mentionedAppsTokens,
+                inputTokens,
+                systemPromptTokens,
+                contextWindow: 128_000,
+              };
             }
             case "search-app": {
               const query = String(

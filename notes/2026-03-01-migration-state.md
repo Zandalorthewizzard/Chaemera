@@ -620,3 +620,32 @@ Then continue the migration plan from `Sprint 11`, unless the smoke suite or Win
 7. A direct contract audit confirmed the GitHub/git contract surface is now fully mapped in the Tauri bridge:
    - `github_git_channels: 32`
    - `github_git_missing: 0`
+
+## Sprint 11 Wave 20
+
+1. Added a dedicated Tauri `chat:count-tokens` wave instead of folding token estimation into the existing chat CRUD or preview runtime waves.
+2. Newly bridged invoke channel:
+   - `chat:count-tokens`
+3. The Rust implementation now mirrors the important Electron-side inputs that drive token bar percentages:
+   - message history
+   - current input
+   - system prompt construction for `build`, `ask`, and `plan`
+   - theme prompt injection
+   - Supabase prompt/context handling, including the large `test-branch-project-id` test-build case
+   - codebase extraction from the current app
+   - mentioned-app codebase extraction
+   - model context-window lookup with a `128_000` fallback
+4. Codebase extraction in the Tauri path now preserves two parity-critical behaviors from `src/utils/codebase.ts`:
+   - `.gitignore` rules are respected through an ignore-aware filesystem walk
+   - unsupported or intentionally omitted files still contribute placeholder content instead of being dropped from the token estimate entirely
+5. To keep the Rust path self-contained, prompt-template assets were materialized under `src-tauri/prompt_assets/` and wired into the new token-count module.
+6. This wave still uses the project's existing rough token heuristic (`ceil(chars / 4)`) for parity with the current Electron implementation; it does not yet introduce provider-accurate tokenizers.
+
+## Sprint 11 Wave 20 Validation
+
+1. `npx oxfmt --write src/ipc/runtime/core_domain_channels.ts src/ipc/runtime/bootstrap_tauri_core_bridge.ts src/__tests__/tauri_wave_w_bridge.test.ts e2e-tests/helpers/tauri_smoke_fixtures.ts` passed.
+2. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe fmt --manifest-path src-tauri/Cargo.toml` passed.
+3. `npm run ts` passed.
+4. `npx vitest run src/__tests__/tauri_wave_w_bridge.test.ts` passed.
+5. `npm run lint` passed.
+6. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe check --manifest-path src-tauri/Cargo.toml` passed.

@@ -298,6 +298,8 @@ export function buildTauriInvokeArgs(
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "chat:stream":
       return payloadRecord ? { request: payloadRecord } : undefined;
+    case "chat:count-tokens":
+      return payloadRecord ? { request: payloadRecord } : undefined;
     case "does-release-note-exist":
     case "upload-to-signed-url":
     case "agent-tool:set-consent":
@@ -407,6 +409,7 @@ export function canInvokeViaTauri(channel: string, payload: unknown): boolean {
     case "run-app":
     case "restart-app":
     case "chat:stream":
+    case "chat:count-tokens":
     case "chat:cancel":
     case "stop-app":
     case "respond-to-app-input":

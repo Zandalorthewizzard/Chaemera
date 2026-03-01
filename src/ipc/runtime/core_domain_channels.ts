@@ -42,6 +42,7 @@ export const TAURI_MIGRATION_CHANNEL_TO_COMMAND = {
   "respond-to-app-input": "respond_to_app_input",
   "chat:stream": "chat_stream",
   "chat:cancel": "chat_cancel",
+  "chat:count-tokens": "chat_count_tokens",
   "agent-tool:get-tools": "agent_tool_get_tools",
   "agent-tool:set-consent": "agent_tool_set_consent",
   "agent-tool:consent-response": "agent_tool_consent_response",

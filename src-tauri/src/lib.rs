@@ -22,6 +22,7 @@ mod wave_s_domains;
 mod wave_t_domains;
 mod wave_u_domains;
 mod wave_v_domains;
+mod wave_w_domains;
 
 use tauri::Manager;
 
@@ -135,6 +136,7 @@ pub fn run() {
             wave_f_domains::open_external_url,
             wave_c_domains::chat_stream,
             wave_c_domains::chat_cancel,
+            wave_w_domains::chat_count_tokens,
             wave_c_domains::agent_tool_get_tools,
             wave_c_domains::agent_tool_set_consent,
             wave_c_domains::agent_tool_consent_response,
