@@ -2,6 +2,7 @@ mod core_domains;
 mod leptos_shell;
 mod sqlite_support;
 mod wave_aa_domains;
+mod wave_ab_domains;
 mod wave_b_domains;
 mod wave_c_domains;
 mod wave_d_domains;
@@ -45,6 +46,11 @@ pub fn run() {
             core_domains::get_system_platform,
             wave_g_domains::get_system_debug_info,
             core_domains::get_app_version,
+            wave_ab_domains::get_env_vars,
+            wave_ab_domains::get_app_env_vars,
+            wave_ab_domains::set_app_env_vars,
+            wave_ab_domains::get_context_paths,
+            wave_ab_domains::set_context_paths,
             wave_j_domains::get_app,
             wave_j_domains::list_apps,
             wave_n_domains::search_app,

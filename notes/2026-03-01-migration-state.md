@@ -772,3 +772,43 @@ Then continue the migration plan from `Sprint 11`, unless the smoke suite or Win
 5. `npx vitest run src/__tests__/tauri_wave_aa_bridge.test.ts` passed.
 6. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe check --manifest-path src-tauri/Cargo.toml` passed.
 7. A fresh contract audit reduced the remaining unmapped contract count to `48`.
+
+## Sprint 11 Wave 25
+
+1. Added a focused Tauri workspace-config wave covering the remaining env/context IPC surface:
+   - `get-env-vars`
+   - `get-app-env-vars`
+   - `set-app-env-vars`
+   - `get-context-paths`
+   - `set-context-paths`
+2. The Rust implementation keeps the existing filesystem model instead of inventing new storage:
+   - global provider env vars are read from the current process environment
+   - app env vars still live in `.env.local`
+   - app chat context still lives in the `apps.chat_context` JSON column in `sqlite.db`
+3. `get-app-env-vars` and `set-app-env-vars` now have a Tauri path with a Rust parser/serializer that preserves the existing Electron semantics:
+   - skip blank/comment lines
+   - split on the first `=`
+   - preserve unquoted values
+   - support quoted values
+   - quote serialized values when they contain whitespace or special characters
+4. `get-context-paths` now has a Tauri path that mirrors the current Electron-side summary behavior closely enough for migration parity:
+   - resolves the stored app workspace path
+   - loads and validates `chat_context` JSON
+   - expands each saved glob path
+   - estimates file counts and token counts using the same rough `chars / 4` heuristic and omitted-file placeholder policy used elsewhere in the Tauri migration
+5. Smoke harness coverage now includes deterministic in-memory stores for:
+   - per-app `.env.local` values
+   - per-app chat context glob configuration
+6. Important known limitation:
+   - `get-env-vars` in the Tauri path currently reads the process environment directly instead of using Electron's `shell-env` behavior
+   - that is acceptable for the migration wave, but it remains a parity debt for GUI-launched shells on platforms where process env differs from login-shell env
+
+## Sprint 11 Wave 25 Validation
+
+1. `npx oxfmt --write src/ipc/runtime/core_domain_channels.ts src/ipc/runtime/bootstrap_tauri_core_bridge.ts e2e-tests/helpers/tauri_smoke_fixtures.ts src/__tests__/tauri_wave_ab_bridge.test.ts` passed.
+2. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe fmt --manifest-path src-tauri/Cargo.toml` passed.
+3. `npm run ts` passed.
+4. `npm run lint` passed.
+5. `npx vitest run src/__tests__/tauri_wave_ab_bridge.test.ts` passed.
+6. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe check --manifest-path src-tauri/Cargo.toml` passed.
+7. A fresh contract audit reduced the remaining unmapped contract count to `43`.

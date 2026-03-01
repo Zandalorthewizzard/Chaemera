@@ -255,6 +255,15 @@ fn get_language_model_providers_internal(
     Ok(providers)
 }
 
+pub(crate) fn get_language_model_provider_env_var_names(
+    app: &AppHandle,
+) -> Result<Vec<String>, String> {
+    Ok(get_language_model_providers_internal(app)?
+        .into_iter()
+        .filter_map(|provider| provider.env_var_name)
+        .collect())
+}
+
 fn is_custom_provider(provider_id: &str) -> bool {
     provider_id.starts_with(CUSTOM_PROVIDER_PREFIX)
 }

@@ -68,6 +68,11 @@ const tauriCommandToChannel = {
   get_node_path: "get-node-path",
   get_user_settings: "get-user-settings",
   set_user_settings: "set-user-settings",
+  get_env_vars: "get-env-vars",
+  get_app_env_vars: "get-app-env-vars",
+  set_app_env_vars: "set-app-env-vars",
+  get_context_paths: "get-context-paths",
+  set_context_paths: "set-context-paths",
   check_app_name: "check-app-name",
   show_item_in_folder: "show-item-in-folder",
   clear_session_data: "clear-session-data",
@@ -516,6 +521,30 @@ export const test = base.extend<{
             previewBranchId: string;
           }
         >();
+        const appEnvVarsByAppId = new Map<
+          number,
+          Array<{
+            key: string;
+            value: string;
+          }>
+        >([[1, []]]);
+        const chatContextsByAppId = new Map<
+          number,
+          {
+            contextPaths: Array<{ globPath: string }>;
+            smartContextAutoIncludes: Array<{ globPath: string }>;
+            excludePaths: Array<{ globPath: string }>;
+          }
+        >([
+          [
+            1,
+            {
+              contextPaths: [],
+              smartContextAutoIncludes: [],
+              excludePaths: [],
+            },
+          ],
+        ]);
         const plansById = new Map<
           string,
           {
@@ -580,6 +609,12 @@ export const test = base.extend<{
             "</theme>",
           ].join("\n");
         };
+
+        const summarizeContextPath = (globPath: string) => ({
+          globPath,
+          files: globPath.trim() ? 1 : 0,
+          tokens: globPath.trim() ? Math.max(16, globPath.length * 4) : 0,
+        });
 
         const on = (channel: string, listener: (payload: unknown) => void) => {
           const group = listeners.get(channel) ?? new Set();
@@ -667,6 +702,12 @@ export const test = base.extend<{
                 vercelTeamSlug: null,
               };
               appsById.set(appId, app);
+              appEnvVarsByAppId.set(appId, []);
+              chatContextsByAppId.set(appId, {
+                contextPaths: [],
+                smartContextAutoIncludes: [],
+                excludePaths: [],
+              });
 
               const chatId = nextChatId++;
               chatsById.set(chatId, {
@@ -711,6 +752,8 @@ export const test = base.extend<{
                 ?.request;
               const appId = Number(request?.appId ?? 0);
               appsById.delete(appId);
+              appEnvVarsByAppId.delete(appId);
+              chatContextsByAppId.delete(appId);
               for (const [chatId, chat] of chatsById.entries()) {
                 if (chat.appId === appId) {
                   chatsById.delete(chatId);
@@ -753,6 +796,24 @@ export const test = base.extend<{
                 resolvedPath: `C:/Apps/${newAppName}`,
               };
               appsById.set(nextId, copiedApp);
+              appEnvVarsByAppId.set(
+                nextId,
+                (appEnvVarsByAppId.get(appId) ?? []).map((envVar) => ({
+                  ...envVar,
+                })),
+              );
+              chatContextsByAppId.set(nextId, {
+                contextPaths: [
+                  ...(chatContextsByAppId.get(appId)?.contextPaths ?? []),
+                ],
+                smartContextAutoIncludes: [
+                  ...(chatContextsByAppId.get(appId)
+                    ?.smartContextAutoIncludes ?? []),
+                ],
+                excludePaths: [
+                  ...(chatContextsByAppId.get(appId)?.excludePaths ?? []),
+                ],
+              });
               return {
                 app: copiedApp,
               };
@@ -1192,6 +1253,12 @@ export const test = base.extend<{
                 vercelTeamSlug: null,
               };
               appsById.set(appId, app);
+              appEnvVarsByAppId.set(appId, []);
+              chatContextsByAppId.set(appId, {
+                contextPaths: [],
+                smartContextAutoIncludes: [],
+                excludePaths: [],
+              });
               collaboratorsByAppId.set(appId, []);
               return {
                 app,
@@ -1612,6 +1679,85 @@ export const test = base.extend<{
               };
             case "get-env-vars":
               return {};
+            case "get-app-env-vars": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const appId = Number(request?.appId ?? 0);
+              return appEnvVarsByAppId.get(appId) ?? [];
+            }
+            case "set-app-env-vars": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const appId = Number(request?.appId ?? 0);
+              const envVars = Array.isArray(request?.envVars)
+                ? (request.envVars as Array<Record<string, unknown>>).map(
+                    (envVar) => ({
+                      key: String(envVar.key ?? ""),
+                      value: String(envVar.value ?? ""),
+                    }),
+                  )
+                : [];
+              appEnvVarsByAppId.set(appId, envVars);
+              return;
+            }
+            case "get-context-paths": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const appId = Number(request?.appId ?? 0);
+              const chatContext = chatContextsByAppId.get(appId) ?? {
+                contextPaths: [],
+                smartContextAutoIncludes: [],
+                excludePaths: [],
+              };
+              return {
+                contextPaths: chatContext.contextPaths.map((contextPath) =>
+                  summarizeContextPath(contextPath.globPath),
+                ),
+                smartContextAutoIncludes:
+                  chatContext.smartContextAutoIncludes.map((contextPath) =>
+                    summarizeContextPath(contextPath.globPath),
+                  ),
+                excludePaths: chatContext.excludePaths.map((excludePath) =>
+                  summarizeContextPath(excludePath.globPath),
+                ),
+              };
+            }
+            case "set-context-paths": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const appId = Number(request?.appId ?? 0);
+              const chatContext =
+                typeof request?.chatContext === "object" &&
+                request.chatContext !== null
+                  ? (request.chatContext as {
+                      contextPaths?: Array<{ globPath?: unknown }>;
+                      smartContextAutoIncludes?: Array<{
+                        globPath?: unknown;
+                      }>;
+                      excludePaths?: Array<{ globPath?: unknown }>;
+                    })
+                  : {};
+              chatContextsByAppId.set(appId, {
+                contextPaths: Array.isArray(chatContext.contextPaths)
+                  ? chatContext.contextPaths.map((glob) => ({
+                      globPath: String(glob.globPath ?? ""),
+                    }))
+                  : [],
+                smartContextAutoIncludes: Array.isArray(
+                  chatContext.smartContextAutoIncludes,
+                )
+                  ? chatContext.smartContextAutoIncludes.map((glob) => ({
+                      globPath: String(glob.globPath ?? ""),
+                    }))
+                  : [],
+                excludePaths: Array.isArray(chatContext.excludePaths)
+                  ? chatContext.excludePaths.map((glob) => ({
+                      globPath: String(glob.globPath ?? ""),
+                    }))
+                  : [],
+              });
+              return;
+            }
             case "get-language-model-providers":
               return Array.from(languageModelProvidersById.values());
             case "get-language-models": {

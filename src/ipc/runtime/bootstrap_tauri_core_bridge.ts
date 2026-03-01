@@ -170,6 +170,14 @@ export function buildTauriInvokeArgs(
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "get-app-theme":
       return payloadRecord ? { request: payloadRecord } : undefined;
+    case "get-app-env-vars":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "set-app-env-vars":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "get-context-paths":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "set-context-paths":
+      return payloadRecord ? { request: payloadRecord } : undefined;
     case "get-language-models":
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "create-custom-language-model-provider":
@@ -393,6 +401,10 @@ export function canInvokeViaTauri(channel: string, payload: unknown): boolean {
     case "search-chats":
     case "set-app-theme":
     case "get-app-theme":
+    case "get-app-env-vars":
+    case "set-app-env-vars":
+    case "get-context-paths":
+    case "set-context-paths":
     case "get-language-models":
     case "create-custom-language-model-provider":
     case "edit-custom-language-model-provider":
