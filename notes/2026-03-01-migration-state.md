@@ -143,3 +143,27 @@ Then continue the migration plan from `Sprint 11`, unless the smoke suite or Win
 3. `npx oxfmt --write ...` passed for the touched TypeScript files.
 4. `cargo fmt` passed in `src-tauri`.
 5. A fresh `cargo check` re-run was attempted but timed out under heavy host CPU contention while `.NET Runtime Optimization Service` was still active, so Rust compile revalidation for this exact wave remains deferred.
+
+## Sprint 11 Wave 5
+
+1. Closed the remaining Tauri event-transport gap at the contract layer by adding all missing receive channels to `TAURI_MIGRATION_EVENT_CHANNELS`.
+2. Newly bridged event channels:
+   - `deep-link-received`
+   - `help:chat:response:chunk`
+   - `help:chat:response:end`
+   - `help:chat:response:error`
+   - `github:flow-update`
+   - `github:flow-success`
+   - `github:flow-error`
+   - `plan:update`
+   - `plan:exit`
+   - `plan:questionnaire`
+3. This does not yet mean all of those domains emit from Tauri natively; it means the renderer-side transport no longer blocks them once their Tauri emit path exists.
+
+## Sprint 11 Wave 5 Validation
+
+1. `npx vitest run src/__tests__/tauri_event_bridge_channels.test.ts` passed.
+2. `npm run ts` passed.
+3. Contract coverage check now reports:
+   - `invokeMissing: 117`
+   - `receiveMissing: 0`
