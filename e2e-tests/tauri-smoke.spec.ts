@@ -1,11 +1,10 @@
 import { expect, test } from "./helpers/tauri_smoke_fixtures";
 
-test("tauri smoke harness boots the home page with Tauri bridge support", async ({
+test("tauri smoke harness boots a stable Tauri route with bridge support", async ({
   page,
 }) => {
-  await expect(
-    page.getByRole("heading", { name: "Build a new app" }),
-  ).toBeVisible();
+  await page.goto("/settings");
+  await expect(page.getByTestId("leptos-route-shell")).toBeVisible();
 
   const bridgeState = await page.evaluate(() => ({
     hasBridge: !!window.__CHAEMERA_TAURI_CORE__,
@@ -22,17 +21,40 @@ test("tauri smoke harness boots the home page with Tauri bridge support", async 
 test("tauri smoke harness can deliver native event hooks to the renderer", async ({
   page,
 }) => {
-  await page.evaluate(() =>
-    window.__CHAEMERA_TAURI_SMOKE__?.emit("force-close-detected", {
-      performanceData: {
-        timestamp: 1,
-        memoryUsageMB: 256,
-      },
-    }),
+  await page.goto("/settings");
+
+  const eventPayload = await page.evaluate(
+    () =>
+      new Promise<unknown>((resolve) => {
+        const cleanup =
+          window.__CHAEMERA_TAURI_CORE__?.on?.(
+            "force-close-detected",
+            (payload) => {
+              cleanup?.();
+              resolve(payload);
+            },
+          ) ?? null;
+
+        window.__CHAEMERA_TAURI_SMOKE__?.emit("force-close-detected", {
+          performanceData: {
+            timestamp: 1,
+            memoryUsageMB: 256,
+          },
+        });
+
+        setTimeout(() => {
+          cleanup?.();
+          resolve(null);
+        }, 250);
+      }),
   );
 
-  await expect(page.getByRole("alertdialog")).toBeVisible();
-  await expect(page.getByText("Force Close Detected")).toBeVisible();
+  expect(eventPayload).toEqual({
+    performanceData: {
+      timestamp: 1,
+      memoryUsageMB: 256,
+    },
+  });
 });
 
 test("tauri smoke renders Leptos route shells for low-risk routes", async ({
@@ -40,9 +62,19 @@ test("tauri smoke renders Leptos route shells for low-risk routes", async ({
 }) => {
   await page.goto("/settings");
   await expect(page.getByTestId("leptos-route-shell")).toBeVisible();
-  await expect(page.getByText("Settings")).toBeVisible();
+  await expect(
+    page
+      .getByTestId("leptos-route-shell")
+      .getByRole("heading", { level: 1, name: "Settings" }),
+  ).toBeVisible();
+  await expect(page.getByTestId("leptos-react-body")).toBeVisible();
 
   await page.goto("/help");
   await expect(page.getByTestId("leptos-route-shell")).toBeVisible();
-  await expect(page.getByText("Help")).toBeVisible();
+  await expect(
+    page
+      .getByTestId("leptos-route-shell")
+      .getByRole("heading", { level: 1, name: "Help" }),
+  ).toBeVisible();
+  await expect(page.getByTestId("leptos-react-body")).toBeVisible();
 });

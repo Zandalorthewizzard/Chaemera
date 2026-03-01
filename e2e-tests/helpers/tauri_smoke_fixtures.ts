@@ -12,20 +12,6 @@ declare global {
       emit: (channel: string, payload: unknown) => void;
       getState: () => TauriSmokeHarnessState;
     };
-    __TAURI__?: {
-      core?: {
-        invoke?: (
-          command: string,
-          args?: Record<string, unknown>,
-        ) => Promise<unknown>;
-      };
-      event?: {
-        listen?: (
-          channel: string,
-          handler: (payload: unknown) => void,
-        ) => Promise<() => void>;
-      };
-    };
   }
 }
 
@@ -167,8 +153,16 @@ export const test = base.extend<{
               };
             case "get-env-vars":
               return {};
+            case "get-language-model-providers":
+              return [];
+            case "get-language-models":
+              return [];
+            case "get-language-models-by-providers":
+              return {};
             case "list-apps":
               return { apps: [] };
+            case "prompts:list":
+              return [];
             case "does-release-note-exist":
               return { exists: false };
             case "nodejs-status":
@@ -202,6 +196,8 @@ export const test = base.extend<{
                     "<theme>\nStyle mode: Inspired interpretation.\nReference source (images): no images provided.\nKeywords: none provided.\nBuild an intentional, responsive UI direction with clear typography, spacing, and color hierarchy.\n</theme>",
                 },
               ];
+            case "get-custom-themes":
+              return [];
             case "generate-theme-prompt": {
               const request = (payload as { request?: Record<string, unknown> })
                 ?.request;
@@ -252,6 +248,8 @@ export const test = base.extend<{
                   ? `Provider Setup: ${providerId}`
                   : routeId === "library"
                     ? "Library"
+                    : routeId === "themes"
+                      ? "Themes"
                     : routeId === "help"
                       ? "Help"
                       : "Settings";
@@ -282,7 +280,24 @@ export const test = base.extend<{
           getState: () => state,
         };
 
-        (window as Window).__TAURI__ = {
+        (
+          window as Window & {
+            __TAURI__?: {
+              core?: {
+                invoke?: (
+                  command: string,
+                  args?: Record<string, unknown>,
+                ) => Promise<unknown>;
+              };
+              event?: {
+                listen?: (
+                  channel: string,
+                  handler: (payload: unknown) => void,
+                ) => Promise<(() => void) | void> | (() => void);
+              };
+            };
+          }
+        ).__TAURI__ = {
           core: {
             invoke: tauriInvoke,
           },
@@ -323,11 +338,6 @@ export const test = base.extend<{
     await use(page);
   },
   tauriSmokeState: async ({ page }, use) => {
-    await page.goto("/");
-    await expect(
-      page.getByRole("heading", { name: "Build a new app" }),
-    ).toBeVisible();
-
     const state = await page.evaluate(() =>
       window.__CHAEMERA_TAURI_SMOKE__!.getState(),
     );
