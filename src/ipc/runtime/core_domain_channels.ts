@@ -8,6 +8,7 @@ export const TAURI_MIGRATION_CHANNEL_TO_COMMAND = {
   "create-app": "create_app",
   "get-app": "get_app",
   "list-apps": "list_apps",
+  "search-app": "search_app",
   "delete-app": "delete_app",
   "copy-app": "copy_app",
   "rename-app": "rename_app",

@@ -332,3 +332,41 @@ Then continue the migration plan from `Sprint 11`, unless the smoke suite or Win
    - Supabase
    - Neon
    - Vercel
+
+## Sprint 11 Wave 11
+
+1. Added a focused Tauri-native `search-app` wave instead of dragging in the much heavier `chat:count-tokens` surface.
+2. `search-app` now resolves in Rust with the same three search lanes as the Electron handler:
+   - app name matches
+   - chat title matches
+   - chat message content matches
+3. The Tauri implementation preserves the effective dedupe semantics of the Electron path:
+   - results are deduped by `app.id`
+   - later match classes override earlier ones, so message matches win over title-only matches and title-only matches win over name-only matches
+   - final results are sorted newest-first by app `createdAt`
+4. Extended the Tauri smoke harness with a coherent in-memory `search-app` implementation so future Tauri smoke coverage can exercise the new bridge without a native runtime.
+
+## Sprint 11 Wave 11 Validation
+
+1. `npx oxfmt --write src/ipc/runtime/core_domain_channels.ts src/ipc/runtime/bootstrap_tauri_core_bridge.ts src/__tests__/tauri_wave_n_bridge.test.ts e2e-tests/helpers/tauri_smoke_fixtures.ts notes/2026-03-01-migration-state.md` passed.
+2. `npm run lint` passed.
+3. `npm run ts` passed.
+4. `npx vitest run src/__tests__/tauri_wave_n_bridge.test.ts` passed.
+5. `cargo fmt` passed in `src-tauri`.
+6. `cargo check` passed in `src-tauri`.
+7. Invoke coverage moved from `83` missing channels to `82` missing channels.
+
+## Next Resume Point After Wave 11
+
+1. The next workspace-adjacent local gap is now clearly separated from the simple CRUD/query waves:
+   - `chat:count-tokens`
+   - `help:chat:start`
+2. `chat:count-tokens` is not a compact bridge wave; it drags in prompt construction, theme prompts, AI rules, mentioned-app context, codebase extraction, and model context-window logic.
+3. The largest remaining Electron-only block is still GitHub/git orchestration:
+   - branch listing/switch/create/delete
+   - fetch/pull/push/rebase/merge controls
+   - repo creation/connection flows
+4. Cloud mutation surfaces remain intentionally deferred:
+   - Supabase
+   - Neon
+   - Vercel

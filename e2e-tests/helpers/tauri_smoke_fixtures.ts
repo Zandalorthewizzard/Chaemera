@@ -51,6 +51,7 @@ const tauriCommandToChannel = {
   create_app: "create-app",
   get_app: "get-app",
   list_apps: "list-apps",
+  search_app: "search-app",
   delete_app: "delete-app",
   copy_app: "copy-app",
   rename_app: "rename-app",
@@ -645,6 +646,75 @@ export const test = base.extend<{
                   };
                 })
                 .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+            }
+            case "search-app": {
+              const query = String(
+                (payload as { query?: unknown } | undefined)?.query ?? "",
+              ).toLowerCase();
+              if (!query) {
+                return [];
+              }
+
+              const deduped = new Map<
+                number,
+                {
+                  id: number;
+                  name: string;
+                  createdAt: string;
+                  matchedChatTitle: string | null;
+                  matchedChatMessage: string | null;
+                }
+              >();
+
+              for (const app of appsById.values()) {
+                if (app.name.toLowerCase().includes(query)) {
+                  deduped.set(app.id, {
+                    id: app.id,
+                    name: app.name,
+                    createdAt: app.createdAt,
+                    matchedChatTitle: null,
+                    matchedChatMessage: null,
+                  });
+                }
+              }
+
+              for (const chat of chatsById.values()) {
+                if (
+                  (chat.title ?? "").toLowerCase().includes(query) &&
+                  appsById.has(chat.appId)
+                ) {
+                  const app = appsById.get(chat.appId)!;
+                  deduped.set(app.id, {
+                    id: app.id,
+                    name: app.name,
+                    createdAt: app.createdAt,
+                    matchedChatTitle: chat.title ?? null,
+                    matchedChatMessage: null,
+                  });
+                }
+              }
+
+              for (const chat of chatsById.values()) {
+                const matchedMessage = chat.messages.find((message) =>
+                  message.content.toLowerCase().includes(query),
+                );
+                if (!matchedMessage || !appsById.has(chat.appId)) {
+                  continue;
+                }
+
+                const app = appsById.get(chat.appId)!;
+                deduped.set(app.id, {
+                  id: app.id,
+                  name: app.name,
+                  createdAt: app.createdAt,
+                  matchedChatTitle: chat.title ?? null,
+                  matchedChatMessage: matchedMessage.content,
+                });
+              }
+
+              return Array.from(deduped.values()).sort((a, b) =>
+                b.createdAt.localeCompare(a.createdAt),
+              );
             }
             case "check-app-name": {
               const request = (payload as { request?: Record<string, unknown> })
