@@ -167,3 +167,26 @@ Then continue the migration plan from `Sprint 11`, unless the smoke suite or Win
 3. Contract coverage check now reports:
    - `invokeMissing: 117`
    - `receiveMissing: 0`
+
+## Sprint 11 Wave 6
+
+1. Added a Tauri-native plan CRUD wave for the `.dyad/plans` filesystem layer:
+   - `plan:create`
+   - `plan:get`
+   - `plan:get-for-chat`
+   - `plan:update-plan`
+   - `plan:delete`
+2. Reused the existing `appId -> resolvedPath` registry pattern so plan operations can resolve the app workspace without porting app lookup/query logic to Rust first.
+3. Mirrored the existing plan file semantics in Rust:
+   - `.dyad/plans/*.md`
+   - frontmatter with `title`, `summary`, `chatId`, `createdAt`, `updatedAt`
+   - auto-ensuring `.dyad/` is present in the app-level `.gitignore`
+4. Synced the Tauri smoke harness with new `plan_*` command mappings and an in-memory plan store so the harness stays coherent with the bridge surface.
+
+## Sprint 11 Wave 6 Validation
+
+1. `npx vitest run src/__tests__/tauri_wave_i_bridge.test.ts src/__tests__/tauri_event_bridge_channels.test.ts` passed.
+2. `npm run ts` passed.
+3. `cargo fmt` passed in `src-tauri`.
+4. `cargo check` passed in `src-tauri`.
+5. Invoke coverage moved from `117` missing channels to `112` missing channels.

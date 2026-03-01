@@ -61,6 +61,11 @@ const tauriCommandToChannel = {
   get_user_budget: "get-user-budget",
   upload_to_signed_url: "upload-to-signed-url",
   restart_dyad: "restart-dyad",
+  plan_create: "plan:create",
+  plan_get: "plan:get",
+  plan_get_for_chat: "plan:get-for-chat",
+  plan_update: "plan:update-plan",
+  plan_delete: "plan:delete",
   get_themes: "get-themes",
   generate_theme_prompt: "generate-theme-prompt",
   generate_theme_from_url: "generate-theme-from-url",
@@ -84,6 +89,20 @@ export const test = base.extend<{
         commandToChannel: Record<string, string>;
       }) => {
         const listeners = new Map<string, Set<(payload: unknown) => void>>();
+        const plansById = new Map<
+          string,
+          {
+            id: string;
+            appId: number;
+            chatId: number | null;
+            title: string;
+            summary: string | null;
+            content: string;
+            createdAt: string;
+            updatedAt: string;
+          }
+        >();
+        const latestPlanIdByChatId = new Map<number, string>();
         const state = {
           settings: { ...initialSettings },
           externalUrls: [] as string[],
@@ -220,6 +239,80 @@ export const test = base.extend<{
             case "reload-env-path":
             case "restart-dyad":
               return;
+            case "plan:create": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const appId = Number(request?.appId ?? 0);
+              const chatId = Number(request?.chatId ?? 0);
+              const now = new Date().toISOString();
+              const slug = `chat-${chatId}-tauri-smoke-plan`;
+              const plan = {
+                id: slug,
+                appId,
+                chatId,
+                title: String(request?.title ?? ""),
+                summary:
+                  typeof request?.summary === "string" ? request.summary : null,
+                content: String(request?.content ?? ""),
+                createdAt: now,
+                updatedAt: now,
+              };
+              plansById.set(slug, plan);
+              latestPlanIdByChatId.set(chatId, slug);
+              return slug;
+            }
+            case "plan:get": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              return plansById.get(String(request?.planId ?? "")) ?? null;
+            }
+            case "plan:get-for-chat": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const chatId = Number(request?.chatId ?? 0);
+              const planId = latestPlanIdByChatId.get(chatId);
+              return planId ? (plansById.get(planId) ?? null) : null;
+            }
+            case "plan:update-plan": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const planId = String(request?.id ?? "");
+              const existing = plansById.get(planId);
+              if (!existing) {
+                return;
+              }
+              plansById.set(planId, {
+                ...existing,
+                title:
+                  typeof request?.title === "string"
+                    ? request.title
+                    : existing.title,
+                summary:
+                  typeof request?.summary === "string"
+                    ? request.summary
+                    : existing.summary,
+                content:
+                  typeof request?.content === "string"
+                    ? request.content
+                    : existing.content,
+                updatedAt: new Date().toISOString(),
+              });
+              return;
+            }
+            case "plan:delete": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const planId = String(request?.planId ?? "");
+              const existing = plansById.get(planId);
+              plansById.delete(planId);
+              if (existing && existing.chatId !== null) {
+                const current = latestPlanIdByChatId.get(existing.chatId);
+                if (current === planId) {
+                  latestPlanIdByChatId.delete(existing.chatId);
+                }
+              }
+              return;
+            }
             case "get-themes":
               return [
                 {

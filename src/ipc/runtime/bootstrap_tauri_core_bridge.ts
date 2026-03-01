@@ -125,6 +125,19 @@ export function buildTauriInvokeArgs(
       }
       return { request: { appId, appPath } };
     }
+    case "plan:create":
+    case "plan:get":
+    case "plan:get-for-chat":
+    case "plan:update-plan":
+    case "plan:delete": {
+      const appId =
+        typeof payloadRecord?.appId === "number" ? payloadRecord.appId : null;
+      const appPath = appId !== null ? getResolvedAppPath(appId) : null;
+      if (!appPath || !payloadRecord) {
+        return undefined;
+      }
+      return { request: { ...payloadRecord, appId, appPath } };
+    }
     case "search-app-files": {
       const appId =
         typeof payloadRecord?.appId === "number" ? payloadRecord.appId : null;
@@ -222,6 +235,11 @@ export function canInvokeViaTauri(channel: string, payload: unknown): boolean {
     case "read-app-file":
     case "edit-app-file":
     case "check-problems":
+    case "plan:create":
+    case "plan:get":
+    case "plan:get-for-chat":
+    case "plan:update-plan":
+    case "plan:delete":
     case "search-app-files":
     case "list-versions":
     case "get-current-branch":

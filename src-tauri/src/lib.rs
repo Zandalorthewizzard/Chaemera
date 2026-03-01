@@ -7,6 +7,7 @@ mod wave_e_domains;
 mod wave_f_domains;
 mod wave_g_domains;
 mod wave_h_domains;
+mod wave_i_domains;
 
 use tauri::Manager;
 
@@ -54,6 +55,11 @@ pub fn run() {
             wave_g_domains::get_user_budget,
             wave_g_domains::upload_to_signed_url,
             wave_g_domains::restart_dyad,
+            wave_i_domains::plan_create,
+            wave_i_domains::plan_get,
+            wave_i_domains::plan_get_for_chat,
+            wave_i_domains::plan_update,
+            wave_i_domains::plan_delete,
             wave_f_domains::open_external_url,
             wave_c_domains::chat_stream,
             wave_c_domains::chat_cancel,
