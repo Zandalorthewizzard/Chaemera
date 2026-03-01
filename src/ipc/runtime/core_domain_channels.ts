@@ -44,6 +44,7 @@ export const TAURI_MIGRATION_CHANNEL_TO_COMMAND = {
   "cleanup-theme-images": "cleanup_theme_images",
   "apply-visual-editing-changes": "apply_visual_editing_changes",
   "analyze-component": "analyze_component",
+  "check-problems": "check_problems",
   "add-log": "add_log",
   "clear-logs": "clear_logs",
   "open-external-url": "open_external_url",

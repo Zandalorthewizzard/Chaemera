@@ -37,6 +37,7 @@ pub fn run() {
             wave_f_domains::restart_app,
             wave_f_domains::respond_to_app_input,
             wave_f_domains::edit_app_file,
+            wave_f_domains::check_problems,
             wave_f_domains::add_log,
             wave_f_domains::clear_logs,
             wave_f_domains::open_external_url,

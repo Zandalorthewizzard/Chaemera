@@ -77,3 +77,24 @@ If resuming later, inspect:
 5. `src/__tests__/tauri_wave_f_bridge.test.ts`
 
 Then continue the migration plan from `Sprint 11`, unless the smoke suite or Windows Electron cleanup behavior regresses again.
+
+## Sprint 11 Wave 2
+
+1. Added Tauri-side `check-problems` invoke coverage by routing the existing problem-check flow through a Node wrapper around the bundled TypeScript worker.
+2. Added Tauri-side preview proxy bootstrap by spawning a Node wrapper around the existing `worker/proxy_server.js` so preview iframe injection behavior can stay aligned with the Electron path.
+3. Added new runtime assets for Tauri packaging in `src-tauri/tauri.conf.json` instead of leaving the new preview/problems path dev-only.
+4. Extended the Tauri bridge contract so `check-problems` now resolves through `appId -> appPath` metadata like the other migrated app/runtime channels.
+
+## Sprint 11 Wave 2 Validation
+
+1. `npx vitest run src/__tests__/tauri_wave_f_bridge.test.ts` passed.
+2. `npm run ts` passed.
+3. `npm run lint` passed.
+4. `cargo check` passed in `src-tauri`.
+5. `npm run build` passed before the final Tauri resource-list fix; Electron/Tauri-smoke build path remained green.
+
+## Next Resume Point
+
+1. Verify the real Tauri preview proxy path at runtime once a Tauri launcher path is in active use, not only through `cargo check`.
+2. Continue the remaining Sprint 11 contract gap cleanup, especially Electron-only app/system invokes outside the preview/problems path.
+3. Revisit final Electron/Forge removal only after those remaining runtime contracts are either ported or intentionally dropped.

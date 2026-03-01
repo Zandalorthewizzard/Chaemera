@@ -54,7 +54,7 @@ describe("tauri Wave F bridge", () => {
     });
   });
 
-  it("builds Tauri args for app runtime and edit-file channels", () => {
+  it("builds Tauri args for app runtime, problem-check, and edit-file channels", () => {
     trackResolvedAppPathFromIpc("get-app", null, {
       id: 99,
       resolvedPath: "C:/Apps/runtime-app",
@@ -72,6 +72,17 @@ describe("tauri Wave F bridge", () => {
         appPath: "C:/Apps/runtime-app",
         installCommand: "pnpm install",
         startCommand: "pnpm dev --port 32199",
+      },
+    });
+
+    expect(
+      buildTauriInvokeArgs("check-problems", {
+        appId: 99,
+      }),
+    ).toEqual({
+      request: {
+        appId: 99,
+        appPath: "C:/Apps/runtime-app",
       },
     });
 
@@ -109,6 +120,12 @@ describe("tauri Wave F bridge", () => {
   it("marks app runtime channels as unavailable for Tauri without cached metadata", () => {
     expect(
       canInvokeViaTauri("run-app", {
+        appId: 404,
+      }),
+    ).toBe(false);
+
+    expect(
+      canInvokeViaTauri("check-problems", {
         appId: 404,
       }),
     ).toBe(false);

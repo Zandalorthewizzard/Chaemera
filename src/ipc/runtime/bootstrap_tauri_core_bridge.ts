@@ -114,6 +114,15 @@ export function buildTauriInvokeArgs(
       }
       return { request: { appId, appPath, filePath, content } };
     }
+    case "check-problems": {
+      const appId =
+        typeof payloadRecord?.appId === "number" ? payloadRecord.appId : null;
+      const appPath = appId !== null ? getResolvedAppPath(appId) : null;
+      if (!appPath) {
+        return undefined;
+      }
+      return { request: { appId, appPath } };
+    }
     case "search-app-files": {
       const appId =
         typeof payloadRecord?.appId === "number" ? payloadRecord.appId : null;
@@ -207,6 +216,7 @@ export function canInvokeViaTauri(channel: string, payload: unknown): boolean {
     case "check-ai-rules":
     case "read-app-file":
     case "edit-app-file":
+    case "check-problems":
     case "search-app-files":
     case "list-versions":
     case "get-current-branch":
