@@ -100,6 +100,34 @@ You should test your changes before committing or pushing. Run relevant unit tes
 
 Use these guidelines whenever you work within this repository.
 
+## Documentation governance (Pack 2.0)
+
+This repository uses a local documentation workspace under `docs-new/` for structured AI-driven documentation.
+
+### Required reading chain (for docs-related tasks)
+
+1. `docs-new/00-navigation/INDEX.md`
+2. `docs-new/01-concepts/ai-driven-development.md`
+3. `docs-new/01-concepts/strict-specs.md`
+4. `docs-new/01-concepts/discussion-first.md`
+5. `docs-new/02-guides/agent-navigation.md`
+6. `docs-new/02-guides/working-notes.md`
+
+### Documentation rules
+
+1. Code and runtime behavior are source of truth.
+2. Canonical docs require evidence blocks (`path`, `symbol`, `lines` or stack-equivalent).
+3. Unknown behavior is explicitly marked `UNKNOWN` or `deferred`.
+4. After substantial docs changes, keep these files synchronized:
+   - `docs-new/00-navigation/INDEX.md`
+   - `docs-new/00-navigation/inventory.json`
+   - `docs-new/00-navigation/progress.md`
+   - `docs-new/00-navigation/validation.md`
+5. AI coding tasks should be authored using `docs-new/03-templates/strict-spec.template.md`.
+6. Agents should keep dated working notes in `notes/` when work produces observations, recovery steps, debugging context, or handoff state that may matter later.
+7. `notes/` is non-canonical working memory. Durable decisions, accepted findings, and stable process rules must be promoted into `docs-new/` with evidence.
+8. When resuming after context loss, crash recovery, or agent replacement, review the relevant `notes/` files before continuing risky work.
+
 ## Testing
 
 Our project relies on a combination of unit testing and E2E testing. Unless your change is trivial, you MUST add a test, preferably an e2e test case.
