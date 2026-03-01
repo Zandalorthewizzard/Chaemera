@@ -12,6 +12,7 @@ export const TAURI_MIGRATION_CHANNEL_TO_COMMAND = {
   "get-context-paths": "get_context_paths",
   "set-context-paths": "set_context_paths",
   "get-proposal": "get_proposal",
+  "approve-proposal": "approve_proposal",
   "reject-proposal": "reject_proposal",
   "free-agent-quota:get-status": "free_agent_quota_get_status",
   "get-session-debug-bundle": "get_session_debug_bundle",

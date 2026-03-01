@@ -1104,3 +1104,24 @@ Current lock:
 5. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe fmt --manifest-path src-tauri/Cargo.toml` passed.
 6. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe check --manifest-path src-tauri/Cargo.toml` passed.
 7. A fresh contract audit reduced the remaining unmapped contract count to `26`.
+
+## Sprint 11 Wave 37
+
+1. Added a bounded Tauri `approve-proposal` wave covering:
+   - `approve-proposal`
+2. The new Rust path intentionally targets `code-proposal` execution rather than the whole historical response processor:
+   - applies file writes, renames, deletes, and search-replace edits
+   - installs proposal dependencies and records install output back into the assistant message
+   - commits the resulting workspace changes and stores `commit_hash` on the assistant message
+   - marks the proposal as `approved`
+3. Supabase-specific write side-effects remain explicit non-parity instead of silent omission:
+   - if a Supabase-linked app proposal includes SQL execution or edge-function deployment work, the Tauri path now fails explicitly
+   - this keeps ordinary code proposals moving while avoiding fake success for cloud-coupled proposal actions
+
+## Sprint 11 Wave 37 Validation
+
+1. `npm run ts` passed.
+2. `npm run lint` passed.
+3. `npx vitest run src/__tests__/tauri_wave_an_bridge.test.ts` passed.
+4. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe check --manifest-path src-tauri/Cargo.toml` passed.
+5. A fresh contract audit reduced the remaining unmapped contract count to `25`.

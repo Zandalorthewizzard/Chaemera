@@ -14,6 +14,7 @@ mod wave_aj_domains;
 mod wave_ak_domains;
 mod wave_al_domains;
 mod wave_am_domains;
+mod wave_an_domains;
 mod wave_b_domains;
 mod wave_c_domains;
 mod wave_d_domains;
@@ -60,6 +61,7 @@ pub fn run() {
             wave_af_domains::get_latest_security_review,
             wave_aj_domains::get_session_debug_bundle,
             wave_ag_domains::get_proposal,
+            wave_an_domains::approve_proposal,
             wave_ag_domains::reject_proposal,
             wave_ah_domains::free_agent_quota_get_status,
             wave_ab_domains::get_env_vars,

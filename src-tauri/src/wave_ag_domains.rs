@@ -123,22 +123,22 @@ struct ExtractedFile {
 }
 
 #[derive(Debug)]
-struct WriteTag {
-    path: String,
-    content: String,
-    description: Option<String>,
+pub(crate) struct WriteTag {
+    pub(crate) path: String,
+    pub(crate) content: String,
+    pub(crate) description: Option<String>,
 }
 
 #[derive(Debug)]
-struct RenameTag {
-    from: String,
-    to: String,
+pub(crate) struct RenameTag {
+    pub(crate) from: String,
+    pub(crate) to: String,
 }
 
 #[derive(Debug)]
-struct SqlQueryTag {
-    content: String,
-    description: Option<String>,
+pub(crate) struct SqlQueryTag {
+    pub(crate) content: String,
+    pub(crate) description: Option<String>,
 }
 
 #[derive(Debug, Serialize)]
@@ -258,7 +258,7 @@ fn parse_attribute(attributes: &str, name: &str) -> Option<String> {
         .map(|capture| unescape_xml_attr(capture.as_str()))
 }
 
-fn parse_write_tags(content: &str) -> Vec<WriteTag> {
+pub(crate) fn parse_write_tags(content: &str) -> Vec<WriteTag> {
     let regex = Regex::new(r#"(?si)<dyad-write([^>]*)>(.*?)</dyad-write>"#)
         .expect("write regex must compile");
 
@@ -285,7 +285,7 @@ fn parse_write_tags(content: &str) -> Vec<WriteTag> {
         .collect()
 }
 
-fn parse_search_replace_tags(content: &str) -> Vec<WriteTag> {
+pub(crate) fn parse_search_replace_tags(content: &str) -> Vec<WriteTag> {
     let regex = Regex::new(r#"(?si)<dyad-search-replace([^>]*)>(.*?)</dyad-search-replace>"#)
         .expect("search replace regex must compile");
 
@@ -312,7 +312,7 @@ fn parse_search_replace_tags(content: &str) -> Vec<WriteTag> {
         .collect()
 }
 
-fn parse_rename_tags(content: &str) -> Vec<RenameTag> {
+pub(crate) fn parse_rename_tags(content: &str) -> Vec<RenameTag> {
     let regex =
         Regex::new(r#"(?si)<dyad-rename\s+from="([^"]+)"\s+to="([^"]+)"[^>]*>.*?</dyad-rename>"#)
             .expect("rename regex must compile");
@@ -334,7 +334,7 @@ fn parse_rename_tags(content: &str) -> Vec<RenameTag> {
         .collect()
 }
 
-fn parse_delete_tags(content: &str) -> Vec<String> {
+pub(crate) fn parse_delete_tags(content: &str) -> Vec<String> {
     let regex = Regex::new(r#"(?si)<dyad-delete\s+path="([^"]+)"[^>]*>.*?</dyad-delete>"#)
         .expect("delete regex must compile");
 
@@ -348,7 +348,7 @@ fn parse_delete_tags(content: &str) -> Vec<String> {
         .collect()
 }
 
-fn parse_dependency_tags(content: &str) -> Vec<String> {
+pub(crate) fn parse_dependency_tags(content: &str) -> Vec<String> {
     let regex =
         Regex::new(r#"(?si)<dyad-add-dependency\s+packages="([^"]+)">[^<]*</dyad-add-dependency>"#)
             .expect("dependency regex must compile");
@@ -367,7 +367,7 @@ fn parse_dependency_tags(content: &str) -> Vec<String> {
     packages
 }
 
-fn parse_chat_summary(content: &str) -> Option<String> {
+pub(crate) fn parse_chat_summary(content: &str) -> Option<String> {
     let regex = Regex::new(r#"(?si)<dyad-chat-summary>(.*?)</dyad-chat-summary>"#)
         .expect("chat summary regex must compile");
 
@@ -378,7 +378,7 @@ fn parse_chat_summary(content: &str) -> Option<String> {
         .filter(|value| !value.is_empty())
 }
 
-fn parse_sql_queries(content: &str) -> Vec<SqlQueryTag> {
+pub(crate) fn parse_sql_queries(content: &str) -> Vec<SqlQueryTag> {
     let regex = Regex::new(r#"(?si)<dyad-execute-sql([^>]*)>(.*?)</dyad-execute-sql>"#)
         .expect("sql regex must compile");
 

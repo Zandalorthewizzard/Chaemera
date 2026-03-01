@@ -52,6 +52,7 @@ const tauriCommandToChannel = {
   get_session_debug_bundle: "get-session-debug-bundle",
   portal_migrate_create: "portal:migrate-create",
   get_proposal: "get-proposal",
+  approve_proposal: "approve-proposal",
   reject_proposal: "reject-proposal",
   free_agent_quota_get_status: "free-agent-quota:get-status",
   create_app: "create-app",
@@ -795,6 +796,30 @@ export const test = base.extend<{
               };
             case "get-proposal":
               return null;
+            case "approve-proposal": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const chatId = Number(request?.chatId ?? 0);
+              const messageId = Number(request?.messageId ?? 0);
+              const chat = chatsById.get(chatId);
+              if (!chat) {
+                throw new Error("Chat not found");
+              }
+              chat.messages = chat.messages.map((message) =>
+                message.id === messageId
+                  ? {
+                      ...message,
+                      approvalState: "approved" as const,
+                      commitHash: "smoke-approve-commit",
+                    }
+                  : message,
+              );
+              chatsById.set(chatId, { ...chat });
+              return {
+                success: true,
+                commitHash: "smoke-approve-commit",
+              };
+            }
             case "reject-proposal": {
               const request = (payload as { request?: Record<string, unknown> })
                 ?.request;

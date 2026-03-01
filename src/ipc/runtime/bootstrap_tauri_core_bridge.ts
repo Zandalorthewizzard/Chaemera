@@ -102,6 +102,8 @@ export function buildTauriInvokeArgs(
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "get-proposal":
       return payloadRecord ? { request: payloadRecord } : undefined;
+    case "approve-proposal":
+      return payloadRecord ? { request: payloadRecord } : undefined;
     case "reject-proposal":
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "show-item-in-folder":
@@ -418,6 +420,7 @@ export function canInvokeViaTauri(channel: string, payload: unknown): boolean {
     case "get-latest-security-review":
     case "get-session-debug-bundle":
     case "get-proposal":
+    case "approve-proposal":
     case "reject-proposal":
     case "search-app":
     case "delete-app":
