@@ -2,6 +2,7 @@ use rusqlite::Connection;
 use std::env;
 use std::fs;
 use std::path::{Path, PathBuf};
+use std::process::Command;
 use tauri::{AppHandle, Manager};
 use time::{format_description::well_known::Rfc3339, OffsetDateTime};
 
@@ -71,4 +72,23 @@ pub fn timestamp_to_rfc3339(timestamp: i64) -> String {
 
 pub fn now_unix_timestamp() -> i64 {
     OffsetDateTime::now_utc().unix_timestamp()
+}
+
+pub fn run_git(app_path: &Path, args: &[&str]) -> Result<String, String> {
+    let output = Command::new("git")
+        .args(args)
+        .current_dir(app_path)
+        .output()
+        .map_err(|error| format!("failed to spawn git: {error}"))?;
+
+    if !output.status.success() {
+        let stderr = String::from_utf8_lossy(&output.stderr).trim().to_string();
+        return Err(if stderr.is_empty() {
+            "git command failed".to_string()
+        } else {
+            stderr
+        });
+    }
+
+    Ok(String::from_utf8_lossy(&output.stdout).trim().to_string())
 }

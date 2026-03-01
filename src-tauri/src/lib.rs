@@ -11,6 +11,7 @@ mod wave_h_domains;
 mod wave_i_domains;
 mod wave_j_domains;
 mod wave_k_domains;
+mod wave_l_domains;
 
 use tauri::Manager;
 
@@ -63,6 +64,13 @@ pub fn run() {
             wave_g_domains::restart_dyad,
             wave_j_domains::add_to_favorite,
             wave_j_domains::update_app_commands,
+            wave_l_domains::get_chat,
+            wave_l_domains::get_chats,
+            wave_l_domains::create_chat,
+            wave_l_domains::update_chat,
+            wave_l_domains::delete_chat,
+            wave_l_domains::delete_messages,
+            wave_l_domains::search_chats,
             wave_k_domains::set_app_theme,
             wave_k_domains::get_app_theme,
             wave_k_domains::get_custom_themes,

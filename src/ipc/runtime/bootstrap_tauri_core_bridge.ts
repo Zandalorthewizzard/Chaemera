@@ -78,6 +78,12 @@ export function buildTauriInvokeArgs(
   switch (channel) {
     case "get-app":
       return typeof payload === "number" ? { appId: payload } : undefined;
+    case "get-chat":
+      return typeof payload === "number" ? { chatId: payload } : undefined;
+    case "get-chats":
+      return typeof payload === "number" ? { appId: payload } : undefined;
+    case "create-chat":
+      return typeof payload === "number" ? { appId: payload } : undefined;
     case "set-user-settings":
       return payloadRecord ? { patch: payloadRecord } : undefined;
     case "show-item-in-folder":
@@ -146,6 +152,10 @@ export function buildTauriInvokeArgs(
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "check-app-name":
       return payloadRecord ? { request: payloadRecord } : undefined;
+    case "update-chat":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "search-chats":
+      return payloadRecord ? { request: payloadRecord } : undefined;
     case "set-app-theme":
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "get-app-theme":
@@ -160,6 +170,10 @@ export function buildTauriInvokeArgs(
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "prompts:update":
       return payloadRecord ? { request: payloadRecord } : undefined;
+    case "delete-chat":
+      return typeof payload === "number" ? { chatId: payload } : undefined;
+    case "delete-messages":
+      return typeof payload === "number" ? { chatId: payload } : undefined;
     case "prompts:delete":
       return typeof payload === "number" ? { promptId: payload } : undefined;
     case "search-app-files": {
@@ -255,11 +269,17 @@ export function canInvokeViaTauri(channel: string, payload: unknown): boolean {
   switch (channel) {
     case "set-user-settings":
     case "get-app":
+    case "get-chat":
+    case "create-chat":
     case "show-item-in-folder":
     case "check-ai-rules":
     case "add-to-favorite":
     case "update-app-commands":
     case "check-app-name":
+    case "update-chat":
+    case "delete-chat":
+    case "delete-messages":
+    case "search-chats":
     case "set-app-theme":
     case "get-app-theme":
     case "create-custom-theme":

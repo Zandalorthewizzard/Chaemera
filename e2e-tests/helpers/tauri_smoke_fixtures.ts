@@ -50,6 +50,13 @@ const tauriCommandToChannel = {
   get_app_version: "get-app-version",
   get_app: "get-app",
   list_apps: "list-apps",
+  get_chat: "get-chat",
+  get_chats: "get-chats",
+  create_chat: "create-chat",
+  update_chat: "update-chat",
+  delete_chat: "delete-chat",
+  delete_messages: "delete-messages",
+  search_chats: "search-chats",
   nodejs_status: "nodejs-status",
   select_node_folder: "select-node-folder",
   get_node_path: "get-node-path",
@@ -165,6 +172,59 @@ export const test = base.extend<{
             },
           ],
         ]);
+        const chatsById = new Map<
+          number,
+          {
+            id: number;
+            appId: number;
+            title: string | null;
+            createdAt: string;
+            initialCommitHash: string | null;
+            messages: Array<{
+              id: number;
+              role: "user" | "assistant";
+              content: string;
+              approvalState?: "approved" | "rejected" | null;
+              commitHash?: string | null;
+              sourceCommitHash?: string | null;
+              dbTimestamp?: string | null;
+              createdAt?: string;
+              requestId?: string | null;
+              totalTokens?: number | null;
+              model?: string | null;
+            }>;
+          }
+        >([
+          [
+            1,
+            {
+              id: 1,
+              appId: 1,
+              title: "Smoke migration chat",
+              createdAt: "2026-03-01T00:00:00Z",
+              initialCommitHash: "abc123def456",
+              messages: [
+                {
+                  id: 1,
+                  role: "user",
+                  content: "What changed in the migration?",
+                  createdAt: "2026-03-01T00:00:00Z",
+                },
+                {
+                  id: 2,
+                  role: "assistant",
+                  content: "Tauri route shells are active.",
+                  createdAt: "2026-03-01T00:01:00Z",
+                  commitHash: "abc123def456",
+                  sourceCommitHash: "abc123def456",
+                  totalTokens: 128,
+                  model: "auto",
+                },
+              ],
+            },
+          ],
+        ]);
+        let nextChatId = 2;
         const appThemesById = new Map<number, string | null>([[1, "default"]]);
         const customThemesById = new Map<
           number,
@@ -322,6 +382,133 @@ export const test = base.extend<{
                   id: appId,
                 }
               );
+            }
+            case "get-chat": {
+              const chatId =
+                typeof payload === "object" &&
+                payload !== null &&
+                "chatId" in payload
+                  ? Number((payload as { chatId?: unknown }).chatId ?? 0)
+                  : Number(payload ?? 0);
+              const existing = chatsById.get(chatId);
+              if (!existing) {
+                throw new Error("Chat not found");
+              }
+              return {
+                id: existing.id,
+                title: existing.title ?? "",
+                messages: existing.messages,
+                initialCommitHash: existing.initialCommitHash,
+                dbTimestamp: null,
+              };
+            }
+            case "get-chats": {
+              const appId =
+                typeof payload === "object" &&
+                payload !== null &&
+                "appId" in payload
+                  ? Number((payload as { appId?: unknown }).appId ?? 0)
+                  : typeof payload === "number"
+                    ? payload
+                    : null;
+              return Array.from(chatsById.values())
+                .filter((chat) => (appId == null ? true : chat.appId === appId))
+                .map((chat) => ({
+                  id: chat.id,
+                  appId: chat.appId,
+                  title: chat.title,
+                  createdAt: chat.createdAt,
+                }))
+                .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+            }
+            case "create-chat": {
+              const appId =
+                typeof payload === "object" &&
+                payload !== null &&
+                "appId" in payload
+                  ? Number((payload as { appId?: unknown }).appId ?? 0)
+                  : Number(payload ?? 0);
+              const chatId = nextChatId++;
+              chatsById.set(chatId, {
+                id: chatId,
+                appId,
+                title: null,
+                createdAt: new Date().toISOString(),
+                initialCommitHash: "abc123def456",
+                messages: [],
+              });
+              return chatId;
+            }
+            case "update-chat": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const chatId = Number(request?.chatId ?? 0);
+              const existing = chatsById.get(chatId);
+              if (!existing) {
+                return;
+              }
+              chatsById.set(chatId, {
+                ...existing,
+                title: String(request?.title ?? ""),
+              });
+              return;
+            }
+            case "delete-chat": {
+              const chatId =
+                typeof payload === "object" &&
+                payload !== null &&
+                "chatId" in payload
+                  ? Number((payload as { chatId?: unknown }).chatId ?? 0)
+                  : Number(payload ?? 0);
+              chatsById.delete(chatId);
+              return;
+            }
+            case "delete-messages": {
+              const chatId =
+                typeof payload === "object" &&
+                payload !== null &&
+                "chatId" in payload
+                  ? Number((payload as { chatId?: unknown }).chatId ?? 0)
+                  : Number(payload ?? 0);
+              const existing = chatsById.get(chatId);
+              if (!existing) {
+                return;
+              }
+              chatsById.set(chatId, {
+                ...existing,
+                messages: [],
+              });
+              return;
+            }
+            case "search-chats": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const appId = Number(request?.appId ?? 0);
+              const query = String(request?.query ?? "").toLowerCase();
+              return Array.from(chatsById.values())
+                .filter((chat) => chat.appId === appId)
+                .filter((chat) => {
+                  const titleMatch = (chat.title ?? "")
+                    .toLowerCase()
+                    .includes(query);
+                  const messageMatch = chat.messages.some((message) =>
+                    message.content.toLowerCase().includes(query),
+                  );
+                  return titleMatch || messageMatch;
+                })
+                .map((chat) => {
+                  const matchedMessage = chat.messages.find((message) =>
+                    message.content.toLowerCase().includes(query),
+                  );
+                  return {
+                    id: chat.id,
+                    appId: chat.appId,
+                    title: chat.title,
+                    createdAt: chat.createdAt,
+                    matchedMessageContent: matchedMessage?.content ?? null,
+                  };
+                })
+                .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
             }
             case "check-app-name": {
               const request = (payload as { request?: Record<string, unknown> })

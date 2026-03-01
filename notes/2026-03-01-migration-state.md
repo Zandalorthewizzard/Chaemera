@@ -244,3 +244,44 @@ Then continue the migration plan from `Sprint 11`, unless the smoke suite or Win
 3. `cargo fmt` passed in `src-tauri`.
 4. `cargo check` passed in `src-tauri`.
 5. Invoke coverage moved from `106` missing channels to `96` missing channels.
+
+## Sprint 11 Wave 9
+
+1. Added a Tauri-native chat CRUD wave backed by direct SQLite access in Rust:
+   - `get-chat`
+   - `get-chats`
+   - `create-chat`
+   - `update-chat`
+   - `delete-chat`
+   - `delete-messages`
+   - `search-chats`
+2. Reused the shared SQLite/path helpers so chat reads and writes can stay aligned with the existing Electron data model without porting the whole Drizzle layer.
+3. Preserved the important Electron-side semantics:
+   - chat titles stay nullable in summaries/search results but normalize to `""` in `get-chat`
+   - message order stays `created_at ASC, id ASC`
+   - `create-chat` tolerates missing git state and only stores `initialCommitHash` when `git rev-parse HEAD` succeeds
+4. Extended the Tauri smoke harness with an in-memory chat store so bridge-level chat flows can be exercised later without requiring a native runtime.
+
+## Sprint 11 Wave 9 Validation
+
+1. `npx oxfmt --write src/ipc/runtime/core_domain_channels.ts src/ipc/runtime/bootstrap_tauri_core_bridge.ts src/__tests__/tauri_wave_l_bridge.test.ts e2e-tests/helpers/tauri_smoke_fixtures.ts` passed.
+2. `npm run lint` passed.
+3. `npm run ts` passed.
+4. `npx vitest run src/__tests__/tauri_wave_l_bridge.test.ts` passed.
+5. `cargo fmt` passed in `src-tauri`.
+6. `cargo check` passed in `src-tauri`.
+7. Invoke coverage moved from `96` missing channels to `89` missing channels.
+
+## Next Resume Point After Wave 9
+
+1. Highest-value remaining CRUD gap is app management:
+   - `create-app`
+   - `delete-app`
+   - `copy-app`
+   - `rename-app`
+   - `change-app-location`
+   - `rename-branch`
+2. The next workspace-adjacent runtime gap after that is still chat/tooling behavior beyond CRUD, especially `chat:count-tokens`.
+3. Integration-heavy domains remain the largest untouched Electron-only block:
+   - GitHub flow/repo/git operations
+   - Supabase/Neon/Vercel mutation flows
