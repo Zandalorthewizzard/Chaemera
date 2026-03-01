@@ -183,6 +183,27 @@ Then continue the migration plan from `Sprint 11`, unless the smoke suite or Win
 5. `npm run lint` passed.
 6. `cargo check` passed in `src-tauri`.
 
+## Sprint 11 Wave 18
+
+1. Added a focused Tauri collaborator-management wave for the remaining GitHub team commands:
+   - `github:invite-collaborator`
+   - `github:remove-collaborator`
+2. Preserved the Electron-side semantics:
+   - invite still validates GitHub username format before calling the API
+   - both commands still require a stored GitHub access token
+   - both commands still require the app to be linked to a GitHub repo
+   - invite still defaults to `push` permission
+3. The Tauri smoke harness now tracks collaborator lists in-memory per app so invite/remove behavior stays coherent in migration smoke mode.
+
+## Sprint 11 Wave 18 Validation
+
+1. `npx oxfmt --write ...` was run only on the touched TypeScript files.
+2. `cargo fmt` passed in `src-tauri`.
+3. `npm run ts` passed.
+4. `npx vitest run src/__tests__/tauri_wave_u_bridge.test.ts src/__tests__/tauri_wave_t_bridge.test.ts` passed.
+5. `npm run lint` passed.
+6. `cargo check` passed in `src-tauri`.
+
 ## Sprint 11 Wave 3
 
 1. Added a new Tauri system utility wave for non-DB shell/runtime commands:

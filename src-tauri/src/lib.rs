@@ -20,6 +20,7 @@ mod wave_q_domains;
 mod wave_r_domains;
 mod wave_s_domains;
 mod wave_t_domains;
+mod wave_u_domains;
 
 use tauri::Manager;
 
@@ -64,6 +65,8 @@ pub fn run() {
             wave_t_domains::github_rename_branch,
             wave_t_domains::github_merge_branch,
             wave_o_domains::github_list_collaborators,
+            wave_u_domains::github_invite_collaborator,
+            wave_u_domains::github_remove_collaborator,
             wave_o_domains::github_disconnect,
             wave_r_domains::git_get_uncommitted_files,
             wave_t_domains::git_commit_changes,

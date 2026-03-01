@@ -224,6 +224,10 @@ export function buildTauriInvokeArgs(
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "github:list-collaborators":
       return payloadRecord ? { request: payloadRecord } : undefined;
+    case "github:invite-collaborator":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "github:remove-collaborator":
+      return payloadRecord ? { request: payloadRecord } : undefined;
     case "delete-chat":
       return typeof payload === "number" ? { chatId: payload } : undefined;
     case "delete-messages":
@@ -376,6 +380,8 @@ export function canInvokeViaTauri(channel: string, payload: unknown): boolean {
     case "github:get-conflicts":
     case "github:get-git-state":
     case "github:list-collaborators":
+    case "github:invite-collaborator":
+    case "github:remove-collaborator":
     case "prompts:create":
     case "prompts:update":
     case "prompts:delete":

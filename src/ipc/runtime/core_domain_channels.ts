@@ -114,6 +114,8 @@ export const TAURI_MIGRATION_CHANNEL_TO_COMMAND = {
   "github:get-conflicts": "github_get_conflicts",
   "github:get-git-state": "github_get_git_state",
   "github:list-collaborators": "github_list_collaborators",
+  "github:invite-collaborator": "github_invite_collaborator",
+  "github:remove-collaborator": "github_remove_collaborator",
   "github:disconnect": "github_disconnect",
   "git:get-uncommitted-files": "git_get_uncommitted_files",
   "git:commit-changes": "git_commit_changes",

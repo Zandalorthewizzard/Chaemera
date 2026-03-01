@@ -108,6 +108,8 @@ const tauriCommandToChannel = {
   github_get_conflicts: "github:get-conflicts",
   github_get_git_state: "github:get-git-state",
   github_list_collaborators: "github:list-collaborators",
+  github_invite_collaborator: "github:invite-collaborator",
+  github_remove_collaborator: "github:remove-collaborator",
   github_disconnect: "github:disconnect",
   git_get_uncommitted_files: "git:get-uncommitted-files",
   git_commit_changes: "git:commit-changes",
@@ -310,6 +312,25 @@ export const test = base.extend<{
           }
         >();
         const latestPlanIdByChatId = new Map<number, string>();
+        const collaboratorsByAppId = new Map<
+          number,
+          Array<{
+            login: string;
+            avatar_url: string;
+            permissions?: { push: boolean };
+          }>
+        >([
+          [
+            1,
+            [
+              {
+                login: "chaemera-collaborator",
+                avatar_url: "https://example.test/avatar.png",
+                permissions: { push: true },
+              },
+            ],
+          ],
+        ]);
         const state = {
           settings: { ...initialSettings },
           externalUrls: [] as string[],
@@ -959,13 +980,45 @@ export const test = base.extend<{
               if (!app?.githubOrg || !app.githubRepo) {
                 throw new Error("App is not linked to a GitHub repo.");
               }
-              return [
+              return collaboratorsByAppId.get(appId) ?? [];
+            }
+            case "github:invite-collaborator": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const appId = Number(request?.appId ?? 0);
+              const username = String(request?.username ?? "").trim();
+              const app = appsById.get(appId);
+              if (!app?.githubOrg || !app.githubRepo) {
+                throw new Error("App is not linked to a GitHub repo.");
+              }
+              if (!username) {
+                throw new Error("Username cannot be empty.");
+              }
+              const existing = collaboratorsByAppId.get(appId) ?? [];
+              collaboratorsByAppId.set(appId, [
+                ...existing.filter(
+                  (collaborator) => collaborator.login !== username,
+                ),
                 {
-                  login: "chaemera-collaborator",
-                  avatar_url: "https://example.test/avatar.png",
+                  login: username,
+                  avatar_url: "https://example.test/new-avatar.png",
                   permissions: { push: true },
                 },
-              ];
+              ]);
+              return;
+            }
+            case "github:remove-collaborator": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const appId = Number(request?.appId ?? 0);
+              const username = String(request?.username ?? "").trim();
+              collaboratorsByAppId.set(
+                appId,
+                (collaboratorsByAppId.get(appId) ?? []).filter(
+                  (collaborator) => collaborator.login !== username,
+                ),
+              );
+              return;
             }
             case "github:disconnect": {
               const request = (payload as { request?: Record<string, unknown> })
