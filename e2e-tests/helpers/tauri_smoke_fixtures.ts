@@ -85,6 +85,11 @@ const tauriCommandToChannel = {
   plan_get_for_chat: "plan:get-for-chat",
   plan_update: "plan:update-plan",
   plan_delete: "plan:delete",
+  github_list_repos: "github:list-repos",
+  github_get_repo_branches: "github:get-repo-branches",
+  github_is_repo_available: "github:is-repo-available",
+  github_list_collaborators: "github:list-collaborators",
+  github_disconnect: "github:disconnect",
   get_themes: "get-themes",
   set_app_theme: "set-app-theme",
   get_app_theme: "get-app-theme",
@@ -715,6 +720,76 @@ export const test = base.extend<{
               return Array.from(deduped.values()).sort((a, b) =>
                 b.createdAt.localeCompare(a.createdAt),
               );
+            }
+            case "github:list-repos":
+              return [
+                {
+                  name: "chaemera-smoke-repo",
+                  full_name: "chaemera/chaemera-smoke-repo",
+                  private: true,
+                },
+              ];
+            case "github:get-repo-branches": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const repo = String(request?.repo ?? "");
+              return [
+                {
+                  name: "main",
+                  commit: {
+                    sha: `${repo || "repo"}-main-sha`,
+                  },
+                },
+                {
+                  name: "feature/tauri",
+                  commit: {
+                    sha: `${repo || "repo"}-feature-sha`,
+                  },
+                },
+              ];
+            }
+            case "github:is-repo-available": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const repo = String(request?.repo ?? "");
+              const normalizedRepo = repo.trim().replace(/\s+/g, "-");
+              const exists = normalizedRepo === "chaemera-smoke-repo";
+              return {
+                available: !exists,
+                error: exists ? "Repository already exists." : undefined,
+              };
+            }
+            case "github:list-collaborators": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const appId = Number(request?.appId ?? 0);
+              const app = appsById.get(appId);
+              if (!app?.githubOrg || !app.githubRepo) {
+                throw new Error("App is not linked to a GitHub repo.");
+              }
+              return [
+                {
+                  login: "chaemera-collaborator",
+                  avatar_url: "https://example.test/avatar.png",
+                  permissions: { push: true },
+                },
+              ];
+            }
+            case "github:disconnect": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const appId = Number(request?.appId ?? 0);
+              const existing = appsById.get(appId);
+              if (!existing) {
+                throw new Error("App not found");
+              }
+              appsById.set(appId, {
+                ...existing,
+                githubOrg: null,
+                githubRepo: null,
+                githubBranch: null,
+              });
+              return;
             }
             case "check-app-name": {
               const request = (payload as { request?: Record<string, unknown> })

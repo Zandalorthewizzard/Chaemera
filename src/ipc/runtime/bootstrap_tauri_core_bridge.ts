@@ -180,12 +180,20 @@ export function buildTauriInvokeArgs(
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "prompts:update":
       return payloadRecord ? { request: payloadRecord } : undefined;
+    case "github:get-repo-branches":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "github:is-repo-available":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "github:list-collaborators":
+      return payloadRecord ? { request: payloadRecord } : undefined;
     case "delete-chat":
       return typeof payload === "number" ? { chatId: payload } : undefined;
     case "delete-messages":
       return typeof payload === "number" ? { chatId: payload } : undefined;
     case "prompts:delete":
       return typeof payload === "number" ? { promptId: payload } : undefined;
+    case "github:disconnect":
+      return payloadRecord ? { request: payloadRecord } : undefined;
     case "search-app-files": {
       const appId =
         typeof payloadRecord?.appId === "number" ? payloadRecord.appId : null;
@@ -304,9 +312,13 @@ export function canInvokeViaTauri(channel: string, payload: unknown): boolean {
     case "create-custom-theme":
     case "update-custom-theme":
     case "delete-custom-theme":
+    case "github:get-repo-branches":
+    case "github:is-repo-available":
+    case "github:list-collaborators":
     case "prompts:create":
     case "prompts:update":
     case "prompts:delete":
+    case "github:disconnect":
     case "read-app-file":
     case "edit-app-file":
     case "check-problems":

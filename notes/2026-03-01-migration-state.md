@@ -370,3 +370,42 @@ Then continue the migration plan from `Sprint 11`, unless the smoke suite or Win
    - Supabase
    - Neon
    - Vercel
+
+## Sprint 11 Wave 12
+
+1. Started the GitHub section with an intentionally narrow API/read-only and local-disconnect wave instead of mixing OAuth device flow, remote git orchestration, and branch mutation in one step.
+2. Newly bridged Tauri invoke channels:
+   - `github:list-repos`
+   - `github:get-repo-branches`
+   - `github:is-repo-available`
+   - `github:list-collaborators`
+   - `github:disconnect`
+3. The Rust implementation reuses existing Tauri-side sources of truth:
+   - GitHub token comes from `user-settings.json`
+   - linked repo metadata for collaborators/disconnect comes from `sqlite.db`
+   - test-mode GitHub API base honors `E2E_TEST_BUILD` and `FAKE_LLM_PORT`
+4. This wave deliberately does not port:
+   - GitHub device flow
+   - repo creation/connection flows
+   - push/fetch/pull/rebase
+   - local/remote branch mutation
+   - clone/import flows
+5. A local docs issue now tracks the unresolved help-bot OSS decision, and a dedicated planned sprint now exists for `chat:count-tokens` because that path is too dependency-heavy to hide inside a small bridge wave.
+
+## Sprint 11 Wave 12 Validation
+
+1. `npx oxfmt --write src/ipc/runtime/core_domain_channels.ts src/ipc/runtime/bootstrap_tauri_core_bridge.ts e2e-tests/helpers/tauri_smoke_fixtures.ts src/__tests__/tauri_wave_o_bridge.test.ts` passed.
+2. `cargo fmt` passed in `src-tauri`.
+3. `npm run lint` passed.
+4. `npm run ts` passed.
+5. `npx vitest run src/__tests__/tauri_wave_o_bridge.test.ts` passed.
+6. `cargo check` passed in `src-tauri`.
+
+## Next Resume Point After Wave 12
+
+1. The next GitHub layer should stay capability-grouped rather than chasing single channels:
+   - `GitHub device flow + auth lifecycle`
+   - `GitHub repo creation/connection`
+   - `GitHub branch and sync orchestration`
+2. The heaviest remaining non-GitHub workspace gap is still `chat:count-tokens`.
+3. The help bot remains intentionally undecided and must not be ported blindly.

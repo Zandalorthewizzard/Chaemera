@@ -14,6 +14,7 @@ mod wave_k_domains;
 mod wave_l_domains;
 mod wave_m_domains;
 mod wave_n_domains;
+mod wave_o_domains;
 
 use tauri::Manager;
 
@@ -35,6 +36,11 @@ pub fn run() {
             wave_j_domains::get_app,
             wave_j_domains::list_apps,
             wave_n_domains::search_app,
+            wave_o_domains::github_list_repos,
+            wave_o_domains::github_get_repo_branches,
+            wave_o_domains::github_is_repo_available,
+            wave_o_domains::github_list_collaborators,
+            wave_o_domains::github_disconnect,
             wave_g_domains::nodejs_status,
             wave_g_domains::select_node_folder,
             wave_g_domains::get_node_path,
