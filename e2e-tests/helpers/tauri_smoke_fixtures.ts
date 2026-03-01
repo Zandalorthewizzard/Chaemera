@@ -122,6 +122,17 @@ const tauriCommandToChannel = {
   vercel_connect_existing_project: "vercel:connect-existing-project",
   vercel_get_deployments: "vercel:get-deployments",
   vercel_disconnect: "vercel:disconnect",
+  get_language_model_providers: "get-language-model-providers",
+  get_language_models: "get-language-models",
+  get_language_models_by_providers: "get-language-models-by-providers",
+  create_custom_language_model_provider:
+    "create-custom-language-model-provider",
+  edit_custom_language_model_provider: "edit-custom-language-model-provider",
+  delete_custom_language_model_provider:
+    "delete-custom-language-model-provider",
+  create_custom_language_model: "create-custom-language-model",
+  delete_custom_language_model: "delete-custom-language-model",
+  delete_custom_model: "delete-custom-model",
   get_themes: "get-themes",
   set_app_theme: "set-app-theme",
   get_app_theme: "get-app-theme",
@@ -307,6 +318,108 @@ export const test = base.extend<{
           ],
         ]);
         let nextPromptId = 2;
+        const languageModelProvidersById = new Map<
+          string,
+          {
+            id: string;
+            name: string;
+            hasFreeTier?: boolean;
+            websiteUrl?: string;
+            gatewayPrefix?: string;
+            secondary?: boolean;
+            envVarName?: string;
+            apiBaseUrl?: string;
+            type: "custom" | "local" | "cloud";
+          }
+        >([
+          [
+            "openai",
+            {
+              id: "openai",
+              name: "OpenAI",
+              websiteUrl: "https://platform.openai.com/api-keys",
+              gatewayPrefix: "",
+              envVarName: "OPENAI_API_KEY",
+              hasFreeTier: false,
+              type: "cloud",
+            },
+          ],
+          [
+            "auto",
+            {
+              id: "auto",
+              name: "Dyad",
+              websiteUrl: "https://academy.dyad.sh/subscription",
+              gatewayPrefix: "dyad/",
+              type: "cloud",
+            },
+          ],
+          [
+            "ollama",
+            {
+              id: "ollama",
+              name: "Ollama",
+              hasFreeTier: true,
+              type: "local",
+            },
+          ],
+          [
+            "lmstudio",
+            {
+              id: "lmstudio",
+              name: "LM Studio",
+              hasFreeTier: true,
+              type: "local",
+            },
+          ],
+        ]);
+        const languageModelsByProvider = new Map<
+          string,
+          Array<{
+            id?: number;
+            apiName: string;
+            displayName: string;
+            description?: string;
+            tag?: string;
+            tagColor?: string;
+            maxOutputTokens?: number;
+            contextWindow?: number;
+            temperature?: number;
+            dollarSigns?: number;
+            type?: "custom" | "cloud";
+          }>
+        >([
+          [
+            "openai",
+            [
+              {
+                apiName: "gpt-5.2",
+                displayName: "GPT 5.2",
+                description: "OpenAI's latest model",
+                contextWindow: 400_000,
+                temperature: 1,
+                dollarSigns: 3,
+                type: "cloud",
+              },
+            ],
+          ],
+          [
+            "auto",
+            [
+              {
+                apiName: "auto",
+                displayName: "Auto",
+                description: "Automatically selects the best model",
+                tag: "Default",
+                maxOutputTokens: 32_000,
+                contextWindow: 200_000,
+                temperature: 0,
+                type: "cloud",
+              },
+            ],
+          ],
+        ]);
+        let nextCustomLanguageModelId = 1;
         const plansById = new Map<
           string,
           {
@@ -1404,11 +1517,171 @@ export const test = base.extend<{
             case "get-env-vars":
               return {};
             case "get-language-model-providers":
-              return [];
-            case "get-language-models":
-              return [];
-            case "get-language-models-by-providers":
-              return {};
+              return Array.from(languageModelProvidersById.values());
+            case "get-language-models": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const providerId = String(request?.providerId ?? "");
+              const provider = languageModelProvidersById.get(providerId);
+              if (!provider) {
+                throw new Error(`Provider with ID "${providerId}" not found`);
+              }
+              if (provider.type === "local") {
+                throw new Error("Local models cannot be fetched");
+              }
+              return languageModelsByProvider.get(providerId) ?? [];
+            }
+            case "get-language-models-by-providers": {
+              const modelsByProviders: Record<string, unknown[]> = {};
+              for (const provider of languageModelProvidersById.values()) {
+                if (provider.type === "local") {
+                  continue;
+                }
+                modelsByProviders[provider.id] =
+                  languageModelsByProvider.get(provider.id) ?? [];
+              }
+              return modelsByProviders;
+            }
+            case "create-custom-language-model-provider": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const rawId = String(request?.id ?? "").trim();
+              const storedId = `custom::${rawId}`;
+              const provider = {
+                id: storedId,
+                name: String(request?.name ?? "").trim(),
+                apiBaseUrl: String(request?.apiBaseUrl ?? "").trim(),
+                envVarName:
+                  typeof request?.envVarName === "string"
+                    ? request.envVarName
+                    : undefined,
+                type: "custom" as const,
+              };
+              languageModelProvidersById.set(storedId, provider);
+              languageModelsByProvider.set(storedId, []);
+              return {
+                id: rawId,
+                name: provider.name,
+                apiBaseUrl: provider.apiBaseUrl,
+                envVarName: provider.envVarName,
+                type: "custom",
+              };
+            }
+            case "edit-custom-language-model-provider": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const rawId = String(request?.id ?? "").trim();
+              const storedId = `custom::${rawId}`;
+              const existing = languageModelProvidersById.get(storedId);
+              if (!existing) {
+                throw new Error(`Provider with ID "${rawId}" not found`);
+              }
+              const updated = {
+                ...existing,
+                name: String(request?.name ?? existing.name).trim(),
+                apiBaseUrl:
+                  typeof request?.apiBaseUrl === "string"
+                    ? request.apiBaseUrl.trim()
+                    : existing.apiBaseUrl,
+                envVarName:
+                  typeof request?.envVarName === "string"
+                    ? request.envVarName
+                    : undefined,
+              };
+              languageModelProvidersById.set(storedId, updated);
+              return {
+                id: rawId,
+                name: updated.name,
+                apiBaseUrl: updated.apiBaseUrl,
+                envVarName: updated.envVarName,
+                type: "custom",
+              };
+            }
+            case "delete-custom-language-model-provider": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const providerId = String(request?.providerId ?? "").trim();
+              languageModelProvidersById.delete(providerId);
+              languageModelsByProvider.delete(providerId);
+              return;
+            }
+            case "create-custom-language-model": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const providerId = String(request?.providerId ?? "").trim();
+              const provider = languageModelProvidersById.get(providerId);
+              if (!provider) {
+                throw new Error(`Provider with ID "${providerId}" not found`);
+              }
+              if (provider.type === "local") {
+                throw new Error("Local models cannot be customized");
+              }
+              const existingModels =
+                languageModelsByProvider.get(providerId) ?? [];
+              languageModelsByProvider.set(providerId, [
+                ...existingModels,
+                {
+                  id: nextCustomLanguageModelId++,
+                  apiName: String(request?.apiName ?? ""),
+                  displayName: String(request?.displayName ?? ""),
+                  description:
+                    typeof request?.description === "string"
+                      ? request.description
+                      : "",
+                  maxOutputTokens:
+                    typeof request?.maxOutputTokens === "number"
+                      ? request.maxOutputTokens
+                      : undefined,
+                  contextWindow:
+                    typeof request?.contextWindow === "number"
+                      ? request.contextWindow
+                      : undefined,
+                  type: "custom",
+                },
+              ]);
+              return;
+            }
+            case "delete-custom-language-model": {
+              const modelId = String(payload ?? "").trim();
+              for (const [providerId, models] of languageModelsByProvider) {
+                const nextModels = models.filter(
+                  (model) =>
+                    !(model.type === "custom" && model.apiName === modelId),
+                );
+                if (nextModels.length !== models.length) {
+                  languageModelsByProvider.set(providerId, nextModels);
+                  return;
+                }
+              }
+              throw new Error(
+                `A model with API name (modelId) "${modelId}" was not found`,
+              );
+            }
+            case "delete-custom-model": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const providerId = String(request?.providerId ?? "").trim();
+              const modelApiName = String(request?.modelApiName ?? "").trim();
+              const provider = languageModelProvidersById.get(providerId);
+              if (!provider) {
+                throw new Error(`Provider with ID "${providerId}" not found`);
+              }
+              if (provider.type === "local") {
+                throw new Error("Local models cannot be deleted");
+              }
+              const existingModels =
+                languageModelsByProvider.get(providerId) ?? [];
+              languageModelsByProvider.set(
+                providerId,
+                existingModels.filter(
+                  (model) =>
+                    !(
+                      model.type === "custom" && model.apiName === modelApiName
+                    ),
+                ),
+              );
+              return;
+            }
             case "does-release-note-exist":
               return { exists: false };
             case "nodejs-status":

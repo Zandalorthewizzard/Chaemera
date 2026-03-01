@@ -1,0 +1,435 @@
+{
+  "MODEL_OPTIONS": {
+    "openai": [
+      {
+        "name": "gpt-5.2",
+        "displayName": "GPT 5.2",
+        "description": "OpenAI's latest model",
+        "contextWindow": 400000,
+        "temperature": 1,
+        "dollarSigns": 3
+      },
+      {
+        "name": "gpt-5.1",
+        "displayName": "GPT 5.1",
+        "description": "OpenAI's flagship model- smarter, faster, and more conversational",
+        "contextWindow": 400000,
+        "temperature": 1,
+        "dollarSigns": 3
+      },
+      {
+        "name": "gpt-5.1-codex",
+        "displayName": "GPT 5.1 Codex",
+        "description": "OpenAI's advanced coding workflows",
+        "contextWindow": 400000,
+        "temperature": 1,
+        "dollarSigns": 3
+      },
+      {
+        "name": "gpt-5.1-codex-mini",
+        "displayName": "GPT 5.1 Codex Mini",
+        "description": "OpenAI's compact and efficient coding model",
+        "contextWindow": 400000,
+        "temperature": 1,
+        "dollarSigns": 2
+      },
+      {
+        "name": "gpt-5",
+        "displayName": "GPT 5",
+        "description": "OpenAI's flagship model",
+        "contextWindow": 400000,
+        "temperature": 1,
+        "dollarSigns": 3
+      },
+      {
+        "name": "gpt-5-codex",
+        "displayName": "GPT 5 Codex",
+        "description": "OpenAI's flagship model optimized for coding",
+        "contextWindow": 400000,
+        "temperature": 1,
+        "dollarSigns": 3
+      },
+      {
+        "name": "gpt-5-mini",
+        "displayName": "GPT 5 Mini",
+        "description": "OpenAI's lightweight, but intelligent model",
+        "contextWindow": 400000,
+        "temperature": 1,
+        "dollarSigns": 2
+      }
+    ],
+    "anthropic": [
+      {
+        "name": "claude-opus-4-6",
+        "displayName": "Claude Opus 4.6",
+        "description": "Anthropic's best model for coding (note: this model is very expensive!)",
+        "maxOutputTokens": 32000,
+        "contextWindow": 1000000,
+        "temperature": 0,
+        "dollarSigns": 6
+      },
+      {
+        "name": "claude-opus-4-5",
+        "displayName": "Claude Opus 4.5",
+        "description": "Anthropic's best model for coding (note: this model is very expensive!)",
+        "maxOutputTokens": 32000,
+        "contextWindow": 200000,
+        "temperature": 0,
+        "dollarSigns": 5
+      },
+      {
+        "name": "claude-sonnet-4-5-20250929",
+        "displayName": "Claude Sonnet 4.5",
+        "description": "Anthropic's best model for coding (note: >200k tokens is very expensive!)",
+        "maxOutputTokens": 32000,
+        "contextWindow": 1000000,
+        "temperature": 0,
+        "dollarSigns": 5
+      },
+      {
+        "name": "claude-sonnet-4-20250514",
+        "displayName": "Claude Sonnet 4",
+        "description": "Excellent coder (note: >200k tokens is very expensive!)",
+        "maxOutputTokens": 32000,
+        "contextWindow": 1000000,
+        "temperature": 0,
+        "dollarSigns": 5
+      }
+    ],
+    "google": [
+      {
+        "name": "gemini-3-pro-preview",
+        "displayName": "Gemini 3 Pro (Preview)",
+        "description": "Google's latest Gemini model",
+        "maxOutputTokens": 65535,
+        "contextWindow": 1048576,
+        "temperature": 1,
+        "dollarSigns": 4
+      },
+      {
+        "name": "gemini-3-flash-preview",
+        "displayName": "Gemini 3 Flash (Preview)",
+        "description": "Powerful coding model at a good price",
+        "maxOutputTokens": 65535,
+        "contextWindow": 1048576,
+        "temperature": 1,
+        "dollarSigns": 2
+      },
+      {
+        "name": "gemini-2.5-pro",
+        "displayName": "Gemini 2.5 Pro",
+        "description": "Google's Gemini 2.5 Pro model",
+        "maxOutputTokens": 65535,
+        "contextWindow": 1048576,
+        "temperature": 0,
+        "dollarSigns": 3
+      },
+      {
+        "name": "gemini-flash-latest",
+        "displayName": "Gemini 2.5 Flash",
+        "description": "Google's Gemini 2.5 Flash model (free tier available)",
+        "maxOutputTokens": 65535,
+        "contextWindow": 1048576,
+        "temperature": 0,
+        "dollarSigns": 2
+      }
+    ],
+    "vertex": [
+      {
+        "name": "gemini-2.5-pro",
+        "displayName": "Gemini 2.5 Pro",
+        "description": "Vertex Gemini 2.5 Pro",
+        "maxOutputTokens": 65535,
+        "contextWindow": 1048576,
+        "temperature": 0
+      },
+      {
+        "name": "gemini-flash-latest",
+        "displayName": "Gemini 2.5 Flash",
+        "description": "Vertex Gemini 2.5 Flash",
+        "maxOutputTokens": 65535,
+        "contextWindow": 1048576,
+        "temperature": 0
+      }
+    ],
+    "openrouter": [
+      {
+        "name": "openrouter/free",
+        "displayName": "Free (OpenRouter)",
+        "description": "Uses one of the free OpenRouter models (data may be used for training)",
+        "maxOutputTokens": 32000,
+        "contextWindow": 200000,
+        "temperature": 0,
+        "dollarSigns": 0
+      },
+      {
+        "name": "moonshotai/kimi-k2.5",
+        "displayName": "Kimi K2.5",
+        "description": "Moonshot AI's latest and most capable model",
+        "maxOutputTokens": 32000,
+        "contextWindow": 256000,
+        "temperature": 1,
+        "dollarSigns": 2
+      },
+      {
+        "name": "z-ai/glm-5",
+        "displayName": "GLM 5",
+        "description": "Z-AI's best coding model",
+        "maxOutputTokens": 32000,
+        "contextWindow": 200000,
+        "temperature": 0.7,
+        "dollarSigns": 2
+      },
+      {
+        "name": "z-ai/glm-4.7",
+        "displayName": "GLM 4.7",
+        "description": "Z-AI's coding model",
+        "maxOutputTokens": 32000,
+        "contextWindow": 200000,
+        "temperature": 0.7,
+        "dollarSigns": 2
+      },
+      {
+        "name": "qwen/qwen3-coder",
+        "displayName": "Qwen3 Coder",
+        "description": "Qwen's best coding model",
+        "maxOutputTokens": 32000,
+        "contextWindow": 262000,
+        "temperature": 0,
+        "dollarSigns": 2
+      },
+      {
+        "name": "deepseek/deepseek-chat-v3.1",
+        "displayName": "DeepSeek v3.1",
+        "description": "Strong cost-effective model with optional thinking",
+        "maxOutputTokens": 32000,
+        "contextWindow": 128000,
+        "temperature": 0,
+        "dollarSigns": 2
+      }
+    ],
+    "auto": [
+      {
+        "name": "auto",
+        "displayName": "Auto",
+        "description": "Automatically selects the best model",
+        "tag": "Default",
+        "maxOutputTokens": 32000,
+        "contextWindow": 200000,
+        "temperature": 0
+      },
+      {
+        "name": "free",
+        "displayName": "Free (OpenRouter)",
+        "description": "Selects from one of the free OpenRouter models",
+        "tag": "Free",
+        "maxOutputTokens": 32000,
+        "contextWindow": 128000,
+        "temperature": 0
+      },
+      {
+        "name": "turbo",
+        "displayName": "Turbo (Pro)",
+        "description": "Use very fast open-source frontier models",
+        "maxOutputTokens": 32000,
+        "contextWindow": 256000,
+        "temperature": 0,
+        "tag": "Fast",
+        "tagColor": "bg-rose-800 text-white"
+      },
+      {
+        "name": "value",
+        "displayName": "Super Value (Pro)",
+        "description": "Uses the most cost-effective models available",
+        "maxOutputTokens": 32000,
+        "contextWindow": 256000,
+        "temperature": 0,
+        "tag": "Budget",
+        "tagColor": "bg-emerald-700 text-white"
+      }
+    ],
+    "azure": [
+      {
+        "name": "gpt-5.1",
+        "displayName": "GPT-5.1",
+        "description": "Azure OpenAI GPT-5.1 model",
+        "contextWindow": 400000,
+        "temperature": 1
+      },
+      {
+        "name": "gpt-5.1-codex",
+        "displayName": "GPT-5.1 Codex",
+        "description": "Azure OpenAI GPT-5.1 Codex model",
+        "contextWindow": 400000,
+        "temperature": 1
+      },
+      {
+        "name": "gpt-5.1-codex-mini",
+        "displayName": "GPT-5.1 Codex Mini",
+        "description": "Azure OpenAI GPT-5.1 Codex Mini model",
+        "contextWindow": 400000,
+        "temperature": 1
+      },
+      {
+        "name": "gpt-5-codex",
+        "displayName": "GPT-5 Codex",
+        "description": "Azure OpenAI GPT-5 Codex model",
+        "contextWindow": 400000,
+        "temperature": 1
+      },
+      {
+        "name": "gpt-5",
+        "displayName": "GPT-5",
+        "description": "Azure OpenAI GPT-5 model with reasoning capabilities",
+        "contextWindow": 400000,
+        "temperature": 1
+      },
+      {
+        "name": "gpt-5-mini",
+        "displayName": "GPT-5 Mini",
+        "description": "Azure OpenAI GPT-5 Mini model",
+        "contextWindow": 400000,
+        "temperature": 1
+      },
+      {
+        "name": "gpt-5-nano",
+        "displayName": "GPT-5 Nano",
+        "description": "Azure OpenAI GPT-5 Nano model",
+        "contextWindow": 400000,
+        "temperature": 1
+      },
+      {
+        "name": "gpt-5-chat",
+        "displayName": "GPT-5 Chat",
+        "description": "Azure OpenAI GPT-5 Chat model",
+        "contextWindow": 128000,
+        "temperature": 1
+      }
+    ],
+    "xai": [
+      {
+        "name": "grok-code-fast-1",
+        "displayName": "Grok Code Fast",
+        "description": "Fast coding model",
+        "maxOutputTokens": 32000,
+        "contextWindow": 256000,
+        "temperature": 0,
+        "dollarSigns": 1
+      },
+      {
+        "name": "grok-4",
+        "displayName": "Grok 4",
+        "description": "Most capable coding model",
+        "maxOutputTokens": 32000,
+        "contextWindow": 256000,
+        "temperature": 0,
+        "dollarSigns": 4
+      },
+      {
+        "name": "grok-3",
+        "displayName": "Grok 3",
+        "description": "Powerful coding model",
+        "maxOutputTokens": 32000,
+        "contextWindow": 131072,
+        "temperature": 0,
+        "dollarSigns": 4
+      }
+    ],
+    "bedrock": [
+      {
+        "name": "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+        "displayName": "Claude 4.5 Sonnet",
+        "description": "Anthropic's best model for coding (note: >200k tokens is very expensive!)",
+        "maxOutputTokens": 32000,
+        "contextWindow": 1000000,
+        "temperature": 0
+      },
+      {
+        "name": "us.anthropic.claude-sonnet-4-20250514-v1:0",
+        "displayName": "Claude 4 Sonnet",
+        "description": "Excellent coder (note: >200k tokens is very expensive!)",
+        "maxOutputTokens": 32000,
+        "contextWindow": 1000000,
+        "temperature": 0
+      }
+    ]
+  },
+  "PROVIDER_TO_ENV_VAR": {
+    "openai": "OPENAI_API_KEY",
+    "anthropic": "ANTHROPIC_API_KEY",
+    "google": "GEMINI_API_KEY",
+    "openrouter": "OPENROUTER_API_KEY",
+    "azure": "AZURE_API_KEY",
+    "xai": "XAI_API_KEY",
+    "bedrock": "AWS_BEARER_TOKEN_BEDROCK"
+  },
+  "CLOUD_PROVIDERS": {
+    "openai": {
+      "displayName": "OpenAI",
+      "hasFreeTier": false,
+      "websiteUrl": "https://platform.openai.com/api-keys",
+      "gatewayPrefix": ""
+    },
+    "anthropic": {
+      "displayName": "Anthropic",
+      "hasFreeTier": false,
+      "websiteUrl": "https://console.anthropic.com/settings/keys",
+      "gatewayPrefix": "anthropic/"
+    },
+    "google": {
+      "displayName": "Google",
+      "hasFreeTier": true,
+      "websiteUrl": "https://aistudio.google.com/app/apikey",
+      "gatewayPrefix": "gemini/"
+    },
+    "vertex": {
+      "displayName": "Google Vertex AI",
+      "hasFreeTier": false,
+      "websiteUrl": "https://console.cloud.google.com/vertex-ai",
+      "gatewayPrefix": "gemini/",
+      "secondary": true
+    },
+    "openrouter": {
+      "displayName": "OpenRouter",
+      "hasFreeTier": true,
+      "websiteUrl": "https://openrouter.ai/settings/keys",
+      "gatewayPrefix": "openrouter/"
+    },
+    "auto": {
+      "displayName": "Dyad",
+      "websiteUrl": "https://academy.dyad.sh/subscription",
+      "gatewayPrefix": "dyad/"
+    },
+    "azure": {
+      "displayName": "Azure OpenAI",
+      "hasFreeTier": false,
+      "websiteUrl": "https://portal.azure.com/",
+      "gatewayPrefix": "",
+      "secondary": true
+    },
+    "xai": {
+      "displayName": "xAI",
+      "hasFreeTier": false,
+      "websiteUrl": "https://console.x.ai/",
+      "gatewayPrefix": "xai/",
+      "secondary": true
+    },
+    "bedrock": {
+      "displayName": "AWS Bedrock",
+      "hasFreeTier": false,
+      "websiteUrl": "https://console.aws.amazon.com/bedrock/",
+      "gatewayPrefix": "bedrock/",
+      "secondary": true
+    }
+  },
+  "LOCAL_PROVIDERS": {
+    "ollama": {
+      "displayName": "Ollama",
+      "hasFreeTier": true
+    },
+    "lmstudio": {
+      "displayName": "LM Studio",
+      "hasFreeTier": true
+    }
+  }
+}

@@ -24,6 +24,7 @@ mod wave_u_domains;
 mod wave_v_domains;
 mod wave_w_domains;
 mod wave_x_domains;
+mod wave_y_domains;
 
 use tauri::Manager;
 
@@ -156,6 +157,15 @@ pub fn run() {
             wave_x_domains::vercel_connect_existing_project,
             wave_x_domains::vercel_get_deployments,
             wave_x_domains::vercel_disconnect,
+            wave_y_domains::get_language_model_providers,
+            wave_y_domains::get_language_models,
+            wave_y_domains::get_language_models_by_providers,
+            wave_y_domains::create_custom_language_model_provider,
+            wave_y_domains::edit_custom_language_model_provider,
+            wave_y_domains::delete_custom_language_model_provider,
+            wave_y_domains::create_custom_language_model,
+            wave_y_domains::delete_custom_language_model,
+            wave_y_domains::delete_custom_model,
             wave_d_domains::local_models_list_ollama,
             wave_d_domains::local_models_list_lmstudio,
             wave_e_domains::get_themes,

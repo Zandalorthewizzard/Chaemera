@@ -675,3 +675,38 @@ Then continue the migration plan from `Sprint 11`, unless the smoke suite or Win
 4. `npx vitest run src/__tests__/tauri_wave_x_bridge.test.ts` passed.
 5. `npm run lint` passed.
 6. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe check --manifest-path src-tauri/Cargo.toml` passed.
+
+## Sprint 11 Wave 22
+
+1. Added a dedicated Tauri `language-model` wave covering the remaining provider/model contract surface:
+   - `get-language-model-providers`
+   - `get-language-models`
+   - `get-language-models-by-providers`
+   - `create-custom-language-model-provider`
+   - `edit-custom-language-model-provider`
+   - `delete-custom-language-model-provider`
+   - `create-custom-language-model`
+   - `delete-custom-language-model`
+   - `delete-custom-model`
+2. The Tauri implementation keeps hardcoded provider/model catalog data in a compile-time JSON asset:
+   - `src-tauri/catalog_assets/language_models.json`
+   - generated from the current TypeScript source catalog to avoid hand-copying the model matrix into Rust
+3. The Rust path now mirrors the current Electron-side data split:
+   - hardcoded cloud/local providers from the catalog asset
+   - custom providers and custom models from `sqlite.db`
+   - cloud providers can still have DB-backed custom models appended after builtin models
+4. Renderer/Tauri bridge coverage and smoke harness coverage were extended so the full language-model contract surface exists coherently in Tauri smoke mode.
+5. This wave intentionally keeps the current branded `auto` provider in the migrated catalog for parity; removing or replacing that provider is still a separate OSS/product cleanup decision.
+6. One deliberate behavior change versus the old Electron handler:
+   - Tauri now rejects creating custom models for local providers with `Local models cannot be customized`
+   - the old Electron path could silently create unusable orphan rows for that case
+
+## Sprint 11 Wave 22 Validation
+
+1. `npx oxfmt --write src/ipc/runtime/core_domain_channels.ts src/ipc/runtime/bootstrap_tauri_core_bridge.ts e2e-tests/helpers/tauri_smoke_fixtures.ts src/__tests__/tauri_wave_y_bridge.test.ts` passed.
+2. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe fmt --manifest-path src-tauri/Cargo.toml` passed.
+3. `npm run ts` passed.
+4. `npm run lint` passed.
+5. `npx vitest run src/__tests__/tauri_wave_y_bridge.test.ts` passed.
+6. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe check --manifest-path src-tauri/Cargo.toml` passed.
+7. A fresh contract audit reduced the remaining unmapped contract count to `59`.

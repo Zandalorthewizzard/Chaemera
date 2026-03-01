@@ -61,6 +61,17 @@ export const TAURI_MIGRATION_CHANNEL_TO_COMMAND = {
   "vercel:connect-existing-project": "vercel_connect_existing_project",
   "vercel:get-deployments": "vercel_get_deployments",
   "vercel:disconnect": "vercel_disconnect",
+  "get-language-model-providers": "get_language_model_providers",
+  "get-language-models": "get_language_models",
+  "get-language-models-by-providers": "get_language_models_by_providers",
+  "create-custom-language-model-provider":
+    "create_custom_language_model_provider",
+  "edit-custom-language-model-provider": "edit_custom_language_model_provider",
+  "delete-custom-language-model-provider":
+    "delete_custom_language_model_provider",
+  "create-custom-language-model": "create_custom_language_model",
+  "delete-custom-language-model": "delete_custom_language_model",
+  "delete-custom-model": "delete_custom_model",
   "local-models:list-ollama": "local_models_list_ollama",
   "local-models:list-lmstudio": "local_models_list_lmstudio",
   "get-themes": "get_themes",

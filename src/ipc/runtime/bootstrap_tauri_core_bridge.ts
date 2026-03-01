@@ -170,6 +170,18 @@ export function buildTauriInvokeArgs(
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "get-app-theme":
       return payloadRecord ? { request: payloadRecord } : undefined;
+    case "get-language-models":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "create-custom-language-model-provider":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "edit-custom-language-model-provider":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "delete-custom-language-model-provider":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "create-custom-language-model":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "delete-custom-model":
+      return payloadRecord ? { request: payloadRecord } : undefined;
     case "create-custom-theme":
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "update-custom-theme":
@@ -236,6 +248,8 @@ export function buildTauriInvokeArgs(
       return typeof payload === "number" ? { chatId: payload } : undefined;
     case "prompts:delete":
       return typeof payload === "number" ? { promptId: payload } : undefined;
+    case "delete-custom-language-model":
+      return typeof payload === "string" ? { modelId: payload } : undefined;
     case "github:disconnect":
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "git:get-uncommitted-files":
@@ -363,6 +377,12 @@ export function canInvokeViaTauri(channel: string, payload: unknown): boolean {
     case "search-chats":
     case "set-app-theme":
     case "get-app-theme":
+    case "get-language-models":
+    case "create-custom-language-model-provider":
+    case "edit-custom-language-model-provider":
+    case "delete-custom-language-model-provider":
+    case "create-custom-language-model":
+    case "delete-custom-model":
     case "create-custom-theme":
     case "update-custom-theme":
     case "delete-custom-theme":
@@ -394,6 +414,7 @@ export function canInvokeViaTauri(channel: string, payload: unknown): boolean {
     case "prompts:create":
     case "prompts:update":
     case "prompts:delete":
+    case "delete-custom-language-model":
     case "github:disconnect":
     case "git:get-uncommitted-files":
     case "git:commit-changes":
