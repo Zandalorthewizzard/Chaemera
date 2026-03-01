@@ -9,6 +9,7 @@ mod wave_ae_domains;
 mod wave_af_domains;
 mod wave_ag_domains;
 mod wave_ah_domains;
+mod wave_ai_domains;
 mod wave_b_domains;
 mod wave_c_domains;
 mod wave_d_domains;
@@ -165,6 +166,7 @@ pub fn run() {
             wave_c_domains::chat_stream,
             wave_c_domains::chat_cancel,
             wave_w_domains::chat_count_tokens,
+            wave_ai_domains::chat_add_dep,
             wave_c_domains::agent_tool_get_tools,
             wave_c_domains::agent_tool_set_consent,
             wave_c_domains::agent_tool_consent_response,

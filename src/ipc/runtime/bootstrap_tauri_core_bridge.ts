@@ -170,6 +170,8 @@ export function buildTauriInvokeArgs(
       return typeof payload === "string" ? { query: payload } : undefined;
     case "update-chat":
       return payloadRecord ? { request: payloadRecord } : undefined;
+    case "chat:add-dep":
+      return payloadRecord ? { request: payloadRecord } : undefined;
     case "search-chats":
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "set-app-theme":
@@ -421,6 +423,7 @@ export function canInvokeViaTauri(channel: string, payload: unknown): boolean {
     case "update-app-commands":
     case "check-app-name":
     case "update-chat":
+    case "chat:add-dep":
     case "delete-chat":
     case "delete-messages":
     case "search-chats":

@@ -67,6 +67,7 @@ const tauriCommandToChannel = {
   delete_messages: "delete-messages",
   search_chats: "search-chats",
   chat_count_tokens: "chat:count-tokens",
+  chat_add_dep: "chat:add-dep",
   nodejs_status: "nodejs-status",
   select_node_folder: "select-node-folder",
   get_node_path: "get-node-path",
@@ -1003,6 +1004,34 @@ export const test = base.extend<{
                   };
                 })
                 .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+            }
+            case "chat:add-dep": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const chatId = Number(request?.chatId ?? 0);
+              const packages = Array.isArray(request?.packages)
+                ? (request.packages as string[])
+                : [];
+              const chat = chatsById.get(chatId);
+              if (!chat) {
+                throw new Error(`Chat not found: ${chatId}`);
+              }
+              const packageTag = `<dyad-add-dependency packages="${packages.join(
+                " ",
+              )}">`;
+              chat.messages = chat.messages.map((message) =>
+                message.content.includes(packageTag)
+                  ? {
+                      ...message,
+                      content: message.content.replace(
+                        packageTag,
+                        `${packageTag}installed in tauri smoke\n`,
+                      ),
+                    }
+                  : message,
+              );
+              chatsById.set(chatId, { ...chat });
+              return;
             }
             case "chat:count-tokens": {
               const request = (payload as { request?: Record<string, unknown> })

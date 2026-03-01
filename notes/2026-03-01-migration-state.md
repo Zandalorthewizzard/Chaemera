@@ -990,3 +990,25 @@ Current lock:
 5. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe fmt --manifest-path src-tauri/Cargo.toml` passed.
 6. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe check --manifest-path src-tauri/Cargo.toml` passed.
 7. A fresh contract audit reduced the remaining unmapped contract count to `31`.
+
+## Sprint 11 Wave 32
+
+1. Added a focused Tauri `chat:add-dep` wave covering:
+   - `chat:add-dep`
+2. The new Rust path preserves the current Electron behavior closely:
+   - resolves the app by `chatId`
+   - finds the latest matching assistant message containing the exact dependency tag
+   - runs `pnpm add ...` with `npm install --legacy-peer-deps ...` fallback
+   - writes the install output back into the original `<dyad-add-dependency>` tag in the stored message
+3. The Tauri implementation now reuses the same custom-node/PATH strategy as the rest of the desktop utility layer, so dependency installs respect user-selected Node locations.
+4. The Tauri smoke harness now knows `chat:add-dep` and mutates the in-memory chat message so the bridge surface stays coherent.
+
+## Sprint 11 Wave 32 Validation
+
+1. `npx oxfmt --write src/ipc/runtime/core_domain_channels.ts src/ipc/runtime/bootstrap_tauri_core_bridge.ts src/__tests__/tauri_wave_ai_bridge.test.ts e2e-tests/helpers/tauri_smoke_fixtures.ts` passed.
+2. `npm run ts` passed.
+3. `npm run lint` passed.
+4. `npx vitest run src/__tests__/tauri_wave_ai_bridge.test.ts` passed.
+5. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe fmt --manifest-path src-tauri/Cargo.toml` passed.
+6. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe check --manifest-path src-tauri/Cargo.toml` passed.
+7. A fresh contract audit reduced the remaining unmapped contract count to `30`.
