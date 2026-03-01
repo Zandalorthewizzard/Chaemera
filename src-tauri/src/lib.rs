@@ -4,6 +4,7 @@ mod sqlite_support;
 mod wave_aa_domains;
 mod wave_ab_domains;
 mod wave_ac_domains;
+mod wave_ad_domains;
 mod wave_b_domains;
 mod wave_c_domains;
 mod wave_d_domains;
@@ -56,6 +57,7 @@ pub fn run() {
             wave_ac_domains::sync_capacitor,
             wave_ac_domains::open_ios,
             wave_ac_domains::open_android,
+            wave_ad_domains::import_app,
             wave_j_domains::get_app,
             wave_j_domains::list_apps,
             wave_n_domains::search_app,

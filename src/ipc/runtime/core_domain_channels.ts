@@ -14,6 +14,7 @@ export const TAURI_MIGRATION_CHANNEL_TO_COMMAND = {
   "sync-capacitor": "sync_capacitor",
   "open-ios": "open_ios",
   "open-android": "open_android",
+  "import-app": "import_app",
   "create-app": "create_app",
   "get-app": "get_app",
   "list-apps": "list_apps",

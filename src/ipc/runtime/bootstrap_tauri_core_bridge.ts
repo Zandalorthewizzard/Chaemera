@@ -186,6 +186,8 @@ export function buildTauriInvokeArgs(
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "open-android":
       return payloadRecord ? { request: payloadRecord } : undefined;
+    case "import-app":
+      return payloadRecord ? { request: payloadRecord } : undefined;
     case "get-language-models":
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "create-custom-language-model-provider":
@@ -417,6 +419,7 @@ export function canInvokeViaTauri(channel: string, payload: unknown): boolean {
     case "sync-capacitor":
     case "open-ios":
     case "open-android":
+    case "import-app":
     case "get-language-models":
     case "create-custom-language-model-provider":
     case "edit-custom-language-model-provider":

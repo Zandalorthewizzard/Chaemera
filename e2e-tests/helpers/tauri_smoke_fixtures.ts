@@ -77,6 +77,7 @@ const tauriCommandToChannel = {
   sync_capacitor: "sync-capacitor",
   open_ios: "open-ios",
   open_android: "open-android",
+  import_app: "import-app",
   check_app_name: "check-app-name",
   show_item_in_folder: "show-item-in-folder",
   clear_session_data: "clear-session-data",
@@ -1791,6 +1792,84 @@ export const test = base.extend<{
                 throw new Error("Capacitor is not installed in this app");
               }
               return;
+            }
+            case "import-app": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const appName = String(request?.appName ?? "").trim();
+              const sourcePath = String(request?.path ?? "").trim();
+              if (!appName || !sourcePath) {
+                throw new Error("Source folder does not exist");
+              }
+              if (
+                Array.from(appsById.values()).some(
+                  (app) => app.name === appName,
+                )
+              ) {
+                throw new Error("An app with this name already exists");
+              }
+
+              const now = new Date().toISOString();
+              const appId = nextAppId++;
+              const storedPath =
+                request?.skipCopy === true ? sourcePath : appName;
+              appsById.set(appId, {
+                id: appId,
+                name: appName,
+                path: storedPath,
+                createdAt: now,
+                updatedAt: now,
+                githubOrg: null,
+                githubRepo: null,
+                githubBranch: null,
+                supabaseProjectId: null,
+                supabaseParentProjectId: null,
+                supabaseOrganizationSlug: null,
+                neonProjectId: null,
+                neonDevelopmentBranchId: null,
+                neonPreviewBranchId: null,
+                vercelProjectId: null,
+                vercelProjectName: null,
+                vercelDeploymentUrl: null,
+                vercelTeamId: null,
+                installCommand:
+                  typeof request?.installCommand === "string" &&
+                  request.installCommand.trim()
+                    ? request.installCommand.trim()
+                    : null,
+                startCommand:
+                  typeof request?.startCommand === "string" &&
+                  request.startCommand.trim()
+                    ? request.startCommand.trim()
+                    : null,
+                isFavorite: false,
+                resolvedPath:
+                  request?.skipCopy === true
+                    ? sourcePath
+                    : `C:/Apps/${appName}`,
+                files: ["package.json", "src/main.tsx"],
+                supabaseProjectName: null,
+                vercelTeamSlug: null,
+              });
+              appEnvVarsByAppId.set(appId, []);
+              chatContextsByAppId.set(appId, {
+                contextPaths: [],
+                smartContextAutoIncludes: [],
+                excludePaths: [],
+              });
+              const chatId = nextChatId++;
+              chatsById.set(chatId, {
+                id: chatId,
+                appId,
+                title: "",
+                createdAt: now,
+                initialCommitHash: null,
+                messages: [],
+              });
+              return {
+                appId,
+                chatId,
+              };
             }
             case "get-language-model-providers":
               return Array.from(languageModelProvidersById.values());

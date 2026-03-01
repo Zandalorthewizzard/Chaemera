@@ -837,3 +837,29 @@ Then continue the migration plan from `Sprint 11`, unless the smoke suite or Win
 5. `npx vitest run src/__tests__/tauri_wave_ac_bridge.test.ts` passed.
 6. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe check --manifest-path src-tauri/Cargo.toml` passed.
 7. A fresh contract audit reduced the remaining unmapped contract count to `39`.
+
+## Sprint 11 Wave 27
+
+1. Added a focused Tauri onboarding/import wave for:
+   - `import-app`
+2. The new Rust implementation preserves the existing Electron behavior:
+   - validates that the source folder exists
+   - respects `skipCopy`
+   - copies the app into the standard `~/dyad-apps/<appName>` workspace when `skipCopy` is false
+   - initializes a git repo and initial commit when the imported app is not already a git repository
+   - inserts the imported app into `sqlite.db`
+   - creates the initial chat row
+   - returns the same `{ appId, chatId }` result shape
+3. The Tauri smoke harness now supports `import-app` coherently by creating an in-memory app + chat pair and carrying through the requested install/start commands.
+4. One deliberate behavior change versus upstream/Dyad naming:
+   - the initial import commit message is now `Init Chaemera app`, matching the fork branding policy instead of reusing the original product name
+
+## Sprint 11 Wave 27 Validation
+
+1. `npx oxfmt --write src/ipc/runtime/core_domain_channels.ts src/ipc/runtime/bootstrap_tauri_core_bridge.ts e2e-tests/helpers/tauri_smoke_fixtures.ts src/__tests__/tauri_wave_ad_bridge.test.ts` passed.
+2. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe fmt --manifest-path src-tauri/Cargo.toml` passed.
+3. `npm run ts` passed.
+4. `npm run lint` passed.
+5. `npx vitest run src/__tests__/tauri_wave_ad_bridge.test.ts` passed.
+6. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe check --manifest-path src-tauri/Cargo.toml` passed.
+7. A fresh contract audit reduced the remaining unmapped contract count to `38`.
