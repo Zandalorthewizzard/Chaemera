@@ -8,6 +8,7 @@ export const TAURI_MIGRATION_CHANNEL_TO_COMMAND = {
   "get-env-vars": "get_env_vars",
   "get-app-env-vars": "get_app_env_vars",
   "set-app-env-vars": "set_app_env_vars",
+  "portal:migrate-create": "portal_migrate_create",
   "get-context-paths": "get_context_paths",
   "set-context-paths": "set_context_paths",
   "get-proposal": "get_proposal",

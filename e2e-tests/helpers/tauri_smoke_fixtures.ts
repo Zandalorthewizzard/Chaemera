@@ -50,6 +50,7 @@ const tauriCommandToChannel = {
   get_app_version: "get-app-version",
   get_latest_security_review: "get-latest-security-review",
   get_session_debug_bundle: "get-session-debug-bundle",
+  portal_migrate_create: "portal:migrate-create",
   get_proposal: "get-proposal",
   reject_proposal: "reject-proposal",
   free_agent_quota_get_status: "free-agent-quota:get-status",
@@ -785,6 +786,11 @@ export const test = base.extend<{
                 logs: "",
               };
             }
+            case "portal:migrate-create":
+              return {
+                output:
+                  "Migration created at drizzle/0001_smoke.sql\n\n[chaemera] staged and committed migration changes.",
+              };
             case "get-proposal":
               return null;
             case "reject-proposal": {

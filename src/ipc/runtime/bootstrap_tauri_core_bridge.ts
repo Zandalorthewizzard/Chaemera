@@ -98,6 +98,8 @@ export function buildTauriInvokeArgs(
       return typeof payload === "number" ? { appId: payload } : undefined;
     case "set-user-settings":
       return payloadRecord ? { patch: payloadRecord } : undefined;
+    case "portal:migrate-create":
+      return payloadRecord ? { request: payloadRecord } : undefined;
     case "get-proposal":
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "reject-proposal":
@@ -408,6 +410,7 @@ export function canInvokeViaTauri(channel: string, payload: unknown): boolean {
   const mappedArgs = buildTauriInvokeArgs(channel, payload);
   switch (channel) {
     case "set-user-settings":
+    case "portal:migrate-create":
     case "create-app":
     case "get-app":
     case "get-latest-security-review":

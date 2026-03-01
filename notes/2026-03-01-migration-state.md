@@ -1036,3 +1036,27 @@ Current lock:
 5. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe fmt --manifest-path src-tauri/Cargo.toml` passed.
 6. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe check --manifest-path src-tauri/Cargo.toml` passed.
 7. A fresh contract audit reduced the remaining unmapped contract count to `29`.
+
+## Sprint 11 Wave 34
+
+1. Added a focused Tauri `portal` migration wave covering:
+   - `portal:migrate-create`
+2. The new Rust path preserves the core Electron workflow:
+   - runs `npm run migrate:create -- --skip-empty` inside the app workspace
+   - auto-responds to the drizzle rename prompt by writing Enter to stdin when the known prompt text appears
+   - stages all resulting changes and commits them automatically
+3. This wave keeps the git-author behavior deterministic in the Tauri path using the same Chaemera fallback identity pattern used in the earlier git/upgrade waves.
+4. Neon timestamp persistence is currently `best-effort` in this Tauri path:
+   - linked apps still upsert a version record before the post-migration commit
+   - the timestamp currently uses local UTC instead of querying Neon directly
+   - exact Neon DB clock parity remains a follow-up debt to revisit alongside `revert-version`
+
+## Sprint 11 Wave 34 Validation
+
+1. `npx oxfmt --write src/ipc/runtime/core_domain_channels.ts src/ipc/runtime/bootstrap_tauri_core_bridge.ts src/__tests__/tauri_wave_ak_bridge.test.ts e2e-tests/helpers/tauri_smoke_fixtures.ts` passed.
+2. `npm run ts` passed.
+3. `npm run lint` passed.
+4. `npx vitest run src/__tests__/tauri_wave_ak_bridge.test.ts` passed.
+5. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe fmt --manifest-path src-tauri/Cargo.toml` passed.
+6. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe check --manifest-path src-tauri/Cargo.toml` passed.
+7. A fresh contract audit reduced the remaining unmapped contract count to `28`.

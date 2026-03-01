@@ -11,6 +11,7 @@ mod wave_ag_domains;
 mod wave_ah_domains;
 mod wave_ai_domains;
 mod wave_aj_domains;
+mod wave_ak_domains;
 mod wave_b_domains;
 mod wave_c_domains;
 mod wave_d_domains;
@@ -62,6 +63,7 @@ pub fn run() {
             wave_ab_domains::get_env_vars,
             wave_ab_domains::get_app_env_vars,
             wave_ab_domains::set_app_env_vars,
+            wave_ak_domains::portal_migrate_create,
             wave_ab_domains::get_context_paths,
             wave_ab_domains::set_context_paths,
             wave_ac_domains::is_capacitor,
