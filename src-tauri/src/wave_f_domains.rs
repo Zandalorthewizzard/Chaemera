@@ -459,6 +459,21 @@ fn stop_running_app(app_id: i64) -> Result<(), String> {
     Ok(())
 }
 
+pub(crate) fn stop_all_running_apps() -> Result<(), String> {
+    let app_ids = {
+        let guard = running_apps()
+            .lock()
+            .map_err(|_| "running apps mutex poisoned".to_string())?;
+        guard.keys().copied().collect::<Vec<_>>()
+    };
+
+    for app_id in app_ids {
+        let _ = stop_running_app(app_id);
+    }
+
+    Ok(())
+}
+
 fn remove_node_modules_if_requested(app_path: &str, should_remove: bool) -> Result<(), String> {
     if !should_remove {
         return Ok(());

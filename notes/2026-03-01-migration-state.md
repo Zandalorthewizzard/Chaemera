@@ -125,3 +125,21 @@ Then continue the migration plan from `Sprint 11`, unless the smoke suite or Win
 3. `npm run lint` passed.
 4. `cargo check` passed in `src-tauri`.
 5. Full `npm run build` was intentionally deferred after a manual stop because concurrent `.NET Runtime Optimization Service` activity was saturating CPU on the host machine and heavily skewing build duration.
+
+## Sprint 11 Wave 4
+
+1. Added a focused Tauri `reset-all` bridge so the settings-level full reset action no longer depends on Electron for the destructive cleanup path.
+2. Added a shared `stop_all_running_apps()` helper in `src-tauri/src/wave_f_domains.rs` so reset can terminate tracked Tauri-run app processes before deleting runtime state.
+3. Implemented Tauri-side reset cleanup for:
+   - `sqlite.db` under the app data directory
+   - `user-settings.json`
+   - the `~/dyad-apps` workspace directory, recreated empty after deletion
+4. Left `take-screenshot` untouched; it remains outside the migrated Tauri surface for now.
+
+## Sprint 11 Wave 4 Validation
+
+1. `npx vitest run src/__tests__/tauri_wave_h_bridge.test.ts src/__tests__/tauri_wave_g_bridge.test.ts` passed.
+2. `npm run ts` passed.
+3. `npx oxfmt --write ...` passed for the touched TypeScript files.
+4. `cargo fmt` passed in `src-tauri`.
+5. A fresh `cargo check` re-run was attempted but timed out under heavy host CPU contention while `.NET Runtime Optimization Service` was still active, so Rust compile revalidation for this exact wave remains deferred.

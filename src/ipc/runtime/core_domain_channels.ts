@@ -51,6 +51,7 @@ export const TAURI_MIGRATION_CHANNEL_TO_COMMAND = {
   "check-problems": "check_problems",
   "show-item-in-folder": "show_item_in_folder",
   "clear-session-data": "clear_session_data",
+  "reset-all": "reset_all",
   "reload-env-path": "reload_env_path",
   "does-release-note-exist": "does_release_note_exist",
   "get-user-budget": "get_user_budget",

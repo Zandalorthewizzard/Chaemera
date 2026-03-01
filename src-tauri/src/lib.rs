@@ -6,6 +6,7 @@ mod wave_d_domains;
 mod wave_e_domains;
 mod wave_f_domains;
 mod wave_g_domains;
+mod wave_h_domains;
 
 use tauri::Manager;
 
@@ -47,6 +48,7 @@ pub fn run() {
             wave_f_domains::clear_logs,
             wave_g_domains::show_item_in_folder,
             wave_g_domains::clear_session_data,
+            wave_h_domains::reset_all,
             wave_g_domains::reload_env_path,
             wave_g_domains::does_release_note_exist,
             wave_g_domains::get_user_budget,
