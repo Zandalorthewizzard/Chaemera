@@ -5,6 +5,7 @@ mod wave_c_domains;
 mod wave_d_domains;
 mod wave_e_domains;
 mod wave_f_domains;
+mod wave_g_domains;
 
 use tauri::Manager;
 
@@ -21,7 +22,11 @@ pub fn run() {
             core_domains::window_maximize,
             core_domains::window_close,
             core_domains::get_system_platform,
+            wave_g_domains::get_system_debug_info,
             core_domains::get_app_version,
+            wave_g_domains::nodejs_status,
+            wave_g_domains::select_node_folder,
+            wave_g_domains::get_node_path,
             core_domains::get_user_settings,
             core_domains::set_user_settings,
             wave_b_domains::select_app_folder,
@@ -40,6 +45,13 @@ pub fn run() {
             wave_f_domains::check_problems,
             wave_f_domains::add_log,
             wave_f_domains::clear_logs,
+            wave_g_domains::show_item_in_folder,
+            wave_g_domains::clear_session_data,
+            wave_g_domains::reload_env_path,
+            wave_g_domains::does_release_note_exist,
+            wave_g_domains::get_user_budget,
+            wave_g_domains::upload_to_signed_url,
+            wave_g_domains::restart_dyad,
             wave_f_domains::open_external_url,
             wave_c_domains::chat_stream,
             wave_c_domains::chat_cancel,

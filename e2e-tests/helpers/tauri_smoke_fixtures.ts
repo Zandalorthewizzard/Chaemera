@@ -46,9 +46,20 @@ const tauriCommandToChannel = {
   window_maximize: "window:maximize",
   window_close: "window:close",
   get_system_platform: "get-system-platform",
+  get_system_debug_info: "get-system-debug-info",
   get_app_version: "get-app-version",
+  nodejs_status: "nodejs-status",
+  select_node_folder: "select-node-folder",
+  get_node_path: "get-node-path",
   get_user_settings: "get-user-settings",
   set_user_settings: "set-user-settings",
+  show_item_in_folder: "show-item-in-folder",
+  clear_session_data: "clear-session-data",
+  reload_env_path: "reload-env-path",
+  does_release_note_exist: "does-release-note-exist",
+  get_user_budget: "get-user-budget",
+  upload_to_signed_url: "upload-to-signed-url",
+  restart_dyad: "restart-dyad",
   get_themes: "get-themes",
   generate_theme_prompt: "generate-theme-prompt",
   generate_theme_from_url: "generate-theme-from-url",
@@ -140,6 +151,22 @@ export const test = base.extend<{
               return { version: "0.37.0-beta.2-tauri-smoke" };
             case "get-system-platform":
               return "tauri-smoke";
+            case "get-system-debug-info":
+              return {
+                nodeVersion: "v24.0.0",
+                pnpmVersion: "9.0.0",
+                nodePath: "C:/Program Files/nodejs/node.exe",
+                telemetryId: "tauri-smoke-user",
+                telemetryConsent: "unset",
+                telemetryUrl: "https://us.i.posthog.com",
+                dyadVersion: "0.37.0-beta.2-tauri-smoke",
+                platform: "tauri-smoke",
+                architecture: "x64",
+                logs: "",
+                selectedLanguageModel: "auto:auto",
+              };
+            case "get-node-path":
+              return "C:/Program Files/nodejs/node.exe";
             case "get-user-budget":
               return null;
             case "free-agent-quota:get-status":
@@ -171,11 +198,19 @@ export const test = base.extend<{
                 pnpmVersion: "9.0.0",
                 nodeDownloadUrl: "https://nodejs.org/",
               };
+            case "select-node-folder":
+              return {
+                path: "C:/Program Files/nodejs",
+                canceled: false,
+                selectedPath: "C:/Program Files/nodejs",
+              };
             case "open-external-url":
               if (typeof payload === "string") {
                 state.externalUrls.push(payload);
               }
               return;
+            case "show-item-in-folder":
+            case "upload-to-signed-url":
             case "window:minimize":
             case "window:maximize":
             case "window:close":
@@ -251,14 +286,14 @@ export const test = base.extend<{
                     : routeId === "app-details"
                       ? "App Details"
                       : routeId === "provider-settings" && providerId
-                  ? `Provider Setup: ${providerId}`
-                  : routeId === "library"
-                    ? "Library"
-                    : routeId === "themes"
-                      ? "Themes"
-                    : routeId === "help"
-                      ? "Help"
-                      : "Settings";
+                        ? `Provider Setup: ${providerId}`
+                        : routeId === "library"
+                          ? "Library"
+                          : routeId === "themes"
+                            ? "Themes"
+                            : routeId === "help"
+                              ? "Help"
+                              : "Settings";
               return {
                 routeId,
                 title,

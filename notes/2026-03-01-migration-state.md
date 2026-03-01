@@ -98,3 +98,30 @@ Then continue the migration plan from `Sprint 11`, unless the smoke suite or Win
 1. Verify the real Tauri preview proxy path at runtime once a Tauri launcher path is in active use, not only through `cargo check`.
 2. Continue the remaining Sprint 11 contract gap cleanup, especially Electron-only app/system invokes outside the preview/problems path.
 3. Revisit final Electron/Forge removal only after those remaining runtime contracts are either ported or intentionally dropped.
+
+## Sprint 11 Wave 3
+
+1. Added a new Tauri system utility wave for non-DB shell/runtime commands:
+   - `get-system-debug-info`
+   - `nodejs-status`
+   - `select-node-folder`
+   - `get-node-path`
+   - `show-item-in-folder`
+   - `clear-session-data`
+   - `reload-env-path`
+   - `does-release-note-exist`
+   - `get-user-budget`
+   - `upload-to-signed-url`
+   - `restart-dyad`
+2. Reused the existing OSS-safe semantics where appropriate instead of reintroducing branded/pro-only behavior:
+   - `get-user-budget` remains `null`
+   - `does-release-note-exist` returns `{ exists: false }` in the Tauri path instead of probing branded Dyad release-note URLs
+3. Extended the Tauri smoke harness with stub coverage for the new system utility channels so the bridge can be exercised without a full native run.
+
+## Sprint 11 Wave 3 Validation
+
+1. `npx vitest run src/__tests__/tauri_wave_f_bridge.test.ts src/__tests__/tauri_wave_g_bridge.test.ts` passed.
+2. `npm run ts` passed.
+3. `npm run lint` passed.
+4. `cargo check` passed in `src-tauri`.
+5. Full `npm run build` was intentionally deferred after a manual stop because concurrent `.NET Runtime Optimization Service` activity was saturating CPU on the host machine and heavily skewing build duration.

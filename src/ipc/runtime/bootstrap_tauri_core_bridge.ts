@@ -78,6 +78,8 @@ export function buildTauriInvokeArgs(
   switch (channel) {
     case "set-user-settings":
       return payloadRecord ? { patch: payloadRecord } : undefined;
+    case "show-item-in-folder":
+      return typeof payload === "string" ? { fullPath: payload } : undefined;
     case "select-app-location":
       return payloadRecord?.defaultPath
         ? { defaultPath: payloadRecord.defaultPath }
@@ -175,6 +177,8 @@ export function buildTauriInvokeArgs(
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "chat:stream":
       return payloadRecord ? { request: payloadRecord } : undefined;
+    case "does-release-note-exist":
+    case "upload-to-signed-url":
     case "agent-tool:set-consent":
     case "agent-tool:consent-response":
     case "mcp:create-server":
@@ -213,6 +217,7 @@ export function canInvokeViaTauri(channel: string, payload: unknown): boolean {
   const mappedArgs = buildTauriInvokeArgs(channel, payload);
   switch (channel) {
     case "set-user-settings":
+    case "show-item-in-folder":
     case "check-ai-rules":
     case "read-app-file":
     case "edit-app-file":
@@ -236,6 +241,8 @@ export function canInvokeViaTauri(channel: string, payload: unknown): boolean {
     case "mcp:tool-consent-response":
     case "vercel:save-token":
     case "vercel:is-project-available":
+    case "does-release-note-exist":
+    case "upload-to-signed-url":
     case "generate-theme-prompt":
     case "generate-theme-from-url":
     case "save-theme-image":
