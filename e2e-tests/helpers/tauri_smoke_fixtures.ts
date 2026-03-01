@@ -78,6 +78,8 @@ const tauriCommandToChannel = {
   open_ios: "open-ios",
   open_android: "open-android",
   import_app: "import-app",
+  get_app_upgrades: "get-app-upgrades",
+  execute_app_upgrade: "execute-app-upgrade",
   check_app_name: "check-app-name",
   show_item_in_folder: "show-item-in-folder",
   clear_session_data: "clear-session-data",
@@ -91,6 +93,7 @@ const tauriCommandToChannel = {
   update_app_commands: "update-app-commands",
   change_app_location: "change-app-location",
   rename_branch: "rename-branch",
+  checkout_version: "checkout-version",
   plan_create: "plan:create",
   plan_get: "plan:get",
   plan_get_for_chat: "plan:get-for-chat",
@@ -1871,6 +1874,30 @@ export const test = base.extend<{
                 chatId,
               };
             }
+            case "get-app-upgrades":
+              return [
+                {
+                  id: "component-tagger",
+                  title: "Enable select component to edit",
+                  description:
+                    "Installs the component tagger Vite plugin and its dependencies.",
+                  manualUpgradeUrl:
+                    "https://dyad.sh/docs/upgrades/select-component",
+                  isNeeded: true,
+                },
+                {
+                  id: "capacitor",
+                  title: "Upgrade to hybrid mobile app with Capacitor",
+                  description:
+                    "Adds Capacitor so the app can run on iOS and Android in addition to the web.",
+                  manualUpgradeUrl:
+                    "https://dyad.sh/docs/guides/mobile-app#upgrade-your-app",
+                  isNeeded: true,
+                },
+              ];
+            case "execute-app-upgrade":
+            case "checkout-version":
+              return;
             case "get-language-model-providers":
               return Array.from(languageModelProvidersById.values());
             case "get-language-models": {

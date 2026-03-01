@@ -188,6 +188,12 @@ export function buildTauriInvokeArgs(
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "import-app":
       return payloadRecord ? { request: payloadRecord } : undefined;
+    case "get-app-upgrades":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "execute-app-upgrade":
+      return payloadRecord ? { request: payloadRecord } : undefined;
+    case "checkout-version":
+      return payloadRecord ? { request: payloadRecord } : undefined;
     case "get-language-models":
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "create-custom-language-model-provider":
@@ -420,6 +426,8 @@ export function canInvokeViaTauri(channel: string, payload: unknown): boolean {
     case "open-ios":
     case "open-android":
     case "import-app":
+    case "get-app-upgrades":
+    case "execute-app-upgrade":
     case "get-language-models":
     case "create-custom-language-model-provider":
     case "edit-custom-language-model-provider":
@@ -481,6 +489,7 @@ export function canInvokeViaTauri(channel: string, payload: unknown): boolean {
     case "change-app-location":
     case "list-versions":
     case "get-current-branch":
+    case "checkout-version":
     case "rename-branch":
     case "run-app":
     case "restart-app":

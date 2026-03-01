@@ -299,6 +299,80 @@ fn neon_api_error(response: Response) -> String {
     }
 }
 
+pub fn resolve_neon_connection_uri(
+    app: &AppHandle,
+    project_id: &str,
+    branch_id: &str,
+) -> Result<String, String> {
+    if is_test_build() {
+        return Ok("postgresql://test:test@test.neon.tech/test".to_string());
+    }
+
+    let token = neon_access_token(app)?;
+    let client = neon_client()?;
+    let response = client
+        .get(format!(
+            "{NEON_API_BASE}/projects/{project_id}/connection_uri"
+        ))
+        .query(&[
+            ("branch_id", branch_id),
+            ("database_name", "neondb"),
+            ("role_name", "neondb_owner"),
+        ])
+        .header(AUTHORIZATION, format!("Bearer {token}"))
+        .send()
+        .map_err(|error| format!("failed to fetch Neon connection URI: {error}"))?;
+
+    if !response.status().is_success() {
+        return Err(neon_api_error(response));
+    }
+
+    let payload = response
+        .json::<Value>()
+        .map_err(|error| format!("failed to parse Neon connection URI response: {error}"))?;
+
+    payload
+        .get("uri")
+        .and_then(Value::as_str)
+        .map(str::to_string)
+        .ok_or_else(|| "Failed to resolve Neon connection URI".to_string())
+}
+
+pub fn restore_neon_project_branch(
+    app: &AppHandle,
+    project_id: &str,
+    branch_id: &str,
+    source_branch_id: &str,
+    source_timestamp: &str,
+) -> Result<(), String> {
+    if is_test_build() {
+        return Ok(());
+    }
+
+    let token = neon_access_token(app)?;
+    let client = neon_client()?;
+    let response = send_with_locked_retry(|| {
+        client
+            .post(format!(
+                "{NEON_API_BASE}/projects/{project_id}/branches/{branch_id}/restore"
+            ))
+            .header(AUTHORIZATION, format!("Bearer {token}"))
+            .header(CONTENT_TYPE, "application/json")
+            .json(&json!({
+                "source_branch_id": source_branch_id,
+                "source_timestamp": source_timestamp,
+            }))
+            .send()
+            .map_err(|error| format!("failed to restore Neon branch: {error}"))
+    })?;
+
+    if !response.status().is_success() {
+        return Err(neon_api_error(response));
+    }
+
+    Ok(())
+}
+
 fn send_with_locked_retry<F>(mut operation: F) -> Result<Response, String>
 where
     F: FnMut() -> Result<Response, String>,

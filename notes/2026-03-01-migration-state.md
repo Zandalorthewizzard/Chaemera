@@ -863,3 +863,35 @@ Then continue the migration plan from `Sprint 11`, unless the smoke suite or Win
 5. `npx vitest run src/__tests__/tauri_wave_ad_bridge.test.ts` passed.
 6. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe check --manifest-path src-tauri/Cargo.toml` passed.
 7. A fresh contract audit reduced the remaining unmapped contract count to `38`.
+
+## Sprint 11 Wave 28
+
+1. Added a focused Tauri `upgrade + checkout-version` wave covering:
+   - `get-app-upgrades`
+   - `execute-app-upgrade`
+   - `checkout-version`
+2. The new Rust upgrade path preserves the current Electron-side product model:
+   - component-tagger upgrade still inspects and edits `vite.config.{ts,js}`
+   - component-tagger still installs `@dyad-sh/react-vite-component-tagger` with `pnpm` fallback to `npm`
+   - Capacitor upgrade still installs dependencies, runs `cap init`, and adds both mobile platforms
+3. The Tauri path now uses fork-neutral git commit messages for app-local upgrade commits:
+   - `[chaemera] add component tagger`
+   - `[chaemera] add Capacitor for mobile app support`
+4. `checkout-version` now has a real Tauri path for the non-destructive version-switch workflow:
+   - plain git checkout for normal app histories
+   - Neon-aware branch/env switching for apps with stored Neon linkage
+   - `.env.local` updates for `POSTGRES_URL` and `DYAD_DISABLE_DB_PUSH`
+5. `revert-version` remains intentionally unmigrated for now because it still carries the heavier coupled side-effects:
+   - chat-message pruning
+   - DB timestamp mutation
+   - Supabase edge-function redeploy after revert
+
+## Sprint 11 Wave 28 Validation
+
+1. `npx oxfmt --write src/ipc/runtime/core_domain_channels.ts src/ipc/runtime/bootstrap_tauri_core_bridge.ts src/__tests__/tauri_wave_ae_bridge.test.ts e2e-tests/helpers/tauri_smoke_fixtures.ts` passed.
+2. `npm run ts` passed.
+3. `npm run lint` passed.
+4. `npx vitest run src/__tests__/tauri_wave_ae_bridge.test.ts` passed.
+5. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe fmt --manifest-path src-tauri/Cargo.toml` passed.
+6. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe check --manifest-path src-tauri/Cargo.toml` passed.
+7. This wave closes 3 more invoke channels and leaves `revert-version` as the intentional remainder of the version-management surface.

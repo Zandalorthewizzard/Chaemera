@@ -5,6 +5,7 @@ mod wave_aa_domains;
 mod wave_ab_domains;
 mod wave_ac_domains;
 mod wave_ad_domains;
+mod wave_ae_domains;
 mod wave_b_domains;
 mod wave_c_domains;
 mod wave_d_domains;
@@ -58,6 +59,8 @@ pub fn run() {
             wave_ac_domains::open_ios,
             wave_ac_domains::open_android,
             wave_ad_domains::import_app,
+            wave_ae_domains::get_app_upgrades,
+            wave_ae_domains::execute_app_upgrade,
             wave_j_domains::get_app,
             wave_j_domains::list_apps,
             wave_n_domains::search_app,
@@ -103,6 +106,7 @@ pub fn run() {
             wave_b_domains::read_app_file,
             wave_b_domains::search_app_files,
             wave_b_domains::list_versions,
+            wave_ae_domains::checkout_version,
             wave_b_domains::get_current_branch,
             wave_f_domains::run_app,
             wave_f_domains::stop_app,
