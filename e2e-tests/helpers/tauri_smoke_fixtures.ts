@@ -115,6 +115,13 @@ const tauriCommandToChannel = {
   github_disconnect: "github:disconnect",
   git_get_uncommitted_files: "git:get-uncommitted-files",
   git_commit_changes: "git:commit-changes",
+  vercel_save_token: "vercel:save-token",
+  vercel_list_projects: "vercel:list-projects",
+  vercel_is_project_available: "vercel:is-project-available",
+  vercel_create_project: "vercel:create-project",
+  vercel_connect_existing_project: "vercel:connect-existing-project",
+  vercel_get_deployments: "vercel:get-deployments",
+  vercel_disconnect: "vercel:disconnect",
   get_themes: "get-themes",
   set_app_theme: "set-app-theme",
   get_app_theme: "get-app-theme",
@@ -165,17 +172,17 @@ export const test = base.extend<{
             neonProjectId: null;
             neonDevelopmentBranchId: null;
             neonPreviewBranchId: null;
-            vercelProjectId: null;
-            vercelProjectName: null;
-            vercelDeploymentUrl: null;
-            vercelTeamId: null;
+            vercelProjectId: string | null;
+            vercelProjectName: string | null;
+            vercelDeploymentUrl: string | null;
+            vercelTeamId: string | null;
             installCommand: string | null;
             startCommand: string | null;
             isFavorite: boolean;
             resolvedPath: string;
             files: string[];
             supabaseProjectName: null;
-            vercelTeamSlug: null;
+            vercelTeamSlug: string | null;
           }
         >([
           [
@@ -1152,6 +1159,148 @@ export const test = base.extend<{
               return [];
             case "git:commit-changes":
               return "abcdef1234567890";
+            case "vercel:save-token": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const token = String(request?.token ?? "").trim();
+              if (!token) {
+                throw new Error("Access token is required.");
+              }
+              state.settings = {
+                ...state.settings,
+                vercelAccessToken: {
+                  value: token,
+                },
+              };
+              return;
+            }
+            case "vercel:list-projects":
+              return [
+                {
+                  id: "prj_smoke_existing",
+                  name: "smoke-existing-project",
+                  framework: "vite",
+                },
+                {
+                  id: "prj_smoke_docs",
+                  name: "smoke-docs-project",
+                  framework: "nextjs",
+                },
+              ];
+            case "vercel:is-project-available": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const name = String(request?.name ?? "").trim();
+              const unavailable = [
+                "smoke-existing-project",
+                ...Array.from(appsById.values())
+                  .map((app) => app.vercelProjectName)
+                  .filter(
+                    (projectName): projectName is string =>
+                      typeof projectName === "string" && projectName.length > 0,
+                  ),
+              ];
+              const available = name.length > 0 && !unavailable.includes(name);
+              return {
+                available,
+                error: available ? undefined : "Project name is not available.",
+              };
+            }
+            case "vercel:create-project": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const appId = Number(request?.appId ?? 0);
+              const name = String(request?.name ?? "").trim();
+              const existing = appsById.get(appId);
+              if (!existing) {
+                throw new Error("App not found.");
+              }
+              if (!existing.githubOrg || !existing.githubRepo) {
+                throw new Error(
+                  "App must be connected to a GitHub repository before creating a Vercel project.",
+                );
+              }
+              appsById.set(appId, {
+                ...existing,
+                vercelProjectId: `prj_${name || "smoke"}`,
+                vercelProjectName: name,
+                vercelTeamId: "team_smoke_default",
+                vercelDeploymentUrl: `https://${name}.vercel.app`,
+                updatedAt: new Date().toISOString(),
+                vercelTeamSlug: "tauri-smoke-team",
+              });
+              return;
+            }
+            case "vercel:connect-existing-project": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const appId = Number(request?.appId ?? 0);
+              const projectId = String(request?.projectId ?? "");
+              const existing = appsById.get(appId);
+              if (!existing) {
+                throw new Error("App not found.");
+              }
+              const projectName =
+                projectId === "prj_smoke_existing"
+                  ? "smoke-existing-project"
+                  : projectId;
+              appsById.set(appId, {
+                ...existing,
+                vercelProjectId: projectId,
+                vercelProjectName: projectName,
+                vercelTeamId: "team_smoke_default",
+                vercelDeploymentUrl: `https://${projectName}.vercel.app`,
+                updatedAt: new Date().toISOString(),
+                vercelTeamSlug: "tauri-smoke-team",
+              });
+              return;
+            }
+            case "vercel:get-deployments": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const appId = Number(request?.appId ?? 0);
+              const existing = appsById.get(appId);
+              if (!existing?.vercelProjectId) {
+                throw new Error("App is not linked to a Vercel project.");
+              }
+              return [
+                {
+                  uid: "dpl_smoke_ready",
+                  url: `${existing.vercelProjectName}.vercel.app`,
+                  state: "READY",
+                  createdAt: Date.parse("2026-03-01T00:10:00Z"),
+                  target: "production",
+                  readyState: "READY",
+                },
+                {
+                  uid: "dpl_smoke_building",
+                  url: `${existing.vercelProjectName}-preview.vercel.app`,
+                  state: "BUILDING",
+                  createdAt: Date.parse("2026-03-01T00:12:00Z"),
+                  target: "preview",
+                  readyState: "BUILDING",
+                },
+              ];
+            }
+            case "vercel:disconnect": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const appId = Number(request?.appId ?? 0);
+              const existing = appsById.get(appId);
+              if (!existing) {
+                throw new Error("App not found");
+              }
+              appsById.set(appId, {
+                ...existing,
+                vercelProjectId: null,
+                vercelProjectName: null,
+                vercelDeploymentUrl: null,
+                vercelTeamId: null,
+                updatedAt: new Date().toISOString(),
+                vercelTeamSlug: null,
+              });
+              return;
+            }
             case "check-app-name": {
               const request = (payload as { request?: Record<string, unknown> })
                 ?.request;

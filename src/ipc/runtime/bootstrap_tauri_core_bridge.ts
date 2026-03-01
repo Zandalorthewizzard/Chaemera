@@ -310,6 +310,10 @@ export function buildTauriInvokeArgs(
     case "mcp:tool-consent-response":
     case "vercel:save-token":
     case "vercel:is-project-available":
+    case "vercel:create-project":
+    case "vercel:connect-existing-project":
+    case "vercel:get-deployments":
+    case "vercel:disconnect":
     case "generate-theme-prompt":
     case "generate-theme-from-url":
     case "save-theme-image":
@@ -423,6 +427,10 @@ export function canInvokeViaTauri(channel: string, payload: unknown): boolean {
     case "mcp:tool-consent-response":
     case "vercel:save-token":
     case "vercel:is-project-available":
+    case "vercel:create-project":
+    case "vercel:connect-existing-project":
+    case "vercel:get-deployments":
+    case "vercel:disconnect":
     case "does-release-note-exist":
     case "upload-to-signed-url":
     case "generate-theme-prompt":

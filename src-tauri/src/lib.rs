@@ -23,6 +23,7 @@ mod wave_t_domains;
 mod wave_u_domains;
 mod wave_v_domains;
 mod wave_w_domains;
+mod wave_x_domains;
 
 use tauri::Manager;
 
@@ -151,6 +152,10 @@ pub fn run() {
             wave_d_domains::vercel_save_token,
             wave_d_domains::vercel_list_projects,
             wave_d_domains::vercel_is_project_available,
+            wave_x_domains::vercel_create_project,
+            wave_x_domains::vercel_connect_existing_project,
+            wave_x_domains::vercel_get_deployments,
+            wave_x_domains::vercel_disconnect,
             wave_d_domains::local_models_list_ollama,
             wave_d_domains::local_models_list_lmstudio,
             wave_e_domains::get_themes,

@@ -649,3 +649,29 @@ Then continue the migration plan from `Sprint 11`, unless the smoke suite or Win
 4. `npx vitest run src/__tests__/tauri_wave_w_bridge.test.ts` passed.
 5. `npm run lint` passed.
 6. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe check --manifest-path src-tauri/Cargo.toml` passed.
+
+## Sprint 11 Wave 21
+
+1. Closed the remaining Vercel IPC surface in the Tauri path:
+   - `vercel:create-project`
+   - `vercel:connect-existing-project`
+   - `vercel:get-deployments`
+   - `vercel:disconnect`
+2. The new Rust implementation keeps the current Electron-side flow shape instead of inventing a new deployment model:
+   - Vercel token still comes from user settings
+   - project creation still requires an app-linked GitHub repo
+   - framework detection still happens from config files / `package.json`
+   - app linkage still writes `vercelProjectId`, `vercelProjectName`, `vercelTeamId`, and `vercelDeploymentUrl` into `sqlite.db`
+   - disconnect still clears those stored Vercel fields from the app row
+3. Added a best-effort first-deployment trigger after project creation so the Tauri path does not regress behind the current Electron behavior.
+4. The Tauri smoke harness now knows the full Vercel contract surface instead of only carrying the app-shape fields with no command support.
+5. This wave intentionally did not yet solve the separate `vercelTeamSlug` read-side gap in `get-app`; the bridge surface is now complete, but that UI-facing enrichment remains a follow-up read-model concern.
+
+## Sprint 11 Wave 21 Validation
+
+1. `npx oxfmt --write src/ipc/runtime/core_domain_channels.ts src/ipc/runtime/bootstrap_tauri_core_bridge.ts src/__tests__/tauri_wave_x_bridge.test.ts e2e-tests/helpers/tauri_smoke_fixtures.ts` passed.
+2. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe fmt --manifest-path src-tauri/Cargo.toml` passed.
+3. `npm run ts` passed.
+4. `npx vitest run src/__tests__/tauri_wave_x_bridge.test.ts` passed.
+5. `npm run lint` passed.
+6. `C:\\Users\\ZandM\\.cargo\\bin\\cargo.exe check --manifest-path src-tauri/Cargo.toml` passed.
