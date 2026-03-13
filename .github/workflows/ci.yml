@@ -171,6 +171,10 @@ jobs:
         # do not run this on windows (it's redundant)
         if: contains(matrix.os.name, 'macos')
         run: npm run test
+      - name: Audit Tauri cutover coverage
+        # do not run this on windows (it's redundant)
+        if: contains(matrix.os.name, 'macos')
+        run: npm run audit:tauri-cutover
       - name: Build
         env:
           NODE_OPTIONS: "--max-old-space-size=4096"

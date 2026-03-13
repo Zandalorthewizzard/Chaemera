@@ -660,12 +660,22 @@ export const test = base.extend<{
           switch (channel) {
             case "get-user-settings":
               return state.settings;
-            case "set-user-settings":
+            case "set-user-settings": {
+              const patch =
+                typeof payload === "object" &&
+                payload !== null &&
+                "patch" in payload &&
+                typeof (payload as { patch?: unknown }).patch === "object" &&
+                (payload as { patch?: unknown }).patch !== null
+                  ? ((payload as { patch: Record<string, unknown> }).patch ??
+                      {}) as Record<string, unknown>
+                  : ((payload as Record<string, unknown> | null) ?? {});
               state.settings = {
                 ...state.settings,
-                ...(payload as Record<string, unknown>),
+                ...patch,
               };
               return state.settings;
+            }
             case "get-app-version":
               return { version: "0.37.0-beta.2-tauri-smoke" };
             case "get-system-platform":
@@ -2499,11 +2509,21 @@ export const test = base.extend<{
                 canceled: false,
                 selectedPath: "C:/Program Files/nodejs",
               };
-            case "open-external-url":
-              if (typeof payload === "string") {
-                state.externalUrls.push(payload);
+            case "open-external-url": {
+              const url =
+                typeof payload === "string"
+                  ? payload
+                  : typeof payload === "object" &&
+                      payload !== null &&
+                      "url" in payload &&
+                      typeof (payload as { url?: unknown }).url === "string"
+                    ? (payload as { url: string }).url
+                    : null;
+              if (url) {
+                state.externalUrls.push(url);
               }
               return;
+            }
             case "show-item-in-folder":
             case "upload-to-signed-url":
             case "window:minimize":

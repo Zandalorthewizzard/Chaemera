@@ -34,7 +34,7 @@ This checkpoint captures the current migration status and the clarified near-ter
 
 1. Canonical docs still describe an older migration shape and do not yet reflect the later `Sprint 11` waves.
 2. A fresh contract audit is still needed because the last explicit unmapped-channel count in the note is `25` after `Wave 37`, while `Wave 38-41` do not yet include a new audit result.
-3. A milestone regression suite wider than `tauri-smoke` is still needed before final release cutover.
+3. A browser-backed milestone regression suite wider than `tauri-smoke` is now in progress through the named `tauri-regression` lane, but a real Tauri desktop runtime gate is still needed before final release cutover.
 4. `help:chat:*` remains intentionally deferred behind a separate OSS/product decision.
 5. Several partial-parity debts remain explicit in the note:
    - encrypted legacy Electron secrets for Supabase/Neon
@@ -57,6 +57,7 @@ This checkpoint captures the current migration status and the clarified near-ter
 
 1. Reconcile canonical docs with the actual `Sprint 11` execution log.
 2. Run a fresh contract audit to identify the true remaining Electron-only surface.
-3. Define a pragmatic milestone regression suite broader than `tauri-smoke`.
-4. Finish the remaining Tauri cutover and Electron cleanup for the production release.
-5. Revisit Leptos only after the Tauri-first production version is stable and accepted.
+3. Keep widening `tauri-regression` only where it adds real cutover signal.
+4. Introduce at least one real Tauri desktop runtime gate.
+5. Finish the remaining Tauri cutover and Electron cleanup for the production release.
+6. Revisit Leptos only after the Tauri-first production version is stable and accepted.

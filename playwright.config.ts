@@ -25,7 +25,7 @@ function generateWebServerConfigs(): PlaywrightTestConfig["webServer"] {
   }
 
   configs.push({
-    command: "npm run serve:tauri-smoke",
+    command: "npm run serve:tauri-regression",
     url: "http://127.0.0.1:4173",
     reuseExistingServer: !process.env.CI,
   });
@@ -81,11 +81,11 @@ const config: PlaywrightTestConfig = {
   projects: [
     {
       name: "electron-regression",
-      testIgnore: /tauri-smoke\.spec\.ts$/,
+      testIgnore: /tauri-(smoke|regression)\.spec\.ts$/,
     },
     {
-      name: "tauri-smoke",
-      testMatch: /tauri-smoke\.spec\.ts$/,
+      name: "tauri-regression",
+      testMatch: /tauri-(smoke|regression)\.spec\.ts$/,
       use: {
         browserName: "chromium",
         baseURL: "http://127.0.0.1:4173",

@@ -1,7 +1,7 @@
 # Task: Tauri Regression Gate Before Electron Removal
 
 Date: 2026-03-13
-Status: open
+Status: in progress
 Branch: `refactor/leptos-tauri2`
 
 ## Intent
@@ -22,12 +22,19 @@ Current testing is good enough to continue the migration safely, but not good en
 2. Tauri smoke coverage exists in:
    - `e2e-tests/tauri-smoke.spec.ts`
    - `e2e-tests/helpers/tauri_smoke_fixtures.ts`
-3. Recent renderer boundary cleanup is covered by:
+3. A broader browser-backed Tauri regression lane now exists in:
+   - `e2e-tests/tauri-regression.spec.ts`
+   - `playwright.config.ts` project `tauri-regression`
+   - `package.json` scripts `pre:e2e:tauri-regression` and `e2e:tauri-regression`
+4. CI now runs the contract/parity audit explicitly:
+   - `npm run audit:tauri-cutover`
+   - `.github/workflows/ci.yml`
+5. Recent renderer boundary cleanup is covered by:
    - `src/__tests__/app_zoom.test.ts`
 
 ### Why That Is Still Not Enough
 
-1. `tauri-smoke` is a browser harness with a mocked Tauri bridge, not a real packaged or desktop-running Tauri app.
+1. `tauri-regression` is still a browser harness with a mocked Tauri bridge, not a real packaged or desktop-running Tauri app.
 2. Current CI and E2E default flow are still Electron-first:
    - `playwright.config.ts` still contains `electron-regression`
    - `.github/workflows/ci.yml` still builds through Electron harness paths
@@ -45,6 +52,18 @@ The repository does **not** yet have enough risk coverage to safely:
 3. delete `forge.config.ts`
 4. delete Electron packaging scripts
 5. delete Electron regression lanes from CI
+
+## Progress Made In This Pass
+
+1. The old narrow `tauri-smoke` lane has been promoted into a broader named `tauri-regression` lane while keeping backward-compatible aliases.
+2. The widened regression harness now covers:
+   - app create/get/search flows,
+   - chat create/get/list flows,
+   - settings mutation persistence,
+   - deep-link callback delivery through a native-style integration path,
+   - external URL and window-control side-effect channels.
+3. CI now treats `audit:tauri-cutover` as a first-class Tauri parity check.
+4. This reduces cutover risk meaningfully, but does not close the “real desktop runtime” requirement.
 
 ## Required Gate Before Final Electron Removal
 
@@ -112,6 +131,7 @@ When resuming this task:
 4. inspect `.github/workflows/ci.yml`
 5. identify which current E2E flows can be promoted into a real Tauri lane first
 6. only after that plan the deletion of Electron entrypoints
+7. do not confuse the current browser-backed `tauri-regression` lane with the final real-runtime gate
 
 ## Evidence Pointers
 
@@ -119,6 +139,7 @@ When resuming this task:
 2. `src/__tests__/desktop_runtime.test.ts`
 3. `src/__tests__/app_zoom.test.ts`
 4. `e2e-tests/tauri-smoke.spec.ts`
-5. `e2e-tests/helpers/tauri_smoke_fixtures.ts`
-6. `playwright.config.ts`
-7. `.github/workflows/ci.yml`
+5. `e2e-tests/tauri-regression.spec.ts`
+6. `e2e-tests/helpers/tauri_smoke_fixtures.ts`
+7. `playwright.config.ts`
+8. `.github/workflows/ci.yml`

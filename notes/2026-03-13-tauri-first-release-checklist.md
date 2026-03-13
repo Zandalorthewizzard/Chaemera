@@ -38,6 +38,10 @@ Related gate note:
 8. CI build wiring is now more explicit:
    - current desktop build step calls `pre:e2e:electron-regression`
    - Tauri runtime check calls `check:tauri`
+9. The browser-backed Tauri harness is now widened into a named regression lane:
+   - `tauri-regression` runs both `e2e-tests/tauri-smoke.spec.ts` and `e2e-tests/tauri-regression.spec.ts`
+   - compatibility aliases still keep the old `tauri-smoke` script names working
+10. CI now runs `npm run audit:tauri-cutover` as an explicit build-time Tauri parity gate.
 
 ## Decisions Applied In This Pass
 
@@ -69,7 +73,8 @@ Related gate note:
    - `build:electron-harness`
 3. CI is still Electron-first for regression:
    - `.github/workflows/ci.yml`
-   - Playwright default project still includes `electron-regression`
+   - Playwright default project still includes `electron-regression` as the broader desktop lane
+   - the new `tauri-regression` lane is still browser-backed, not a real desktop runtime
 4. There are still Electron-only implementation files that become removable only after script/CI cutover:
    - `src/ipc/handlers/window_handlers.ts`
    - `src/ipc/utils/telemetry.ts`
@@ -97,6 +102,9 @@ Related gate note:
 3. Convert CI from Electron-harness-first to Tauri-first.
 4. Delete `src/main.ts`, `src/preload.ts`, `forge.config.ts`, and Electron-only handlers only after the new Tauri build/test path is working.
 5. Treat `notes/2026-03-13-tauri-regression-gate-before-electron-removal.md` as a hard gate before final Electron removal.
+6. Treat the current `tauri-regression` lane as an intermediate gate only:
+   - it is broader than `tauri-smoke`
+   - it is still not sufficient to delete Electron entrypoints without a real Tauri runtime lane
 
 ## Evidence Pointers
 
@@ -112,3 +120,7 @@ Related gate note:
 4. Tauri channel registry:
    - `src/ipc/runtime/core_domain_channels.ts`
    - `src-tauri/src/lib.rs`
+5. Tauri regression harness:
+   - `playwright.config.ts`
+   - `e2e-tests/tauri-smoke.spec.ts`
+   - `e2e-tests/tauri-regression.spec.ts`
