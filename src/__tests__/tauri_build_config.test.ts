@@ -43,6 +43,9 @@ describe("tauri build config", () => {
     expect(packageJson.scripts["check:tauri"]).toBe(
       "cargo check --manifest-path src-tauri/Cargo.toml",
     );
+    expect(packageJson.scripts["audit:electron-legacy"]).toBe(
+      "node scripts/audit-electron-legacy-surface.js",
+    );
     expect(packageJson.scripts["build:electron-harness"]).toBe(
       "cross-env E2E_TEST_BUILD=true npm run package:electron",
     );

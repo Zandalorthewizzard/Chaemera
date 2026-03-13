@@ -42,6 +42,16 @@ Related gate note:
    - `tauri-regression` runs both `e2e-tests/tauri-smoke.spec.ts` and `e2e-tests/tauri-regression.spec.ts`
    - compatibility aliases still keep the old `tauri-smoke` script names working
 10. CI now runs `npm run audit:tauri-cutover` as an explicit build-time Tauri parity gate.
+11. An Electron legacy inventory command now exists:
+   - `npm run audit:electron-legacy`
+   - use it to drive the next deletion pass instead of relying on ad hoc grep-only review
+12. Current Electron legacy inventory snapshot:
+   - `5` entrypoint/config files still exist: `src/main.ts`, `src/preload.ts`, `forge.config.ts`, `vite.main.config.mts`, `vite.preload.config.mts`
+   - `30` tracked files still import from `electron`
+   - `74` tracked files still import `electron-log`
+   - `7` tracked files still reference Electron Forge
+   - `10` package scripts still point at Electron runtime, packaging, or Electron regression lanes
+   - `2` workflow files still reference Electron build/release paths
 
 ## Decisions Applied In This Pass
 
@@ -100,9 +110,10 @@ Related gate note:
    - ensure Rust + Tauri CLI are available in `PATH`
 2. Introduce verified Tauri-first npm scripts and demote Electron scripts to explicit legacy names.
 3. Convert CI from Electron-harness-first to Tauri-first.
-4. Delete `src/main.ts`, `src/preload.ts`, `forge.config.ts`, and Electron-only handlers only after the new Tauri build/test path is working.
-5. Treat `notes/2026-03-13-tauri-regression-gate-before-electron-removal.md` as a hard gate before final Electron removal.
-6. Treat the current `tauri-regression` lane as an intermediate gate only:
+4. Run `npm run audit:electron-legacy` and use its output to sequence the next Electron deletion pass.
+5. Delete `src/main.ts`, `src/preload.ts`, `forge.config.ts`, and Electron-only handlers only after the new Tauri build/test path is working.
+6. Treat `notes/2026-03-13-tauri-regression-gate-before-electron-removal.md` as a hard gate before final Electron removal.
+7. Treat the current `tauri-regression` lane as an intermediate gate only:
    - it is broader than `tauri-smoke`
    - it is still not sufficient to delete Electron entrypoints without a real Tauri runtime lane
 
@@ -124,3 +135,5 @@ Related gate note:
    - `playwright.config.ts`
    - `e2e-tests/tauri-smoke.spec.ts`
    - `e2e-tests/tauri-regression.spec.ts`
+6. Electron legacy inventory:
+   - `scripts/audit-electron-legacy-surface.js`
