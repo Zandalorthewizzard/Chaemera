@@ -27,6 +27,17 @@ Related gate note:
 3. Runtime transport was tightened so migrated channels no longer silently fall back to Electron when a Tauri bridge is present.
 4. Renderer zoom no longer depends on Electron `webFrame`; it now uses a runtime-neutral DOM zoom helper.
 5. Electron preload API was narrowed to IPC only; `webFrame` exposure was removed.
+6. Local script layer now exposes explicit Tauri entrypoints:
+   - `start` -> `start:tauri`
+   - `package` -> `package:tauri`
+   - `build:electron-harness` now calls `package:electron` explicitly instead of relying on the default `package` alias
+7. E2E prep is now split into explicit lanes:
+   - `pre:e2e:tauri-smoke`
+   - `pre:e2e:electron-regression`
+   - current `pre:e2e` still points to the Electron regression lane for compatibility
+8. CI build wiring is now more explicit:
+   - current desktop build step calls `pre:e2e:electron-regression`
+   - Tauri runtime check calls `check:tauri`
 
 ## Decisions Applied In This Pass
 
@@ -51,12 +62,11 @@ Related gate note:
    - `src/preload.ts`
    - `forge.config.ts`
 2. Default npm workflow is still Electron-first:
-   - `start`
-   - `package`
    - `make`
    - `publish`
    - `build`
    - `pre:e2e`
+   - `build:electron-harness`
 3. CI is still Electron-first for regression:
    - `.github/workflows/ci.yml`
    - Playwright default project still includes `electron-regression`

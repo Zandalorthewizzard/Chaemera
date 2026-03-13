@@ -31,6 +31,30 @@ describe("tauri build config", () => {
     expect(packageJson.scripts["dev:renderer"]).toBe(
       "npx vite --config vite.renderer.config.mts --host 127.0.0.1 --port 5173",
     );
+    expect(packageJson.scripts.start).toBe("npm run start:tauri");
+    expect(packageJson.scripts["start:tauri"]).toBe(
+      "npx @tauri-apps/cli dev --config src-tauri/tauri.conf.json",
+    );
+    expect(packageJson.scripts["start:electron"]).toBe("electron-forge start");
+    expect(packageJson.scripts.package).toBe("npm run package:tauri");
+    expect(packageJson.scripts["package:tauri"]).toBe(
+      "npx @tauri-apps/cli build --config src-tauri/tauri.conf.json",
+    );
+    expect(packageJson.scripts["check:tauri"]).toBe(
+      "cargo check --manifest-path src-tauri/Cargo.toml",
+    );
+    expect(packageJson.scripts["build:electron-harness"]).toBe(
+      "cross-env E2E_TEST_BUILD=true npm run package:electron",
+    );
+    expect(packageJson.scripts["pre:e2e:tauri-smoke"]).toBe(
+      "npm run build:tauri-smoke",
+    );
+    expect(packageJson.scripts["pre:e2e:electron-regression"]).toBe(
+      "npm run build:electron-harness && npm run build:tauri-smoke",
+    );
+    expect(packageJson.scripts["pre:e2e"]).toBe(
+      "npm run pre:e2e:electron-regression",
+    );
     expect(packageJson.scripts["build:renderer"]).toBe(
       "npx vite build --config vite.renderer.config.mts --outDir dist",
     );
@@ -59,10 +83,9 @@ describe("tauri build config", () => {
     );
 
     expect(ciWorkflow).toContain("uses: dtolnay/rust-toolchain@stable");
+    expect(ciWorkflow).toContain("run: npm run pre:e2e:electron-regression");
     expect(ciWorkflow).toContain("run: npm run build:renderer");
-    expect(ciWorkflow).toContain(
-      "run: cargo check --manifest-path src-tauri/Cargo.toml",
-    );
+    expect(ciWorkflow).toContain("run: npm run check:tauri");
   });
 
   it("keeps a dedicated Tauri preview release workflow", () => {

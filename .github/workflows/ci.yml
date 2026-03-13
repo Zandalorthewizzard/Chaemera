@@ -174,13 +174,13 @@ jobs:
       - name: Build
         env:
           NODE_OPTIONS: "--max-old-space-size=4096"
-        run: npm run pre:e2e
+        run: npm run pre:e2e:electron-regression
       - name: Build Tauri renderer dist
         env:
           NODE_OPTIONS: "--max-old-space-size=4096"
         run: npm run build:renderer
       - name: Check Tauri runtime
-        run: cargo check --manifest-path src-tauri/Cargo.toml
+        run: npm run check:tauri
       - name: Prep test server
         run: cd testing/fake-llm-server && npm install && npm run build && cd -
       # macOS: Archive app bundle with tar to preserve metadata (code signatures, extended attributes)
