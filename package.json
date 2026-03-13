@@ -26,6 +26,7 @@
     "publish:electron": "npm run clean && electron-forge publish",
     "build:renderer": "npx vite build --config vite.renderer.config.mts --outDir dist",
     "verify-release": "node scripts/verify-release-assets.js",
+    "audit:tauri-cutover": "node scripts/audit-tauri-cutover.js",
     "ts": "npm run ts:main && npm run ts:workers",
     "ts:main": "npx tsgo -p tsconfig.app.json --noEmit --incremental",
     "ts:workers": "npx tsc -p workers/tsc/tsconfig.json --noEmit --incremental",

@@ -42,7 +42,6 @@ export { promptContracts } from "./prompts";
 export { templateContracts } from "./templates";
 export { proposalContracts } from "./proposals";
 export { importContracts } from "./import";
-export { helpContracts, helpStreamContract } from "./help";
 export { capacitorContracts } from "./capacitor";
 export { contextContracts } from "./context";
 export { upgradeContracts } from "./upgrade";
@@ -72,7 +71,6 @@ export { promptClient } from "./prompts";
 export { templateClient } from "./templates";
 export { proposalClient } from "./proposals";
 export { importClient } from "./import";
-export { helpClient, helpStreamClient } from "./help";
 export { capacitorClient } from "./capacitor";
 export { contextClient } from "./context";
 export { upgradeClient } from "./upgrade";
@@ -262,9 +260,6 @@ export type { ProposalResult, ApproveProposalResult } from "./proposals";
 // Import types
 export type { ImportAppParams, ImportAppResult } from "./import";
 
-// Help types
-export type { HelpChatStartParams } from "./help";
-
 // Context types
 export type { ContextPathResults, AppChatContext } from "./context";
 
@@ -345,7 +340,6 @@ import { promptClient } from "./prompts";
 import { templateClient } from "./templates";
 import { proposalClient } from "./proposals";
 import { importClient } from "./import";
-import { helpClient, helpStreamClient } from "./help";
 import { capacitorClient } from "./capacitor";
 import { contextClient } from "./context";
 import { upgradeClient } from "./upgrade";
@@ -383,7 +377,6 @@ export const ipc = {
 
   // Streaming clients
   chatStream: chatStreamClient,
-  helpStream: helpStreamClient,
 
   // Integrations
   github: githubClient,
@@ -401,7 +394,6 @@ export const ipc = {
   template: templateClient,
   proposal: proposalClient,
   import: importClient,
-  help: helpClient,
   capacitor: capacitorClient,
   context: contextClient,
   upgrade: upgradeClient,

@@ -1,7 +1,7 @@
 // See the Electron documentation for details on how to use preload scripts:
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 
-import { contextBridge, ipcRenderer, webFrame } from "electron";
+import { contextBridge, ipcRenderer } from "electron";
 import {
   VALID_INVOKE_CHANNELS,
   VALID_RECEIVE_CHANNELS,
@@ -52,11 +52,5 @@ contextBridge.exposeInMainWorld("electron", {
         ipcRenderer.removeListener(channel, listener);
       }
     },
-  },
-  webFrame: {
-    setZoomFactor: (factor: number) => {
-      webFrame.setZoomFactor(factor);
-    },
-    getZoomFactor: () => webFrame.getZoomFactor(),
   },
 });

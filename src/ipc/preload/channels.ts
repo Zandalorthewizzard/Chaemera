@@ -30,7 +30,6 @@ import { promptContracts } from "../types/prompts";
 import { templateContracts } from "../types/templates";
 import { proposalContracts } from "../types/proposals";
 import { importContracts } from "../types/import";
-import { helpContracts, helpStreamContract } from "../types/help";
 import { capacitorContracts } from "../types/capacitor";
 import { contextContracts } from "../types/context";
 import { upgradeContracts } from "../types/upgrade";
@@ -45,7 +44,6 @@ import { planEvents, planContracts } from "../types/plan";
 // =============================================================================
 
 const CHAT_STREAM_CHANNELS = getStreamChannels(chatStreamContract);
-const HELP_STREAM_CHANNELS = getStreamChannels(helpStreamContract);
 
 // Test-only channels (handler only registered in E2E test builds, but channel always allowed)
 const TEST_INVOKE_CHANNELS = [
@@ -66,7 +64,6 @@ export const VALID_INVOKE_CHANNELS = [
 
   // Stream invoke channels
   CHAT_STREAM_CHANNELS.invoke,
-  HELP_STREAM_CHANNELS.invoke,
 
   // Integrations
   ...getInvokeChannels(githubContracts),
@@ -84,7 +81,6 @@ export const VALID_INVOKE_CHANNELS = [
   ...getInvokeChannels(templateContracts),
   ...getInvokeChannels(proposalContracts),
   ...getInvokeChannels(importContracts),
-  ...getInvokeChannels(helpContracts),
   ...getInvokeChannels(capacitorContracts),
   ...getInvokeChannels(contextContracts),
   ...getInvokeChannels(upgradeContracts),
@@ -109,7 +105,6 @@ export const VALID_INVOKE_CHANNELS = [
 export const VALID_RECEIVE_CHANNELS = [
   // Stream receive channels
   ...CHAT_STREAM_CHANNELS.receive,
-  ...HELP_STREAM_CHANNELS.receive,
 
   // Event channels
   ...getReceiveChannels(agentEvents),

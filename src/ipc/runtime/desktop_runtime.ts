@@ -51,15 +51,23 @@ export function getInvokeTransport(
   payload: unknown,
 ): InvokeTransport | null {
   const tauri = getTauriCoreBridge();
-  if (
-    tauri &&
-    isTauriMigrationInvokeChannel(channel) &&
-    tauriSupportsChannel(tauri, channel) &&
-    tauriCanInvoke(tauri, channel, payload)
-  ) {
+  if (tauri && isTauriMigrationInvokeChannel(channel)) {
+    if (!tauriSupportsChannel(tauri, channel)) {
+      throw new Error(
+        `[${channel}] Tauri core bridge is present but this channel is not marked as supported yet.`,
+      );
+    }
+
+    if (!tauriCanInvoke(tauri, channel, payload)) {
+      throw new Error(
+        `[${channel}] Tauri core bridge is present but the payload is not ready for the mapped command arguments yet.`,
+      );
+    }
+
     return {
       kind: "tauri",
-      invoke: (targetChannel, payload) => tauri.invoke(targetChannel, payload),
+      invoke: (targetChannel, invokePayload) =>
+        tauri.invoke(targetChannel, invokePayload),
     };
   }
 
@@ -72,22 +80,24 @@ export function getInvokeTransport(
     };
   }
 
-  if (tauri && isTauriMigrationInvokeChannel(channel)) {
-    throw new Error(
-      `[${channel}] Tauri core bridge is present but this channel is not marked as supported yet.`,
-    );
-  }
-
   return null;
 }
 
 export function getEventTransport(channel: string): EventTransport | null {
   const tauri = getTauriCoreBridge();
-  if (
-    tauri?.on &&
-    isTauriMigrationEventChannel(channel) &&
-    tauriSupportsChannel(tauri, channel)
-  ) {
+  if (tauri && isTauriMigrationEventChannel(channel)) {
+    if (!tauri.on) {
+      throw new Error(
+        `[${channel}] Tauri core bridge is present but no event bridge is available.`,
+      );
+    }
+
+    if (!tauriSupportsChannel(tauri, channel)) {
+      throw new Error(
+        `[${channel}] Tauri core bridge is present but this event channel is not marked as supported yet.`,
+      );
+    }
+
     return {
       kind: "tauri",
       on: (targetChannel, handler) => tauri.on!(targetChannel, handler),

@@ -20,6 +20,7 @@ import { usePlanEvents } from "@/hooks/usePlanEvents";
 import { useZoomShortcuts } from "@/hooks/useZoomShortcuts";
 import i18n from "@/i18n";
 import { LanguageSchema } from "@/lib/schemas";
+import { applyAppZoom } from "@/lib/app_zoom";
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   const { refreshAppIframe } = useRunApp();
@@ -41,28 +42,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   useZoomShortcuts();
 
   useEffect(() => {
-    const zoomLevel = settings?.zoomLevel ?? DEFAULT_ZOOM_LEVEL;
-    const zoomFactor = Number(zoomLevel) / 100;
-
-    const electronApi = (
-      window as Window & {
-        electron?: {
-          webFrame?: {
-            setZoomFactor: (factor: number) => void;
-          };
-        };
-      }
-    ).electron;
-
-    if (electronApi?.webFrame?.setZoomFactor) {
-      electronApi.webFrame.setZoomFactor(zoomFactor);
-
-      return () => {
-        electronApi.webFrame?.setZoomFactor(Number(DEFAULT_ZOOM_LEVEL) / 100);
-      };
-    }
-
-    return () => {};
+    return applyAppZoom(settings?.zoomLevel ?? DEFAULT_ZOOM_LEVEL);
   }, [settings?.zoomLevel]);
 
   // Sync i18n language with persisted user setting

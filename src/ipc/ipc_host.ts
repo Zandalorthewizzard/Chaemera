@@ -31,7 +31,6 @@ import { registerTemplateHandlers } from "./handlers/template_handlers";
 import { registerThemesHandlers } from "./handlers/themes_handlers";
 import { registerPortalHandlers } from "./handlers/portal_handlers";
 import { registerPromptHandlers } from "./handlers/prompt_handlers";
-import { registerHelpBotHandlers } from "./handlers/help_bot_handlers";
 import { registerMcpHandlers } from "./handlers/mcp_handlers";
 import { registerSecurityHandlers } from "./handlers/security_handlers";
 import { registerVisualEditingHandlers } from "./handlers/visual_editing_handlers";
@@ -74,7 +73,6 @@ export function registerIpcHandlers() {
   registerThemesHandlers();
   registerPortalHandlers();
   registerPromptHandlers();
-  registerHelpBotHandlers();
   registerMcpHandlers();
   registerSecurityHandlers();
   registerVisualEditingHandlers();
