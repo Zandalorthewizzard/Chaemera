@@ -399,6 +399,31 @@ Replace the highest-value Electron-based desktop regression dependencies with Ta
    - `npm run lint -- e2e-tests/helpers/page-objects/PageObject.ts e2e-tests/helpers/page-objects/components/AppManagement.ts e2e-tests/helpers/page-objects/components/Navigation.ts e2e-tests/helpers/tauri_page_object_fixtures.ts e2e-tests/helpers/tauri_test_helper.ts e2e-tests/tauri-delete-provider.spec.ts playwright.config.ts`
    - `npx playwright test --project=tauri-regression e2e-tests/tauri-delete-provider.spec.ts`
 
+## Additional Verification On 2026-03-25: Settings-Only Specs Migrated Off Electron Fixture
+
+1. The next low-risk page-object migration batch no longer depends on filesystem-backed Electron settings snapshots:
+   - `e2e-tests/tauri-auto-update.spec.ts`
+   - `e2e-tests/tauri-release-channel.spec.ts`
+   - `e2e-tests/tauri-telemetry.spec.ts`
+2. The browser-backed Tauri lane now reads settings from the harness state directly through:
+   - `e2e-tests/helpers/tauri_harness_state.ts`
+3. The following legacy Electron specs have been removed because their real signal was settings mutation plus toast/banner UI, not native-process behavior:
+   - `e2e-tests/auto_update.spec.ts`
+   - `e2e-tests/release_channel.spec.ts`
+   - `e2e-tests/telemetry.spec.ts`
+4. This slice confirms another migration rule:
+   - settings-only specs that previously diffed `user-settings.json` are good Tauri-browser candidates when the harness already owns the relevant settings state
+   - no fresh Electron runtime value remains for auto-update, release-channel, or telemetry coverage
+5. The legacy snapshot artifacts for those removed Electron specs have also been deleted from `e2e-tests/snapshots/`.
+6. A concrete route-scoping detail was confirmed during this slice:
+   - the telemetry consent banner is mounted on the home route, not the settings route
+   - Tauri coverage should target the actual home-page banner behavior rather than the telemetry settings page section
+7. Validation for this slice passed with:
+   - `npm run fmt -- e2e-tests/helpers/tauri_harness_state.ts e2e-tests/tauri-auto-update.spec.ts e2e-tests/tauri-release-channel.spec.ts e2e-tests/tauri-telemetry.spec.ts notes/2026-03-25-tauri-first-harness-replacement-task.md notes/2026-03-13-tauri-first-release-checklist.md`
+   - `npm run lint -- e2e-tests/helpers/tauri_harness_state.ts e2e-tests/tauri-auto-update.spec.ts e2e-tests/tauri-release-channel.spec.ts e2e-tests/tauri-telemetry.spec.ts notes/2026-03-25-tauri-first-harness-replacement-task.md notes/2026-03-13-tauri-first-release-checklist.md`
+   - `npm run ts`
+   - `npx playwright test --project=tauri-regression e2e-tests/tauri-auto-update.spec.ts e2e-tests/tauri-release-channel.spec.ts e2e-tests/tauri-telemetry.spec.ts`
+
 ## Non-Goals
 
 1. Do not archive Electron runtime files inside the active repo tree.
