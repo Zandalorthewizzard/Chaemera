@@ -53,6 +53,23 @@ export async function waitForDesktopShell() {
   await layout.waitForExist({ timeout: 60_000 });
 }
 
+export async function invokeCoreCommand(channel, payload) {
+  return browser.execute(
+    async ({ invokeChannel, invokePayload }) => {
+      const bridge = window.__CHAEMERA_TAURI_CORE__;
+      if (!bridge?.invoke) {
+        throw new Error("Tauri core bridge is unavailable.");
+      }
+
+      return bridge.invoke(invokeChannel, invokePayload);
+    },
+    {
+      invokeChannel: channel,
+      invokePayload: payload,
+    },
+  );
+}
+
 export async function readBrowserLogs() {
   try {
     return await browser.getLogs("browser");

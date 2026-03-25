@@ -22,6 +22,10 @@ const runtimeRuns = [
     label: "performance sampling",
     spec: "./specs/performance-sampling.e2e.mjs",
   },
+  {
+    label: "app storage location",
+    spec: "./specs/app-storage-location.e2e.mjs",
+  },
 ];
 
 for (const runtimeRun of runtimeRuns) {

@@ -249,6 +249,47 @@ Replace the highest-value Electron-based desktop regression dependencies with Ta
    - `e2e-tests/version_integrity.spec.ts`
 2. The next reduction slice should target these three files through the real `tauri-runtime` lane, not the browser-backed `tauri-regression` lane.
 
+## Additional Verification On 2026-03-25: App Storage Migrated To Real Tauri Runtime
+
+1. `app_storage_path` no longer depends on the Electron regression harness.
+2. Tauri now owns the runtime infrastructure needed for file-backed app-move coverage:
+   - explicit runtime overrides for the SQLite `userData` directory
+   - explicit runtime overrides for the `dyad-apps` workspace root
+   - Tauri-side SQLite bootstrap by applying the checked-in `drizzle/*.sql` migration set when the database is missing
+3. The implementation lives in:
+   - `src-tauri/src/sqlite_support.rs`
+   - `src-tauri/src/wave_h_domains.rs`
+   - `testing/tauri-webdriver/wdio.conf.mjs`
+   - `testing/tauri-webdriver/runtime_profile.mjs`
+   - `testing/tauri-webdriver/test_helpers.mjs`
+4. The real runtime coverage now lives in:
+   - `testing/tauri-webdriver/specs/app-storage-location.e2e.mjs`
+5. The old Electron-only spec has been removed:
+   - `e2e-tests/app_storage_path.spec.ts`
+6. A concrete runtime constraint was resolved during this slice:
+   - filesystem-backed runtime commands must not write into repo-local or user-home paths during tests
+   - the runtime harness now passes `CHAEMERA_TAURI_USER_DATA_DIR` and `CHAEMERA_TAURI_DYAD_APPS_DIR`
+7. Another concrete runtime gap was resolved during this slice:
+   - `create-app` in Tauri could not run against a fresh profile because `open_db()` failed when `sqlite.db` did not already exist
+   - Tauri now bootstraps the database from the Drizzle migration journal when needed
+8. Validation for this slice passed with:
+   - `cargo fmt --manifest-path src-tauri/Cargo.toml`
+   - `cargo check --manifest-path src-tauri/Cargo.toml`
+   - `npm run ts`
+   - `npm run lint`
+   - `npm run pre:e2e:tauri-runtime`
+   - `npm run e2e:tauri-runtime`
+   - `npm run audit:electron-legacy`
+
+## Updated Remaining Direct Electron Spec Usage
+
+1. After removing `e2e-tests/app_storage_path.spec.ts`, direct `electronApp` usage in spec files is now limited to:
+   - `e2e-tests/import.spec.ts`
+   - `e2e-tests/version_integrity.spec.ts`
+2. The next reduction slice should treat both remaining specs as real `tauri-runtime` candidates:
+   - `import.spec.ts` is blocked on AI-rules prompt-context and runtime stream/file realism
+   - `version_integrity.spec.ts` is blocked on version snapshots and restore behavior across real app files
+
 ## Non-Goals
 
 1. Do not archive Electron runtime files inside the active repo tree.
@@ -265,6 +306,6 @@ Replace the highest-value Electron-based desktop regression dependencies with Ta
 4. Treat the old Electron-only home smoke as migrated to `tauri-smoke`.
 5. Treat import advanced-options coverage and in-place import coverage as migrated to `tauri-regression`.
 6. Focus next on the remaining direct Electron spec usage list in this note.
-7. Treat the remaining three Electron specs as likely `tauri-runtime` candidates, not easy browser-harness candidates.
-8. Treat the performance-monitor slice as complete and use it as the template for the next runtime migration.
-9. Pick the next smallest slice that extends real Tauri runtime coverage for filesystem- and stream-backed behavior without lowering regression signal.
+7. Treat the remaining two Electron specs as likely `tauri-runtime` candidates, not easy browser-harness candidates.
+8. Treat the performance-monitor and app-storage slices as complete runtime templates.
+9. Pick the next smallest slice that extends real Tauri runtime coverage for stream- and version-backed behavior without lowering regression signal.

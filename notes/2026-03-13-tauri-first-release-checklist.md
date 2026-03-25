@@ -146,6 +146,14 @@ Related gate note:
 - `e2e-tests/performance_monitor.spec.ts` has been removed
 - verified with `cargo check --manifest-path src-tauri/Cargo.toml`, `npm run pre:e2e:tauri-runtime`, `npm run e2e:tauri-runtime`, `npm run ts`, `npm run lint`, `npm run audit:tauri-cutover`, and `npm run audit:electron-legacy`
 
+26. The old Electron-only app-storage regression has been migrated into the real `tauri-runtime` lane:
+
+- Tauri runtime now supports explicit isolated overrides for both SQLite `userData` and the `dyad-apps` workspace root
+- Tauri now bootstraps `sqlite.db` from the checked-in Drizzle migration journal when a runtime profile starts from an empty database
+- the real runtime suite now includes `testing/tauri-webdriver/specs/app-storage-location.e2e.mjs`
+- `e2e-tests/app_storage_path.spec.ts` has been removed
+- verified with `cargo fmt --manifest-path src-tauri/Cargo.toml`, `cargo check --manifest-path src-tauri/Cargo.toml`, `npm run ts`, `npm run lint`, `npm run pre:e2e:tauri-runtime`, `npm run e2e:tauri-runtime`, and `npm run audit:electron-legacy`
+
 ## Decisions Applied In This Pass
 
 1. Removed the unused help-bot IPC surface from active code:
@@ -174,7 +182,7 @@ Related gate note:
    - `e2e:electron`
    - current Forge reference count is down to `5`
    - the remaining question is now whether this legacy lane still covers anything not already exercised by `tauri-regression` plus the real `tauri-runtime` gate
-   - the remaining direct Electron spec usage is now concentrated in app storage, import AI-rules prompt context, and version integrity coverage
+   - the remaining direct Electron spec usage is now concentrated in import AI-rules prompt context and version integrity coverage
    - these remaining cases look more like `tauri-runtime` expansion work than additional browser-harness migration because they depend on real stream/file/runtime side effects
    - the real runtime harness now has a prelaunch setup hook path for preparing profile and file state before app launch
 3. CI is still not fully Tauri-first for broad regression:

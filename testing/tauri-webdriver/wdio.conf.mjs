@@ -16,6 +16,8 @@ const appDataDir = path.join(profileRoot, "AppData", "Roaming");
 const tauriAppIdentifier = "io.chaemera.app";
 const tauriAppDataDir = path.join(appDataDir, tauriAppIdentifier);
 const tauriLocalDataDir = path.join(localAppDataDir, tauriAppIdentifier);
+const tauriUserDataDir = path.join(profileRoot, "userData");
+const tauriDyadAppsDir = path.join(profileRoot, "dyad-apps");
 const tauriDriverPath = path.join(
   os.homedir(),
   ".cargo",
@@ -133,6 +135,8 @@ async function runRuntimeSetupHook() {
     appIdentifier: tauriAppIdentifier,
     tauriAppDataDir,
     tauriLocalDataDir,
+    tauriUserDataDir,
+    tauriDyadAppsDir,
   });
 }
 
@@ -165,11 +169,15 @@ export const config = {
     fs.mkdirSync(appDataDir, { recursive: true });
     fs.mkdirSync(tauriAppDataDir, { recursive: true });
     fs.mkdirSync(tauriLocalDataDir, { recursive: true });
+    fs.mkdirSync(tauriUserDataDir, { recursive: true });
+    fs.mkdirSync(tauriDyadAppsDir, { recursive: true });
 
     process.env.CHAEMERA_TAURI_PROFILE_ROOT = profileRoot;
     process.env.CHAEMERA_TAURI_APP_IDENTIFIER = tauriAppIdentifier;
     process.env.CHAEMERA_TAURI_APP_DATA_DIR = tauriAppDataDir;
     process.env.CHAEMERA_TAURI_LOCAL_DATA_DIR = tauriLocalDataDir;
+    process.env.CHAEMERA_TAURI_USER_DATA_DIR = tauriUserDataDir;
+    process.env.CHAEMERA_TAURI_DYAD_APPS_DIR = tauriDyadAppsDir;
 
     await runRuntimeSetupHook();
 
@@ -186,6 +194,8 @@ export const config = {
           CHAEMERA_TAURI_APP_IDENTIFIER: tauriAppIdentifier,
           CHAEMERA_TAURI_APP_DATA_DIR: tauriAppDataDir,
           CHAEMERA_TAURI_LOCAL_DATA_DIR: tauriLocalDataDir,
+          CHAEMERA_TAURI_USER_DATA_DIR: tauriUserDataDir,
+          CHAEMERA_TAURI_DYAD_APPS_DIR: tauriDyadAppsDir,
           OPENAI_API_KEY: "sk-test",
           E2E_TEST_BUILD: "true",
         },
@@ -210,6 +220,8 @@ export const config = {
     delete process.env.CHAEMERA_TAURI_APP_IDENTIFIER;
     delete process.env.CHAEMERA_TAURI_APP_DATA_DIR;
     delete process.env.CHAEMERA_TAURI_LOCAL_DATA_DIR;
+    delete process.env.CHAEMERA_TAURI_USER_DATA_DIR;
+    delete process.env.CHAEMERA_TAURI_DYAD_APPS_DIR;
     if (keepRuntimeProfile) {
       console.log(`Preserving Tauri runtime profile at ${profileRoot}`);
       return;

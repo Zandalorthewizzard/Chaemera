@@ -1,4 +1,5 @@
 use rusqlite::{params, Connection, OptionalExtension};
+use serde::Deserialize;
 use std::env;
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -13,6 +14,22 @@ pub struct CopyDirOptions {
     pub exclude_git: bool,
 }
 
+const USER_DATA_DIR_OVERRIDE_ENV: &str = "CHAEMERA_TAURI_USER_DATA_DIR";
+const DYAD_APPS_DIR_OVERRIDE_ENV: &str = "CHAEMERA_TAURI_DYAD_APPS_DIR";
+const DRIZZLE_MIGRATIONS_TABLE: &str = "__drizzle_migrations";
+
+#[derive(Debug, Deserialize)]
+struct MigrationJournal {
+    entries: Vec<MigrationJournalEntry>,
+}
+
+#[derive(Debug, Deserialize)]
+struct MigrationJournalEntry {
+    idx: usize,
+    tag: String,
+    when: i64,
+}
+
 pub fn workspace_root() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR"))
         .parent()
@@ -20,19 +37,117 @@ pub fn workspace_root() -> PathBuf {
         .to_path_buf()
 }
 
-pub fn user_data_dir(app: &AppHandle) -> Result<PathBuf, String> {
-    if cfg!(debug_assertions) {
-        let path = workspace_root().join("userData");
-        fs::create_dir_all(&path)
-            .map_err(|error| format!("failed to create debug userData dir: {error}"))?;
-        return Ok(path);
+fn override_dir(env_key: &str) -> Option<PathBuf> {
+    env::var_os(env_key).map(PathBuf::from)
+}
+
+fn drizzle_dir() -> PathBuf {
+    workspace_root().join("drizzle")
+}
+
+fn migration_journal_path() -> PathBuf {
+    drizzle_dir().join("meta").join("_journal.json")
+}
+
+fn migration_sql_path(tag: &str) -> PathBuf {
+    drizzle_dir().join(format!("{tag}.sql"))
+}
+
+fn create_directory(path: &Path, label: &str) -> Result<(), String> {
+    fs::create_dir_all(path).map_err(|error| format!("failed to create {label}: {error}"))
+}
+
+fn read_migration_journal() -> Result<Vec<MigrationJournalEntry>, String> {
+    let raw = fs::read_to_string(migration_journal_path())
+        .map_err(|error| format!("failed to read migration journal: {error}"))?;
+    let mut journal: MigrationJournal = serde_json::from_str(&raw)
+        .map_err(|error| format!("failed to parse migration journal: {error}"))?;
+    journal.entries.sort_by_key(|entry| entry.idx);
+    Ok(journal.entries)
+}
+
+fn table_exists(connection: &Connection, table_name: &str) -> Result<bool, String> {
+    let exists = connection
+        .query_row(
+            "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ?1 LIMIT 1",
+            params![table_name],
+            |row| row.get::<_, i64>(0),
+        )
+        .optional()
+        .map_err(|error| format!("failed to inspect sqlite schema: {error}"))?;
+
+    Ok(exists.is_some())
+}
+
+fn apply_pending_migrations(
+    connection: &Connection,
+    database_preexisted: bool,
+) -> Result<(), String> {
+    connection
+        .execute(
+            &format!(
+                "CREATE TABLE IF NOT EXISTS {DRIZZLE_MIGRATIONS_TABLE} (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    hash text NOT NULL,
+                    created_at numeric
+                )"
+            ),
+            [],
+        )
+        .map_err(|error| format!("failed to create drizzle migrations table: {error}"))?;
+
+    let last_applied = connection
+        .query_row(
+            &format!(
+                "SELECT created_at FROM {DRIZZLE_MIGRATIONS_TABLE} ORDER BY created_at DESC LIMIT 1"
+            ),
+            [],
+            |row| row.get::<_, i64>(0),
+        )
+        .optional()
+        .map_err(|error| format!("failed to query latest drizzle migration: {error}"))?;
+
+    if last_applied.is_none() && database_preexisted && table_exists(connection, "apps")? {
+        return Ok(());
     }
 
-    let path = app
-        .path()
-        .app_data_dir()
-        .map_err(|error| format!("failed to resolve app data dir: {error}"))?;
-    fs::create_dir_all(&path).map_err(|error| format!("failed to create app data dir: {error}"))?;
+    for entry in read_migration_journal()? {
+        if last_applied.is_some_and(|timestamp| timestamp >= entry.when) {
+            continue;
+        }
+
+        let migration_sql = fs::read_to_string(migration_sql_path(&entry.tag))
+            .map_err(|error| format!("failed to read migration {}: {error}", entry.tag))?;
+
+        connection
+            .execute_batch(&migration_sql)
+            .map_err(|error| format!("failed to apply migration {}: {error}", entry.tag))?;
+        connection
+            .execute(
+                &format!(
+                    "INSERT INTO {DRIZZLE_MIGRATIONS_TABLE} (hash, created_at) VALUES (?1, ?2)"
+                ),
+                params![entry.tag, entry.when],
+            )
+            .map_err(|error| format!("failed to record migration {}: {error}", entry.tag))?;
+    }
+
+    Ok(())
+}
+
+pub fn user_data_dir(app: &AppHandle) -> Result<PathBuf, String> {
+    let path = if let Some(override_dir) = override_dir(USER_DATA_DIR_OVERRIDE_ENV) {
+        override_dir
+    } else if cfg!(debug_assertions) {
+        let path = workspace_root().join("userData");
+        path
+    } else {
+        app.path()
+            .app_data_dir()
+            .map_err(|error| format!("failed to resolve app data dir: {error}"))?
+    };
+
+    create_directory(&path, "app data dir")?;
     Ok(path)
 }
 
@@ -42,19 +157,35 @@ pub fn sqlite_path(app: &AppHandle) -> Result<PathBuf, String> {
 
 pub fn open_db(app: &AppHandle) -> Result<Connection, String> {
     let path = sqlite_path(app)?;
-    if !path.exists() {
-        return Err("sqlite database not found".to_string());
+    if let Some(parent) = path.parent() {
+        create_directory(parent, "sqlite parent dir")?;
     }
-    Connection::open(path).map_err(|error| format!("failed to open sqlite database: {error}"))
+
+    let database_preexisted = path.exists();
+    let connection = Connection::open(path)
+        .map_err(|error| format!("failed to open sqlite database: {error}"))?;
+
+    connection
+        .execute_batch("PRAGMA foreign_keys = ON;")
+        .map_err(|error| format!("failed to configure sqlite pragmas: {error}"))?;
+    apply_pending_migrations(&connection, database_preexisted)?;
+
+    Ok(connection)
 }
 
 pub fn dyad_apps_base_directory() -> Result<PathBuf, String> {
-    let home_dir = env::var_os("USERPROFILE")
-        .or_else(|| env::var_os("HOME"))
-        .map(PathBuf::from)
-        .ok_or_else(|| "failed to resolve home directory".to_string())?;
+    let path = if let Some(override_dir) = override_dir(DYAD_APPS_DIR_OVERRIDE_ENV) {
+        override_dir
+    } else {
+        let home_dir = env::var_os("USERPROFILE")
+            .or_else(|| env::var_os("HOME"))
+            .map(PathBuf::from)
+            .ok_or_else(|| "failed to resolve home directory".to_string())?;
+        home_dir.join("dyad-apps")
+    };
 
-    Ok(home_dir.join("dyad-apps"))
+    create_directory(&path, "dyad-apps directory")?;
+    Ok(path)
 }
 
 pub fn resolve_workspace_app_path(raw_path: &str) -> Result<PathBuf, String> {
