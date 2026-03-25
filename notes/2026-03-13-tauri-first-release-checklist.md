@@ -117,6 +117,27 @@ Related gate note:
 - `e2e-tests/helpers/fixtures.ts` now uses the project-owned helper instead of the npm package
 - `electron-playwright-helpers` has been removed from `package.json`
 
+22. Renderer deep-link regression no longer depends on Electron main-process event injection:
+
+- `e2e-tests/add_prompt_deep_link.spec.ts` and `e2e-tests/add_mcp_server_deep_link.spec.ts` have been removed
+- `e2e-tests/tauri-regression.spec.ts` now covers both flows through the harness `deep-link-received` event path
+- there are now no direct `electronApp.evaluate(({ app }) => app.emit(...))` usages left in `e2e-tests`
+- verified with `npm run build:tauri-regression`, `npx playwright test --project=tauri-regression e2e-tests/tauri-regression.spec.ts`, `npm run ts`, and `npm run lint`
+
+23. The trivial Electron-only boot smoke has been migrated out of the legacy lane:
+
+- `e2e-tests/1.spec.ts` has been removed
+- `e2e-tests/tauri-smoke.spec.ts` now verifies the default `/` home route, title bar no-selection state, and home chat input visibility
+- verified with `npm run build:tauri-regression`, `npx playwright test --project=tauri-regression e2e-tests/tauri-smoke.spec.ts`, `npm run ts`, and `npm run lint`
+
+24. Import-dialog validation is now broader in the `tauri-regression` lane:
+
+- missing-`AI_RULES.md` feedback is covered
+- advanced-options validation and persisted custom commands are covered
+- `e2e-tests/import_in_place.spec.ts` has been removed
+- `e2e-tests/import.spec.ts` has been narrowed to the remaining AI-rules-specific prompt-context case
+- verified with `npm run build:tauri-regression`, `npx playwright test --project=tauri-regression e2e-tests/tauri-regression.spec.ts`, `npm run pre:e2e:electron-regression`, `npx playwright test --project=electron-regression e2e-tests/import.spec.ts`, `npm run ts`, and `npm run lint`
+
 ## Decisions Applied In This Pass
 
 1. Removed the unused help-bot IPC surface from active code:
@@ -144,6 +165,8 @@ Related gate note:
    - `pre:e2e:electron-regression`
    - `e2e:electron`
    - current Forge reference count is down to `5`
+   - the remaining question is now whether this legacy lane still covers anything not already exercised by `tauri-regression` plus the real `tauri-runtime` gate
+   - the remaining direct Electron spec usage is now concentrated in app storage, import AI-rules prompt context, version integrity, and performance-monitor coverage
 3. CI is still not fully Tauri-first for broad regression:
    - `.github/workflows/ci.yml`
    - CI still uses the broader Electron-plus-Tauri lane as the full desktop proof path

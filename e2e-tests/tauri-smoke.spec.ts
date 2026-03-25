@@ -1,5 +1,14 @@
 import { expect, test } from "./helpers/tauri_smoke_fixtures";
 
+test("tauri smoke harness renders the default home route", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: "Apps" })).toBeVisible();
+  await expect(page.getByTestId("title-bar-app-name-button")).toContainText(
+    "(no app selected)",
+  );
+  await expect(page.getByTestId("home-chat-input-container")).toBeVisible();
+});
+
 test("tauri smoke harness boots a stable Tauri route with bridge support", async ({
   page,
 }) => {

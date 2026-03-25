@@ -115,6 +115,74 @@ Replace the highest-value Electron-based desktop regression dependencies with Ta
    - `npm run lint`
    - `npx playwright test --project=electron-regression e2e-tests/chat_mode.spec.ts --grep "default build mode"`
 
+## Additional Verification On 2026-03-25: Deep-Link Renderer Flows
+
+1. Renderer-consumed deep-link flows now pass in the `tauri-regression` lane without Electron main-process event injection:
+   - prompt creation via `deep-link-received`
+   - MCP server form prefill via `deep-link-received`
+2. The following Electron-only specs have been removed because the meaningful behavior is renderer-side and now covered through the harness event bridge:
+   - `e2e-tests/add_prompt_deep_link.spec.ts`
+   - `e2e-tests/add_mcp_server_deep_link.spec.ts`
+3. This also removes the last direct `electronApp.evaluate(({ app }) => app.emit(...))` pattern from `e2e-tests`.
+4. Validation for this slice passed with:
+   - `npm run build:tauri-regression`
+   - `npx playwright test --project=tauri-regression e2e-tests/tauri-regression.spec.ts`
+   - `npm run ts`
+   - `npm run lint`
+
+## Additional Verification On 2026-03-25: Home Route Smoke
+
+1. The trivial Electron-only boot smoke in `e2e-tests/1.spec.ts` has been removed.
+2. Equivalent high-level coverage now lives in `e2e-tests/tauri-smoke.spec.ts`:
+   - load `/`
+   - assert the `Apps` home shell
+   - assert no app is selected in the title bar
+   - assert the home chat input container is visible
+3. This slice passed with:
+   - `npm run build:tauri-regression`
+   - `npx playwright test --project=tauri-regression e2e-tests/tauri-smoke.spec.ts`
+   - `npm run ts`
+   - `npm run lint`
+
+## Current Remaining Direct Electron Spec Usage
+
+1. After removing the deep-link specs and the old `1.spec.ts` smoke, direct `electronApp` usage in spec files is now limited to:
+   - `e2e-tests/app_storage_path.spec.ts`
+   - `e2e-tests/import.spec.ts`
+   - `e2e-tests/performance_monitor.spec.ts`
+   - `e2e-tests/version_integrity.spec.ts`
+2. This is now the highest-signal inventory for the next reduction slice.
+
+## Additional Verification On 2026-03-25: Import Advanced Options
+
+1. The `tauri-regression` lane now covers import-dialog behavior that previously lived only in Electron specs:
+   - missing `AI_RULES.md` warning state
+   - default empty advanced options
+   - invalid one-command-only customization state
+   - persisted custom install/start commands after import
+2. This makes the following legacy Electron cases redundant and removable:
+   - `import app`
+   - `import app with custom commands`
+   - `advanced options: both cleared are valid and use defaults`
+   - `import app without copying to dyad-apps`
+3. The remaining Electron import coverage is now intentionally narrowed to the AI-rules-specific prompt-context case in `e2e-tests/import.spec.ts`.
+4. Validation for this slice passed with:
+   - `npm run build:tauri-regression`
+   - `npx playwright test --project=tauri-regression e2e-tests/tauri-regression.spec.ts`
+   - `npm run pre:e2e:electron-regression`
+   - `npx playwright test --project=electron-regression e2e-tests/import.spec.ts`
+   - `npm run ts`
+   - `npm run lint`
+
+## Updated Remaining Direct Electron Spec Usage
+
+1. After removing `import_in_place.spec.ts` and shrinking `import.spec.ts`, direct `electronApp` usage in spec files is now limited to:
+   - `e2e-tests/app_storage_path.spec.ts`
+   - `e2e-tests/import.spec.ts`
+   - `e2e-tests/performance_monitor.spec.ts`
+   - `e2e-tests/version_integrity.spec.ts`
+2. This is the current highest-value list for the next reduction slice.
+
 ## Non-Goals
 
 1. Do not archive Electron runtime files inside the active repo tree.
@@ -126,6 +194,9 @@ Replace the highest-value Electron-based desktop regression dependencies with Ta
 1. Read this note.
 2. Re-run:
    - `npm run audit:electron-legacy`
-   - `rg -n "electron-playwright-helpers|electron-regression" -g '!node_modules' -g '!docs-new' .`
-3. Treat the import/storage slice as complete and focus next on the remaining Electron fixture concentration.
-4. Pick the next smallest replacement slice that reduces real harness dependency without lowering regression signal.
+   - `rg -n "electron-regression|build:test-electron-harness|pre:e2e:electron-regression|e2e:electron" -g '!node_modules' -g '!docs-new' .`
+3. Treat both the import/storage slice and the deep-link renderer slice as complete.
+4. Treat the old Electron-only home smoke as migrated to `tauri-smoke`.
+5. Treat import advanced-options coverage and in-place import coverage as migrated to `tauri-regression`.
+6. Focus next on the remaining direct Electron spec usage list in this note.
+7. Pick the next smallest replacement slice that reduces real harness dependency without lowering regression signal.

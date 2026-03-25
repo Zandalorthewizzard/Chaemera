@@ -73,6 +73,22 @@ async function setNextSelectedAppLocation(
   }, selection);
 }
 
+async function emitHarnessEvent(
+  page: Page,
+  channel: string,
+  payload: unknown,
+): Promise<void> {
+  await page.evaluate(
+    ({ eventChannel, eventPayload }) => {
+      window.__CHAEMERA_TAURI_SMOKE__?.emit(eventChannel, eventPayload);
+    },
+    {
+      eventChannel: channel,
+      eventPayload: payload,
+    },
+  );
+}
+
 async function findAppByName(
   page: Page,
   name: string,
@@ -290,6 +306,75 @@ test("tauri regression harness preserves native side effects and callback events
   await invokeViaTauriBridge(page, "window:close");
 });
 
+test("tauri regression harness covers renderer deep-link flows without electron main-process events", async ({
+  page,
+}) => {
+  const promptPayload = {
+    type: "add-prompt",
+    payload: {
+      title: "Deep Link Test Prompt",
+      description: "A prompt created via deep link",
+      content: "You are a helpful assistant. Please help with:\n\n[task here]",
+    },
+  };
+  const mcpPayload = {
+    type: "add-mcp-server",
+    payload: {
+      name: "Deep Link MCP Server",
+      config: {
+        type: "stdio",
+        command: "node /tmp/fake-server.mjs --trace",
+      },
+    },
+  };
+
+  await page.goto("/library");
+  await expect(page.getByTestId("leptos-route-shell")).toBeVisible();
+  const promptCards = page.getByTestId("prompt-card");
+  const initialPromptCount = await promptCards.count();
+
+  await emitHarnessEvent(page, "deep-link-received", promptPayload);
+
+  await expect(
+    page.getByRole("dialog").getByText("Create New Prompt"),
+  ).toBeVisible();
+  await expect(page.getByRole("textbox", { name: "Title" })).toHaveValue(
+    promptPayload.payload.title,
+  );
+  await expect(
+    page.getByRole("textbox", { name: "Description (optional)" }),
+  ).toHaveValue(promptPayload.payload.description);
+  await expect(page.getByRole("textbox", { name: "Content" })).toHaveValue(
+    promptPayload.payload.content,
+  );
+
+  await page.getByRole("button", { name: "Save" }).click();
+  await expect(promptCards).toHaveCount(initialPromptCount + 1);
+  const createdPromptCard = promptCards.filter({
+    hasText: promptPayload.payload.title,
+  });
+  await expect(createdPromptCard).toHaveCount(1);
+  await expect(createdPromptCard).toContainText(promptPayload.payload.title);
+  await expect(createdPromptCard).toContainText(
+    promptPayload.payload.description,
+  );
+
+  await page.goto("/settings");
+  await expect(page.getByTestId("leptos-route-shell")).toBeVisible();
+  await page.getByRole("button", { name: "Tools (MCP)" }).click();
+
+  await emitHarnessEvent(page, "deep-link-received", mcpPayload);
+
+  await expect(
+    page.getByRole("textbox", { name: "My MCP Server" }),
+  ).toHaveValue(mcpPayload.payload.name);
+  await expect(page.getByTestId("mcp-transport-select")).toHaveValue("stdio");
+  await expect(page.getByRole("textbox", { name: "node" })).toHaveValue("node");
+  await expect(
+    page.getByRole("textbox", { name: "path/to/mcp-server.js --flag" }),
+  ).toHaveValue("/tmp/fake-server.mjs --trace");
+});
+
 test("tauri regression harness covers import and app storage dialogs without electron helpers", async ({
   page,
 }) => {
@@ -407,6 +492,121 @@ test("tauri regression harness covers import and app storage dialogs without ele
       expect.objectContaining({ channel: "select-app-location" }),
       expect.objectContaining({ channel: "change-app-location" }),
       expect.objectContaining({ channel: "list-apps" }),
+      expect.objectContaining({ channel: "get-app" }),
+    ]),
+  );
+});
+
+test("tauri regression harness covers import advanced options and missing AI rules feedback", async ({
+  page,
+}) => {
+  const importPath = "C:/Fixtures/import-app/minimal";
+  const defaultAppName = "tauri-import-default";
+  const customCommandsAppName = "tauri-import-custom-commands";
+  const missingAiRulesText =
+    "No AI_RULES.md found. Dyad will automatically generate one after importing.";
+
+  await page.goto("/");
+  await expect(page.getByTestId("leptos-route-shell")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Import App" })).toBeVisible();
+
+  await setNextSelectedAppFolder(page, {
+    path: importPath,
+    name: "minimal",
+    hasAiRules: false,
+  });
+
+  await page.getByRole("button", { name: "Import App" }).click();
+  await page.getByRole("button", { name: "Select Folder" }).click();
+  await expect(page.getByText(missingAiRulesText)).toBeVisible();
+
+  const defaultImportNameInput = page.getByRole("textbox", {
+    name: "Enter new app name",
+  });
+  await expect(defaultImportNameInput).toHaveValue("minimal");
+  await defaultImportNameInput.fill(defaultAppName);
+
+  await page.getByRole("button", { name: "Advanced options" }).click();
+  await expect(page.getByPlaceholder("pnpm install")).toHaveValue("");
+  await expect(page.getByPlaceholder("pnpm dev")).toHaveValue("");
+  const importButton = page.getByRole("button", { name: "Import" });
+  await expect(importButton).toBeEnabled();
+
+  await importButton.click();
+  await page.waitForURL((url) => url.pathname === "/chat");
+
+  const defaultImportedApp = await findAppByName(page, defaultAppName);
+  const defaultImportedAppDetails = await invokeViaTauriBridge<{
+    id: number;
+    installCommand: string | null;
+    startCommand: string | null;
+  }>(page, "get-app", defaultImportedApp.id);
+  expect(defaultImportedAppDetails).toEqual(
+    expect.objectContaining({
+      id: defaultImportedApp.id,
+      installCommand: null,
+      startCommand: null,
+    }),
+  );
+
+  await page.getByRole("link", { name: "Apps" }).click();
+  await expect(page.getByRole("button", { name: "Import App" })).toBeVisible();
+
+  await setNextSelectedAppFolder(page, {
+    path: importPath,
+    name: "minimal",
+    hasAiRules: false,
+  });
+
+  await page.getByRole("button", { name: "Import App" }).click();
+  await page.getByRole("button", { name: "Select Folder" }).click();
+  await expect(page.getByText(missingAiRulesText)).toBeVisible();
+
+  const customImportNameInput = page.getByRole("textbox", {
+    name: "Enter new app name",
+  });
+  await customImportNameInput.fill(customCommandsAppName);
+
+  await page.getByRole("button", { name: "Advanced options" }).click();
+  const installCommandInput = page.getByPlaceholder("pnpm install");
+  const startCommandInput = page.getByPlaceholder("pnpm dev");
+
+  await installCommandInput.fill("");
+  await startCommandInput.fill("npm start");
+  await expect(importButton).toBeDisabled();
+  await expect(
+    page.getByText("Both commands are required when customizing."),
+  ).toBeVisible();
+
+  await installCommandInput.fill("npm i");
+  await expect(importButton).toBeEnabled();
+  await expect(
+    page.getByText("Both commands are required when customizing."),
+  ).toHaveCount(0);
+
+  await importButton.click();
+  await page.waitForURL((url) => url.pathname === "/chat");
+
+  const customCommandsApp = await findAppByName(page, customCommandsAppName);
+  const customCommandsAppDetails = await invokeViaTauriBridge<{
+    id: number;
+    installCommand: string | null;
+    startCommand: string | null;
+  }>(page, "get-app", customCommandsApp.id);
+  expect(customCommandsAppDetails).toEqual(
+    expect.objectContaining({
+      id: customCommandsApp.id,
+      installCommand: "npm i",
+      startCommand: "npm start",
+    }),
+  );
+
+  const { invocations } = await getHarnessState(page);
+  expect(invocations).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({ channel: "select-app-folder" }),
+      expect.objectContaining({ channel: "check-ai-rules" }),
+      expect.objectContaining({ channel: "import-app" }),
       expect.objectContaining({ channel: "get-app" }),
     ]),
   );
