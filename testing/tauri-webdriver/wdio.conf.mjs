@@ -2,7 +2,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { spawn } from "node:child_process";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 const rootDir = path.resolve(__dirname, "..", "..");
@@ -25,6 +25,7 @@ const nativeDriverPath = path.join(
   "bin",
   "msedgedriver.exe",
 );
+const runtimeSetupModulePath = process.env.CHAEMERA_TAURI_RUNTIME_SETUP ?? null;
 
 let tauriDriver;
 let exit = false;
@@ -85,6 +86,43 @@ function registerShutdownCleanup(fn) {
   process.once("SIGBREAK", cleanup);
 }
 
+async function runRuntimeSetupHook() {
+  if (!runtimeSetupModulePath) {
+    return;
+  }
+
+  const resolvedModulePath = path.isAbsolute(runtimeSetupModulePath)
+    ? runtimeSetupModulePath
+    : path.resolve(rootDir, runtimeSetupModulePath);
+
+  if (!fs.existsSync(resolvedModulePath)) {
+    throw new Error(
+      `Tauri runtime setup module not found: ${resolvedModulePath}`,
+    );
+  }
+
+  const runtimeSetupModule = await import(
+    pathToFileURL(resolvedModulePath).href
+  );
+  const runtimeSetupHook =
+    runtimeSetupModule.default ??
+    runtimeSetupModule.setup ??
+    runtimeSetupModule.setupRuntime;
+
+  if (typeof runtimeSetupHook !== "function") {
+    throw new Error(
+      `Tauri runtime setup module must export a default/setup/setupRuntime function: ${resolvedModulePath}`,
+    );
+  }
+
+  await runtimeSetupHook({
+    rootDir,
+    profileRoot,
+    localAppDataDir,
+    appDataDir,
+  });
+}
+
 registerShutdownCleanup(() => {
   closeTauriDriver();
 });
@@ -109,9 +147,10 @@ export const config = {
     ui: "bdd",
     timeout: 120_000,
   },
-  beforeSession: () => {
+  beforeSession: async () => {
     fs.mkdirSync(localAppDataDir, { recursive: true });
     fs.mkdirSync(appDataDir, { recursive: true });
+    await runRuntimeSetupHook();
 
     tauriDriver = spawn(
       tauriDriverPath,

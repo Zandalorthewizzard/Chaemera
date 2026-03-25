@@ -193,6 +193,18 @@ Replace the highest-value Electron-based desktop regression dependencies with Ta
    - `version_integrity.spec.ts`: version snapshots and restore behavior across real app files
 4. This means the next safest direction is likely to widen the real `tauri-runtime` lane, not the browser-backed `tauri-regression` lane.
 
+## Tauri Runtime Infrastructure Added On 2026-03-25
+
+1. The real runtime WebdriverIO harness now supports an optional prelaunch setup module via `CHAEMERA_TAURI_RUNTIME_SETUP`.
+2. The setup module runs before `tauri-driver` starts and receives:
+   - `rootDir`
+   - `profileRoot`
+   - `localAppDataDir`
+   - `appDataDir`
+3. This is intended to unblock migration of remaining Electron specs that need profile/file preparation before launch.
+4. The default runtime lane still passes after this addition:
+   - `npm run e2e:tauri-runtime`
+
 ## Non-Goals
 
 1. Do not archive Electron runtime files inside the active repo tree.
@@ -210,4 +222,5 @@ Replace the highest-value Electron-based desktop regression dependencies with Ta
 5. Treat import advanced-options coverage and in-place import coverage as migrated to `tauri-regression`.
 6. Focus next on the remaining direct Electron spec usage list in this note.
 7. Treat the remaining four Electron specs as likely `tauri-runtime` candidates, not easy browser-harness candidates.
-8. Pick the next smallest slice that extends real Tauri runtime coverage for filesystem- and stream-backed behavior without lowering regression signal.
+8. Use the new runtime setup hook to prototype the first migrated file-backed Tauri runtime spec.
+9. Pick the next smallest slice that extends real Tauri runtime coverage for filesystem- and stream-backed behavior without lowering regression signal.
