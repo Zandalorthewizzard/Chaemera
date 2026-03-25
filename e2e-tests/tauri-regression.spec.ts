@@ -179,11 +179,12 @@ test("tauri regression harness preserves native side effects and callback events
     if (!bridge?.on) {
       throw new Error("Tauri event bridge is unavailable.");
     }
+    const subscribe = bridge.on;
 
     return new Promise<unknown>((resolve) => {
       let cleanup: (() => void) | null = null;
       cleanup =
-        bridge.on("deep-link-received", (payload) => {
+        subscribe("deep-link-received", (payload) => {
           cleanup?.();
           resolve(payload);
         }) ?? null;

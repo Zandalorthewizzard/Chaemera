@@ -31,7 +31,7 @@ describe("release metadata", () => {
     expect(packageLock.packages[""].name).toBe("chaemera");
   });
 
-  it("keeps legacy forge metadata aligned with the Chaemera fork", () => {
+  it("keeps Tauri-first packaging and legacy forge metadata aligned with the Chaemera fork", () => {
     const forgeConfig = fs.readFileSync(
       path.join(process.cwd(), "forge.config.ts"),
       "utf8",
@@ -52,7 +52,13 @@ describe("release metadata", () => {
     expect(forgeConfig).toContain('owner: "Zandalorthewizzard"');
     expect(forgeConfig).toContain('name: "Chaemera"');
     expect(forgeConfig).toContain('schemes: ["dyad"]');
-    expect(packageJson.scripts.package).toBe("npm run package:electron");
+    expect(packageJson.scripts.package).toBe("npm run package:tauri");
+    expect(packageJson.scripts["package:tauri"]).toContain(
+      "@tauri-apps/cli build",
+    );
+    expect(packageJson.scripts["package:electron"]).toBe(
+      "npm run clean && electron-forge package",
+    );
     expect(packageJson.scripts.make).toBe("npm run make:electron");
     expect(packageJson.scripts.publish).toBe("npm run publish:electron");
     expect(packageJson.scripts["publish:electron"]).toContain(
