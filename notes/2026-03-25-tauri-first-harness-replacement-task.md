@@ -1,0 +1,110 @@
+## Task: Replace Remaining Electron Test Harness With Tauri-First Coverage
+
+Date: 2026-03-25
+Status: in progress
+Branch: `refactor/leptos-tauri2`
+
+## Context
+
+The product and release surface is already Tauri-first.
+
+Electron is no longer part of:
+
+1. default local runtime scripts
+2. release workflow surface
+3. production packaging intent
+
+The remaining Electron layer is now a legacy test harness only.
+
+## Why This Task Exists
+
+The final Electron entrypoint cluster cannot be removed safely while broad desktop regression still depends on:
+
+1. `electron-regression` in `playwright.config.ts`
+2. `build:test-electron-harness`
+3. `pre:e2e:electron-regression`
+4. `e2e:electron`
+5. `electron-playwright-helpers` in the Playwright fixture layer
+
+## Short-Term Goal
+
+Replace the highest-value Electron-based desktop regression dependencies with Tauri-first coverage until the Electron harness stops being a test blocker.
+
+## Ordered Work Plan
+
+1. Inventory the remaining Electron-based Playwright and fixture dependencies.
+2. Identify the smallest high-signal user flows that still require Electron helpers.
+3. Replace or isolate those helpers with Tauri-first equivalents where practical.
+4. Move `pre:e2e:ci` and `e2e:ci` off the Electron harness once Tauri coverage is sufficient.
+5. Only after that, delete:
+   - `src/main.ts`
+   - `src/preload.ts`
+   - `forge.config.ts`
+   - `vite.main.config.mts`
+   - `vite.preload.config.mts`
+
+## Current Confirmed State
+
+1. Real Tauri runtime validation exists and passes locally:
+   - `npm run pre:e2e:tauri-runtime`
+   - `npm run e2e:tauri-runtime`
+2. Windows CI now includes a real Tauri runtime gate.
+3. `audit:electron-legacy` still reports:
+   - `entrypointCount: 5`
+   - `electronScriptCount: 3`
+   - `forgeReferenceFileCount: 5`
+   - `workflowReferenceFileCount: 0`
+4. Remaining Electron Playwright helper usage is currently concentrated in:
+   - `e2e-tests/helpers/fixtures.ts`
+   - `e2e-tests/helpers/page-objects/components/AppManagement.ts`
+   - `e2e-tests/app_storage_path.spec.ts`
+   - `e2e-tests/import.spec.ts`
+   - `e2e-tests/import_in_place.spec.ts`
+   - `e2e-tests/version_integrity.spec.ts`
+
+## Slice Completed On 2026-03-25
+
+1. The browser-backed `tauri-regression` harness now supports controlled replacements for native folder dialogs:
+   - `select-app-folder`
+   - `select-app-location`
+   - `check-ai-rules`
+2. The harness exposes explicit test controls for those dialogs through:
+   - `window.__CHAEMERA_TAURI_SMOKE__.setNextSelectedAppFolder(...)`
+   - `window.__CHAEMERA_TAURI_SMOKE__.setNextSelectedAppLocation(...)`
+3. `e2e-tests/tauri-regression.spec.ts` now covers, without Electron helpers:
+   - import app with copy-to-apps enabled
+   - import app in place
+   - move app folder from app details
+4. This slice passed with:
+   - `npm run lint`
+   - `npm run ts`
+   - `npx playwright test --project=tauri-regression e2e-tests/tauri-regression.spec.ts`
+
+## What This Reduced
+
+1. Import and app-storage regression no longer require Electron-only dialog stubbing to stay covered in the Tauri-first lane.
+2. The remaining high-value Electron helper dependency is now narrower and more clearly centered on:
+   - `e2e-tests/helpers/fixtures.ts`
+   - `e2e-tests/helpers/page-objects/components/AppManagement.ts`
+   - `e2e-tests/version_integrity.spec.ts`
+
+## Next Likely Slice
+
+1. Move the remaining import/storage-focused Electron specs behind the Tauri-first lane or retire them if the new regression flow is sufficient.
+2. Revisit `version_integrity.spec.ts` separately because it still depends on the Electron fixture stack for a broader history/restore workflow.
+3. After that, reassess whether `electron-playwright-helpers` is still needed outside the legacy Electron fixture bootstrap.
+
+## Non-Goals
+
+1. Do not archive Electron runtime files inside the active repo tree.
+2. Do not remove the remaining Electron harness before an equivalent Tauri-first gate exists.
+3. Do not expand this task into a full UI redesign or Leptos migration.
+
+## Resume Point
+
+1. Read this note.
+2. Re-run:
+   - `npm run audit:electron-legacy`
+   - `rg -n "electron-playwright-helpers|electron-regression" -g '!node_modules' -g '!docs-new' .`
+3. Treat the import/storage slice as complete and focus next on the remaining Electron fixture concentration.
+4. Pick the next smallest replacement slice that reduces real harness dependency without lowering regression signal.

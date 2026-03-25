@@ -1,6 +1,21 @@
 import type { Page } from "@playwright/test";
 import { expect, test } from "./helpers/tauri_smoke_fixtures";
 
+type TauriSmokeHarnessState = {
+  settings: Record<string, unknown>;
+  externalUrls: string[];
+  invocations: Array<{ channel: string; payload: unknown }>;
+  nextSelectedAppFolder: {
+    path: string | null;
+    name: string | null;
+    hasAiRules: boolean;
+  } | null;
+  nextSelectedAppLocation: {
+    path: string | null;
+    canceled: boolean;
+  } | null;
+};
+
 async function invokeViaTauriBridge<T>(
   page: Page,
   channel: string,
@@ -21,11 +36,7 @@ async function invokeViaTauriBridge<T>(
   return result as T;
 }
 
-async function getHarnessState(page: Page): Promise<{
-  settings: Record<string, unknown>;
-  externalUrls: string[];
-  invocations: Array<{ channel: string; payload: unknown }>;
-}> {
+async function getHarnessState(page: Page): Promise<TauriSmokeHarnessState> {
   const state = await page.evaluate(() =>
     window.__CHAEMERA_TAURI_SMOKE__?.getState(),
   );
@@ -34,11 +45,56 @@ async function getHarnessState(page: Page): Promise<{
     throw new Error("Tauri smoke harness state is unavailable.");
   }
 
-  return {
-    settings: state.settings,
-    externalUrls: state.externalUrls,
-    invocations: state.invocations,
-  };
+  return state;
+}
+
+async function setNextSelectedAppFolder(
+  page: Page,
+  selection: {
+    path: string;
+    name?: string;
+    hasAiRules?: boolean;
+  },
+) {
+  await page.evaluate((nextSelection) => {
+    window.__CHAEMERA_TAURI_SMOKE__?.setNextSelectedAppFolder(nextSelection);
+  }, selection);
+}
+
+async function setNextSelectedAppLocation(
+  page: Page,
+  selection: {
+    path: string;
+    canceled?: boolean;
+  },
+) {
+  await page.evaluate((nextSelection) => {
+    window.__CHAEMERA_TAURI_SMOKE__?.setNextSelectedAppLocation(nextSelection);
+  }, selection);
+}
+
+async function findAppByName(
+  page: Page,
+  name: string,
+): Promise<{
+  id: number;
+  name: string;
+  path: string;
+  resolvedPath: string;
+}> {
+  const result = await invokeViaTauriBridge<{
+    apps: Array<{
+      id: number;
+      name: string;
+      path: string;
+      resolvedPath: string;
+    }>;
+  }>(page, "list-apps");
+  const app = result.apps.find((candidate) => candidate.name === name);
+  if (!app) {
+    throw new Error(`App "${name}" not found in Tauri regression harness.`);
+  }
+  return app;
 }
 
 test("tauri regression harness exercises core app and chat bridge flows", async ({
@@ -232,6 +288,128 @@ test("tauri regression harness preserves native side effects and callback events
   await invokeViaTauriBridge(page, "window:minimize");
   await invokeViaTauriBridge(page, "window:maximize");
   await invokeViaTauriBridge(page, "window:close");
+});
+
+test("tauri regression harness covers import and app storage dialogs without electron helpers", async ({
+  page,
+}) => {
+  const copiedImportPath = "C:/Fixtures/import-app/minimal-with-ai-rules";
+  const copiedAppName = "tauri-imported-copy";
+  const inPlaceImportPath =
+    "C:/Fixtures/import-app/minimal-in-place-with-ai-rules";
+  const inPlaceAppName = "tauri-imported-in-place";
+  const movedBasePath = "C:/Apps/relocated";
+
+  await page.goto("/");
+  await expect(page.getByTestId("leptos-route-shell")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Import App" })).toBeVisible();
+
+  await setNextSelectedAppFolder(page, {
+    path: copiedImportPath,
+    name: "minimal-with-ai-rules",
+    hasAiRules: true,
+  });
+
+  await page.getByRole("button", { name: "Import App" }).click();
+  await page.getByRole("button", { name: "Select Folder" }).click();
+  const copyNameInput = page.getByRole("textbox", {
+    name: "Enter new app name",
+  });
+  await expect(copyNameInput).toHaveValue("minimal-with-ai-rules");
+  await copyNameInput.fill(copiedAppName);
+  await page.getByRole("button", { name: "Import" }).click();
+  await page.waitForURL((url) => url.pathname === "/chat");
+
+  const copiedApp = await findAppByName(page, copiedAppName);
+  expect(copiedApp).toEqual(
+    expect.objectContaining({
+      name: copiedAppName,
+      path: copiedAppName,
+      resolvedPath: `C:/Apps/${copiedAppName}`,
+    }),
+  );
+
+  await page.getByRole("link", { name: "Apps" }).click();
+  await expect(page.getByRole("button", { name: "Import App" })).toBeVisible();
+
+  await setNextSelectedAppFolder(page, {
+    path: inPlaceImportPath,
+    name: "minimal-in-place-with-ai-rules",
+    hasAiRules: true,
+  });
+
+  await page.getByRole("button", { name: "Import App" }).click();
+  await page.getByRole("button", { name: "Select Folder" }).click();
+  await page.getByRole("checkbox", { name: /Copy to the/ }).uncheck();
+  const inPlaceNameInput = page.getByRole("textbox", {
+    name: "Enter new app name",
+  });
+  await inPlaceNameInput.fill(inPlaceAppName);
+  await page.getByRole("button", { name: "Import" }).click();
+  await page.waitForURL((url) => url.pathname === "/chat");
+
+  const inPlaceApp = await findAppByName(page, inPlaceAppName);
+  expect(inPlaceApp).toEqual(
+    expect.objectContaining({
+      name: inPlaceAppName,
+      path: inPlaceImportPath,
+      resolvedPath: inPlaceImportPath,
+    }),
+  );
+
+  await setNextSelectedAppLocation(page, {
+    path: movedBasePath,
+    canceled: false,
+  });
+
+  await page.getByRole("link", { name: "Apps" }).click();
+  await expect(
+    page.getByTestId(`app-list-item-${copiedAppName}`),
+  ).toBeVisible();
+  await page.getByTestId(`app-list-item-${copiedAppName}`).click();
+  await expect(page.getByTestId("app-details-page")).toBeVisible();
+  await page.getByTestId("app-details-more-options-button").click();
+  await page.getByRole("button", { name: "Move folder" }).click();
+
+  const selectFolderButton = page
+    .getByRole("dialog")
+    .getByRole("button", { name: "Select Folder" });
+  await expect(selectFolderButton).toBeVisible();
+  await selectFolderButton.click();
+  await expect(selectFolderButton).not.toBeVisible();
+
+  const movedPath = `${movedBasePath}/${copiedAppName}`;
+  const movedApp = await invokeViaTauriBridge<{
+    id: number;
+    path: string;
+    resolvedPath: string;
+  }>(page, "get-app", copiedApp.id);
+  expect(movedApp).toEqual(
+    expect.objectContaining({
+      id: copiedApp.id,
+      path: movedPath,
+      resolvedPath: movedPath,
+    }),
+  );
+  await expect(
+    page
+      .locator("span.text-sm.break-all")
+      .filter({ hasText: movedPath })
+      .first(),
+  ).toBeVisible();
+
+  const { invocations } = await getHarnessState(page);
+  expect(invocations).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({ channel: "select-app-folder" }),
+      expect.objectContaining({ channel: "check-ai-rules" }),
+      expect.objectContaining({ channel: "import-app" }),
+      expect.objectContaining({ channel: "select-app-location" }),
+      expect.objectContaining({ channel: "change-app-location" }),
+      expect.objectContaining({ channel: "list-apps" }),
+      expect.objectContaining({ channel: "get-app" }),
+    ]),
+  );
 });
 
 test("tauri regression harness covers GitHub auth events and repository lifecycle", async ({

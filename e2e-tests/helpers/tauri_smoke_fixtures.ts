@@ -1,9 +1,22 @@
 import { test as base, expect } from "@playwright/test";
 
+type TauriSmokeSelectedAppFolder = {
+  path: string | null;
+  name: string | null;
+  hasAiRules: boolean;
+};
+
+type TauriSmokeSelectedAppLocation = {
+  path: string | null;
+  canceled: boolean;
+};
+
 type TauriSmokeHarnessState = {
   settings: Record<string, unknown>;
   externalUrls: string[];
   invocations: Array<{ channel: string; payload: unknown }>;
+  nextSelectedAppFolder: TauriSmokeSelectedAppFolder | null;
+  nextSelectedAppLocation: TauriSmokeSelectedAppLocation | null;
 };
 
 declare global {
@@ -11,6 +24,12 @@ declare global {
     __CHAEMERA_TAURI_SMOKE__?: {
       emit: (channel: string, payload: unknown) => void;
       getState: () => TauriSmokeHarnessState;
+      setNextSelectedAppFolder: (
+        selection: Partial<TauriSmokeSelectedAppFolder> | null,
+      ) => void;
+      setNextSelectedAppLocation: (
+        selection: Partial<TauriSmokeSelectedAppLocation> | null,
+      ) => void;
     };
   }
 }
@@ -73,9 +92,12 @@ const tauriCommandToChannel = {
   chat_add_dep: "chat:add-dep",
   nodejs_status: "nodejs-status",
   select_node_folder: "select-node-folder",
+  select_app_folder: "select-app-folder",
+  select_app_location: "select-app-location",
   get_node_path: "get-node-path",
   get_user_settings: "get-user-settings",
   set_user_settings: "set-user-settings",
+  check_ai_rules: "check-ai-rules",
   get_env_vars: "get-env-vars",
   get_app_env_vars: "get-app-env-vars",
   set_app_env_vars: "set-app-env-vars",
@@ -600,7 +622,16 @@ export const test = base.extend<{
           settings: { ...initialSettings },
           externalUrls: [] as string[],
           invocations: [] as Array<{ channel: string; payload: unknown }>,
+          nextSelectedAppFolder: null as TauriSmokeSelectedAppFolder | null,
+          nextSelectedAppLocation: null as TauriSmokeSelectedAppLocation | null,
         };
+        const appFolderSelectionsByPath = new Map<
+          string,
+          { hasAiRules: boolean }
+        >();
+
+        const normalizeHarnessPath = (value: string) =>
+          value.replace(/[\\\\]+/g, "/");
 
         const themePromptFrom = ({
           source,
@@ -654,6 +685,56 @@ export const test = base.extend<{
           }
         };
 
+        const setNextSelectedAppFolder = (
+          selection: Partial<TauriSmokeSelectedAppFolder> | null,
+        ) => {
+          if (!selection) {
+            state.nextSelectedAppFolder = null;
+            return;
+          }
+
+          const normalizedSelection = {
+            path:
+              typeof selection.path === "string"
+                ? normalizeHarnessPath(selection.path)
+                : null,
+            name:
+              typeof selection.name === "string"
+                ? selection.name
+                : typeof selection.path === "string"
+                  ? (normalizeHarnessPath(selection.path)
+                      .split("/")
+                      .filter(Boolean)
+                      .pop() ?? null)
+                  : null,
+            hasAiRules: selection.hasAiRules === true,
+          };
+
+          state.nextSelectedAppFolder = normalizedSelection;
+          if (normalizedSelection.path) {
+            appFolderSelectionsByPath.set(normalizedSelection.path, {
+              hasAiRules: normalizedSelection.hasAiRules,
+            });
+          }
+        };
+
+        const setNextSelectedAppLocation = (
+          selection: Partial<TauriSmokeSelectedAppLocation> | null,
+        ) => {
+          if (!selection) {
+            state.nextSelectedAppLocation = null;
+            return;
+          }
+
+          state.nextSelectedAppLocation = {
+            path:
+              typeof selection.path === "string"
+                ? normalizeHarnessPath(selection.path)
+                : null,
+            canceled: selection.canceled === true,
+          };
+        };
+
         const invokeByChannel = async (channel: string, payload: unknown) => {
           state.invocations.push({ channel, payload });
 
@@ -667,8 +748,8 @@ export const test = base.extend<{
                 "patch" in payload &&
                 typeof (payload as { patch?: unknown }).patch === "object" &&
                 (payload as { patch?: unknown }).patch !== null
-                  ? ((payload as { patch: Record<string, unknown> }).patch ??
-                      {}) as Record<string, unknown>
+                  ? (((payload as { patch: Record<string, unknown> }).patch ??
+                      {}) as Record<string, unknown>)
                   : ((payload as Record<string, unknown> | null) ?? {});
               state.settings = {
                 ...state.settings,
@@ -849,6 +930,47 @@ export const test = base.extend<{
             }
             case "get-node-path":
               return "C:/Program Files/nodejs/node.exe";
+            case "select-app-folder": {
+              const selection = state.nextSelectedAppFolder;
+              state.nextSelectedAppFolder = null;
+              if (!selection) {
+                return {
+                  path: null,
+                  name: null,
+                };
+              }
+              return {
+                path: selection.path,
+                name: selection.name,
+              };
+            }
+            case "select-app-location": {
+              const selection = state.nextSelectedAppLocation;
+              state.nextSelectedAppLocation = null;
+              if (!selection) {
+                return {
+                  path: null,
+                  canceled: true,
+                };
+              }
+              return {
+                path: selection.path,
+                canceled: selection.canceled,
+              };
+            }
+            case "check-ai-rules": {
+              const request = (payload as { request?: Record<string, unknown> })
+                ?.request;
+              const requestedPath =
+                typeof request?.path === "string"
+                  ? normalizeHarnessPath(request.path)
+                  : "";
+              return {
+                exists:
+                  appFolderSelectionsByPath.get(requestedPath)?.hasAiRules ??
+                  /ai[-_]rules/i.test(requestedPath),
+              };
+            }
             case "take-screenshot":
               return;
             case "create-app": {
@@ -2814,6 +2936,8 @@ export const test = base.extend<{
         (window as Window).__CHAEMERA_TAURI_SMOKE__ = {
           emit,
           getState: () => state,
+          setNextSelectedAppFolder,
+          setNextSelectedAppLocation,
         };
 
         (

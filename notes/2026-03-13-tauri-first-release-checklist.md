@@ -10,6 +10,7 @@ Ship a production-ready `Tauri 2` desktop app with current functional parity for
 Related gate note:
 
 1. `notes/2026-03-13-tauri-regression-gate-before-electron-removal.md`
+2. `notes/2026-03-25-tauri-first-harness-replacement-task.md`
 
 ## What Was Verified
 
@@ -98,6 +99,13 @@ Related gate note:
 - `makers/MakerAppImage.ts` has been removed
 - `build:test-electron-harness` still passes after this reduction
 
+19. The browser-backed `tauri-regression` lane now covers import/storage dialog flows without Electron helpers:
+
+- import app with copy enabled
+- import app in place
+- move app folder from app details
+- verified by `npx playwright test --project=tauri-regression e2e-tests/tauri-regression.spec.ts`
+
 ## Decisions Applied In This Pass
 
 1. Removed the unused help-bot IPC surface from active code:
@@ -165,6 +173,7 @@ Related gate note:
 8. Treat the current `tauri-regression` lane as an intermediate gate only:
    - it is broader than `tauri-smoke`
    - it is still not sufficient to delete Electron entrypoints without a real Tauri runtime lane
+   - but it now covers import/storage dialog regressions that previously required Electron-only dialog stubs
 9. Use the real Tauri runtime lane as the new hard checkpoint before each Electron deletion pass:
    - `npm run pre:e2e:tauri-runtime`
    - `npm run e2e:tauri-runtime`
