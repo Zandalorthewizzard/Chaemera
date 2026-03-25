@@ -206,6 +206,15 @@ Related gate note:
 - a route-level nuance was confirmed during migration: the telemetry consent banner belongs to the home route, so Tauri coverage now tests the real home-page banner flow instead of the telemetry settings section
 - verified with targeted `fmt`, targeted `lint`, `npm run ts`, and `npx playwright test --project=tauri-regression e2e-tests/tauri-auto-update.spec.ts e2e-tests/tauri-release-channel.spec.ts e2e-tests/tauri-telemetry.spec.ts`
 
+33. Two old `Pro`-mode settings specs have been removed as obsolete legacy coverage:
+
+- `e2e-tests/smart_context_options.spec.ts`
+- `e2e-tests/turbo_edits_options.spec.ts`
+- their old snapshot artifacts under `e2e-tests/snapshots/` have been removed
+- an attempted Tauri migration showed the current home-page UI no longer exposes the expected `Pro` button or a live `Build mode settings` entry surface
+- source search also found no active UI callsites that mutate `enableProLazyEditsMode`, `proLazyEditsMode`, `enableProSmartFilesContextMode`, or `proSmartContextOption`
+- this means these tests were stale Electron-era coverage for behavior that is no longer user-facing, not missing Tauri parity
+
 ## Decisions Applied In This Pass
 
 1. Removed the unused help-bot IPC surface from active code:

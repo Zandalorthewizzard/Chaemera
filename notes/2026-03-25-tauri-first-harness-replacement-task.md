@@ -424,6 +424,22 @@ Replace the highest-value Electron-based desktop regression dependencies with Ta
    - `npm run ts`
    - `npx playwright test --project=tauri-regression e2e-tests/tauri-auto-update.spec.ts e2e-tests/tauri-release-channel.spec.ts e2e-tests/tauri-telemetry.spec.ts`
 
+## Additional Verification On 2026-03-25: Legacy Pro-Mode Settings Specs Removed As Obsolete
+
+1. The old Electron snapshot-based specs have been removed:
+   - `e2e-tests/smart_context_options.spec.ts`
+   - `e2e-tests/turbo_edits_options.spec.ts`
+2. Their old snapshot artifacts under `e2e-tests/snapshots/` have been removed as well.
+3. The attempted Tauri migration exposed that these specs no longer match the live product UI:
+   - the page-object expected a `Pro` button inside `home-chat-input-container`
+   - the current home-page DOM in `tauri-regression` exposes only the chat-mode combobox, model button, and auxiliary actions button there
+   - no live source UI callsites were found that write `enableProLazyEditsMode`, `proLazyEditsMode`, `enableProSmartFilesContextMode`, or `proSmartContextOption`
+4. This means the blocker was not a missing Tauri bridge:
+   - it was stale Electron-era test intent targeting a settings surface that is no longer user-facing in the current app
+5. This adds a new migration rule:
+   - before porting a remaining Electron spec, verify that the underlying user flow still exists in the current product surface
+   - if the UI entrypoint is gone and no active source callsites mutate the setting, remove the stale spec instead of inventing new Tauri coverage for dead behavior
+
 ## Non-Goals
 
 1. Do not archive Electron runtime files inside the active repo tree.
