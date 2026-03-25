@@ -1,10 +1,5 @@
 import { windowsSign } from "./windowsSign";
 import type { ForgeConfig } from "@electron-forge/shared-types";
-import { MakerSquirrel } from "@electron-forge/maker-squirrel";
-import { MakerZIP } from "@electron-forge/maker-zip";
-import { MakerDeb } from "@electron-forge/maker-deb";
-import { MakerRpm } from "@electron-forge/maker-rpm";
-import { MakerAppImage } from "./makers/MakerAppImage";
 import { VitePlugin } from "@electron-forge/plugin-vite";
 import { FusesPlugin } from "@electron-forge/plugin-fuses";
 import { FuseV1Options, FuseVersion } from "@electron/fuses";
@@ -103,52 +98,6 @@ const config: ForgeConfig = {
     extraModules: ["better-sqlite3"],
     force: true,
   },
-  makers: [
-    new MakerSquirrel(
-      // @ts-expect-error - incorrect types exported by MakerSquirrel
-      isWindowsSigningEnabled
-        ? {
-            windowsSign,
-            iconUrl:
-              "https://raw.githubusercontent.com/Zandalorthewizzard/Chaemera/main/assets/icon/logo.ico",
-            setupIcon: "./assets/icon/logo.ico",
-          }
-        : {
-            iconUrl:
-              "https://raw.githubusercontent.com/Zandalorthewizzard/Chaemera/main/assets/icon/logo.ico",
-            setupIcon: "./assets/icon/logo.ico",
-          },
-    ),
-    new MakerZIP({}, ["darwin"]),
-    new MakerRpm({
-      options: {
-        icon: "./assets/icon/logo.png",
-      },
-    }),
-    new MakerDeb({
-      options: {
-        mimeType: ["x-scheme-handler/dyad"],
-        icon: "./assets/icon/logo.png",
-      },
-    }),
-    new MakerAppImage({
-      icon: "./assets/icon/logo.png",
-    }),
-  ],
-  publishers: [
-    {
-      name: "@electron-forge/publisher-github",
-      config: {
-        repository: {
-          owner: "Zandalorthewizzard",
-          name: "Chaemera",
-        },
-        draft: true,
-        force: true,
-        prerelease: true,
-      },
-    },
-  ],
   plugins: [
     new AutoUnpackNativesPlugin({}),
     new VitePlugin({

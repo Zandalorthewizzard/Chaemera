@@ -12,6 +12,7 @@ describe("tauri build config", () => {
   it("uses dedicated renderer scripts instead of the legacy Electron build", () => {
     const packageJson = readJson<{
       scripts: Record<string, string>;
+      devDependencies: Record<string, string | undefined>;
     }>("package.json");
     const rootTauriConfig = readJson<{
       build: {
@@ -55,6 +56,21 @@ describe("tauri build config", () => {
     expect(packageJson.scripts["package:electron"]).toBeUndefined();
     expect(packageJson.scripts.make).toBeUndefined();
     expect(packageJson.scripts.publish).toBeUndefined();
+    expect(
+      packageJson.devDependencies["@electron-forge/maker-deb"],
+    ).toBeUndefined();
+    expect(
+      packageJson.devDependencies["@electron-forge/maker-rpm"],
+    ).toBeUndefined();
+    expect(
+      packageJson.devDependencies["@electron-forge/maker-squirrel"],
+    ).toBeUndefined();
+    expect(
+      packageJson.devDependencies["@electron-forge/maker-zip"],
+    ).toBeUndefined();
+    expect(
+      packageJson.devDependencies["@electron-forge/publisher-github"],
+    ).toBeUndefined();
     expect(packageJson.scripts["build:tauri-regression"]).toBe(
       "npx vite build --config vite.renderer.config.mts --outDir .tauri-smoke-dist",
     );

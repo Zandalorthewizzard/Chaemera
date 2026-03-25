@@ -92,6 +92,12 @@ Related gate note:
 - run `pre:e2e:tauri-runtime`
 - run `e2e:tauri-runtime`
 
+18. The remaining Electron Forge harness is now package-only:
+
+- `forge.config.ts` no longer carries maker or GitHub publisher definitions
+- `makers/MakerAppImage.ts` has been removed
+- `build:test-electron-harness` still passes after this reduction
+
 ## Decisions Applied In This Pass
 
 1. Removed the unused help-bot IPC surface from active code:
@@ -118,6 +124,7 @@ Related gate note:
    - `build:test-electron-harness`
    - `pre:e2e:electron-regression`
    - `e2e:electron`
+   - current Forge reference count is down to `5`
 3. CI is still not fully Tauri-first for broad regression:
    - `.github/workflows/ci.yml`
    - CI still uses the broader Electron-plus-Tauri lane as the full desktop proof path
