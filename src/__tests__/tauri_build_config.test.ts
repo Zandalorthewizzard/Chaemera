@@ -70,8 +70,20 @@ describe("tauri build config", () => {
     expect(packageJson.scripts["pre:e2e:electron-regression"]).toBe(
       "npm run build:electron-harness && npm run build:tauri-regression",
     );
-    expect(packageJson.scripts["pre:e2e"]).toBe(
+    expect(packageJson.scripts["pre:e2e:full"]).toBe(
       "npm run pre:e2e:electron-regression",
+    );
+    expect(packageJson.scripts["pre:e2e:ci"]).toBe("npm run pre:e2e:full");
+    expect(packageJson.scripts["pre:e2e"]).toBe(
+      "npm run pre:e2e:tauri-regression",
+    );
+    expect(packageJson.scripts.e2e).toBe(
+      "playwright test --project=tauri-regression",
+    );
+    expect(packageJson.scripts["e2e:full"]).toBe("playwright test");
+    expect(packageJson.scripts["e2e:ci"]).toBe("npm run e2e:full");
+    expect(packageJson.scripts["e2e:electron"]).toBe(
+      "playwright test --project=electron-regression",
     );
     expect(packageJson.scripts["e2e:tauri-regression"]).toBe(
       "playwright test --project=tauri-regression",
@@ -82,15 +94,11 @@ describe("tauri build config", () => {
     expect(packageJson.scripts["build:renderer"]).toBe(
       "npx vite build --config vite.renderer.config.mts --outDir dist",
     );
-    expect(rootTauriConfig.build.beforeDevCommand).toBe(
-      "npm run dev:renderer",
-    );
+    expect(rootTauriConfig.build.beforeDevCommand).toBe("npm run dev:renderer");
     expect(rootTauriConfig.build.beforeBuildCommand).toBe(
       "npm run build:renderer",
     );
-    expect(srcTauriConfig.build.beforeDevCommand).toBe(
-      "npm run dev:renderer",
-    );
+    expect(srcTauriConfig.build.beforeDevCommand).toBe("npm run dev:renderer");
     expect(srcTauriConfig.build.beforeBuildCommand).toBe(
       "npm run build:renderer",
     );
@@ -108,9 +116,12 @@ describe("tauri build config", () => {
 
     expect(ciWorkflow).toContain("uses: dtolnay/rust-toolchain@stable");
     expect(ciWorkflow).toContain("run: npm run audit:tauri-cutover");
-    expect(ciWorkflow).toContain("run: npm run pre:e2e:electron-regression");
+    expect(ciWorkflow).toContain("run: npm run pre:e2e:ci");
     expect(ciWorkflow).toContain("run: npm run build:renderer");
     expect(ciWorkflow).toContain("run: npm run check:tauri");
+    expect(ciWorkflow).toContain(
+      "run: DEBUG=pw:browser npm run e2e:ci -- --shard=${{ matrix.shard }}/${{ matrix.shardTotal }}",
+    );
   });
 
   it("keeps a dedicated Tauri preview release workflow", () => {

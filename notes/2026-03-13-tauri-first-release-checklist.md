@@ -34,24 +34,34 @@ Related gate note:
 7. E2E prep is now split into explicit lanes:
    - `pre:e2e:tauri-smoke`
    - `pre:e2e:electron-regression`
-   - current `pre:e2e` still points to the Electron regression lane for compatibility
+   - `pre:e2e` now defaults to the Tauri regression lane for local development
+   - `pre:e2e:full` and `pre:e2e:ci` keep the full Electron-plus-Tauri lane explicit
 8. CI build wiring is now more explicit:
-   - current desktop build step calls `pre:e2e:electron-regression`
+   - local `build` and `e2e` now default to the Tauri regression lane
+   - CI uses explicit `pre:e2e:ci` and `e2e:ci` for the broader desktop lane
    - Tauri runtime check calls `check:tauri`
 9. The browser-backed Tauri harness is now widened into a named regression lane:
    - `tauri-regression` runs both `e2e-tests/tauri-smoke.spec.ts` and `e2e-tests/tauri-regression.spec.ts`
    - compatibility aliases still keep the old `tauri-smoke` script names working
 10. CI now runs `npm run audit:tauri-cutover` as an explicit build-time Tauri parity gate.
 11. An Electron legacy inventory command now exists:
-   - `npm run audit:electron-legacy`
-   - use it to drive the next deletion pass instead of relying on ad hoc grep-only review
+
+- `npm run audit:electron-legacy`
+- use it to drive the next deletion pass instead of relying on ad hoc grep-only review
+
 12. Current Electron legacy inventory snapshot:
-   - `5` entrypoint/config files still exist: `src/main.ts`, `src/preload.ts`, `forge.config.ts`, `vite.main.config.mts`, `vite.preload.config.mts`
-   - `30` tracked files still import from `electron`
-   - `74` tracked files still import `electron-log`
-   - `7` tracked files still reference Electron Forge
-   - `10` package scripts still point at Electron runtime, packaging, or Electron regression lanes
-   - `2` workflow files still reference Electron build/release paths
+    - `5` entrypoint/config files still exist: `src/main.ts`, `src/preload.ts`, `forge.config.ts`, `vite.main.config.mts`, `vite.preload.config.mts`
+    - `30` tracked files still import from `electron`
+    - `74` tracked files still import `electron-log`
+    - `7` tracked files still reference Electron Forge
+    - `10` package scripts still point at Electron runtime, packaging, or Electron regression lanes
+    - `1` workflow file still references Electron build/release paths
+13. Post-toolchain validation on 2026-03-25:
+
+- `npm run ts` passed
+- `npx vitest run src/__tests__/tauri_build_config.test.ts` passed
+- `npm run build` passed through the Tauri regression prep lane
+- `npm run e2e` passed and now resolves to the Tauri regression project
 
 ## Decisions Applied In This Pass
 
@@ -78,12 +88,11 @@ Related gate note:
 2. Default npm workflow is still Electron-first:
    - `make`
    - `publish`
-   - `build`
-   - `pre:e2e`
    - `build:electron-harness`
+   - `pre:e2e:electron-regression`
 3. CI is still Electron-first for regression:
    - `.github/workflows/ci.yml`
-   - Playwright default project still includes `electron-regression` as the broader desktop lane
+   - CI still uses the broader Electron-plus-Tauri lane as the full desktop proof path
    - the new `tauri-regression` lane is still browser-backed, not a real desktop runtime
 4. There are still Electron-only implementation files that become removable only after script/CI cutover:
    - `src/ipc/handlers/window_handlers.ts`
@@ -94,14 +103,18 @@ Related gate note:
 
 ## Environment Constraints In This Workspace
 
-1. `node_modules` is currently absent.
-2. `cargo` is not available in `PATH`.
-3. `rustup` is not available in `PATH`.
-4. Because of that, this pass could not run:
+1. `node_modules` is present.
+2. `cargo` and `rustup` are available in `PATH`.
+3. Visual Studio Build Tools are installed, but `cl.exe` is still expected to run through the Visual Studio developer environment rather than a plain PowerShell `PATH`.
+4. The validated local commands in this workspace are currently:
    - `npm run ts`
-   - `npm run test`
+   - `npx vitest run src/__tests__/tauri_build_config.test.ts`
    - `npm run build`
-   - `cargo check`
+   - `npm run e2e`
+5. The wider suite still needs follow-up verification:
+   - `npm run test`
+   - `npm run check:tauri`
+   - full CI/full-lane desktop regression
 
 ## Recommended Next Work Order
 
@@ -109,7 +122,7 @@ Related gate note:
    - install project npm dependencies
    - ensure Rust + Tauri CLI are available in `PATH`
 2. Introduce verified Tauri-first npm scripts and demote Electron scripts to explicit legacy names.
-3. Convert CI from Electron-harness-first to Tauri-first.
+3. Convert CI from the current explicit Electron-plus-Tauri full lane to a real Tauri-first desktop gate.
 4. Run `npm run audit:electron-legacy` and use its output to sequence the next Electron deletion pass.
 5. Delete `src/main.ts`, `src/preload.ts`, `forge.config.ts`, and Electron-only handlers only after the new Tauri build/test path is working.
 6. Treat `notes/2026-03-13-tauri-regression-gate-before-electron-removal.md` as a hard gate before final Electron removal.

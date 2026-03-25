@@ -178,7 +178,7 @@ jobs:
       - name: Build
         env:
           NODE_OPTIONS: "--max-old-space-size=4096"
-        run: npm run pre:e2e:electron-regression
+        run: npm run pre:e2e:ci
       - name: Build Tauri renderer dist
         env:
           NODE_OPTIONS: "--max-old-space-size=4096"
@@ -289,7 +289,7 @@ jobs:
         # You can add debug logging to make it easier to see what's failing
         # by adding "DEBUG=pw:browser" in front.
         # Use blob reporter for sharding and merge capabilities
-        run: DEBUG=pw:browser npx playwright test --shard=${{ matrix.shard }}/${{ matrix.shardTotal }}
+        run: DEBUG=pw:browser npm run e2e:ci -- --shard=${{ matrix.shard }}/${{ matrix.shardTotal }}
       - name: Record shard metadata
         if: ${{ !cancelled() }}
         run: |

@@ -35,9 +35,10 @@ Current testing is good enough to continue the migration safely, but not good en
 ### Why That Is Still Not Enough
 
 1. `tauri-regression` is still a browser harness with a mocked Tauri bridge, not a real packaged or desktop-running Tauri app.
-2. Current CI and E2E default flow are still Electron-first:
-   - `playwright.config.ts` still contains `electron-regression`
-   - `.github/workflows/ci.yml` still builds through Electron harness paths
+2. Current CI still depends on a broader Electron-plus-Tauri full lane:
+   - local `build` and `e2e` defaults are now Tauri-first
+   - `playwright.config.ts` still contains `electron-regression` for the broader desktop lane
+   - `.github/workflows/ci.yml` still builds and runs the explicit `ci/full` lane
 3. The highest-risk breakages from full Electron removal are runtime and platform integration failures, not contract-shape failures.
 4. These failures are exactly the kind that line coverage or bridge unit tests can miss.
 
@@ -59,11 +60,16 @@ The repository does **not** yet have enough risk coverage to safely:
 2. The widened regression harness now covers:
    - app create/get/search flows,
    - chat create/get/list flows,
+   - GitHub auth, repository, and collaborator lifecycle flows,
+   - Vercel, Supabase, and Neon integration flows,
    - settings mutation persistence,
    - deep-link callback delivery through a native-style integration path,
    - external URL and window-control side-effect channels.
-3. CI now treats `audit:tauri-cutover` as a first-class Tauri parity check.
-4. This reduces cutover risk meaningfully, but does not close the “real desktop runtime” requirement.
+3. Local default scripts now route through the Tauri lane:
+   - `npm run build` -> `pre:e2e:tauri-regression`
+   - `npm run e2e` -> `playwright test --project=tauri-regression`
+4. CI now treats `audit:tauri-cutover` as a first-class Tauri parity check while keeping the wider Electron-plus-Tauri lane explicit via `pre:e2e:ci` and `e2e:ci`.
+5. This reduces cutover risk meaningfully, but does not close the "real desktop runtime" requirement.
 
 ## Required Gate Before Final Electron Removal
 
@@ -112,7 +118,7 @@ CI must stop depending on Electron harness as the primary proof of desktop corre
 Minimum direction:
 
 1. Tauri-first build path becomes the default desktop gate
-2. Electron regression, if still temporarily kept, becomes legacy and removable
+2. Electron regression, if still temporarily kept, becomes explicit legacy coverage rather than the hidden default
 3. final deletion of Electron paths happens only after Tauri CI is stable
 
 ## Explicit Non-Goal
