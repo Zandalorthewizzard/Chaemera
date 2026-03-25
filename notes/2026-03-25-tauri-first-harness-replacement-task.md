@@ -83,16 +83,31 @@ Replace the highest-value Electron-based desktop regression dependencies with Ta
 ## What This Reduced
 
 1. Import and app-storage regression no longer require Electron-only dialog stubbing to stay covered in the Tauri-first lane.
-2. The remaining high-value Electron helper dependency is now narrower and more clearly centered on:
-   - `e2e-tests/helpers/fixtures.ts`
+2. Electron dialog stubbing no longer depends on the external `electron-playwright-helpers` package in:
    - `e2e-tests/helpers/page-objects/components/AppManagement.ts`
+   - `e2e-tests/app_storage_path.spec.ts`
+   - `e2e-tests/import.spec.ts`
+   - `e2e-tests/import_in_place.spec.ts`
    - `e2e-tests/version_integrity.spec.ts`
+3. Remaining `electron-playwright-helpers` usage is now narrowed to the legacy Electron fixture bootstrap:
+   - `e2e-tests/helpers/fixtures.ts`
 
 ## Next Likely Slice
 
-1. Move the remaining import/storage-focused Electron specs behind the Tauri-first lane or retire them if the new regression flow is sufficient.
-2. Revisit `version_integrity.spec.ts` separately because it still depends on the Electron fixture stack for a broader history/restore workflow.
-3. After that, reassess whether `electron-playwright-helpers` is still needed outside the legacy Electron fixture bootstrap.
+1. Replace `findLatestBuild` and `parseElectronApp` in `e2e-tests/helpers/fixtures.ts` with local harness code so the external helper package can be removed entirely.
+2. Revisit whether the Windows-skipped import/version-integrity specs are still worth keeping once Tauri-first coverage is broad enough.
+3. After that, reassess whether `electron-regression` itself can shrink further without lowering release confidence.
+
+## Additional Verification On 2026-03-25
+
+1. Local replacement of the dialog stub helper passed:
+   - `npm run ts`
+   - `npm run lint`
+   - `npm run pre:e2e:electron-regression`
+   - `npx playwright test --project=electron-regression e2e-tests/import.spec.ts e2e-tests/import_in_place.spec.ts e2e-tests/app_storage_path.spec.ts e2e-tests/version_integrity.spec.ts`
+2. On this Windows workspace only the non-skipped Electron regression case executed at runtime:
+   - `e2e-tests/app_storage_path.spec.ts`
+3. The Windows-skipped import/version-integrity specs remain compile-checked here, while functional import/storage coverage is now exercised in the Tauri-first lane.
 
 ## Non-Goals
 

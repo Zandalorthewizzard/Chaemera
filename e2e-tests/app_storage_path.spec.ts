@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import { expect } from "@playwright/test";
 import { test, Timeout } from "./helpers/test_helper";
-import * as eph from "electron-playwright-helpers";
+import { stubElectronDialog } from "./helpers/electron_dialog_stub";
 
 test("move app to a custom storage location", async ({ po }) => {
   await po.setUp();
@@ -19,7 +19,7 @@ test("move app to a custom storage location", async ({ po }) => {
   }
 
   // Stub the file dialog to return the new base path BEFORE clicking the button
-  await eph.stubDialog(po.electronApp, "showOpenDialog", {
+  await stubElectronDialog(po.electronApp, "showOpenDialog", {
     filePaths: [newBasePath],
   });
 

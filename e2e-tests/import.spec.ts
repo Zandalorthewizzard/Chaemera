@@ -1,12 +1,12 @@
 import path from "path";
 import { testSkipIfWindows } from "./helpers/test_helper";
 import { expect } from "@playwright/test";
-import * as eph from "electron-playwright-helpers";
+import { stubElectronDialog } from "./helpers/electron_dialog_stub";
 
 testSkipIfWindows("import app", async ({ po }) => {
   await po.setUp();
   await po.page.getByRole("button", { name: "Import App" }).click();
-  await eph.stubDialog(po.electronApp, "showOpenDialog", {
+  await stubElectronDialog(po.electronApp, "showOpenDialog", {
     filePaths: [path.join(__dirname, "fixtures", "import-app", "minimal")],
   });
 
@@ -24,7 +24,7 @@ testSkipIfWindows("import app", async ({ po }) => {
 testSkipIfWindows("import app with AI rules", async ({ po }) => {
   await po.setUp();
   await po.page.getByRole("button", { name: "Import App" }).click();
-  await eph.stubDialog(po.electronApp, "showOpenDialog", {
+  await stubElectronDialog(po.electronApp, "showOpenDialog", {
     filePaths: [
       path.join(__dirname, "fixtures", "import-app", "minimal-with-ai-rules"),
     ],
@@ -48,7 +48,7 @@ testSkipIfWindows("import app with AI rules", async ({ po }) => {
 testSkipIfWindows("import app with custom commands", async ({ po }) => {
   await po.setUp();
   await po.page.getByRole("button", { name: "Import App" }).click();
-  await eph.stubDialog(po.electronApp, "showOpenDialog", {
+  await stubElectronDialog(po.electronApp, "showOpenDialog", {
     filePaths: [path.join(__dirname, "fixtures", "import-app", "minimal")],
   });
   await po.page.getByRole("button", { name: "Select Folder" }).click();
@@ -79,7 +79,7 @@ testSkipIfWindows(
   async ({ po }) => {
     await po.setUp();
     await po.page.getByRole("button", { name: "Import App" }).click();
-    await eph.stubDialog(po.electronApp, "showOpenDialog", {
+    await stubElectronDialog(po.electronApp, "showOpenDialog", {
       filePaths: [path.join(__dirname, "fixtures", "import-app", "minimal")],
     });
     await po.page.getByRole("button", { name: "Select Folder" }).click();

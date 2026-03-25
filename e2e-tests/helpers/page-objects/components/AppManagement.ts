@@ -4,11 +4,11 @@
  */
 
 import { Page, expect } from "@playwright/test";
-import * as eph from "electron-playwright-helpers";
 import { ElectronApplication } from "playwright";
 import path from "path";
 import { execSync, execFileSync } from "child_process";
 import { Timeout } from "../../constants";
+import { stubElectronDialog } from "../../electron_dialog_stub";
 
 export class AppManagement {
   constructor(
@@ -108,7 +108,7 @@ export class AppManagement {
 
   async importApp(appDir: string) {
     await this.page.getByRole("button", { name: "Import App" }).click();
-    await eph.stubDialog(this.electronApp, "showOpenDialog", {
+    await stubElectronDialog(this.electronApp, "showOpenDialog", {
       filePaths: [
         path.join(
           __dirname,

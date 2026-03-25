@@ -1,14 +1,14 @@
 import { PageObject, testSkipIfWindows, Timeout } from "./helpers/test_helper";
 import { expect } from "@playwright/test";
-import * as eph from "electron-playwright-helpers";
 import path from "node:path";
+import { stubElectronDialog } from "./helpers/electron_dialog_stub";
 
 const runVersionIntegrityTest = async (po: PageObject, nativeGit: boolean) => {
   await po.setUp({ autoApprove: true, disableNativeGit: !nativeGit });
 
   // Importing a simple app with a few files.
   await po.page.getByRole("button", { name: "Import App" }).click();
-  await eph.stubDialog(po.electronApp, "showOpenDialog", {
+  await stubElectronDialog(po.electronApp, "showOpenDialog", {
     filePaths: [
       path.join(__dirname, "fixtures", "import-app", "version-integrity"),
     ],

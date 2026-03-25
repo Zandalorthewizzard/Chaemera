@@ -2,7 +2,7 @@ import path from "path";
 import os from "os";
 import fs from "fs";
 import { testSkipIfWindows } from "./helpers/test_helper";
-import * as eph from "electron-playwright-helpers";
+import { stubElectronDialog } from "./helpers/electron_dialog_stub";
 
 testSkipIfWindows("import app without copying to dyad-apps", async ({ po }) => {
   await po.setUp();
@@ -19,7 +19,7 @@ testSkipIfWindows("import app without copying to dyad-apps", async ({ po }) => {
 
   await po.page.getByRole("button", { name: "Import App" }).click();
 
-  await eph.stubDialog(po.electronApp, "showOpenDialog", {
+  await stubElectronDialog(po.electronApp, "showOpenDialog", {
     filePaths: [tempDir],
   });
 

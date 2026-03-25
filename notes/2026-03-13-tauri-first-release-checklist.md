@@ -106,6 +106,12 @@ Related gate note:
 - move app folder from app details
 - verified by `npx playwright test --project=tauri-regression e2e-tests/tauri-regression.spec.ts`
 
+20. Electron dialog stubbing is now localized to a project-owned helper instead of direct spec-level reliance on `electron-playwright-helpers`:
+
+- `e2e-tests/helpers/electron_dialog_stub.ts`
+- page objects and Electron import/storage/version-integrity specs now use the local helper
+- remaining external helper usage is narrowed to `e2e-tests/helpers/fixtures.ts`
+
 ## Decisions Applied In This Pass
 
 1. Removed the unused help-bot IPC surface from active code:
