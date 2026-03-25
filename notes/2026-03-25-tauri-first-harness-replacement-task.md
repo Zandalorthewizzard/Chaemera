@@ -183,6 +183,16 @@ Replace the highest-value Electron-based desktop regression dependencies with Ta
    - `e2e-tests/version_integrity.spec.ts`
 2. This is the current highest-value list for the next reduction slice.
 
+## Current Constraint On Further Browser-Harness Migration
+
+1. The remaining `import.spec.ts` case is not blocked on UI automation; it is blocked on backend realism.
+2. The browser-backed `tauri-regression` harness does not currently model `chat:stream`, fake server dump capture, or file-backed imported app context closely enough to replace the AI-rules prompt-context assertion safely.
+3. The other remaining Electron specs also lean on real side effects rather than shallow renderer flows:
+   - `app_storage_path.spec.ts`: filesystem move verification
+   - `performance_monitor.spec.ts`: user-settings file writes and timed runtime sampling
+   - `version_integrity.spec.ts`: version snapshots and restore behavior across real app files
+4. This means the next safest direction is likely to widen the real `tauri-runtime` lane, not the browser-backed `tauri-regression` lane.
+
 ## Non-Goals
 
 1. Do not archive Electron runtime files inside the active repo tree.
@@ -199,4 +209,5 @@ Replace the highest-value Electron-based desktop regression dependencies with Ta
 4. Treat the old Electron-only home smoke as migrated to `tauri-smoke`.
 5. Treat import advanced-options coverage and in-place import coverage as migrated to `tauri-regression`.
 6. Focus next on the remaining direct Electron spec usage list in this note.
-7. Pick the next smallest replacement slice that reduces real harness dependency without lowering regression signal.
+7. Treat the remaining four Electron specs as likely `tauri-runtime` candidates, not easy browser-harness candidates.
+8. Pick the next smallest slice that extends real Tauri runtime coverage for filesystem- and stream-backed behavior without lowering regression signal.

@@ -167,6 +167,7 @@ Related gate note:
    - current Forge reference count is down to `5`
    - the remaining question is now whether this legacy lane still covers anything not already exercised by `tauri-regression` plus the real `tauri-runtime` gate
    - the remaining direct Electron spec usage is now concentrated in app storage, import AI-rules prompt context, version integrity, and performance-monitor coverage
+   - these remaining cases look more like `tauri-runtime` expansion work than additional browser-harness migration because they depend on real stream/file/runtime side effects
 3. CI is still not fully Tauri-first for broad regression:
    - `.github/workflows/ci.yml`
    - CI still uses the broader Electron-plus-Tauri lane as the full desktop proof path
