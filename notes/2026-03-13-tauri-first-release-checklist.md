@@ -81,7 +81,7 @@ Related gate note:
 16. Full post-fix validation on 2026-03-25:
 
 - `npm run ts` passed
-- `npm run test` passed with `682` tests
+- `npm run test` passed with `685` tests
 - `npm run check:tauri` passed
 - `npm run audit:tauri-cutover` passed with `0` missing mappings or handlers
 - `npm run e2e:tauri-runtime` passed without `SEVERE` browser errors
@@ -154,6 +154,16 @@ Related gate note:
 - `e2e-tests/app_storage_path.spec.ts` has been removed
 - verified with `cargo fmt --manifest-path src-tauri/Cargo.toml`, `cargo check --manifest-path src-tauri/Cargo.toml`, `npm run ts`, `npm run lint`, `npm run pre:e2e:tauri-runtime`, `npm run e2e:tauri-runtime`, and `npm run audit:electron-legacy`
 
+27. The old Electron-only import AI-rules regression has been migrated into the real `tauri-runtime` lane:
+
+- the runtime suite now covers the real local-folder import flow with existing `AI_RULES.md` through:
+  - `testing/tauri-webdriver/specs/import-with-ai-rules.e2e.mjs`
+  - `testing/tauri-webdriver/specs/import-with-ai-rules.setup.mjs`
+- the old `e2e-tests/import.spec.ts` file has been removed
+- the imported-app prompt-context signal is now covered by `src/__tests__/import_app_context.test.ts`
+- `import-app` now returns `resolvedPath`, `installCommand`, and `startCommand` so Tauri can register runtime metadata immediately after import and avoid post-import `list-versions` / `get-current-branch` bridge errors
+- verified with `npm run build`, `npm run pre:e2e:tauri-runtime`, `npm run e2e:tauri-runtime`, `npm run test`, `npm run ts`, `npm run lint`, `cargo check --manifest-path src-tauri/Cargo.toml`, `npm run audit:tauri-cutover`, and `npm run audit:electron-legacy`
+
 ## Decisions Applied In This Pass
 
 1. Removed the unused help-bot IPC surface from active code:
@@ -182,8 +192,8 @@ Related gate note:
    - `e2e:electron`
    - current Forge reference count is down to `5`
    - the remaining question is now whether this legacy lane still covers anything not already exercised by `tauri-regression` plus the real `tauri-runtime` gate
-   - the remaining direct Electron spec usage is now concentrated in import AI-rules prompt context and version integrity coverage
-   - these remaining cases look more like `tauri-runtime` expansion work than additional browser-harness migration because they depend on real stream/file/runtime side effects
+   - the remaining direct Electron spec usage is now limited to version integrity coverage
+   - this last case still looks like `tauri-runtime` expansion work rather than additional browser-harness migration because it depends on real version/file/runtime side effects
    - the real runtime harness now has a prelaunch setup hook path for preparing profile and file state before app launch
 3. CI is still not fully Tauri-first for broad regression:
    - `.github/workflows/ci.yml`

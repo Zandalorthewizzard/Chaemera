@@ -113,6 +113,18 @@ export function trackResolvedAppPathFromIpc(
         registerFromAppLike(result.app);
       }
       return;
+    case "import-app": {
+      const appId = readNumber(result, "appId");
+      const resolvedPath = readString(result, "resolvedPath");
+      if (appId !== null && resolvedPath) {
+        appRuntimeMetadata.set(appId, {
+          resolvedPath,
+          installCommand: readNullableString(result, "installCommand"),
+          startCommand: readNullableString(result, "startCommand"),
+        });
+      }
+      return;
+    }
     case "change-app-location": {
       const appId = readNumber(input, "appId");
       const resolvedPath = readString(result, "resolvedPath");

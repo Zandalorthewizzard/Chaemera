@@ -162,5 +162,8 @@ pub fn import_app(app: AppHandle, request: ImportAppRequest) -> Result<Value, St
     Ok(json!({
         "appId": app_id,
         "chatId": chat_id,
+        "resolvedPath": target_path.to_string_lossy().to_string(),
+        "installCommand": install_command,
+        "startCommand": start_command,
     }))
 }

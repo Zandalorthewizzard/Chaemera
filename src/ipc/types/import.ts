@@ -18,6 +18,9 @@ export type ImportAppParams = z.infer<typeof ImportAppParamsSchema>;
 export const ImportAppResultSchema = z.object({
   appId: z.number(),
   chatId: z.number(),
+  resolvedPath: z.string(),
+  installCommand: z.string().nullable(),
+  startCommand: z.string().nullable(),
 });
 
 export type ImportAppResult = z.infer<typeof ImportAppResultSchema>;

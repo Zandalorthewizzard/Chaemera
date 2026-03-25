@@ -149,7 +149,13 @@ export function registerImportHandlers() {
           appId: app.id,
         })
         .returning();
-      return { appId: app.id, chatId: chat.id };
+      return {
+        appId: app.id,
+        chatId: chat.id,
+        resolvedPath: appPath,
+        installCommand: installCommand ?? null,
+        startCommand: startCommand ?? null,
+      };
     },
   );
 

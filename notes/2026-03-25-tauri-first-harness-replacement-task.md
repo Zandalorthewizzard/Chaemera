@@ -290,6 +290,36 @@ Replace the highest-value Electron-based desktop regression dependencies with Ta
    - `import.spec.ts` is blocked on AI-rules prompt-context and runtime stream/file realism
    - `version_integrity.spec.ts` is blocked on version snapshots and restore behavior across real app files
 
+## Additional Verification On 2026-03-25: Import AI_RULES Flow Migrated To Real Tauri Runtime
+
+1. `import.spec.ts` no longer depends on the Electron regression harness and has been removed.
+2. The real runtime suite now covers the remaining high-signal import case through:
+   - `testing/tauri-webdriver/specs/import-with-ai-rules.e2e.mjs`
+   - `testing/tauri-webdriver/specs/import-with-ai-rules.setup.mjs`
+   - `testing/tauri-webdriver/run-suite.mjs`
+3. The old `"[dump]"` prompt-context assertion has been replaced with a targeted unit test for imported app context extraction:
+   - `src/__tests__/import_app_context.test.ts`
+4. A concrete Tauri parity gap was discovered and fixed during this slice:
+   - post-import runtime queries like `list-versions` and `get-current-branch` were logging `payload is not ready` errors because `import-app` did not register runtime metadata
+   - `import-app` now returns `resolvedPath`, `installCommand`, and `startCommand`
+   - `src/ipc/runtime/app_path_registry.ts` now tracks imported-app metadata immediately
+5. This slice passed with:
+   - `npm run build`
+   - `npm run pre:e2e:tauri-runtime`
+   - `npm run e2e:tauri-runtime`
+   - `npm run test`
+   - `npm run ts`
+   - `npm run lint`
+   - `cargo check --manifest-path src-tauri/Cargo.toml`
+   - `npm run audit:tauri-cutover`
+   - `npm run audit:electron-legacy`
+
+## Updated Remaining Direct Electron Spec Usage
+
+1. After removing `e2e-tests/import.spec.ts`, direct `electronApp` usage in spec files is now limited to:
+   - `e2e-tests/version_integrity.spec.ts`
+2. The final remaining Electron runtime-regression candidate is now `version_integrity`, and it should be treated as a real `tauri-runtime` migration rather than a browser-harness task.
+
 ## Non-Goals
 
 1. Do not archive Electron runtime files inside the active repo tree.
@@ -306,6 +336,6 @@ Replace the highest-value Electron-based desktop regression dependencies with Ta
 4. Treat the old Electron-only home smoke as migrated to `tauri-smoke`.
 5. Treat import advanced-options coverage and in-place import coverage as migrated to `tauri-regression`.
 6. Focus next on the remaining direct Electron spec usage list in this note.
-7. Treat the remaining two Electron specs as likely `tauri-runtime` candidates, not easy browser-harness candidates.
-8. Treat the performance-monitor and app-storage slices as complete runtime templates.
-9. Pick the next smallest slice that extends real Tauri runtime coverage for stream- and version-backed behavior without lowering regression signal.
+7. Treat `version_integrity.spec.ts` as the last Electron-only runtime candidate.
+8. Treat the performance-monitor, app-storage, and import-with-AI-rules slices as complete runtime templates.
+9. Pick the next smallest slice that extends real Tauri runtime coverage for version-backed behavior without lowering regression signal.

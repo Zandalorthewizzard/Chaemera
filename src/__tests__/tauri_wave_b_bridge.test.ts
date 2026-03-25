@@ -68,6 +68,32 @@ describe("tauri Wave B bridge", () => {
     });
   });
 
+  it("tracks imported app runtime metadata from import results", () => {
+    trackResolvedAppPathFromIpc(
+      "import-app",
+      {
+        path: "C:/Fixtures/source-app",
+        appName: "imported-app",
+      },
+      {
+        appId: 77,
+        chatId: 88,
+        resolvedPath: "C:/Apps/imported-app",
+        installCommand: "npm install",
+        startCommand: "npm run dev",
+      },
+    );
+
+    expect(getResolvedAppPath(77)).toBe("C:/Apps/imported-app");
+    expect(
+      buildTauriInvokeArgs("get-current-branch", {
+        appId: 77,
+      }),
+    ).toEqual({
+      appPath: "C:/Apps/imported-app",
+    });
+  });
+
   it("falls back from Tauri when path-dependent channels are missing app resolution", () => {
     expect(
       canInvokeViaTauri("read-app-file", {

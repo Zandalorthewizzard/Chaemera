@@ -26,6 +26,11 @@ const runtimeRuns = [
     label: "app storage location",
     spec: "./specs/app-storage-location.e2e.mjs",
   },
+  {
+    label: "import with AI rules",
+    spec: "./specs/import-with-ai-rules.e2e.mjs",
+    setup: "./specs/import-with-ai-rules.setup.mjs",
+  },
 ];
 
 for (const runtimeRun of runtimeRuns) {
