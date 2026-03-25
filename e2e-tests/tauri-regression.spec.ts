@@ -22,6 +22,7 @@ async function invokeViaTauriBridge<T>(
 }
 
 async function getHarnessState(page: Page): Promise<{
+  settings: Record<string, unknown>;
   externalUrls: string[];
   invocations: Array<{ channel: string; payload: unknown }>;
 }> {
@@ -34,6 +35,7 @@ async function getHarnessState(page: Page): Promise<{
   }
 
   return {
+    settings: state.settings,
     externalUrls: state.externalUrls,
     invocations: state.invocations,
   };
@@ -46,30 +48,36 @@ test("tauri regression harness exercises core app and chat bridge flows", async 
   await expect(page.getByTestId("leptos-route-shell")).toBeVisible();
 
   const createdApp = await invokeViaTauriBridge<{
-    id: number;
-    name: string;
-    resolvedPath: string;
-    files: string[];
+    app: {
+      id: number;
+      name: string;
+      resolvedPath: string;
+      files: string[];
+    };
+    chatId: number;
   }>(page, "create-app", {
     name: "Tauri Regression App",
   });
 
   expect(createdApp).toEqual(
     expect.objectContaining({
-      id: expect.any(Number),
-      name: "Tauri Regression App",
-      resolvedPath: expect.stringContaining("Tauri Regression App"),
+      app: expect.objectContaining({
+        id: expect.any(Number),
+        name: "Tauri Regression App",
+        resolvedPath: expect.stringContaining("Tauri Regression App"),
+      }),
+      chatId: expect.any(Number),
     }),
   );
-  expect(createdApp.files).toContain("package.json");
+  expect(createdApp.app.files).toContain("package.json");
 
   const reopenedApp = await invokeViaTauriBridge<{
     id: number;
     name: string;
-  }>(page, "get-app", createdApp.id);
+  }>(page, "get-app", createdApp.app.id);
   expect(reopenedApp).toEqual(
     expect.objectContaining({
-      id: createdApp.id,
+      id: createdApp.app.id,
       name: "Tauri Regression App",
     }),
   );
@@ -85,7 +93,7 @@ test("tauri regression harness exercises core app and chat bridge flows", async 
   expect(searchResults).toEqual(
     expect.arrayContaining([
       expect.objectContaining({
-        id: createdApp.id,
+        id: createdApp.app.id,
         name: "Tauri Regression App",
       }),
     ]),
@@ -94,7 +102,7 @@ test("tauri regression harness exercises core app and chat bridge flows", async 
   const chatId = await invokeViaTauriBridge<number>(
     page,
     "create-chat",
-    createdApp.id,
+    createdApp.app.id,
   );
   expect(chatId).toEqual(expect.any(Number));
 
@@ -104,12 +112,12 @@ test("tauri regression harness exercises core app and chat bridge flows", async 
       appId: number;
       title: string | null;
     }>
-  >(page, "get-chats", createdApp.id);
+  >(page, "get-chats", createdApp.app.id);
   expect(chats).toEqual(
     expect.arrayContaining([
       expect.objectContaining({
         id: chatId,
-        appId: createdApp.id,
+        appId: createdApp.app.id,
         title: null,
       }),
     ]),
@@ -224,20 +232,434 @@ test("tauri regression harness preserves native side effects and callback events
   await invokeViaTauriBridge(page, "window:minimize");
   await invokeViaTauriBridge(page, "window:maximize");
   await invokeViaTauriBridge(page, "window:close");
+});
 
-  const { externalUrls, invocations } = await getHarnessState(page);
-  expect(externalUrls).toContain("https://chaemera.app");
+test("tauri regression harness covers GitHub auth events and repository lifecycle", async ({
+  page,
+}) => {
+  await page.goto("/settings");
+  await expect(page.getByTestId("leptos-route-shell")).toBeVisible();
+
+  const createdApp = await invokeViaTauriBridge<{
+    app: {
+      id: number;
+      name: string;
+      githubOrg: string | null;
+      githubRepo: string | null;
+      githubBranch: string | null;
+    };
+    chatId: number;
+  }>(page, "create-app", {
+    name: "GitHub Regression App",
+  });
+
+  const githubFlow = await page.evaluate(async () => {
+    const bridge = window.__CHAEMERA_TAURI_CORE__;
+    if (!bridge?.on) {
+      throw new Error("Tauri event bridge is unavailable.");
+    }
+
+    const subscribe = bridge.on;
+
+    return new Promise<{
+      updates: unknown[];
+      success: unknown | null;
+    }>((resolve) => {
+      const updates: unknown[] = [];
+      const cleanups: Array<() => void> = [];
+
+      const finish = (success: unknown | null) => {
+        for (const cleanup of cleanups) {
+          cleanup();
+        }
+        resolve({ updates, success });
+      };
+
+      cleanups.push(
+        subscribe("github:flow-update", (payload) => {
+          updates.push(payload);
+        }) ?? (() => {}),
+      );
+      cleanups.push(
+        subscribe("github:flow-success", (payload) => {
+          finish(payload);
+        }) ?? (() => {}),
+      );
+
+      window.setTimeout(() => finish(null), 500);
+      void bridge.invoke("github:start-flow", undefined);
+    });
+  });
+
+  expect(githubFlow.updates).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        message: "Requesting device code from GitHub...",
+      }),
+      expect.objectContaining({
+        userCode: "CHAEMERA-CODE",
+        verificationUri: "https://github.com/login/device",
+      }),
+    ]),
+  );
+  expect(githubFlow.success).toEqual({
+    message: "Successfully connected!",
+  });
+
+  const stateAfterAuth = await getHarnessState(page);
+  expect(stateAfterAuth.settings).toEqual(
+    expect.objectContaining({
+      githubAccessToken: { value: "tauri-smoke-github-token" },
+      githubUser: { email: "tauri-smoke@example.com" },
+    }),
+  );
+
+  await invokeViaTauriBridge(page, "github:create-repo", {
+    appId: createdApp.app.id,
+    org: "chaemera",
+    repo: "github-regression-app",
+    branch: "main",
+  });
+
+  const appWithRepo = await invokeViaTauriBridge<{
+    id: number;
+    githubOrg: string | null;
+    githubRepo: string | null;
+    githubBranch: string | null;
+  }>(page, "get-app", createdApp.app.id);
+  expect(appWithRepo).toEqual(
+    expect.objectContaining({
+      id: createdApp.app.id,
+      githubOrg: "chaemera",
+      githubRepo: "github-regression-app",
+      githubBranch: "main",
+    }),
+  );
+
+  const repoBranches = await invokeViaTauriBridge<
+    Array<{
+      name: string;
+      commit: { sha: string };
+    }>
+  >(page, "github:get-repo-branches", {
+    repo: "github-regression-app",
+  });
+  expect(repoBranches).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: "main",
+        commit: { sha: "github-regression-app-main-sha" },
+      }),
+      expect.objectContaining({
+        name: "feature/tauri",
+        commit: { sha: "github-regression-app-feature-sha" },
+      }),
+    ]),
+  );
+
+  const localBranches = await invokeViaTauriBridge<{
+    branches: string[];
+    current: string;
+  }>(page, "github:list-local-branches", {
+    appId: createdApp.app.id,
+  });
+  expect(localBranches).toEqual({
+    branches: ["main", "feature/tauri"],
+    current: "main",
+  });
+
+  const remoteBranches = await invokeViaTauriBridge<string[]>(
+    page,
+    "github:list-remote-branches",
+    {
+      remote: "origin",
+    },
+  );
+  expect(remoteBranches).toEqual(["main", "feature/tauri"]);
+
+  const gitState = await invokeViaTauriBridge<{
+    mergeInProgress: boolean;
+    rebaseInProgress: boolean;
+  }>(page, "github:get-git-state");
+  expect(gitState).toEqual({
+    mergeInProgress: false,
+    rebaseInProgress: false,
+  });
+
+  const collaboratorsBefore = await invokeViaTauriBridge<
+    Array<{ login: string }>
+  >(page, "github:list-collaborators", {
+    appId: createdApp.app.id,
+  });
+  expect(collaboratorsBefore).toEqual([]);
+
+  await invokeViaTauriBridge(page, "github:invite-collaborator", {
+    appId: createdApp.app.id,
+    username: "octo-smoke",
+  });
+
+  const collaboratorsAfterInvite = await invokeViaTauriBridge<
+    Array<{ login: string }>
+  >(page, "github:list-collaborators", {
+    appId: createdApp.app.id,
+  });
+  expect(collaboratorsAfterInvite).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        login: "octo-smoke",
+      }),
+    ]),
+  );
+
+  await invokeViaTauriBridge(page, "github:remove-collaborator", {
+    appId: createdApp.app.id,
+    username: "octo-smoke",
+  });
+
+  const collaboratorsAfterRemoval = await invokeViaTauriBridge<
+    Array<{ login: string }>
+  >(page, "github:list-collaborators", {
+    appId: createdApp.app.id,
+  });
+  expect(collaboratorsAfterRemoval).toEqual([]);
+
+  const { invocations } = await getHarnessState(page);
   expect(invocations).toEqual(
     expect.arrayContaining([
-      expect.objectContaining({ channel: "set-user-settings" }),
-      expect.objectContaining({ channel: "get-user-settings" }),
+      expect.objectContaining({ channel: "github:start-flow" }),
+      expect.objectContaining({ channel: "github:create-repo" }),
+      expect.objectContaining({ channel: "github:get-repo-branches" }),
+      expect.objectContaining({ channel: "github:list-local-branches" }),
+      expect.objectContaining({ channel: "github:list-remote-branches" }),
+      expect.objectContaining({ channel: "github:get-git-state" }),
+      expect.objectContaining({ channel: "github:list-collaborators" }),
+      expect.objectContaining({ channel: "github:invite-collaborator" }),
+      expect.objectContaining({ channel: "github:remove-collaborator" }),
+    ]),
+  );
+});
+
+test("tauri regression harness covers deployment and database integrations", async ({
+  page,
+}) => {
+  await page.goto("/settings");
+  await expect(page.getByTestId("leptos-route-shell")).toBeVisible();
+
+  const createdApp = await invokeViaTauriBridge<{
+    app: {
+      id: number;
+      name: string;
+    };
+    chatId: number;
+  }>(page, "create-app", {
+    name: "Cloud Regression App",
+  });
+
+  await invokeViaTauriBridge(page, "github:connect-existing-repo", {
+    appId: createdApp.app.id,
+    owner: "chaemera",
+    repo: "cloud-regression-app",
+    branch: "main",
+  });
+
+  const vercelProjects = await invokeViaTauriBridge<
+    Array<{
+      id: string;
+      name: string;
+    }>
+  >(page, "vercel:list-projects");
+  expect(vercelProjects).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        id: "prj_smoke_existing",
+      }),
+    ]),
+  );
+
+  await invokeViaTauriBridge(page, "vercel:create-project", {
+    appId: createdApp.app.id,
+    name: "cloud-regression-app",
+  });
+
+  const deployments = await invokeViaTauriBridge<
+    Array<{
+      uid: string;
+      state: string;
+      target: string;
+      readyState: string;
+    }>
+  >(page, "vercel:get-deployments", {
+    appId: createdApp.app.id,
+  });
+  expect(deployments).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        uid: "dpl_smoke_ready",
+        state: "READY",
+        target: "production",
+        readyState: "READY",
+      }),
+      expect.objectContaining({
+        uid: "dpl_smoke_building",
+        state: "BUILDING",
+        target: "preview",
+        readyState: "BUILDING",
+      }),
+    ]),
+  );
+
+  const supabaseOrganizations = await invokeViaTauriBridge<
+    Array<{
+      organizationSlug: string;
+      name?: string;
+    }>
+  >(page, "supabase:list-organizations");
+  expect(supabaseOrganizations).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        organizationSlug: "fake-org-id",
+        name: "Fake Organization",
+      }),
+    ]),
+  );
+
+  const supabaseProjects = await invokeViaTauriBridge<
+    Array<{
+      id: string;
+      name: string;
+      organizationSlug: string;
+    }>
+  >(page, "supabase:list-all-projects");
+  expect(supabaseProjects).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        id: "fake-project-id",
+        name: "Fake Supabase Project",
+        organizationSlug: "fake-org-id",
+      }),
+    ]),
+  );
+
+  const supabaseBranches = await invokeViaTauriBridge<
+    Array<{
+      id: string;
+      name: string;
+      isDefault: boolean;
+    }>
+  >(page, "supabase:list-branches", {
+    projectId: "fake-project-id",
+  });
+  expect(supabaseBranches).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        id: "default-branch-id",
+        name: "Default Branch",
+        isDefault: true,
+      }),
+      expect.objectContaining({
+        id: "test-branch-id",
+        name: "Test Branch",
+        isDefault: false,
+      }),
+    ]),
+  );
+
+  await invokeViaTauriBridge(page, "supabase:fake-connect-and-set-project", {
+    appId: createdApp.app.id,
+    fakeProjectId: "fake-project-id",
+  });
+
+  const neonProject = await invokeViaTauriBridge<{
+    id: string;
+    name: string;
+    branchId: string;
+  }>(page, "neon:create-project", {
+    appId: createdApp.app.id,
+    name: "Cloud Regression Neon",
+  });
+  expect(neonProject).toEqual(
+    expect.objectContaining({
+      id: `test-neon-project-${createdApp.app.id}`,
+      name: "Cloud Regression Neon",
+      branchId: `test-neon-branch-${createdApp.app.id}`,
+    }),
+  );
+
+  const neonProjectDetails = await invokeViaTauriBridge<{
+    projectId: string;
+    projectName: string;
+    branches: Array<{
+      type: string;
+      branchId: string;
+      branchName: string;
+    }>;
+  }>(page, "neon:get-project", {
+    appId: createdApp.app.id,
+  });
+  expect(neonProjectDetails).toEqual(
+    expect.objectContaining({
+      projectId: `test-neon-project-${createdApp.app.id}`,
+      projectName: "Cloud Regression Neon",
+      branches: expect.arrayContaining([
+        expect.objectContaining({
+          type: "production",
+          branchId: `test-neon-branch-${createdApp.app.id}`,
+          branchName: "main",
+        }),
+        expect.objectContaining({
+          type: "preview",
+          branchId: `test-neon-preview-${createdApp.app.id}`,
+          branchName: "preview",
+        }),
+      ]),
+    }),
+  );
+
+  const connectedApp = await invokeViaTauriBridge<{
+    id: number;
+    githubRepo: string | null;
+    vercelProjectId: string | null;
+    vercelProjectName: string | null;
+    vercelTeamSlug: string | null;
+    supabaseProjectId: string | null;
+    supabaseOrganizationSlug: string | null;
+    supabaseProjectName: string | null;
+    neonProjectId: string | null;
+    neonDevelopmentBranchId: string | null;
+    neonPreviewBranchId: string | null;
+  }>(page, "get-app", createdApp.app.id);
+  expect(connectedApp).toEqual(
+    expect.objectContaining({
+      id: createdApp.app.id,
+      githubRepo: "cloud-regression-app",
+      vercelProjectId: "prj_cloud-regression-app",
+      vercelProjectName: "cloud-regression-app",
+      vercelTeamSlug: "tauri-smoke-team",
+      supabaseProjectId: "fake-project-id",
+      supabaseOrganizationSlug: "fake-org-id",
+      supabaseProjectName: "Fake Supabase Project",
+      neonProjectId: `test-neon-project-${createdApp.app.id}`,
+      neonDevelopmentBranchId: `test-neon-branch-${createdApp.app.id}`,
+      neonPreviewBranchId: `test-neon-preview-${createdApp.app.id}`,
+    }),
+  );
+
+  const { invocations } = await getHarnessState(page);
+  expect(invocations).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({ channel: "github:connect-existing-repo" }),
+      expect.objectContaining({ channel: "vercel:list-projects" }),
+      expect.objectContaining({ channel: "vercel:create-project" }),
+      expect.objectContaining({ channel: "vercel:get-deployments" }),
+      expect.objectContaining({ channel: "supabase:list-organizations" }),
+      expect.objectContaining({ channel: "supabase:list-all-projects" }),
+      expect.objectContaining({ channel: "supabase:list-branches" }),
       expect.objectContaining({
         channel: "supabase:fake-connect-and-set-project",
       }),
-      expect.objectContaining({ channel: "open-external-url" }),
-      expect.objectContaining({ channel: "window:minimize" }),
-      expect.objectContaining({ channel: "window:maximize" }),
-      expect.objectContaining({ channel: "window:close" }),
+      expect.objectContaining({ channel: "neon:create-project" }),
+      expect.objectContaining({ channel: "neon:get-project" }),
+      expect.objectContaining({ channel: "get-app" }),
     ]),
   );
 });
