@@ -35,7 +35,7 @@ describe("tauri build config", () => {
     expect(packageJson.scripts["start:tauri"]).toBe(
       "npx @tauri-apps/cli dev --config src-tauri/tauri.conf.json",
     );
-    expect(packageJson.scripts["start:electron"]).toBe("electron-forge start");
+    expect(packageJson.scripts["start:electron"]).toBeUndefined();
     expect(packageJson.scripts.package).toBe("npm run package:tauri");
     expect(packageJson.scripts["package:tauri"]).toBe(
       "npx @tauri-apps/cli build --config src-tauri/tauri.conf.json",
@@ -49,9 +49,12 @@ describe("tauri build config", () => {
     expect(packageJson.scripts["audit:electron-legacy"]).toBe(
       "node scripts/audit-electron-legacy-surface.js",
     );
-    expect(packageJson.scripts["build:electron-harness"]).toBe(
-      "cross-env E2E_TEST_BUILD=true npm run package:electron",
+    expect(packageJson.scripts["build:test-electron-harness"]).toBe(
+      "npm run clean && cross-env E2E_TEST_BUILD=true electron-forge package",
     );
+    expect(packageJson.scripts["package:electron"]).toBeUndefined();
+    expect(packageJson.scripts.make).toBeUndefined();
+    expect(packageJson.scripts.publish).toBeUndefined();
     expect(packageJson.scripts["build:tauri-regression"]).toBe(
       "npx vite build --config vite.renderer.config.mts --outDir .tauri-smoke-dist",
     );
@@ -74,7 +77,7 @@ describe("tauri build config", () => {
       "npm run pre:e2e:tauri-regression",
     );
     expect(packageJson.scripts["pre:e2e:electron-regression"]).toBe(
-      "npm run build:electron-harness && npm run build:tauri-regression",
+      "npm run build:test-electron-harness && npm run build:tauri-regression",
     );
     expect(packageJson.scripts["pre:e2e:full"]).toBe(
       "npm run pre:e2e:electron-regression",

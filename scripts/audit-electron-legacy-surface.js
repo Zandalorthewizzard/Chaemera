@@ -83,6 +83,10 @@ function collectImports(files) {
   );
 
   for (const file of files) {
+    if (!fs.existsSync(path.join(ROOT, file))) {
+      continue;
+    }
+
     if (file === "package-lock.json") {
       continue;
     }
@@ -110,6 +114,7 @@ function collectImports(files) {
 function collectWorkflowRefs(files) {
   return files
     .filter((file) => file.startsWith(".github/workflows/"))
+    .filter((file) => fs.existsSync(path.join(ROOT, file)))
     .flatMap((file) => {
       const content = read(file);
       const matches = WORKFLOW_PATTERNS.flatMap((regex) =>

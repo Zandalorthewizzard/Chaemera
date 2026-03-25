@@ -30,7 +30,8 @@ Related gate note:
 6. Local script layer now exposes explicit Tauri entrypoints:
    - `start` -> `start:tauri`
    - `package` -> `package:tauri`
-   - `build:electron-harness` now calls `package:electron` explicitly instead of relying on the default `package` alias
+   - the old product-facing Electron scripts (`start:electron`, `package:electron`, `make`, `publish`) have been removed
+   - the remaining Electron build path is now explicit test infrastructure only: `build:test-electron-harness`
 7. E2E prep is now split into explicit lanes:
    - `pre:e2e:tauri-smoke`
    - `pre:e2e:electron-regression`
@@ -54,8 +55,8 @@ Related gate note:
     - `30` tracked files still import from `electron`
     - `74` tracked files still import `electron-log`
     - `7` tracked files still reference Electron Forge
-    - `10` package scripts still point at Electron runtime, packaging, or Electron regression lanes
-    - `1` workflow file still references Electron build/release paths
+    - Electron is no longer part of the product-facing npm or release surface
+    - the remaining Electron script/workflow surface is now limited to legacy regression harness support
 13. Post-toolchain validation on 2026-03-25:
 
 - `npm run ts` passed
@@ -106,16 +107,17 @@ Related gate note:
    - `src/main.ts`
    - `src/preload.ts`
    - `forge.config.ts`
-2. Default npm workflow is still Electron-first:
-   - `make`
-   - `publish`
-   - `build:electron-harness`
+2. CI and broad regression still keep a legacy Electron harness:
+   - `build:test-electron-harness`
    - `pre:e2e:electron-regression`
-3. CI is still Electron-first for regression:
+   - `e2e:electron`
+3. CI is still not fully Tauri-first for broad regression:
    - `.github/workflows/ci.yml`
    - CI still uses the broader Electron-plus-Tauri lane as the full desktop proof path
    - the new `tauri-regression` lane is still browser-backed, not a real desktop runtime
-4. There are still Electron-only implementation files that become removable only after script/CI cutover:
+4. There is no signed production Tauri release workflow yet:
+   - `.github/workflows/release-tauri-preview.yml` remains a preview artifact lane, not a final signed release lane
+5. There are still Electron-only implementation files that become removable only after script/CI cutover:
    - `src/ipc/handlers/window_handlers.ts`
    - `src/ipc/utils/telemetry.ts`
    - `src/ipc/handlers/debug_handlers.ts`
@@ -140,24 +142,27 @@ Related gate note:
 1. Restore local toolchains:
    - install project npm dependencies
    - ensure Rust + Tauri CLI are available in `PATH`
-2. Introduce verified Tauri-first npm scripts and demote Electron scripts to explicit legacy names.
+2. Keep Electron confined to explicit legacy test-harness paths only while widening Tauri runtime coverage.
 3. Convert CI from the current explicit Electron-plus-Tauri full lane to a real Tauri-first desktop gate.
-4. Run `npm run audit:electron-legacy` and use its output to sequence the next Electron deletion pass.
-5. Delete `src/main.ts`, `src/preload.ts`, `forge.config.ts`, and Electron-only handlers only after the new Tauri build/test path is working.
-6. Treat `notes/2026-03-13-tauri-regression-gate-before-electron-removal.md` as a hard gate before final Electron removal.
-7. Treat the current `tauri-regression` lane as an intermediate gate only:
+4. Replace the removed Electron legacy release workflow with a real Tauri release path before calling the cutover complete.
+5. Run `npm run audit:electron-legacy` and use its output to sequence the next Electron deletion pass.
+6. Delete `src/main.ts`, `src/preload.ts`, `forge.config.ts`, and Electron-only handlers only after the new Tauri build/test path is working.
+7. Treat `notes/2026-03-13-tauri-regression-gate-before-electron-removal.md` as a hard gate before final Electron removal.
+8. Treat the current `tauri-regression` lane as an intermediate gate only:
    - it is broader than `tauri-smoke`
    - it is still not sufficient to delete Electron entrypoints without a real Tauri runtime lane
-8. Use the real Tauri runtime lane as the new hard checkpoint before each Electron deletion pass:
+9. Use the real Tauri runtime lane as the new hard checkpoint before each Electron deletion pass:
    - `npm run pre:e2e:tauri-runtime`
    - `npm run e2e:tauri-runtime`
-9. The next deletion target should be the Electron entrypoint cluster:
-   - `src/main.ts`
-   - `src/preload.ts`
-   - `forge.config.ts`
-   - `vite.main.config.mts`
-   - `vite.preload.config.mts`
-10. Keep the new Tauri permissions and event bridge pieces intact while removing Electron:
+10. The next deletion target should still be the Electron entrypoint cluster, but only after the broader Tauri gate replaces the legacy harness:
+
+- `src/main.ts`
+- `src/preload.ts`
+- `forge.config.ts`
+- `vite.main.config.mts`
+- `vite.preload.config.mts`
+
+11. Keep the new Tauri permissions and event bridge pieces intact while removing Electron:
 
 - `src/ipc/runtime/bootstrap_tauri_core_bridge.ts`
 - `src-tauri/capabilities/default.json`

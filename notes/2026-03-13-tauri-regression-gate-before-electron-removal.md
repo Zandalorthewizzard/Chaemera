@@ -83,6 +83,7 @@ The repository does **not** yet have enough risk coverage to safely:
    - `src/__tests__/tauri_wave_c_transport.test.ts`
    - `src-tauri/capabilities/default.json`
 9. This means the task has moved from "invent a real runtime lane" to "use the new real runtime lane as the mandatory gate before each Electron deletion pass"
+10. Product-facing Electron release scripts and the legacy Electron release workflow have now been removed; the remaining Electron surface is explicitly limited to regression-harness support until Tauri replaces it.
 
 ## Required Gate Before Final Electron Removal
 

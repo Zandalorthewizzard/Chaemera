@@ -31,44 +31,34 @@ describe("release metadata", () => {
     expect(packageLock.packages[""].name).toBe("chaemera");
   });
 
-  it("keeps Tauri-first packaging and legacy forge metadata aligned with the Chaemera fork", () => {
-    const forgeConfig = fs.readFileSync(
-      path.join(process.cwd(), "forge.config.ts"),
+  it("keeps Tauri-first packaging and release metadata aligned with the Chaemera fork", () => {
+    const tauriPreviewWorkflow = fs.readFileSync(
+      path.join(process.cwd(), ".github/workflows/release-tauri-preview.yml"),
       "utf8",
     );
-    const releaseVerifier = fs.readFileSync(
-      path.join(process.cwd(), "scripts/verify-release-assets.js"),
+    const workflowsReadme = fs.readFileSync(
+      path.join(process.cwd(), ".github/workflows/README.md"),
       "utf8",
     );
     const packageJson = readJson<{
       scripts: Record<string, string>;
     }>("package.json");
-    const releaseWorkflow = fs.readFileSync(
-      path.join(process.cwd(), ".github/workflows/release.yml"),
-      "utf8",
-    );
 
-    expect(forgeConfig).toContain('name: "Chaemera"');
-    expect(forgeConfig).toContain('owner: "Zandalorthewizzard"');
-    expect(forgeConfig).toContain('name: "Chaemera"');
-    expect(forgeConfig).toContain('schemes: ["dyad"]');
     expect(packageJson.scripts.package).toBe("npm run package:tauri");
     expect(packageJson.scripts["package:tauri"]).toContain(
       "@tauri-apps/cli build",
     );
-    expect(packageJson.scripts["package:electron"]).toBe(
-      "npm run clean && electron-forge package",
-    );
-    expect(packageJson.scripts.make).toBe("npm run make:electron");
-    expect(packageJson.scripts.publish).toBe("npm run publish:electron");
-    expect(packageJson.scripts["publish:electron"]).toContain(
-      "electron-forge publish",
-    );
-    expect(releaseWorkflow).toContain("name: Release Electron Legacy");
-    expect(releaseWorkflow).toContain("npm run publish:electron -- --dry-run");
-    expect(releaseVerifier).toContain('const owner = "Zandalorthewizzard";');
-    expect(releaseVerifier).toContain('const repo = "Chaemera";');
-    expect(releaseVerifier).toContain('"chaemera-release-verifier"');
-    expect(releaseVerifier).toContain("chaemera-darwin-arm64-");
+    expect(packageJson.scripts["start:electron"]).toBeUndefined();
+    expect(packageJson.scripts["package:electron"]).toBeUndefined();
+    expect(packageJson.scripts.make).toBeUndefined();
+    expect(packageJson.scripts.publish).toBeUndefined();
+    expect(
+      fs.existsSync(path.join(process.cwd(), ".github/workflows/release.yml")),
+    ).toBe(false);
+    expect(tauriPreviewWorkflow).toContain("name: Release Tauri Preview");
+    expect(tauriPreviewWorkflow).toContain("uses: tauri-apps/tauri-action@v1");
+    expect(tauriPreviewWorkflow).toContain("workflowArtifactNamePattern");
+    expect(workflowsReadme).not.toContain("Release Electron Legacy");
+    expect(workflowsReadme).toContain("Release Tauri Preview");
   });
 });
