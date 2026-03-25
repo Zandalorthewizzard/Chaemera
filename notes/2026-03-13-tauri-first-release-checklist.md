@@ -110,7 +110,12 @@ Related gate note:
 
 - `e2e-tests/helpers/electron_dialog_stub.ts`
 - page objects and Electron import/storage/version-integrity specs now use the local helper
-- remaining external helper usage is narrowed to `e2e-tests/helpers/fixtures.ts`
+
+21. External `electron-playwright-helpers` usage has now been removed entirely from active test code:
+
+- `e2e-tests/helpers/electron_build_info.ts` now provides packaged Electron build discovery and launch info
+- `e2e-tests/helpers/fixtures.ts` now uses the project-owned helper instead of the npm package
+- `electron-playwright-helpers` has been removed from `package.json`
 
 ## Decisions Applied In This Pass
 

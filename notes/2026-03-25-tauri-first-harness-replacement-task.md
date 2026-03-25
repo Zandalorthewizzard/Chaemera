@@ -89,14 +89,16 @@ Replace the highest-value Electron-based desktop regression dependencies with Ta
    - `e2e-tests/import.spec.ts`
    - `e2e-tests/import_in_place.spec.ts`
    - `e2e-tests/version_integrity.spec.ts`
-3. Remaining `electron-playwright-helpers` usage is now narrowed to the legacy Electron fixture bootstrap:
+3. Electron build discovery and packaged main resolution are now also project-owned:
+   - `e2e-tests/helpers/electron_build_info.ts`
    - `e2e-tests/helpers/fixtures.ts`
+4. `electron-playwright-helpers` has been removed from active code and npm dependencies.
 
 ## Next Likely Slice
 
-1. Replace `findLatestBuild` and `parseElectronApp` in `e2e-tests/helpers/fixtures.ts` with local harness code so the external helper package can be removed entirely.
-2. Revisit whether the Windows-skipped import/version-integrity specs are still worth keeping once Tauri-first coverage is broad enough.
-3. After that, reassess whether `electron-regression` itself can shrink further without lowering release confidence.
+1. Revisit whether the Windows-skipped import/version-integrity specs are still worth keeping once Tauri-first coverage is broad enough.
+2. Reassess whether `electron-regression` itself can shrink further without lowering release confidence.
+3. Once the remaining Electron fixture value is understood, use that to decide whether `build:test-electron-harness` and the `electron-regression` Playwright project can be downgraded or removed.
 
 ## Additional Verification On 2026-03-25
 
@@ -108,6 +110,10 @@ Replace the highest-value Electron-based desktop regression dependencies with Ta
 2. On this Windows workspace only the non-skipped Electron regression case executed at runtime:
    - `e2e-tests/app_storage_path.spec.ts`
 3. The Windows-skipped import/version-integrity specs remain compile-checked here, while functional import/storage coverage is now exercised in the Tauri-first lane.
+4. After replacing fixture bootstrap helpers and removing the package dependency, the remaining Electron bootstrap path still passed:
+   - `npm run ts`
+   - `npm run lint`
+   - `npx playwright test --project=electron-regression e2e-tests/chat_mode.spec.ts --grep "default build mode"`
 
 ## Non-Goals
 

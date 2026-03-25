@@ -4,13 +4,16 @@
  */
 
 import { test as base } from "@playwright/test";
-import * as eph from "electron-playwright-helpers";
 import { ElectronApplication, _electron as electron } from "playwright";
 import os from "os";
 import path from "path";
 import { execSync } from "child_process";
 
 import { showDebugLogs } from "./constants";
+import {
+  findLatestElectronBuild,
+  parseElectronBuild,
+} from "./electron_build_info";
 import { PageObject } from "./page-objects";
 import { FAKE_LLM_BASE_PORT } from "./test-ports";
 
@@ -77,9 +80,9 @@ export const test = base.extend<{
   electronApp: [
     async ({ electronConfig }, use, testInfo) => {
       // find the latest build in the out directory
-      const latestBuild = eph.findLatestBuild();
+      const latestBuild = findLatestElectronBuild();
       // parse the directory and find paths and other info
-      const appInfo = eph.parseElectronApp(latestBuild);
+      const appInfo = parseElectronBuild(latestBuild);
 
       // Calculate worker-specific port for fake LLM server
       // Each parallel worker gets its own server to avoid test interference
