@@ -13,6 +13,9 @@ const profileRoot = path.join(
 );
 const localAppDataDir = path.join(profileRoot, "LocalAppData");
 const appDataDir = path.join(profileRoot, "AppData", "Roaming");
+const tauriAppIdentifier = "io.chaemera.app";
+const tauriAppDataDir = path.join(appDataDir, tauriAppIdentifier);
+const tauriLocalDataDir = path.join(localAppDataDir, tauriAppIdentifier);
 const tauriDriverPath = path.join(
   os.homedir(),
   ".cargo",
@@ -26,6 +29,7 @@ const nativeDriverPath = path.join(
   "msedgedriver.exe",
 );
 const runtimeSetupModulePath = process.env.CHAEMERA_TAURI_RUNTIME_SETUP ?? null;
+const keepRuntimeProfile = process.env.CHAEMERA_TAURI_KEEP_PROFILE === "true";
 
 let tauriDriver;
 let exit = false;
@@ -91,13 +95,19 @@ async function runRuntimeSetupHook() {
     return;
   }
 
-  const resolvedModulePath = path.isAbsolute(runtimeSetupModulePath)
-    ? runtimeSetupModulePath
-    : path.resolve(rootDir, runtimeSetupModulePath);
+  const candidateModulePaths = path.isAbsolute(runtimeSetupModulePath)
+    ? [runtimeSetupModulePath]
+    : [
+        path.resolve(__dirname, runtimeSetupModulePath),
+        path.resolve(rootDir, runtimeSetupModulePath),
+      ];
+  const resolvedModulePath = candidateModulePaths.find((candidatePath) =>
+    fs.existsSync(candidatePath),
+  );
 
-  if (!fs.existsSync(resolvedModulePath)) {
+  if (!resolvedModulePath) {
     throw new Error(
-      `Tauri runtime setup module not found: ${resolvedModulePath}`,
+      `Tauri runtime setup module not found: ${runtimeSetupModulePath}`,
     );
   }
 
@@ -120,6 +130,9 @@ async function runRuntimeSetupHook() {
     profileRoot,
     localAppDataDir,
     appDataDir,
+    appIdentifier: tauriAppIdentifier,
+    tauriAppDataDir,
+    tauriLocalDataDir,
   });
 }
 
@@ -150,6 +163,14 @@ export const config = {
   beforeSession: async () => {
     fs.mkdirSync(localAppDataDir, { recursive: true });
     fs.mkdirSync(appDataDir, { recursive: true });
+    fs.mkdirSync(tauriAppDataDir, { recursive: true });
+    fs.mkdirSync(tauriLocalDataDir, { recursive: true });
+
+    process.env.CHAEMERA_TAURI_PROFILE_ROOT = profileRoot;
+    process.env.CHAEMERA_TAURI_APP_IDENTIFIER = tauriAppIdentifier;
+    process.env.CHAEMERA_TAURI_APP_DATA_DIR = tauriAppDataDir;
+    process.env.CHAEMERA_TAURI_LOCAL_DATA_DIR = tauriLocalDataDir;
+
     await runRuntimeSetupHook();
 
     tauriDriver = spawn(
@@ -161,6 +182,10 @@ export const config = {
           ...process.env,
           APPDATA: appDataDir,
           LOCALAPPDATA: localAppDataDir,
+          CHAEMERA_TAURI_PROFILE_ROOT: profileRoot,
+          CHAEMERA_TAURI_APP_IDENTIFIER: tauriAppIdentifier,
+          CHAEMERA_TAURI_APP_DATA_DIR: tauriAppDataDir,
+          CHAEMERA_TAURI_LOCAL_DATA_DIR: tauriLocalDataDir,
           OPENAI_API_KEY: "sk-test",
           E2E_TEST_BUILD: "true",
         },
@@ -181,6 +206,14 @@ export const config = {
   },
   afterSession: () => {
     closeTauriDriver();
+    delete process.env.CHAEMERA_TAURI_PROFILE_ROOT;
+    delete process.env.CHAEMERA_TAURI_APP_IDENTIFIER;
+    delete process.env.CHAEMERA_TAURI_APP_DATA_DIR;
+    delete process.env.CHAEMERA_TAURI_LOCAL_DATA_DIR;
+    if (keepRuntimeProfile) {
+      console.log(`Preserving Tauri runtime profile at ${profileRoot}`);
+      return;
+    }
     fs.rmSync(profileRoot, { recursive: true, force: true });
   },
 };

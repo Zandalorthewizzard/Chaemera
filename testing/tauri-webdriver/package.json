@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "wdio run wdio.conf.mjs"
+    "test": "node run-suite.mjs",
+    "test:single": "wdio run wdio.conf.mjs"
   },
   "dependencies": {
     "@wdio/cli": "^9.19.0"

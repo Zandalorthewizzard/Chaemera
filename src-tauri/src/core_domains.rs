@@ -1,14 +1,17 @@
 use serde_json::{json, Value};
 use std::fs;
 use std::path::PathBuf;
-use tauri::{AppHandle, Manager, WebviewWindow};
+use tauri::{AppHandle, Manager, Runtime, WebviewWindow};
 use uuid::Uuid;
 
-pub(crate) fn settings_file_path(app: &AppHandle) -> Result<PathBuf, String> {
-    let app_dir = app
-        .path()
-        .app_data_dir()
-        .map_err(|error| format!("failed to resolve app data dir: {error}"))?;
+pub(crate) fn settings_file_path<R: Runtime>(app: &AppHandle<R>) -> Result<PathBuf, String> {
+    let app_dir = if let Some(override_dir) = std::env::var_os("CHAEMERA_TAURI_APP_DATA_DIR") {
+        PathBuf::from(override_dir)
+    } else {
+        app.path()
+            .app_data_dir()
+            .map_err(|error| format!("failed to resolve app data dir: {error}"))?
+    };
 
     fs::create_dir_all(&app_dir)
         .map_err(|error| format!("failed to create app data dir: {error}"))?;
@@ -60,7 +63,7 @@ pub(crate) fn merge_json(base: &mut Value, patch: &Value) {
     }
 }
 
-pub(crate) fn read_settings(app: &AppHandle) -> Result<Value, String> {
+pub(crate) fn read_settings<R: Runtime>(app: &AppHandle<R>) -> Result<Value, String> {
     let file_path = settings_file_path(app)?;
     if !file_path.exists() {
         let defaults = default_settings();
@@ -81,7 +84,10 @@ pub(crate) fn read_settings(app: &AppHandle) -> Result<Value, String> {
     Ok(merged)
 }
 
-pub(crate) fn write_settings(app: &AppHandle, patch: Value) -> Result<Value, String> {
+pub(crate) fn write_settings<R: Runtime>(
+    app: &AppHandle<R>,
+    patch: Value,
+) -> Result<Value, String> {
     let file_path = settings_file_path(app)?;
     let mut current = read_settings(app)?;
     merge_json(&mut current, &patch);

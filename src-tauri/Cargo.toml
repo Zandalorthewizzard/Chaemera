@@ -10,7 +10,7 @@ name = "chaemera_tauri"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
-tauri-build = { version = "2" }
+tauri-build = { version = "2", features = [] }
 
 [dependencies]
 base64 = "0.22"
@@ -19,12 +19,17 @@ ignore = "0.4"
 leptos = { version = "0.8", features = ["ssr"] }
 open = "5"
 regex = "1"
-reqwest = { version = "0.12", default-features = false, features = ["blocking", "json", "rustls-tls"] }
+reqwest = { version = "0.12", default-features = false, features = [
+  "blocking",
+  "json",
+  "rustls-tls",
+] }
 rfd = "0.15"
 rusqlite = { version = "0.31", features = ["bundled"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-tauri = { version = "2" }
+sysinfo = "0.33"
+tauri = { version = "2", features = [] }
 time = { version = "0.3", features = ["formatting"] }
 uuid = { version = "1", features = ["v4"] }
 walkdir = "2"

@@ -205,6 +205,50 @@ Replace the highest-value Electron-based desktop regression dependencies with Ta
 4. The default runtime lane still passes after this addition:
    - `npm run e2e:tauri-runtime`
 
+## Additional Verification On 2026-03-25: Performance Monitor Migrated To Real Tauri Runtime
+
+1. `performance_monitor` no longer depends on the Electron regression harness.
+2. Tauri now carries the runtime lifecycle parity needed for this flow:
+   - startup force-close detection from persisted settings
+   - `isRunning` persistence
+   - runtime performance sampling
+   - `force-close-detected` event delivery to the renderer
+   - final sampling on clean exit
+3. The implementation lives in:
+   - `src-tauri/src/runtime_lifecycle.rs`
+   - `src-tauri/src/lib.rs`
+   - `src-tauri/src/core_domains.rs`
+4. The real runtime coverage now lives in:
+   - `testing/tauri-webdriver/run-suite.mjs`
+   - `testing/tauri-webdriver/runtime_profile.mjs`
+   - `testing/tauri-webdriver/specs/performance-force-close.e2e.mjs`
+   - `testing/tauri-webdriver/specs/performance-clean-shutdown.e2e.mjs`
+   - `testing/tauri-webdriver/specs/performance-sampling.e2e.mjs`
+5. The old Electron-only spec has been removed:
+   - `e2e-tests/performance_monitor.spec.ts`
+6. A concrete Windows runtime-test constraint was discovered and fixed:
+   - under `tauri-driver`, Windows known-folder resolution does not honor `APPDATA` overrides for `app.path().app_data_dir()`
+   - the Tauri settings helper now respects `CHAEMERA_TAURI_APP_DATA_DIR` so runtime setup modules can prepare an isolated profile deterministically
+7. Another concrete parity bug was fixed during this migration:
+   - Rust serialization was producing `memoryUsageMb` / `systemMemoryUsageMb` / `systemMemoryTotalMb`
+   - this now matches the existing frontend contract exactly as `memoryUsageMB` / `systemMemoryUsageMB` / `systemMemoryTotalMB`
+8. Validation for this slice passed with:
+   - `cargo check --manifest-path src-tauri/Cargo.toml`
+   - `npm run pre:e2e:tauri-runtime`
+   - `npm run e2e:tauri-runtime`
+   - `npm run ts`
+   - `npm run lint`
+   - `npm run audit:tauri-cutover`
+   - `npm run audit:electron-legacy`
+
+## Updated Remaining Direct Electron Spec Usage
+
+1. After removing `e2e-tests/performance_monitor.spec.ts`, direct `electronApp` usage in spec files is now limited to:
+   - `e2e-tests/app_storage_path.spec.ts`
+   - `e2e-tests/import.spec.ts`
+   - `e2e-tests/version_integrity.spec.ts`
+2. The next reduction slice should target these three files through the real `tauri-runtime` lane, not the browser-backed `tauri-regression` lane.
+
 ## Non-Goals
 
 1. Do not archive Electron runtime files inside the active repo tree.
@@ -221,6 +265,6 @@ Replace the highest-value Electron-based desktop regression dependencies with Ta
 4. Treat the old Electron-only home smoke as migrated to `tauri-smoke`.
 5. Treat import advanced-options coverage and in-place import coverage as migrated to `tauri-regression`.
 6. Focus next on the remaining direct Electron spec usage list in this note.
-7. Treat the remaining four Electron specs as likely `tauri-runtime` candidates, not easy browser-harness candidates.
-8. Use the new runtime setup hook to prototype the first migrated file-backed Tauri runtime spec.
+7. Treat the remaining three Electron specs as likely `tauri-runtime` candidates, not easy browser-harness candidates.
+8. Treat the performance-monitor slice as complete and use it as the template for the next runtime migration.
 9. Pick the next smallest slice that extends real Tauri runtime coverage for filesystem- and stream-backed behavior without lowering regression signal.

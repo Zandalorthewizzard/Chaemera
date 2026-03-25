@@ -138,6 +138,14 @@ Related gate note:
 - `e2e-tests/import.spec.ts` has been narrowed to the remaining AI-rules-specific prompt-context case
 - verified with `npm run build:tauri-regression`, `npx playwright test --project=tauri-regression e2e-tests/tauri-regression.spec.ts`, `npm run pre:e2e:electron-regression`, `npx playwright test --project=electron-regression e2e-tests/import.spec.ts`, `npm run ts`, and `npm run lint`
 
+25. The old Electron-only performance-monitor regression has been migrated into the real `tauri-runtime` lane:
+
+- Tauri now owns startup force-close detection, runtime performance sampling, and clean-exit persistence in `src-tauri/src/runtime_lifecycle.rs`
+- the Windows runtime harness now uses an explicit `CHAEMERA_TAURI_APP_DATA_DIR` override for settings isolation because `app.path().app_data_dir()` does not follow `APPDATA` overrides under `tauri-driver`
+- the runtime suite now runs dedicated performance specs through `testing/tauri-webdriver/run-suite.mjs`
+- `e2e-tests/performance_monitor.spec.ts` has been removed
+- verified with `cargo check --manifest-path src-tauri/Cargo.toml`, `npm run pre:e2e:tauri-runtime`, `npm run e2e:tauri-runtime`, `npm run ts`, `npm run lint`, `npm run audit:tauri-cutover`, and `npm run audit:electron-legacy`
+
 ## Decisions Applied In This Pass
 
 1. Removed the unused help-bot IPC surface from active code:
@@ -166,7 +174,7 @@ Related gate note:
    - `e2e:electron`
    - current Forge reference count is down to `5`
    - the remaining question is now whether this legacy lane still covers anything not already exercised by `tauri-regression` plus the real `tauri-runtime` gate
-   - the remaining direct Electron spec usage is now concentrated in app storage, import AI-rules prompt context, version integrity, and performance-monitor coverage
+   - the remaining direct Electron spec usage is now concentrated in app storage, import AI-rules prompt context, and version integrity coverage
    - these remaining cases look more like `tauri-runtime` expansion work than additional browser-harness migration because they depend on real stream/file/runtime side effects
    - the real runtime harness now has a prelaunch setup hook path for preparing profile and file state before app launch
 3. CI is still not fully Tauri-first for broad regression:

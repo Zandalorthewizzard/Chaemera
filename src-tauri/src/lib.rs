@@ -1,5 +1,6 @@
 mod core_domains;
 mod leptos_shell;
+mod runtime_lifecycle;
 mod sqlite_support;
 mod wave_aa_domains;
 mod wave_ab_domains;
@@ -44,12 +45,16 @@ mod wave_z_domains;
 use tauri::Manager;
 
 pub fn run() {
-    tauri::Builder::default()
+    let app = tauri::Builder::default()
         .setup(|app| {
+            runtime_lifecycle::initialize(&app.handle())?;
             if let Some(main_window) = app.get_webview_window("main") {
                 main_window.set_title("Chaemera")?;
             }
             Ok(())
+        })
+        .on_page_load(|webview, _payload| {
+            runtime_lifecycle::emit_pending_force_close(webview);
         })
         .invoke_handler(tauri::generate_handler![
             core_domains::window_minimize,
@@ -226,6 +231,12 @@ pub fn run() {
             wave_e_domains::analyze_component,
             leptos_shell::leptos_render_route,
         ])
-        .run(tauri::generate_context!())
-        .expect("error while running Tauri application");
+        .build(tauri::generate_context!())
+        .expect("error while building Tauri application");
+
+    app.run(|app_handle, event| {
+        if let Err(error) = runtime_lifecycle::handle_run_event(app_handle, &event) {
+            eprintln!("runtime lifecycle error: {error}");
+        }
+    });
 }
