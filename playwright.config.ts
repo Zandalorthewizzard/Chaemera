@@ -81,11 +81,11 @@ const config: PlaywrightTestConfig = {
   projects: [
     {
       name: "electron-regression",
-      testIgnore: /tauri-(smoke|regression)\.spec\.ts$/,
+      testIgnore: /tauri-.*\.spec\.ts$/,
     },
     {
       name: "tauri-regression",
-      testMatch: /tauri-(smoke|regression)\.spec\.ts$/,
+      testMatch: /tauri-.*\.spec\.ts$/,
       use: {
         browserName: "chromium",
         baseURL: "http://127.0.0.1:4173",

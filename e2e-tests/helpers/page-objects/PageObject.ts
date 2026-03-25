@@ -54,7 +54,7 @@ export class PageObject {
   public promptLibrary: PromptLibrary;
 
   constructor(
-    public electronApp: ElectronApplication,
+    public electronApp: ElectronApplication | null,
     public page: Page,
     { userDataDir, fakeLlmPort }: { userDataDir: string; fakeLlmPort: number },
   ) {

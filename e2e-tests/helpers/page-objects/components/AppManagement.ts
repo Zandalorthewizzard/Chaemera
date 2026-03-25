@@ -13,7 +13,7 @@ import { stubElectronDialog } from "../../electron_dialog_stub";
 export class AppManagement {
   constructor(
     public page: Page,
-    private electronApp: ElectronApplication,
+    private electronApp: ElectronApplication | null,
     private userDataDir: string,
   ) {}
 
@@ -107,6 +107,12 @@ export class AppManagement {
   }
 
   async importApp(appDir: string) {
+    if (!this.electronApp) {
+      throw new Error(
+        "AppManagement.importApp requires an Electron-backed fixture.",
+      );
+    }
+
     await this.page.getByRole("button", { name: "Import App" }).click();
     await stubElectronDialog(this.electronApp, "showOpenDialog", {
       filePaths: [

@@ -185,6 +185,15 @@ Related gate note:
 - `e2e:full` now dispatches to `playwright test --project=tauri-regression` on Windows and keeps full Playwright coverage on non-Windows platforms
 - verified with `npm run ts`, `npx vitest run src/__tests__/tauri_build_config.test.ts`, `npm run pre:e2e:full`, and `npm run e2e:full -- --list`
 
+31. The first broad page-object Electron spec has been migrated onto a browser-backed Tauri fixture:
+
+- the page-object layer now permits a non-Electron runtime for specs that do not need native dialog stubbing
+- `playwright.config.ts` now routes all `tauri-*.spec.ts` files to the `tauri-regression` project
+- `e2e-tests/tauri-delete-provider.spec.ts` now covers the old provider-deletion freeze check without the Electron fixture
+- the old `e2e-tests/delete_provider.spec.ts` file has been removed
+- a concrete migration rule was confirmed: settings/apps flows are better first movers than preview-driven specs like chat-panel toggle
+- verified with `npm run ts`, targeted lint on the new helper/test files, and `npx playwright test --project=tauri-regression e2e-tests/tauri-delete-provider.spec.ts`
+
 ## Decisions Applied In This Pass
 
 1. Removed the unused help-bot IPC surface from active code:

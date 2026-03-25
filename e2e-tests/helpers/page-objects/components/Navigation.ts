@@ -20,7 +20,11 @@ export class Navigation {
     const appsLink = this.page.getByRole("link", { name: "Apps" });
     await expect(appsLink).toBeVisible({ timeout: 60000 });
     await appsLink.click();
-    await expect(this.page.getByText("Build a new app")).toBeVisible();
+    await expect(
+      this.page.getByTestId("home-chat-input-container"),
+    ).toBeVisible({
+      timeout: 60000,
+    });
   }
 
   async goToChatTab() {

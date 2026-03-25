@@ -378,6 +378,27 @@ Replace the highest-value Electron-based desktop regression dependencies with Ta
    - `npm run pre:e2e:full`
    - `npm run e2e:full -- --list`
 
+## Additional Verification On 2026-03-25: First Page-Object Spec Migrated Off Electron Fixture
+
+1. The page-object helper layer is no longer hard-bound to Electron:
+   - `e2e-tests/helpers/page-objects/PageObject.ts`
+   - `e2e-tests/helpers/page-objects/components/AppManagement.ts`
+2. A new browser-backed Tauri page-object fixture now exists:
+   - `e2e-tests/helpers/tauri_page_object_fixtures.ts`
+   - `e2e-tests/helpers/tauri_test_helper.ts`
+3. `playwright.config.ts` now routes all `tauri-*.spec.ts` files to the `tauri-regression` project and excludes them from `electron-regression`.
+4. The first broad page-object spec successfully migrated through this new path:
+   - `e2e-tests/tauri-delete-provider.spec.ts`
+   - the old `e2e-tests/delete_provider.spec.ts` file has been removed
+5. A concrete triage rule was learned during this slice:
+   - not every Electron page-object spec is a good first Tauri candidate
+   - `chat_panel_toggle.spec.ts` depends on preview/runtime state, so preview-driven specs should not be the first migration batch
+   - settings/apps flows without preview lifecycle or filesystem snapshots are better first movers
+6. Validation for this slice passed with:
+   - `npm run ts`
+   - `npm run lint -- e2e-tests/helpers/page-objects/PageObject.ts e2e-tests/helpers/page-objects/components/AppManagement.ts e2e-tests/helpers/page-objects/components/Navigation.ts e2e-tests/helpers/tauri_page_object_fixtures.ts e2e-tests/helpers/tauri_test_helper.ts e2e-tests/tauri-delete-provider.spec.ts playwright.config.ts`
+   - `npx playwright test --project=tauri-regression e2e-tests/tauri-delete-provider.spec.ts`
+
 ## Non-Goals
 
 1. Do not archive Electron runtime files inside the active repo tree.
