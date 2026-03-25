@@ -453,6 +453,24 @@ Replace the highest-value Electron-based desktop regression dependencies with Ta
 4. Another low-risk remaining candidate is the active default-chat-mode smoke:
    - move the default setup `Build` assertion to a `tauri-*` spec
    - leave the skipped import/new-chat variant alone until app-state coverage is migrated
+5. The next leverage point after that is `AppManagement.importApp()`:
+   - if the page-object can drive the existing Tauri smoke folder-selection hooks directly, app-scoped theme and other import-based UI flows can move without going through the Electron fixture
+
+## Additional Verification On 2026-03-25: App-Scoped Theme Selection Migrated Off Electron Fixture
+
+1. `AppManagement.importApp()` now supports the browser-backed Tauri lane directly by programming the existing smoke-harness folder-selection hook when no Electron fixture is present.
+2. This unlocked full migration of the theme-selection spec:
+   - `e2e-tests/tauri-theme-selection.spec.ts` now covers both:
+     - dyad-wide default theme persistence
+     - app-specific theme persistence after importing a fixture app
+   - the old `e2e-tests/theme_selection.spec.ts` file has been removed
+3. This confirms a broader page-object migration rule:
+   - import-based UI flows do not automatically require Electron if the only native dependency is folder selection and the Tauri harness already owns that dialog path
+4. Validation for this slice passed with:
+   - `npm run fmt -- e2e-tests/helpers/page-objects/components/AppManagement.ts e2e-tests/tauri-theme-selection.spec.ts e2e-tests/theme_selection.spec.ts notes/2026-03-25-tauri-first-harness-replacement-task.md notes/2026-03-13-tauri-first-release-checklist.md`
+   - `npm run lint -- e2e-tests/helpers/page-objects/components/AppManagement.ts e2e-tests/tauri-theme-selection.spec.ts e2e-tests/theme_selection.spec.ts notes/2026-03-25-tauri-first-harness-replacement-task.md notes/2026-03-13-tauri-first-release-checklist.md`
+   - `npm run ts`
+   - `npx playwright test --project=tauri-regression e2e-tests/tauri-theme-selection.spec.ts`
 
 ## Non-Goals
 

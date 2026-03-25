@@ -5,6 +5,7 @@
 
 import { Page, expect } from "@playwright/test";
 import { ElectronApplication } from "playwright";
+import fs from "fs";
 import path from "path";
 import { execSync, execFileSync } from "child_process";
 import { Timeout } from "../../constants";
@@ -106,27 +107,60 @@ export class AppManagement {
     await this.page.getByTestId("connect-supabase-button").click();
   }
 
-  async importApp(appDir: string) {
-    if (!this.electronApp) {
-      throw new Error(
-        "AppManagement.importApp requires an Electron-backed fixture.",
-      );
-    }
+  private getImportFixturePath(appDir: string) {
+    return path.join(
+      __dirname,
+      "..",
+      "..",
+      "..",
+      "fixtures",
+      "import-app",
+      appDir,
+    );
+  }
 
+  private async setTauriSelectedAppFolder(appDir: string) {
+    const importPath = this.getImportFixturePath(appDir);
+    const hasAiRules = fs.existsSync(path.join(importPath, "AI_RULES.md"));
+
+    await this.page.evaluate(
+      (nextSelection) => {
+        const harness = (
+          window as Window & {
+            __CHAEMERA_TAURI_SMOKE__?: {
+              setNextSelectedAppFolder: (selection: {
+                path: string;
+                name: string;
+                hasAiRules: boolean;
+              }) => void;
+            };
+          }
+        ).__CHAEMERA_TAURI_SMOKE__;
+
+        if (!harness) {
+          throw new Error("Tauri smoke harness is unavailable.");
+        }
+
+        harness.setNextSelectedAppFolder(nextSelection);
+      },
+      {
+        path: importPath,
+        name: path.basename(importPath),
+        hasAiRules,
+      },
+    );
+  }
+
+  async importApp(appDir: string) {
+    const importPath = this.getImportFixturePath(appDir);
     await this.page.getByRole("button", { name: "Import App" }).click();
-    await stubElectronDialog(this.electronApp, "showOpenDialog", {
-      filePaths: [
-        path.join(
-          __dirname,
-          "..",
-          "..",
-          "..",
-          "fixtures",
-          "import-app",
-          appDir,
-        ),
-      ],
-    });
+    if (this.electronApp) {
+      await stubElectronDialog(this.electronApp, "showOpenDialog", {
+        filePaths: [importPath],
+      });
+    } else {
+      await this.setTauriSelectedAppFolder(appDir);
+    }
     await this.page.getByRole("button", { name: "Select Folder" }).click();
     await this.page.getByRole("button", { name: "Import" }).click();
   }

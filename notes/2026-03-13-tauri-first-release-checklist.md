@@ -217,10 +217,16 @@ Related gate note:
 
 34. The next low-risk browser-backed Tauri targets are now narrowed to live home/hub settings flows:
 
-- the dyad-wide portion of `theme_selection`
 - `template-community` remains a candidate, but is currently blocked because the browser-backed Tauri Hub route is still shell-only and does not expose the full template gallery
 - the active default-chat-mode smoke is also a good browser-backed candidate because it only asserts the default home selector state after setup
-- app-scoped theme persistence remains a later candidate because it still depends on app-level state rather than pure global settings
+- a likely enabler for the next app-scoped migration is teaching `AppManagement.importApp()` to use the existing Tauri smoke folder-selection hooks when no Electron fixture is present
+
+35. Full theme-selection coverage has now moved onto the browser-backed Tauri fixture:
+
+- `e2e-tests/tauri-theme-selection.spec.ts` now covers both the dyad-wide default theme flow and the app-specific theme flow
+- `AppManagement.importApp()` now uses the Tauri smoke folder-selection hook when no Electron fixture is present
+- the old `e2e-tests/theme_selection.spec.ts` file has been removed
+- this proves that some import-based UI flows can move off Electron once page objects speak the existing Tauri dialog harness directly
 
 ## Decisions Applied In This Pass
 

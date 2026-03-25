@@ -39,3 +39,39 @@ test("tauri theme selection persists the dyad-wide default theme", async ({
     selectedThemeId: "default",
   });
 });
+
+test("tauri theme selection persists the app-specific theme", async ({
+  po,
+}) => {
+  await po.setUp({ autoApprove: true });
+  await po.importApp("minimal");
+
+  await po.chatActions
+    .getChatInputContainer()
+    .getByTestId("auxiliary-actions-menu")
+    .click();
+  await po.page.getByRole("menuitem", { name: "Themes" }).click();
+  await expect(po.page.getByTestId("theme-option-none")).toBeVisible();
+  await po.page.getByTestId("theme-option-default").click();
+  await expect(po.page.getByTestId("theme-option-default")).not.toBeVisible();
+
+  await po.chatActions
+    .getChatInputContainer()
+    .getByTestId("auxiliary-actions-menu")
+    .click();
+  await po.page.getByRole("menuitem", { name: "Themes" }).click();
+  await expect(po.page.getByTestId("theme-option-default")).toHaveClass(
+    /bg-primary/,
+  );
+  await po.page.getByTestId("theme-option-none").click();
+  await expect(po.page.getByTestId("theme-option-none")).not.toBeVisible();
+
+  await po.chatActions
+    .getChatInputContainer()
+    .getByTestId("auxiliary-actions-menu")
+    .click();
+  await po.page.getByRole("menuitem", { name: "Themes" }).click();
+  await expect(po.page.getByTestId("theme-option-none")).toHaveClass(
+    /bg-primary/,
+  );
+});
