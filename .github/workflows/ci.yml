@@ -159,6 +159,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
+      - name: Install Windows WebDriver tools
+        if: contains(matrix.os.name, 'windows')
+        shell: pwsh
+        run: |
+          cargo install tauri-driver --locked
+          cargo install --git https://github.com/chippers/msedgedriver-tool
+          & "$HOME/.cargo/bin/msedgedriver-tool.exe"
       - name: Presubmit check (e.g. lint, format)
         # do not run this on Windows (it fails and not necessary)
         if: contains(matrix.os.name, 'macos')
@@ -185,6 +192,14 @@ jobs:
         run: npm run build:renderer
       - name: Check Tauri runtime
         run: npm run check:tauri
+      - name: Build real Tauri runtime app
+        if: contains(matrix.os.name, 'windows')
+        env:
+          NODE_OPTIONS: "--max-old-space-size=4096"
+        run: npm run pre:e2e:tauri-runtime
+      - name: Run real Tauri runtime gate
+        if: contains(matrix.os.name, 'windows')
+        run: npm run e2e:tauri-runtime
       - name: Prep test server
         run: cd testing/fake-llm-server && npm install && npm run build && cd -
       # macOS: Archive app bundle with tar to preserve metadata (code signatures, extended attributes)

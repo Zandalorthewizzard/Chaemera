@@ -131,6 +131,12 @@ describe("tauri build config", () => {
     expect(ciWorkflow).toContain("run: npm run pre:e2e:ci");
     expect(ciWorkflow).toContain("run: npm run build:renderer");
     expect(ciWorkflow).toContain("run: npm run check:tauri");
+    expect(ciWorkflow).toContain("cargo install tauri-driver --locked");
+    expect(ciWorkflow).toContain(
+      "cargo install --git https://github.com/chippers/msedgedriver-tool",
+    );
+    expect(ciWorkflow).toContain("run: npm run pre:e2e:tauri-runtime");
+    expect(ciWorkflow).toContain("run: npm run e2e:tauri-runtime");
     expect(ciWorkflow).toContain(
       "run: DEBUG=pw:browser npm run e2e:ci -- --shard=${{ matrix.shard }}/${{ matrix.shardTotal }}",
     );

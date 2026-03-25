@@ -85,6 +85,13 @@ Related gate note:
 - `npm run audit:tauri-cutover` passed with `0` missing mappings or handlers
 - `npm run e2e:tauri-runtime` passed without `SEVERE` browser errors
 
+17. CI now has an explicit Windows-only real Tauri runtime gate in addition to the broader legacy desktop lane:
+
+- install `tauri-driver`
+- install `msedgedriver-tool`
+- run `pre:e2e:tauri-runtime`
+- run `e2e:tauri-runtime`
+
 ## Decisions Applied In This Pass
 
 1. Removed the unused help-bot IPC surface from active code:
