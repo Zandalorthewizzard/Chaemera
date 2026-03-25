@@ -70,6 +70,19 @@ The repository does **not** yet have enough risk coverage to safely:
    - `npm run e2e` -> `playwright test --project=tauri-regression`
 4. CI now treats `audit:tauri-cutover` as a first-class Tauri parity check while keeping the wider Electron-plus-Tauri lane explicit via `pre:e2e:ci` and `e2e:ci`.
 5. This reduces cutover risk meaningfully, but does not close the "real desktop runtime" requirement.
+6. The real desktop runtime gate is now implemented and passing locally on Windows:
+   - `scripts/build-tauri-runtime-app.js`
+   - `testing/tauri-webdriver/wdio.conf.mjs`
+   - `testing/tauri-webdriver/specs/boot.e2e.mjs`
+   - `npm run e2e:tauri-runtime`
+7. The real runtime gate initially exposed two platform-specific failures that browser-backed smoke could not catch:
+   - the renderer assumed a Tauri event bridge existed whenever `invoke` existed
+   - Tauri `core:event` permissions were not explicitly granted to the `main` window capability
+8. Both issues are now fixed through:
+   - `src/ipc/runtime/bootstrap_tauri_core_bridge.ts`
+   - `src/__tests__/tauri_wave_c_transport.test.ts`
+   - `src-tauri/capabilities/default.json`
+9. This means the task has moved from "invent a real runtime lane" to "use the new real runtime lane as the mandatory gate before each Electron deletion pass"
 
 ## Required Gate Before Final Electron Removal
 
@@ -85,6 +98,11 @@ Minimum goal:
 2. exercise invoke bridge
 3. exercise event bridge
 4. confirm renderer boot and critical route transitions
+
+Current status:
+
+1. satisfied locally on Windows
+2. the lane now also fails on unexpected `SEVERE` browser logs, which catches event-bridge and permission regressions that the earlier browser harness missed
 
 ### 2. Tauri-First User Flow Regression
 
@@ -135,9 +153,11 @@ When resuming this task:
 2. run `npm run audit:tauri-cutover`
 3. inspect `playwright.config.ts`
 4. inspect `.github/workflows/ci.yml`
-5. identify which current E2E flows can be promoted into a real Tauri lane first
-6. only after that plan the deletion of Electron entrypoints
-7. do not confuse the current browser-backed `tauri-regression` lane with the final real-runtime gate
+5. run `npm run pre:e2e:tauri-runtime`
+6. run `npm run e2e:tauri-runtime`
+7. confirm there are no unexpected `SEVERE` browser logs in the runtime lane
+8. only after that plan the deletion of Electron entrypoints
+9. do not confuse the current browser-backed `tauri-regression` lane with the final real-runtime gate
 
 ## Evidence Pointers
 
@@ -149,3 +169,8 @@ When resuming this task:
 6. `e2e-tests/helpers/tauri_smoke_fixtures.ts`
 7. `playwright.config.ts`
 8. `.github/workflows/ci.yml`
+9. `scripts/build-tauri-runtime-app.js`
+10. `testing/tauri-webdriver/wdio.conf.mjs`
+11. `testing/tauri-webdriver/specs/boot.e2e.mjs`
+12. `src/ipc/runtime/bootstrap_tauri_core_bridge.ts`
+13. `src-tauri/capabilities/default.json`

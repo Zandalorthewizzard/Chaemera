@@ -55,8 +55,17 @@ function getRawTauriListen(): TauriListenFn | null {
   return (
     window.__TAURI__?.event?.listen ??
     window.__TAURI_INTERNALS__?.event?.listen ??
-    null
+    buildPackageTauriListen()
   );
+}
+
+function buildPackageTauriListen(): TauriListenFn {
+  return async (event, handler) => {
+    const { listen } = await import("@tauri-apps/api/event");
+    return listen(event, (eventPayload) => {
+      handler(eventPayload);
+    });
+  };
 }
 
 function normalizeTauriEventPayload(payload: unknown): unknown {
@@ -593,13 +602,20 @@ export function bootstrapTauriCoreBridge(): void {
             return unlisten;
           }
           let disposed = false;
-          void unlisten.then((dispose) => {
-            if (disposed) {
-              dispose();
-            } else {
-              cleanup = dispose;
-            }
-          });
+          void unlisten
+            .then((dispose) => {
+              if (disposed) {
+                dispose();
+              } else {
+                cleanup = dispose;
+              }
+            })
+            .catch((error) => {
+              console.error(
+                `[${channel}] Failed to subscribe to the Tauri event bridge.`,
+                error,
+              );
+            });
 
           let cleanup = () => {
             disposed = true;

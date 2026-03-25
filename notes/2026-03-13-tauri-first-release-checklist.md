@@ -63,6 +63,27 @@ Related gate note:
 - `npm run build` passed through the Tauri regression prep lane
 - `npm run e2e` passed and now resolves to the Tauri regression project
 
+14. Real Tauri desktop runtime validation now exists:
+
+- `build:tauri-runtime-app`
+- `pre:e2e:tauri-runtime`
+- `e2e:tauri-runtime`
+- an isolated WebdriverIO runner under `testing/tauri-webdriver/`
+- a real runtime boot check against `src-tauri/target/debug/chaemera-tauri.exe`
+
+15. The real runtime gate required two concrete fixes:
+
+- a renderer fallback to `@tauri-apps/api/event` when `window.__TAURI_INTERNALS__` exposes `invoke` but not a usable event bridge
+- an explicit capability file at `src-tauri/capabilities/default.json` so the `main` window receives `core:default` and therefore `core:event:default`
+
+16. Full post-fix validation on 2026-03-25:
+
+- `npm run ts` passed
+- `npm run test` passed with `682` tests
+- `npm run check:tauri` passed
+- `npm run audit:tauri-cutover` passed with `0` missing mappings or handlers
+- `npm run e2e:tauri-runtime` passed without `SEVERE` browser errors
+
 ## Decisions Applied In This Pass
 
 1. Removed the unused help-bot IPC surface from active code:
@@ -112,8 +133,6 @@ Related gate note:
    - `npm run build`
    - `npm run e2e`
 5. The wider suite still needs follow-up verification:
-   - `npm run test`
-   - `npm run check:tauri`
    - full CI/full-lane desktop regression
 
 ## Recommended Next Work Order
@@ -129,6 +148,19 @@ Related gate note:
 7. Treat the current `tauri-regression` lane as an intermediate gate only:
    - it is broader than `tauri-smoke`
    - it is still not sufficient to delete Electron entrypoints without a real Tauri runtime lane
+8. Use the real Tauri runtime lane as the new hard checkpoint before each Electron deletion pass:
+   - `npm run pre:e2e:tauri-runtime`
+   - `npm run e2e:tauri-runtime`
+9. The next deletion target should be the Electron entrypoint cluster:
+   - `src/main.ts`
+   - `src/preload.ts`
+   - `forge.config.ts`
+   - `vite.main.config.mts`
+   - `vite.preload.config.mts`
+10. Keep the new Tauri permissions and event bridge pieces intact while removing Electron:
+
+- `src/ipc/runtime/bootstrap_tauri_core_bridge.ts`
+- `src-tauri/capabilities/default.json`
 
 ## Evidence Pointers
 
@@ -150,3 +182,11 @@ Related gate note:
    - `e2e-tests/tauri-regression.spec.ts`
 6. Electron legacy inventory:
    - `scripts/audit-electron-legacy-surface.js`
+7. Real Tauri runtime harness:
+   - `scripts/build-tauri-runtime-app.js`
+   - `testing/tauri-webdriver/wdio.conf.mjs`
+   - `testing/tauri-webdriver/specs/boot.e2e.mjs`
+8. Tauri event bridge fallback and permissions:
+   - `src/ipc/runtime/bootstrap_tauri_core_bridge.ts`
+   - `src/__tests__/tauri_wave_c_transport.test.ts`
+   - `src-tauri/capabilities/default.json`

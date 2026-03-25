@@ -6,6 +6,12 @@ import {
 import { createStreamClient, defineStream } from "@/ipc/contracts/core";
 import { z } from "zod";
 
+const tauriEventListenMock = vi.fn();
+
+vi.mock("@tauri-apps/api/event", () => ({
+  listen: tauriEventListenMock,
+}));
+
 const testStreamContract = defineStream({
   channel: "chat:stream",
   input: z.object({
@@ -45,6 +51,7 @@ describe("tauri Wave C transport", () => {
     delete (window as typeof window & { __TAURI__?: unknown }).__TAURI__;
     delete (window as typeof window & { __TAURI_INTERNALS__?: unknown })
       .__TAURI_INTERNALS__;
+    tauriEventListenMock.mockReset();
   });
 
   it("wraps chat stream payload as a Tauri request argument", () => {
@@ -112,6 +119,61 @@ describe("tauri Wave C transport", () => {
     expect(capturedPayload).toEqual({
       chatId: 1,
       updatedFiles: false,
+    });
+  });
+
+  it("falls back to @tauri-apps/api event.listen when globals omit the event bridge", async () => {
+    let capturedPayload: unknown = null;
+    const dispose = vi.fn();
+
+    tauriEventListenMock.mockImplementation(async (_event, handler) => {
+      handler({
+        payload: {
+          chatId: 99,
+          updatedFiles: true,
+        },
+      });
+      return dispose;
+    });
+
+    (
+      window as typeof window & {
+        __TAURI_INTERNALS__?: {
+          invoke?: (
+            command: string,
+            args?: Record<string, unknown>,
+          ) => Promise<unknown>;
+        };
+      }
+    ).__TAURI_INTERNALS__ = {
+      invoke: vi.fn().mockResolvedValue(undefined),
+    };
+
+    bootstrapTauriCoreBridge();
+
+    const unsubscribe = window.__CHAEMERA_TAURI_CORE__!.on!(
+      "chat:response:end",
+      (payload) => {
+        capturedPayload = payload;
+      },
+    );
+
+    await vi.waitFor(() => {
+      expect(tauriEventListenMock).toHaveBeenCalledWith(
+        "chat:response:end",
+        expect.any(Function),
+      );
+    });
+
+    expect(capturedPayload).toEqual({
+      chatId: 99,
+      updatedFiles: true,
+    });
+
+    unsubscribe();
+
+    await vi.waitFor(() => {
+      expect(dispose).toHaveBeenCalledTimes(1);
     });
   });
 

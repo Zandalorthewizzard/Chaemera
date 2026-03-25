@@ -43,6 +43,9 @@ describe("tauri build config", () => {
     expect(packageJson.scripts["check:tauri"]).toBe(
       "cargo check --manifest-path src-tauri/Cargo.toml",
     );
+    expect(packageJson.scripts["build:tauri-runtime-app"]).toBe(
+      "node scripts/build-tauri-runtime-app.js",
+    );
     expect(packageJson.scripts["audit:electron-legacy"]).toBe(
       "node scripts/audit-electron-legacy-surface.js",
     );
@@ -63,6 +66,9 @@ describe("tauri build config", () => {
     );
     expect(packageJson.scripts["pre:e2e:tauri-regression"]).toBe(
       "npm run build:tauri-regression",
+    );
+    expect(packageJson.scripts["pre:e2e:tauri-runtime"]).toBe(
+      "npm run build:tauri-runtime-app",
     );
     expect(packageJson.scripts["pre:e2e:tauri-smoke"]).toBe(
       "npm run pre:e2e:tauri-regression",
@@ -87,6 +93,9 @@ describe("tauri build config", () => {
     );
     expect(packageJson.scripts["e2e:tauri-regression"]).toBe(
       "playwright test --project=tauri-regression",
+    );
+    expect(packageJson.scripts["e2e:tauri-runtime"]).toBe(
+      "npm --prefix testing/tauri-webdriver test",
     );
     expect(packageJson.scripts["e2e:tauri-smoke"]).toBe(
       "npm run e2e:tauri-regression",

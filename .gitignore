@@ -98,6 +98,10 @@ typings/
 # Electron-Forge
 out/
 
+# Tauri
+src-tauri/gen/
+src-tauri/target/
+
 sqlite.db
 userData/
 .env.local

@@ -1,0 +1,147 @@
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import { spawn } from "node:child_process";
+import { fileURLToPath } from "node:url";
+
+const __dirname = fileURLToPath(new URL(".", import.meta.url));
+const rootDir = path.resolve(__dirname, "..", "..");
+const debugDir = path.join(rootDir, "src-tauri", "target", "debug");
+const profileRoot = path.join(
+  os.tmpdir(),
+  `chaemera-tauri-webdriver-${Date.now()}`,
+);
+const localAppDataDir = path.join(profileRoot, "LocalAppData");
+const appDataDir = path.join(profileRoot, "AppData", "Roaming");
+const tauriDriverPath = path.join(
+  os.homedir(),
+  ".cargo",
+  "bin",
+  "tauri-driver.exe",
+);
+const nativeDriverPath = path.join(
+  os.homedir(),
+  ".cargo",
+  "bin",
+  "msedgedriver.exe",
+);
+
+let tauriDriver;
+let exit = false;
+
+function resolveTauriApplication() {
+  if (!fs.existsSync(debugDir)) {
+    throw new Error(
+      `Expected Tauri debug output at ${debugDir}. Run 'npm run pre:e2e:tauri-runtime' first.`,
+    );
+  }
+
+  const candidates = fs
+    .readdirSync(debugDir, { withFileTypes: true })
+    .filter(
+      (entry) =>
+        entry.isFile() &&
+        entry.name.endsWith(".exe") &&
+        !entry.name.startsWith("build-script-"),
+    )
+    .map((entry) => path.join(debugDir, entry.name))
+    .sort((left, right) => {
+      const leftStat = fs.statSync(left);
+      const rightStat = fs.statSync(right);
+      return rightStat.mtimeMs - leftStat.mtimeMs;
+    });
+
+  const preferred = candidates.find((candidate) =>
+    path.basename(candidate).toLowerCase().includes("chaemera"),
+  );
+
+  const application = preferred ?? candidates[0];
+  if (!application) {
+    throw new Error(
+      `No Tauri executable found in ${debugDir}. Run 'npm run pre:e2e:tauri-runtime' first.`,
+    );
+  }
+
+  return application;
+}
+
+function closeTauriDriver() {
+  exit = true;
+  tauriDriver?.kill();
+}
+
+function registerShutdownCleanup(fn) {
+  const cleanup = () => {
+    try {
+      fn();
+    } finally {
+      process.exit();
+    }
+  };
+
+  process.once("exit", cleanup);
+  process.once("SIGINT", cleanup);
+  process.once("SIGTERM", cleanup);
+  process.once("SIGBREAK", cleanup);
+}
+
+registerShutdownCleanup(() => {
+  closeTauriDriver();
+});
+
+export const config = {
+  host: "127.0.0.1",
+  port: 4444,
+  logLevel: "warn",
+  specs: ["./specs/**/*.e2e.mjs"],
+  maxInstances: 1,
+  capabilities: [
+    {
+      maxInstances: 1,
+      "tauri:options": {
+        application: resolveTauriApplication(),
+      },
+    },
+  ],
+  reporters: ["spec"],
+  framework: "mocha",
+  mochaOpts: {
+    ui: "bdd",
+    timeout: 120_000,
+  },
+  beforeSession: () => {
+    fs.mkdirSync(localAppDataDir, { recursive: true });
+    fs.mkdirSync(appDataDir, { recursive: true });
+
+    tauriDriver = spawn(
+      tauriDriverPath,
+      ["--native-driver", nativeDriverPath],
+      {
+        stdio: [null, process.stdout, process.stderr],
+        env: {
+          ...process.env,
+          APPDATA: appDataDir,
+          LOCALAPPDATA: localAppDataDir,
+          OPENAI_API_KEY: "sk-test",
+          E2E_TEST_BUILD: "true",
+        },
+      },
+    );
+
+    tauriDriver.on("error", (error) => {
+      console.error("tauri-driver error:", error);
+      process.exit(1);
+    });
+
+    tauriDriver.on("exit", (code) => {
+      if (!exit) {
+        console.error("tauri-driver exited with code:", code);
+        process.exit(1);
+      }
+    });
+  },
+  afterSession: () => {
+    closeTauriDriver();
+    fs.rmSync(profileRoot, { recursive: true, force: true });
+  },
+};
