@@ -320,6 +320,34 @@ Replace the highest-value Electron-based desktop regression dependencies with Ta
    - `e2e-tests/version_integrity.spec.ts`
 2. The final remaining Electron runtime-regression candidate is now `version_integrity`, and it should be treated as a real `tauri-runtime` migration rather than a browser-harness task.
 
+## Additional Verification On 2026-03-25: Version Integrity Migrated To Real Tauri Runtime
+
+1. `version_integrity.spec.ts` no longer depends on the Electron regression harness and has been removed.
+2. The real runtime suite now covers version checkout and restore behavior through:
+   - `testing/tauri-webdriver/specs/version-integrity.e2e.mjs`
+   - `testing/tauri-webdriver/specs/version-integrity.setup.mjs`
+   - `testing/tauri-webdriver/run-suite.mjs`
+3. A concrete Tauri runtime test constraint was resolved during this slice:
+   - the version-history row selector could not rely on the old Electron text assumptions or raw container matching
+   - the stable runtime interaction is to click the visible `Init Chaemera app` message row and then wait for `Restore to this version` to become visible before asserting filesystem checkout
+4. This slice passed with:
+   - `npm run pre:e2e:tauri-runtime`
+   - `npm run e2e:tauri-runtime`
+   - `npm run ts`
+   - `npm run lint`
+   - `npm run audit:tauri-cutover`
+   - `npm run audit:electron-legacy`
+
+## Updated Remaining Direct Electron Spec Usage
+
+1. There are now no remaining direct `electronApp` usages in `e2e-tests` spec files.
+2. The next reduction slice should stop treating Electron as a test-runtime dependency and instead target the legacy harness surface itself:
+   - `build:test-electron-harness`
+   - `pre:e2e:electron-regression`
+   - `e2e:electron`
+   - `playwright.config.ts` Electron project wiring
+   - the Electron entrypoint cluster behind that harness
+
 ## Non-Goals
 
 1. Do not archive Electron runtime files inside the active repo tree.
@@ -335,7 +363,6 @@ Replace the highest-value Electron-based desktop regression dependencies with Ta
 3. Treat both the import/storage slice and the deep-link renderer slice as complete.
 4. Treat the old Electron-only home smoke as migrated to `tauri-smoke`.
 5. Treat import advanced-options coverage and in-place import coverage as migrated to `tauri-regression`.
-6. Focus next on the remaining direct Electron spec usage list in this note.
-7. Treat `version_integrity.spec.ts` as the last Electron-only runtime candidate.
-8. Treat the performance-monitor, app-storage, and import-with-AI-rules slices as complete runtime templates.
-9. Pick the next smallest slice that extends real Tauri runtime coverage for version-backed behavior without lowering regression signal.
+6. Treat the performance-monitor, app-storage, import-with-AI-rules, and version-integrity slices as complete runtime templates.
+7. Focus next on removing the legacy Electron harness wiring rather than migrating another spec.
+8. Use the current real `tauri-runtime` suite as the replacement confidence base for deleting the Electron harness and entrypoint cluster.

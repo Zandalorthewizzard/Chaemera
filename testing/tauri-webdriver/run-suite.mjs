@@ -31,6 +31,11 @@ const runtimeRuns = [
     spec: "./specs/import-with-ai-rules.e2e.mjs",
     setup: "./specs/import-with-ai-rules.setup.mjs",
   },
+  {
+    label: "version integrity",
+    spec: "./specs/version-integrity.e2e.mjs",
+    setup: "./specs/version-integrity.setup.mjs",
+  },
 ];
 
 for (const runtimeRun of runtimeRuns) {

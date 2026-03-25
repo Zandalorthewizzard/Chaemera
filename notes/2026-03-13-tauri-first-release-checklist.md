@@ -192,8 +192,8 @@ Related gate note:
    - `e2e:electron`
    - current Forge reference count is down to `5`
    - the remaining question is now whether this legacy lane still covers anything not already exercised by `tauri-regression` plus the real `tauri-runtime` gate
-   - the remaining direct Electron spec usage is now limited to version integrity coverage
-   - this last case still looks like `tauri-runtime` expansion work rather than additional browser-harness migration because it depends on real version/file/runtime side effects
+   - there are no remaining direct Electron spec usages in `e2e-tests`
+   - the next question is no longer spec migration, but whether the Electron harness scripts and Playwright project can now be removed outright
    - the real runtime harness now has a prelaunch setup hook path for preparing profile and file state before app launch
 3. CI is still not fully Tauri-first for broad regression:
    - `.github/workflows/ci.yml`
