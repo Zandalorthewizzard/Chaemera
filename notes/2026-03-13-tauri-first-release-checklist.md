@@ -179,6 +179,12 @@ Related gate note:
 - Windows build artifacts no longer upload the packaged Electron `out/` directory for downstream Playwright sharding
 - verified with `npm run ts`, `npx vitest run src/__tests__/tauri_build_config.test.ts`, and `npm run lint -- .github/workflows/ci.yml src/__tests__/tauri_build_config.test.ts`
 
+30. The local Windows `full` desktop flow no longer defaults to Electron:
+
+- `pre:e2e:full` now dispatches to `pre:e2e:tauri-regression` on Windows and keeps `pre:e2e:electron-regression` on non-Windows platforms
+- `e2e:full` now dispatches to `playwright test --project=tauri-regression` on Windows and keeps full Playwright coverage on non-Windows platforms
+- verified with `npm run ts`, `npx vitest run src/__tests__/tauri_build_config.test.ts`, `npm run pre:e2e:full`, and `npm run e2e:full -- --list`
+
 ## Decisions Applied In This Pass
 
 1. Removed the unused help-bot IPC surface from active code:

@@ -362,6 +362,22 @@ Replace the highest-value Electron-based desktop regression dependencies with Ta
    - `npx vitest run src/__tests__/tauri_build_config.test.ts`
    - `npm run lint -- .github/workflows/ci.yml src/__tests__/tauri_build_config.test.ts`
 
+## Additional Verification On 2026-03-25: Windows Local Full E2E Path Is Now Tauri-Only
+
+1. The local `pre:e2e:full` script now dispatches by platform:
+   - Windows: `pre:e2e:tauri-regression`
+   - non-Windows: `pre:e2e:electron-regression`
+2. The local `e2e:full` script now dispatches by platform:
+   - Windows: `playwright test --project=tauri-regression`
+   - non-Windows: `playwright test`
+3. This aligns the local Windows developer flow with the CI reduction: Windows no longer tries to build or launch the Electron harness for the broad default desktop lane.
+4. Validation for this slice passed with:
+   - `npm run ts`
+   - `npx vitest run src/__tests__/tauri_build_config.test.ts`
+   - `npm run lint -- package.json scripts/prep-full-desktop-e2e.js scripts/run-full-desktop-e2e.js src/__tests__/tauri_build_config.test.ts`
+   - `npm run pre:e2e:full`
+   - `npm run e2e:full -- --list`
+
 ## Non-Goals
 
 1. Do not archive Electron runtime files inside the active repo tree.

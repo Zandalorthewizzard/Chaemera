@@ -96,7 +96,7 @@ describe("tauri build config", () => {
       "npm run build:test-electron-harness && npm run build:tauri-regression",
     );
     expect(packageJson.scripts["pre:e2e:full"]).toBe(
-      "npm run pre:e2e:electron-regression",
+      "node scripts/prep-full-desktop-e2e.js",
     );
     expect(packageJson.scripts["pre:e2e:ci"]).toBe("npm run pre:e2e:full");
     expect(packageJson.scripts["pre:e2e"]).toBe(
@@ -105,7 +105,9 @@ describe("tauri build config", () => {
     expect(packageJson.scripts.e2e).toBe(
       "playwright test --project=tauri-regression",
     );
-    expect(packageJson.scripts["e2e:full"]).toBe("playwright test");
+    expect(packageJson.scripts["e2e:full"]).toBe(
+      "node scripts/run-full-desktop-e2e.js",
+    );
     expect(packageJson.scripts["e2e:ci"]).toBe("npm run e2e:full");
     expect(packageJson.scripts["e2e:electron"]).toBe(
       "playwright test --project=electron-regression",
