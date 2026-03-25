@@ -450,6 +450,9 @@ Replace the highest-value Electron-based desktop regression dependencies with Ta
    - `tauri-regression` currently renders the Hub route as a shell-only placeholder rather than the full template gallery
    - community-template card selection therefore cannot be migrated there yet
    - `template-community.spec.ts` should remain in the legacy lane until the Tauri browser harness grows real Hub content or the case moves to a runtime-backed path
+4. Another low-risk remaining candidate is the active default-chat-mode smoke:
+   - move the default setup `Build` assertion to a `tauri-*` spec
+   - leave the skipped import/new-chat variant alone until app-state coverage is migrated
 
 ## Non-Goals
 

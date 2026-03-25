@@ -219,6 +219,7 @@ Related gate note:
 
 - the dyad-wide portion of `theme_selection`
 - `template-community` remains a candidate, but is currently blocked because the browser-backed Tauri Hub route is still shell-only and does not expose the full template gallery
+- the active default-chat-mode smoke is also a good browser-backed candidate because it only asserts the default home selector state after setup
 - app-scoped theme persistence remains a later candidate because it still depends on app-level state rather than pure global settings
 
 ## Decisions Applied In This Pass

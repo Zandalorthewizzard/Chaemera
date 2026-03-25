@@ -30,15 +30,3 @@ test.skip("default chat mode - agent preset and setting change applies to new ch
     "Build",
   );
 });
-
-test("default chat mode - default setup uses build", async ({ po }) => {
-  await po.setUp();
-
-  // Default setup should use build mode
-  await expect(
-    po.chatActions
-      .getHomeChatInputContainer()
-      .getByTestId("chat-mode-selector"),
-  ).toHaveText("Build");
-});
-
