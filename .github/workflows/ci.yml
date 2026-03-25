@@ -105,7 +105,9 @@ jobs:
       #                                    merge-reports
       #
       # All other authors:
-      #   - GitHub-hosted runners for macOS + Windows, 4 shards each.
+      #   - GitHub-hosted build runners for macOS + Windows.
+      #   - Broad Playwright sharding stays on macOS only.
+      #   - Windows keeps the real Tauri runtime gate in the build job.
       #
       #   build (macOS) ──┐
       #   build (Windows) ┼──> e2e-tests (macOS shards 1-4)    ──┐
@@ -121,7 +123,7 @@ jobs:
             echo 'e2e_shard_total=[2]' >> $GITHUB_OUTPUT
           else
             echo 'build_os=[{"name":"windows","image":"[\"windows-latest\"]"},{"name":"macos","image":"[\"macos-latest\"]"}]' >> $GITHUB_OUTPUT
-            echo 'e2e_os=[{"name":"windows","image":"[\"windows-latest\"]"},{"name":"macos","image":"[\"macos-latest\"]"}]' >> $GITHUB_OUTPUT
+            echo 'e2e_os=[{"name":"macos","image":"[\"macos-latest\"]"}]' >> $GITHUB_OUTPUT
             echo 'e2e_shard=[1,2,3,4]' >> $GITHUB_OUTPUT
             echo 'e2e_shard_total=[4]' >> $GITHUB_OUTPUT
           fi
@@ -182,10 +184,16 @@ jobs:
         # do not run this on windows (it's redundant)
         if: contains(matrix.os.name, 'macos')
         run: npm run audit:tauri-cutover
-      - name: Build
+      - name: Build broad desktop regression assets
+        if: contains(matrix.os.name, 'macos')
         env:
           NODE_OPTIONS: "--max-old-space-size=4096"
-        run: npm run pre:e2e:ci
+        run: npm run pre:e2e:electron-regression
+      - name: Build Tauri regression assets
+        if: contains(matrix.os.name, 'windows')
+        env:
+          NODE_OPTIONS: "--max-old-space-size=4096"
+        run: npm run pre:e2e:tauri-regression
       - name: Build Tauri renderer dist
         env:
           NODE_OPTIONS: "--max-old-space-size=4096"
@@ -224,7 +232,6 @@ jobs:
         with:
           name: build-${{ matrix.os.name }}
           path: |
-            out/
             .tauri-smoke-dist/
             scaffold/
             testing/fake-llm-server/

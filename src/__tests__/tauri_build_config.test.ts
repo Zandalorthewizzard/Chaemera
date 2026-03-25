@@ -144,7 +144,8 @@ describe("tauri build config", () => {
 
     expect(ciWorkflow).toContain("uses: dtolnay/rust-toolchain@stable");
     expect(ciWorkflow).toContain("run: npm run audit:tauri-cutover");
-    expect(ciWorkflow).toContain("run: npm run pre:e2e:ci");
+    expect(ciWorkflow).toContain("run: npm run pre:e2e:electron-regression");
+    expect(ciWorkflow).toContain("run: npm run pre:e2e:tauri-regression");
     expect(ciWorkflow).toContain("run: npm run build:renderer");
     expect(ciWorkflow).toContain("run: npm run check:tauri");
     expect(ciWorkflow).toContain("cargo install tauri-driver --locked");

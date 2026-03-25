@@ -348,6 +348,20 @@ Replace the highest-value Electron-based desktop regression dependencies with Ta
    - `playwright.config.ts` Electron project wiring
    - the Electron entrypoint cluster behind that harness
 
+## Additional Verification On 2026-03-25: Windows CI No Longer Builds Or Runs Electron Regression
+
+1. The CI matrix now keeps broad Playwright sharding on macOS only for non-privileged authors.
+2. Windows still participates in the build matrix, but now uses Tauri-only gates there:
+   - `npm run pre:e2e:tauri-regression`
+   - `npm run pre:e2e:tauri-runtime`
+   - `npm run e2e:tauri-runtime`
+3. The Windows artifact upload no longer carries the packaged Electron `out/` directory for the sharded Playwright job.
+4. This reduces Electron's CI footprint without dropping the remaining broad regression lane on macOS.
+5. Validation for this slice passed with:
+   - `npm run ts`
+   - `npx vitest run src/__tests__/tauri_build_config.test.ts`
+   - `npm run lint -- .github/workflows/ci.yml src/__tests__/tauri_build_config.test.ts`
+
 ## Non-Goals
 
 1. Do not archive Electron runtime files inside the active repo tree.

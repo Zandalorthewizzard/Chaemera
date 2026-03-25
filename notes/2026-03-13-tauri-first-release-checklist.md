@@ -164,6 +164,21 @@ Related gate note:
 - `import-app` now returns `resolvedPath`, `installCommand`, and `startCommand` so Tauri can register runtime metadata immediately after import and avoid post-import `list-versions` / `get-current-branch` bridge errors
 - verified with `npm run build`, `npm run pre:e2e:tauri-runtime`, `npm run e2e:tauri-runtime`, `npm run test`, `npm run ts`, `npm run lint`, `cargo check --manifest-path src-tauri/Cargo.toml`, `npm run audit:tauri-cutover`, and `npm run audit:electron-legacy`
 
+28. The old Electron-only version-integrity regression has been migrated into the real `tauri-runtime` lane:
+
+- the runtime suite now covers version checkout and restore behavior through:
+  - `testing/tauri-webdriver/specs/version-integrity.e2e.mjs`
+  - `testing/tauri-webdriver/specs/version-integrity.setup.mjs`
+- the old `e2e-tests/version_integrity.spec.ts` file has been removed
+- verified with `npm run e2e:tauri-runtime`, `npm run ts`, `npm run audit:tauri-cutover`, and `npm run audit:electron-legacy`
+
+29. Windows CI no longer builds or runs the Electron regression lane:
+
+- the broad Playwright shard matrix is now macOS-only for non-privileged authors
+- Windows keeps the real Tauri runtime gate and Tauri regression prep in the build job
+- Windows build artifacts no longer upload the packaged Electron `out/` directory for downstream Playwright sharding
+- verified with `npm run ts`, `npx vitest run src/__tests__/tauri_build_config.test.ts`, and `npm run lint -- .github/workflows/ci.yml src/__tests__/tauri_build_config.test.ts`
+
 ## Decisions Applied In This Pass
 
 1. Removed the unused help-bot IPC surface from active code:
