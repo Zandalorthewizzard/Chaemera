@@ -440,6 +440,17 @@ Replace the highest-value Electron-based desktop regression dependencies with Ta
    - before porting a remaining Electron spec, verify that the underlying user flow still exists in the current product surface
    - if the UI entrypoint is gone and no active source callsites mutate the setting, remove the stale spec instead of inventing new Tauri coverage for dead behavior
 
+## Next Candidate Slice After Pro-Mode Cleanup
+
+1. The remaining low-risk browser-backed candidates are now narrower:
+   - the dyad-wide part of `theme_selection`
+   - `template-community`
+2. The current strategy is to migrate only the live home/hub flows and leave app-scoped theme behavior in the legacy lane until its app-state dependency is replaced.
+3. A concrete browser-harness constraint was confirmed while probing `template-community`:
+   - `tauri-regression` currently renders the Hub route as a shell-only placeholder rather than the full template gallery
+   - community-template card selection therefore cannot be migrated there yet
+   - `template-community.spec.ts` should remain in the legacy lane until the Tauri browser harness grows real Hub content or the case moves to a runtime-backed path
+
 ## Non-Goals
 
 1. Do not archive Electron runtime files inside the active repo tree.

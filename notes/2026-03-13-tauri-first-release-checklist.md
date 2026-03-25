@@ -215,6 +215,12 @@ Related gate note:
 - source search also found no active UI callsites that mutate `enableProLazyEditsMode`, `proLazyEditsMode`, `enableProSmartFilesContextMode`, or `proSmartContextOption`
 - this means these tests were stale Electron-era coverage for behavior that is no longer user-facing, not missing Tauri parity
 
+34. The next low-risk browser-backed Tauri targets are now narrowed to live home/hub settings flows:
+
+- the dyad-wide portion of `theme_selection`
+- `template-community` remains a candidate, but is currently blocked because the browser-backed Tauri Hub route is still shell-only and does not expose the full template gallery
+- app-scoped theme persistence remains a later candidate because it still depends on app-level state rather than pure global settings
+
 ## Decisions Applied In This Pass
 
 1. Removed the unused help-bot IPC surface from active code:
