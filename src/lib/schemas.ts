@@ -471,9 +471,9 @@ export function getEffectiveDefaultChatMode(
 }
 
 /**
- * Determines if the current session is using Basic Agent mode (free tier with quota).
+ * Determines if the current session is using Basic Agent mode (hosted access gated by quota).
  * Basic Agent mode is when:
- * - User does NOT have cloud access
+ * - User does NOT have hosted access
  * - User is using local-agent chat mode
  */
 export function isBasicAgentMode(settings: UserSettings): boolean {

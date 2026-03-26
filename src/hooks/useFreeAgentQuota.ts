@@ -10,7 +10,7 @@ const STALE_TIME_MS = 30_000;
 const TEST_STALE_TIME_MS = 500;
 
 /**
- * Hook to get the free agent quota status for users without cloud access.
+ * Hook to get the free agent quota status for users without hosted access.
  *
  * - Only fetches for non-cloud users
  * - Refetches every 30 minutes to update the UI when quota resets
@@ -31,7 +31,7 @@ export function useFreeAgentQuota() {
   } = useQuery<FreeAgentQuotaStatus, Error, FreeAgentQuotaStatus>({
     queryKey: queryKeys.freeAgentQuota.status,
     queryFn: () => ipc.freeAgentQuota.getFreeAgentQuotaStatus(),
-    // Only fetch for non-cloud users
+    // Hosted access is currently disabled, so this hook stays dormant in the UI.
     enabled: isHostedAccessEnabled && !!settings,
     // Refetch periodically to check for quota reset
     refetchInterval: THIRTY_MINUTES_IN_MS,

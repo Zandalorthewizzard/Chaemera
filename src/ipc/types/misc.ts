@@ -86,7 +86,7 @@ const DebugSettingsSchema = z.object({
   defaultChatMode: z.string().nullable(),
   /** Whether changes are auto-approved without review */
   autoApproveChanges: z.boolean().nullable(),
-  /** Whether Dyad Pro is enabled */
+  /** Whether hosted engine access is enabled */
   enableDyadPro: z.boolean().nullable(),
   /** Thinking budget level: "low" | "medium" | "high" */
   thinkingBudget: z.string().nullable(),
@@ -181,9 +181,9 @@ const DebugMessageSchema = z.object({
   sourceCommitHash: z.string().nullable(),
   /** Git commit hash of codebase after changes from this message were applied */
   commitHash: z.string().nullable(),
-  /** Pro request UUID for billing/tracking */
+  /** Hosted request UUID for tracking */
   requestId: z.string().nullable(),
-  /** Whether this message used the free agent mode quota */
+  /** Whether this message used the free agent quota */
   usingFreeAgentModeQuota: z.boolean().nullable(),
 });
 
