@@ -184,11 +184,11 @@ jobs:
         # do not run this on windows (it's redundant)
         if: contains(matrix.os.name, 'macos')
         run: npm run audit:tauri-cutover
-      - name: Build broad desktop regression assets
+      - name: Build desktop regression assets
         if: contains(matrix.os.name, 'macos')
         env:
           NODE_OPTIONS: "--max-old-space-size=4096"
-        run: npm run pre:e2e:electron-regression
+        run: npm run pre:e2e:full
       - name: Build Tauri regression assets
         if: contains(matrix.os.name, 'windows')
         env:

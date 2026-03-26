@@ -50,9 +50,7 @@ describe("tauri build config", () => {
     expect(packageJson.scripts["audit:electron-legacy"]).toBe(
       "node scripts/audit-electron-legacy-surface.js",
     );
-    expect(packageJson.scripts["build:test-electron-harness"]).toBe(
-      "npm run clean && cross-env E2E_TEST_BUILD=true electron-forge package",
-    );
+    expect(packageJson.scripts["build:test-electron-harness"]).toBeUndefined();
     expect(packageJson.scripts["package:electron"]).toBeUndefined();
     expect(packageJson.scripts.make).toBeUndefined();
     expect(packageJson.scripts.publish).toBeUndefined();
@@ -92,9 +90,7 @@ describe("tauri build config", () => {
     expect(packageJson.scripts["pre:e2e:tauri-smoke"]).toBe(
       "npm run pre:e2e:tauri-regression",
     );
-    expect(packageJson.scripts["pre:e2e:electron-regression"]).toBe(
-      "npm run build:test-electron-harness && npm run build:tauri-regression",
-    );
+    expect(packageJson.scripts["pre:e2e:electron-regression"]).toBeUndefined();
     expect(packageJson.scripts["pre:e2e:full"]).toBe(
       "node scripts/prep-full-desktop-e2e.js",
     );
@@ -109,9 +105,7 @@ describe("tauri build config", () => {
       "node scripts/run-full-desktop-e2e.js",
     );
     expect(packageJson.scripts["e2e:ci"]).toBe("npm run e2e:full");
-    expect(packageJson.scripts["e2e:electron"]).toBe(
-      "playwright test --project=electron-regression",
-    );
+    expect(packageJson.scripts["e2e:electron"]).toBeUndefined();
     expect(packageJson.scripts["e2e:tauri-regression"]).toBe(
       "playwright test --project=tauri-regression",
     );
@@ -146,7 +140,7 @@ describe("tauri build config", () => {
 
     expect(ciWorkflow).toContain("uses: dtolnay/rust-toolchain@stable");
     expect(ciWorkflow).toContain("run: npm run audit:tauri-cutover");
-    expect(ciWorkflow).toContain("run: npm run pre:e2e:electron-regression");
+    expect(ciWorkflow).toContain("run: npm run pre:e2e:full");
     expect(ciWorkflow).toContain("run: npm run pre:e2e:tauri-regression");
     expect(ciWorkflow).toContain("run: npm run build:renderer");
     expect(ciWorkflow).toContain("run: npm run check:tauri");

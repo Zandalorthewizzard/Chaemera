@@ -1,11 +1,12 @@
 const { spawnSync } = require("node:child_process");
-const os = require("node:os");
 
 const extraArgs = process.argv.slice(2);
-const commandArgs =
-  os.platform() === "win32"
-    ? ["playwright", "test", "--project=tauri-regression", ...extraArgs]
-    : ["playwright", "test", ...extraArgs];
+const commandArgs = [
+  "playwright",
+  "test",
+  "--project=tauri-regression",
+  ...extraArgs,
+];
 
 const result = spawnSync("npx", commandArgs, {
   stdio: "inherit",
