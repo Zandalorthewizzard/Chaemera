@@ -7,7 +7,7 @@ Date: 2026-03-26
 The setup coverage is split:
 
 - Node.js install / node-mock behavior now lives in the browser-backed Tauri regression lane.
-- Provider navigation flows still live in the legacy Electron regression lane for now.
+- Provider navigation flows are now also available in the browser-backed Tauri regression lane after adding `google` and `openrouter` to the harness provider catalog.
 
 ## What Changed
 
@@ -26,5 +26,5 @@ The setup coverage is split:
 ## Notes
 
 - The browser-backed Tauri setup spec now validates the Node.js install banner and install/continue flow.
-- The provider setup route still needs the Electron-backed harness because the Tauri browser harness currently resolves the Google/OpenRouter routes to `Provider Not Found`.
-- This split is intentional for now: the node setup slice is safe to migrate, but the provider navigation slice is still coupled to broader legacy setup behavior.
+- The provider setup route now resolves correctly in the browser-backed harness too.
+- This setup slice is now fully Tauri-backed in practice, but the note keeps the original split context because the migration was done in two steps.

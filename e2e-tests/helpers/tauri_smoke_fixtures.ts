@@ -413,6 +413,30 @@ export const test = base.extend<{
             },
           ],
           [
+            "google",
+            {
+              id: "google",
+              name: "Google",
+              websiteUrl: "https://aistudio.google.com/app/apikey",
+              gatewayPrefix: "gemini/",
+              envVarName: "GEMINI_API_KEY",
+              hasFreeTier: true,
+              type: "cloud",
+            },
+          ],
+          [
+            "openrouter",
+            {
+              id: "openrouter",
+              name: "OpenRouter",
+              websiteUrl: "https://openrouter.ai/settings/keys",
+              gatewayPrefix: "openrouter/",
+              envVarName: "OPENROUTER_API_KEY",
+              hasFreeTier: true,
+              type: "cloud",
+            },
+          ],
+          [
             "ollama",
             {
               id: "ollama",
