@@ -535,3 +535,10 @@ Replace the highest-value Electron-based desktop regression dependencies with Ta
 5. This pilot passed with:
    - `npx oxlint testing/tauri-webdriver/specs/copy-chat.e2e.mjs`
    - `CHAEMERA_TAURI_RUNTIME_SETUP=./specs/copy-chat.setup.mjs npx wdio run wdio.conf.mjs --spec ./specs/copy-chat.e2e.mjs`
+
+## Next Electron-Locked Candidate
+
+1. `e2e-tests/free_agent_quota.spec.ts` still depends on Electron fixture access:
+   - direct `window.electron.ipcRenderer.invoke("test:simulateQuotaTimeElapsed", 25)`
+2. This makes it the next meaningful Electron-only Playwright candidate after `copy-chat`.
+3. The broader harness cleanup can wait until this spec either gets a Tauri-backed test hook or is intentionally retired.
