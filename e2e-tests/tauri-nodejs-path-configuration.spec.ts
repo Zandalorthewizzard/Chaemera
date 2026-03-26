@@ -1,5 +1,5 @@
-import { test } from "./helpers/test_helper";
 import { expect } from "@playwright/test";
+import { test } from "./helpers/tauri_test_helper";
 
 test.describe("Node.js Path Configuration", () => {
   test("should browse and set custom Node.js path", async ({ po }) => {
@@ -11,9 +11,10 @@ test.describe("Node.js Path Configuration", () => {
     });
     await browseButton.click();
 
-    // Should show selecting state
+    await expect(po.page.getByText("Custom Path:")).toBeVisible();
+    await expect(po.page.getByText("C:/Program Files/nodejs")).toBeVisible();
     await expect(
-      po.page.getByRole("button", { name: /Selecting\.\.\./i }),
+      po.page.getByRole("button", { name: /Reset to Default/i }),
     ).toBeVisible();
   });
 
@@ -28,7 +29,6 @@ test.describe("Node.js Path Configuration", () => {
     if (await resetButton.isVisible()) {
       await resetButton.click();
 
-      // Should show system PATH after reset
       await expect(po.page.getByText("System PATH:")).toBeVisible();
     }
   });
@@ -37,20 +37,16 @@ test.describe("Node.js Path Configuration", () => {
     await po.setUp();
     await po.navigation.goToSettingsTab();
 
-    // Wait for status check
     await po.page.waitForTimeout(2000);
 
-    // Target the specific valid status container with CheckCircle
     const validStatus = po.page.locator(
       "div.flex.items-center.gap-1.text-green-600, div.flex.items-center.gap-1.text-green-400",
     );
 
-    // Skip test if Node.js is not installed
     if (!(await validStatus.isVisible())) {
       test.skip();
     }
 
-    // If visible, check for CheckCircle icon
     await expect(validStatus).toBeVisible();
     const checkIcon = validStatus.locator("svg").first();
     await expect(checkIcon).toBeVisible();
