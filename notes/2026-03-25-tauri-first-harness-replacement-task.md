@@ -536,9 +536,19 @@ Replace the highest-value Electron-based desktop regression dependencies with Ta
    - `npx oxlint testing/tauri-webdriver/specs/copy-chat.e2e.mjs`
    - `CHAEMERA_TAURI_RUNTIME_SETUP=./specs/copy-chat.setup.mjs npx wdio run wdio.conf.mjs --spec ./specs/copy-chat.e2e.mjs`
 
-## Next Electron-Locked Candidate
+## Additional Verification On 2026-03-26: Free Agent Quota Migrated To Real Tauri Runtime
 
-1. `e2e-tests/free_agent_quota.spec.ts` still depends on Electron fixture access:
-   - direct `window.electron.ipcRenderer.invoke("test:simulateQuotaTimeElapsed", 25)`
-2. This makes it the next meaningful Electron-only Playwright candidate after `copy-chat`.
-3. The broader harness cleanup can wait until this spec either gets a Tauri-backed test hook or is intentionally retired.
+1. The last Electron-only quota regression has been retired from `e2e-tests/`:
+   - `e2e-tests/free_agent_quota.spec.ts`
+2. The real Tauri runtime suite now owns this dormant-foundation coverage:
+   - `testing/tauri-webdriver/specs/free-agent-quota.e2e.mjs`
+   - `testing/tauri-webdriver/specs/free-agent-quota.setup.mjs`
+3. The runtime path verifies the same core facts without Electron fixture access:
+   - freemium UI remains hidden in the active product surface
+   - quota status can still be observed through the bridge
+   - quota expiration resets the dormant state
+4. This removes the last direct Electron-dependent Playwright spec from the migration inventory.
+5. The next reduction slice should now focus on the legacy Electron harness wiring itself:
+   - `electron-regression` Playwright project wiring
+   - remaining Electron fixture consumers
+   - the final entrypoint cluster once the harness is no longer a blocker
