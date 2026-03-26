@@ -79,3 +79,41 @@ test("themes management - CRUD operations", async ({ po }) => {
     po.page.getByText("No custom themes yet. Create one to get started."),
   ).toBeVisible();
 });
+
+test("themes management - create theme from chat input", async ({ po }) => {
+  await po.setUp();
+
+  await po.chatActions
+    .getHomeChatInputContainer()
+    .getByTestId("auxiliary-actions-menu")
+    .click();
+
+  await po.page.getByRole("menuitem", { name: "Themes" }).click();
+  await po.page.getByRole("menuitem", { name: "New Theme" }).click();
+
+  await expect(
+    po.page.getByRole("dialog").getByText("Create Custom Theme"),
+  ).toBeVisible();
+
+  await po.page.getByRole("tab", { name: "Manual Configuration" }).click();
+
+  await po.page.locator("#manual-name").fill("Chat Input Theme");
+  await po.page.locator("#manual-description").fill("Created from chat input");
+  await po.page
+    .locator("#manual-prompt")
+    .fill("Use dark mode with purple accents");
+
+  await po.page.getByRole("button", { name: "Save Theme" }).click();
+
+  await expect(po.page.getByRole("dialog")).not.toBeVisible();
+
+  await po.chatActions
+    .getHomeChatInputContainer()
+    .getByTestId("auxiliary-actions-menu")
+    .click();
+  await po.page.getByRole("menuitem", { name: "Themes" }).click();
+
+  await expect(po.page.getByTestId("theme-option-custom:1")).toHaveClass(
+    /bg-primary/,
+  );
+});

@@ -1,56 +1,6 @@
 import { test } from "./helpers/test_helper";
 import { expect } from "@playwright/test";
 
-test("themes management - create theme from chat input", async ({ po }) => {
-  await po.setUp();
-
-  // Open the auxiliary actions menu
-  await po.chatActions
-    .getHomeChatInputContainer()
-    .getByTestId("auxiliary-actions-menu")
-    .click();
-
-  // Hover over Themes submenu
-  await po.page.getByRole("menuitem", { name: "Themes" }).click();
-
-  // Click "New Theme" option
-  await po.page.getByRole("menuitem", { name: "New Theme" }).click();
-
-  // Wait for dialog to open
-  await expect(
-    po.page.getByRole("dialog").getByText("Create Custom Theme"),
-  ).toBeVisible();
-
-  // Switch to Manual tab (AI tab is now default)
-  await po.page.getByRole("tab", { name: "Manual Configuration" }).click();
-
-  // Fill in manual configuration form
-  await po.page.locator("#manual-name").fill("Chat Input Theme");
-  await po.page.locator("#manual-description").fill("Created from chat input");
-  await po.page
-    .locator("#manual-prompt")
-    .fill("Use dark mode with purple accents");
-
-  // Save the theme
-  await po.page.getByRole("button", { name: "Save Theme" }).click();
-
-  // Verify dialog closes
-  await expect(po.page.getByRole("dialog")).not.toBeVisible();
-
-  // Verify the newly created theme is auto-selected
-  // Re-open the menu to verify
-  await po.chatActions
-    .getHomeChatInputContainer()
-    .getByTestId("auxiliary-actions-menu")
-    .click();
-  await po.page.getByRole("menuitem", { name: "Themes" }).click();
-
-  // The custom theme should be visible and selected (has bg-primary class)
-  await expect(po.page.getByTestId("theme-option-custom:1")).toHaveClass(
-    /bg-primary/,
-  );
-});
-
 test("themes management - AI generator image upload limit", async ({ po }) => {
   await po.setUpOss();
 

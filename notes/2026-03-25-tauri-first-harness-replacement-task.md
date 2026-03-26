@@ -553,11 +553,11 @@ Replace the highest-value Electron-based desktop regression dependencies with Ta
    - remaining Electron fixture consumers
    - the final entrypoint cluster once the harness is no longer a blocker
 
-## Additional Verification On 2026-03-26: Themes CRUD Migrated To Tauri Regression
+## Additional Verification On 2026-03-26: Themes UI Flows Migrated To Tauri Regression
 
-1. The basic themes CRUD flow now has a Tauri-regression home in:
+1. The basic themes CRUD flow and the chat-input theme creation flow now have a Tauri-regression home in:
    - `e2e-tests/tauri-themes-management.spec.ts`
-2. The legacy Electron-backed file has been trimmed to the remaining generator and chat-input cases:
+2. The legacy Electron-backed file has been trimmed to the remaining generator-heavy cases:
    - `e2e-tests/themes_management.spec.ts`
 3. The Tauri browser harness needed a body-scoped assertion because the `Themes` heading is duplicated in shell and body DOM:
    - the stable signal is the body text `Leptos shell smoke route for themes.`
