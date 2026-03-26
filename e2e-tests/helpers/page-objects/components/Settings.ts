@@ -19,7 +19,7 @@ export class Settings {
   }
 
   async toggleLocalAgentMode() {
-    await this.page.getByRole("switch", { name: "Enable Agent v2" }).click();
+    await this.page.getByRole("switch", { name: "Enable Agent" }).click();
   }
 
   async toggleNativeGit() {
@@ -179,5 +179,4 @@ export class Settings {
     // Wait for the key to be saved
     await expect(this.page.getByText("test-api-key-12345")).toBeVisible();
   }
-
 }

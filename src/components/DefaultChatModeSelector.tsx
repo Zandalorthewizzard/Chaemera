@@ -1,5 +1,4 @@
 import { useSettings } from "@/hooks/useSettings";
-import { useFreeAgentQuota } from "@/hooks/useFreeAgentQuota";
 import {
   Select,
   SelectContent,
@@ -8,28 +7,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { ChatMode } from "@/lib/schemas";
-import { isDyadProEnabled, getEffectiveDefaultChatMode } from "@/lib/schemas";
+import { getEffectiveDefaultChatMode } from "@/lib/schemas";
 import { useTranslation } from "react-i18next";
 
 export function DefaultChatModeSelector() {
   const { settings, updateSettings, envVars } = useSettings();
-  const { isQuotaExceeded, isLoading: isQuotaLoading } = useFreeAgentQuota();
   const { t } = useTranslation("settings");
 
   if (!settings) {
     return null;
   }
 
-  const isProEnabled = isDyadProEnabled(settings);
-  // Wait for quota status to load before determining effective default
-  const freeAgentQuotaAvailable = !isQuotaLoading && !isQuotaExceeded;
-  const effectiveDefault = getEffectiveDefaultChatMode(
-    settings,
-    envVars,
-    freeAgentQuotaAvailable,
-  );
-  // Show Agent option if cloud access is enabled OR if free quota is available
-  const showAgentOption = isProEnabled || freeAgentQuotaAvailable;
+  const effectiveDefault = getEffectiveDefaultChatMode(settings, envVars);
 
   const handleDefaultChatModeChange = (value: ChatMode) => {
     updateSettings({ defaultChatMode: value });
@@ -67,18 +56,14 @@ export function DefaultChatModeSelector() {
             <SelectValue>{getModeDisplayName(effectiveDefault)}</SelectValue>
           </SelectTrigger>
           <SelectContent>
-            {showAgentOption && (
-              <SelectItem value="local-agent">
-                <div className="flex flex-col items-start">
-                  <span className="font-medium">Agent</span>
-                  <span className="text-xs text-muted-foreground">
-                    {isProEnabled
-                      ? "Better at bigger tasks"
-                      : "Daily limit: 5 messages"}
-                  </span>
-                </div>
-              </SelectItem>
-            )}
+            <SelectItem value="local-agent">
+              <div className="flex flex-col items-start">
+                <span className="font-medium">Agent</span>
+                <span className="text-xs text-muted-foreground">
+                  Use your configured AI provider
+                </span>
+              </div>
+            </SelectItem>
             <SelectItem value="build">
               <div className="flex flex-col items-start">
                 <span className="font-medium">Build</span>

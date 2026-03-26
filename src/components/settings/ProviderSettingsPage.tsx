@@ -3,22 +3,13 @@ import { useRouter } from "@tanstack/react-router";
 import { ArrowLeft, AlertTriangle } from "lucide-react";
 import { useSettings } from "@/hooks/useSettings";
 import { useLanguageModelProviders } from "@/hooks/useLanguageModelProviders";
-import { useQueryClient } from "@tanstack/react-query";
-import { queryKeys } from "@/lib/queryKeys";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import {} from "@/components/ui/accordion";
 
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { showError } from "@/lib/toast";
-import {
-  UserSettings,
-  AzureProviderSetting,
-  VertexProviderSetting,
-  hasDyadProKey,
-} from "@/lib/schemas";
+import { AzureProviderSetting, VertexProviderSetting } from "@/lib/schemas";
 
 import { ProviderSettingsHeader } from "./ProviderSettingsHeader";
 import { ApiKeyConfiguration } from "./ApiKeyConfiguration";
@@ -58,21 +49,14 @@ export function ProviderSettingsPage({ provider }: ProviderSettingsPageProps) {
   const supportsCustomModels =
     providerData?.type === "custom" || providerData?.type === "cloud";
 
-  const isDyad = provider === "auto";
-
   const [apiKeyInput, setApiKeyInput] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const router = useRouter();
-  const queryClient = useQueryClient();
 
-  // Use fetched data (or defaults for Dyad)
-  const providerDisplayName = isDyad
-    ? "Hosted AI"
-    : (providerData?.name ?? "Unknown Provider");
+  const providerDisplayName = providerData?.name ?? "Unknown Provider";
   const providerWebsiteUrl = providerData?.websiteUrl;
-  const hasFreeTier = isDyad ? false : providerData?.hasFreeTier;
-  const envVarName = isDyad ? undefined : providerData?.envVarName;
+  const envVarName = providerData?.envVarName;
 
   // Use provider ID (which is the 'provider' prop)
   const userApiKey = settings?.providerSettings?.[provider]?.apiKey?.value;
@@ -128,10 +112,7 @@ export function ProviderSettingsPage({ provider }: ProviderSettingsPageProps) {
     setIsSaving(true);
     setSaveError(null);
     try {
-      // Check if this is the first time user is setting up cloud-hosted access
-      const isNewCloudSetup = isDyad && settings && !hasDyadProKey(settings);
-
-      const settingsUpdate: Partial<UserSettings> = {
+      const settingsUpdate = {
         providerSettings: {
           ...settings?.providerSettings,
           [provider]: {
@@ -142,20 +123,8 @@ export function ProviderSettingsPage({ provider }: ProviderSettingsPageProps) {
           },
         },
       };
-      if (isDyad) {
-        settingsUpdate.enableDyadPro = true;
-        // Set default chat mode to local-agent on initial cloud setup
-        if (isNewCloudSetup) {
-          settingsUpdate.defaultChatMode = "local-agent";
-        }
-      }
       await updateSettings(settingsUpdate);
       setApiKeyInput(""); // Clear input on success
-
-      // Refetch user budget when cloud key is saved
-      if (isDyad) {
-        queryClient.invalidateQueries({ queryKey: queryKeys.userBudget.info });
-      }
     } catch (error: any) {
       console.error("Error saving API key:", error);
       setSaveError(error.message || "Failed to save API key.");
@@ -182,20 +151,6 @@ export function ProviderSettingsPage({ provider }: ProviderSettingsPageProps) {
     } catch (error: any) {
       console.error("Error deleting API key:", error);
       setSaveError(error.message || "Failed to delete API key.");
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  // --- Toggle cloud-hosted AI access ---
-  const handleToggleCloudAccess = async (enabled: boolean) => {
-    setIsSaving(true);
-    try {
-      await updateSettings({
-        enableDyadPro: enabled,
-      });
-    } catch (error: any) {
-      showError(`Error toggling cloud access: ${error}`);
     } finally {
       setIsSaving(false);
     }
@@ -254,7 +209,7 @@ export function ProviderSettingsPage({ provider }: ProviderSettingsPageProps) {
   }
 
   // Handle case where provider is not found (e.g., invalid ID in URL)
-  if (!providerData && !isDyad) {
+  if (!providerData) {
     return (
       <div className="min-h-screen px-8 py-4">
         <div className="max-w-4xl mx-auto">
@@ -289,9 +244,7 @@ export function ProviderSettingsPage({ provider }: ProviderSettingsPageProps) {
           providerDisplayName={providerDisplayName}
           isConfigured={isConfigured}
           isLoading={settingsLoading}
-          hasFreeTier={hasFreeTier}
           providerWebsiteUrl={providerWebsiteUrl}
-          isDyad={isDyad}
           onBackClick={() => router.history.back()}
         />
 
@@ -319,26 +272,8 @@ export function ProviderSettingsPage({ provider }: ProviderSettingsPageProps) {
             onApiKeyInputChange={setApiKeyInput}
             onSaveKey={handleSaveKey}
             onDeleteKey={handleDeleteKey}
-            isDyad={isDyad}
             updateSettings={updateSettings}
           />
-        )}
-
-        {isDyad && !settingsLoading && (
-          <div className="mt-6 flex items-center justify-between p-4 bg-(--background-lightest) rounded-lg border">
-            <div>
-              <h3 className="font-medium">Enable Cloud AI</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Toggle to enable hosted AI access
-              </p>
-            </div>
-            <Switch
-              aria-label="Enable Cloud AI"
-              checked={settings?.enableDyadPro}
-              onCheckedChange={handleToggleCloudAccess}
-              disabled={isSaving}
-            />
-          </div>
         )}
 
         {/* Conditionally render CustomModelsSection */}

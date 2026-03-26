@@ -37,7 +37,6 @@ import type { FileAttachment } from "@/ipc/types";
 import { NEON_TEMPLATE_IDS } from "@/shared/templates";
 import { neonTemplateHook } from "@/client_logic/template_hook";
 import { getEffectiveDefaultChatMode } from "@/lib/schemas";
-import { useFreeAgentQuota } from "@/hooks/useFreeAgentQuota";
 
 // Adding an export for attachments
 export interface HomeSubmitOptions {
@@ -51,7 +50,6 @@ export default function HomePage() {
   const search = useSearch({ from: "/" });
   const { refreshApps } = useLoadApps();
   const { settings, updateSettings, envVars } = useSettings();
-  const { isQuotaExceeded, isLoading: isQuotaLoading } = useFreeAgentQuota();
 
   const setIsPreviewOpen = useSetAtom(isPreviewOpenAtom);
   const { selectChat } = useSelectChat();
@@ -139,22 +137,19 @@ export default function HomePage() {
   }, [appId, navigate]);
 
   // Apply default chat mode when navigating to home page
-  // Wait for quota status to load to avoid race condition where we default to Basic Agent
-  // before knowing if quota is actually exceeded
   const hasAppliedDefaultChatMode = useRef(false);
   useEffect(() => {
-    if (settings && !hasAppliedDefaultChatMode.current && !isQuotaLoading) {
+    if (settings && !hasAppliedDefaultChatMode.current) {
       hasAppliedDefaultChatMode.current = true;
       const effectiveDefaultMode = getEffectiveDefaultChatMode(
         settings,
         envVars,
-        !isQuotaExceeded,
       );
       if (settings.selectedChatMode !== effectiveDefaultMode) {
         updateSettings({ selectedChatMode: effectiveDefaultMode });
       }
     }
-  }, [settings, updateSettings, isQuotaExceeded, isQuotaLoading, envVars]);
+  }, [settings, updateSettings, envVars]);
 
   const handleSubmit = async (options?: HomeSubmitOptions) => {
     const attachments = options?.attachments || [];

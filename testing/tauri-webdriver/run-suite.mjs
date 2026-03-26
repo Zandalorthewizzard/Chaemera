@@ -32,6 +32,16 @@ const runtimeRuns = [
     setup: "./specs/import-with-ai-rules.setup.mjs",
   },
   {
+    label: "copy chat",
+    spec: "./specs/copy-chat.e2e.mjs",
+    setup: "./specs/copy-chat.setup.mjs",
+  },
+  {
+    label: "agent quota foundation",
+    spec: "./specs/free-agent-quota.e2e.mjs",
+    setup: "./specs/free-agent-quota.setup.mjs",
+  },
+  {
     label: "version integrity",
     spec: "./specs/version-integrity.e2e.mjs",
     setup: "./specs/version-integrity.setup.mjs",

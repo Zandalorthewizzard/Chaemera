@@ -2,23 +2,13 @@ import { useAtom, useAtomValue } from "jotai";
 import { selectedAppIdAtom } from "@/atoms/appAtoms";
 import { useLoadApps } from "@/hooks/useLoadApps";
 import { useRouter } from "@tanstack/react-router";
-import { useSettings } from "@/hooks/useSettings";
 import { Button } from "@/components/ui/button";
 // @ts-ignore
 import logo from "../../assets/logo.svg";
-import { providerSettingsRoute } from "@/routes/settings/providers/$provider";
-import { cn } from "@/lib/utils";
 import { useCallback } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { ipc } from "@/ipc/types";
 import { useSystemPlatform } from "@/hooks/useSystemPlatform";
-import { useUserBudgetInfo } from "@/hooks/useUserBudgetInfo";
-import type { UserBudgetInfo } from "@/ipc/types";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { ChatTabs } from "@/components/chat/ChatTabs";
 import { selectedChatIdAtom } from "@/atoms/chatAtoms";
 import { Wrench, Cog, Trash2 } from "lucide-react";
@@ -38,7 +28,6 @@ export const TitleBar = () => {
   const selectedChatId = useAtomValue(selectedChatIdAtom);
   const { apps } = useLoadApps();
   const { navigate } = useRouter();
-  const { settings } = useSettings();
   const platform = useSystemPlatform();
   const showWindowControls = platform !== null && platform !== "darwin";
 
@@ -53,9 +42,6 @@ export const TitleBar = () => {
       navigate({ to: "/app-details", search: { appId: selectedApp.id } });
     }
   };
-
-  const isDyadPro = !!settings?.providerSettings?.auto?.apiKey?.value;
-  const isDyadProEnabled = Boolean(settings?.enableDyadPro);
 
   return (
     <>
@@ -74,8 +60,6 @@ export const TitleBar = () => {
         >
           {displayText}
         </Button>
-        {isDyadPro && <DyadProButton isDyadProEnabled={isDyadProEnabled} />}
-
         <div className="flex-1 min-w-0 overflow-hidden no-app-region-drag">
           <ChatTabs selectedChatId={selectedChatId} />
         </div>
@@ -232,62 +216,5 @@ function TitleBarActions() {
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
-  );
-}
-
-export function DyadProButton({
-  isDyadProEnabled,
-}: {
-  isDyadProEnabled: boolean;
-}) {
-  const { navigate } = useRouter();
-  const { userBudget } = useUserBudgetInfo();
-  return (
-    <Button
-      data-testid="title-bar-dyad-pro-button"
-      onClick={() => {
-        navigate({
-          to: providerSettingsRoute.id,
-          params: { provider: "auto" },
-        });
-      }}
-      variant="outline"
-      className={cn(
-        "hidden @2xl:block ml-1 no-app-region-drag h-7 bg-indigo-600 text-white dark:bg-indigo-600 dark:text-white text-xs px-2 pt-1 pb-1",
-        !isDyadProEnabled && "bg-zinc-600 dark:bg-zinc-600",
-      )}
-      size="sm"
-    >
-      {isDyadProEnabled
-        ? userBudget?.isTrial
-          ? "Cloud (trial)"
-          : "Cloud AI"
-        : "Cloud AI (off)"}
-      {userBudget && isDyadProEnabled && (
-        <AICreditStatus userBudget={userBudget} />
-      )}
-    </Button>
-  );
-}
-
-export function AICreditStatus({
-  userBudget,
-}: {
-  userBudget: NonNullable<UserBudgetInfo>;
-}) {
-  const remaining = Math.round(
-    userBudget.totalCredits - userBudget.usedCredits,
-  );
-  return (
-    <Tooltip>
-      <TooltipTrigger>
-        <div className="text-xs pl-1 mt-0.5">{remaining} credits</div>
-      </TooltipTrigger>
-      <TooltipContent>
-        <div>
-          <p>Note: there is a slight delay in updating the credit status.</p>
-        </div>
-      </TooltipContent>
-    </Tooltip>
   );
 }

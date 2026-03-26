@@ -143,8 +143,6 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          {/* Agent v2 Permissions */}
-
           <div
             id={SECTION_IDS.agentPermissions}
             className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6"

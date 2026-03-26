@@ -99,8 +99,8 @@ export class ChatActions {
       build: "Build Generate and edit code",
       ask: "Ask Ask",
       agent: "Build with MCP",
-      "local-agent": "Agent v2",
-      "basic-agent": "Basic Agent", // For free users
+      "local-agent": "Agent",
+      "basic-agent": "Agent",
       plan: "Plan.*Design before you build",
     };
     const optionName = mapping[mode];

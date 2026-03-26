@@ -3,7 +3,6 @@ import {
   ArrowUp,
   Circle,
   ExternalLink,
-  GiftIcon,
   KeyRound,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -20,22 +19,11 @@ interface ProviderSettingsHeaderProps {
   providerDisplayName: string;
   isConfigured: boolean;
   isLoading: boolean;
-  hasFreeTier?: boolean;
   providerWebsiteUrl?: string;
-  isDyad: boolean;
   onBackClick: () => void;
 }
 
-function getKeyButtonText({
-  isConfigured,
-  isDyad,
-}: {
-  isConfigured: boolean;
-  isDyad: boolean;
-}) {
-  if (isDyad) {
-    return isConfigured ? "Manage Cloud AI Access" : "Setup Cloud AI Access";
-  }
+function getKeyButtonText({ isConfigured }: { isConfigured: boolean }) {
   return isConfigured ? "Manage API Keys" : "Setup API Key";
 }
 
@@ -43,9 +31,7 @@ export function ProviderSettingsHeader({
   providerDisplayName,
   isConfigured,
   isLoading,
-  hasFreeTier,
   providerWebsiteUrl,
-  isDyad,
   onBackClick,
 }: ProviderSettingsHeaderProps) {
   const handleGetApiKeyClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -61,7 +47,7 @@ export function ProviderSettingsHeader({
       className="mb-4 cursor-pointer py-5 w-full ring-4 ring-primary/60 shadow-lg shadow-primary/30 border-primary/60"
     >
       <KeyRound className="mr-2 h-4 w-4" />
-      {getKeyButtonText({ isConfigured, isDyad })}
+      {getKeyButtonText({ isConfigured })}
       <ExternalLink className="ml-2 h-4 w-4" />
     </Button>
   );
@@ -102,12 +88,6 @@ export function ProviderSettingsHeader({
                 : "Not Setup"}
           </span>
         </div>
-        {!isLoading && hasFreeTier && (
-          <span className="text-blue-600 mt-2 dark:text-blue-400 text-sm font-medium bg-blue-100 dark:bg-blue-900/30 px-2 py-1 rounded-full inline-flex items-center">
-            <GiftIcon className="w-4 h-4 mr-1" />
-            Free tier available
-          </span>
-        )}
       </div>
 
       {providerWebsiteUrl &&

@@ -428,6 +428,15 @@ export function hasDyadProKey(settings: UserSettings): boolean {
 }
 
 /**
+ * Hosted agent access is intentionally disabled in the current Chaemera
+ * release line. The underlying entitlement layer stays in place for a future
+ * optional subscription model.
+ */
+export function hasHostedAgentAccess(_settings: UserSettings): boolean {
+  return false;
+}
+
+/**
  * Gets the effective default chat mode based on settings, cloud access, and free quota availability.
  * - If defaultChatMode is set and valid for the user's cloud access status, use it
  * - If defaultChatMode is "local-agent" but user does not have cloud access:
@@ -441,9 +450,7 @@ export function hasDyadProKey(settings: UserSettings): boolean {
 export function getEffectiveDefaultChatMode(
   settings: UserSettings,
   envVars: Record<string, string | undefined>,
-  freeAgentQuotaAvailable?: boolean,
 ): ChatMode {
-  const isPro = isDyadProEnabled(settings);
   // We are checking that OpenAI or Anthropic is setup, which are the first two
   // choices for the Auto model selection.
   //
@@ -453,18 +460,13 @@ export function getEffectiveDefaultChatMode(
   const hasPaidProviderSetup = isOpenAIOrAnthropicSetup(settings, envVars);
 
   if (settings.defaultChatMode) {
-    // "local-agent" requires either cloud access OR (available free quota AND provider setup)
+    // "local-agent" requires a configured provider.
     if (settings.defaultChatMode === "local-agent") {
-      if (isPro) return "local-agent";
-      if (freeAgentQuotaAvailable && hasPaidProviderSetup) return "local-agent";
-      return "build";
+      return hasPaidProviderSetup ? "local-agent" : "build";
     }
     return settings.defaultChatMode;
   }
 
-  // No explicit default set
-  if (isPro) return "local-agent";
-  if (freeAgentQuotaAvailable && hasPaidProviderSetup) return "local-agent";
   return "build";
 }
 
@@ -476,7 +478,8 @@ export function getEffectiveDefaultChatMode(
  */
 export function isBasicAgentMode(settings: UserSettings): boolean {
   return (
-    !isDyadProEnabled(settings) && settings.selectedChatMode === "local-agent"
+    hasHostedAgentAccess(settings) &&
+    settings.selectedChatMode === "local-agent"
   );
 }
 

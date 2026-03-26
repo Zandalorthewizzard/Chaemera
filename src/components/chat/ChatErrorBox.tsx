@@ -17,12 +17,10 @@ import {
 export function ChatErrorBox({
   onDismiss,
   error,
-  isDyadProEnabled,
   onStartNewChat,
 }: {
   onDismiss: () => void;
   error: string;
-  isDyadProEnabled: boolean;
   onStartNewChat?: () => void;
 }) {
   if (error.includes("doesn't have a free quota tier")) {
@@ -42,15 +40,11 @@ export function ChatErrorBox({
     );
   }
 
-  // Important, this needs to come after the "free quota tier" check
-  // because it also includes this URL in the error message
-  //
-  // Keep a dedicated path for free-tier rate-limit style errors.
+  // Keep a dedicated path for generic rate-limit style errors.
   if (
-    !isDyadProEnabled &&
-    (error.includes("Resource has been exhausted") ||
-      error.includes("https://ai.google.dev/gemini-api/docs/rate-limits") ||
-      error.includes("Provider returned error"))
+    error.includes("Resource has been exhausted") ||
+    error.includes("https://ai.google.dev/gemini-api/docs/rate-limits") ||
+    error.includes("Provider returned error")
   ) {
     return (
       <ChatErrorContainer onDismiss={onDismiss}>
@@ -74,21 +68,6 @@ export function ChatErrorBox({
       </ChatInfoContainer>
     );
   }
-  if (isDyadProEnabled && error.includes("ExceededBudget:")) {
-    return (
-      <ChatInfoContainer onDismiss={onDismiss}>
-        <span>
-          You have used all available AI credits for this billing period.{" "}
-          <ExternalLink
-            href="https://academy.dyad.sh/settings"
-            variant="primary"
-          >
-            Manage credits
-          </ExternalLink>
-        </span>
-      </ChatInfoContainer>
-    );
-  }
   // This is a very long list of model fallbacks that clutters the error message.
   //
   // We are matching "Fallbacks=[{" and not just "Fallbacks=" because the fallback
@@ -97,15 +76,6 @@ export function ChatErrorBox({
   const fallbackPrefix = "Fallbacks=[{";
   if (error.includes(fallbackPrefix)) {
     error = error.split(fallbackPrefix)[0];
-  }
-  // Handle FREE_AGENT_QUOTA_EXCEEDED error (Basic Agent mode quota exceeded)
-  if (error.includes("FREE_AGENT_QUOTA_EXCEEDED")) {
-    return (
-      <ChatErrorContainer onDismiss={onDismiss}>
-        You have used all 5 free Agent messages for today. Please switch to
-        Build mode or wait for the quota reset.
-      </ChatErrorContainer>
-    );
   }
 
   return (
