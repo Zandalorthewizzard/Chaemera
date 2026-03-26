@@ -316,6 +316,19 @@ Related gate note:
 - `src/ipc/runtime/bootstrap_tauri_core_bridge.ts`
 - `src-tauri/capabilities/default.json`
 
+## Current Runtime-Migration Note
+
+1. The next safe migration checkpoint is no longer `settings` or `home` coverage.
+2. The active blocker is the first real chat-driven runtime pilot:
+   - `testing/tauri-webdriver/specs/copy-chat.e2e.mjs`
+3. What is already proven there:
+   - fake LLM boot now exists in the runtime harness
+   - import path setup works
+   - custom test provider/model setup through the Tauri bridge works
+4. What is not yet proven:
+   - reliable post-import chat/session state for sending a prompt and reaching assistant-copy UI
+5. Until that pilot passes, do not treat broad import-and-chat Electron specs as ready for deletion.
+
 ## Evidence Pointers
 
 1. Audit script:
@@ -344,3 +357,16 @@ Related gate note:
    - `src/ipc/runtime/bootstrap_tauri_core_bridge.ts`
    - `src/__tests__/tauri_wave_c_transport.test.ts`
    - `src-tauri/capabilities/default.json`
+
+## Additional Verification On 2026-03-26: Copy-Chat Runtime Pilot
+
+1. The runtime copy-chat path is now proven in the real Tauri webdriver lane.
+2. The working flow is:
+   - import the `minimal-with-ai-rules` fixture
+   - wait for the imported `/chat?id=...` route and app selection
+   - type the canned `[dyad-qa=write]` prompt into the Lexical editor with real key events
+   - click `Send message`
+   - wait for the assistant copy button
+   - verify the copied output is markdown-converted and does not contain raw dyad tags
+3. A direct `chat:stream` invoke is not sufficient for this UI test because the renderer-side stream client callbacks are what populate the message store.
+4. This means the next safe chat migration work should stay aligned with the product UI path, not bypass it with direct backend invocation.

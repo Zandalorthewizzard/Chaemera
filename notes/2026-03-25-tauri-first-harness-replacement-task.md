@@ -490,3 +490,48 @@ Replace the highest-value Electron-based desktop regression dependencies with Ta
 6. Treat the performance-monitor, app-storage, import-with-AI-rules, and version-integrity slices as complete runtime templates.
 7. Focus next on removing the legacy Electron harness wiring rather than migrating another spec.
 8. Use the current real `tauri-runtime` suite as the replacement confidence base for deleting the Electron harness and entrypoint cluster.
+
+## Additional Investigation On 2026-03-25: Copy-Chat Runtime Pilot Is Partially Landed But Still Blocked
+
+1. A new runtime pilot scaffold was added for `copy_chat`:
+   - `testing/tauri-webdriver/specs/copy-chat.e2e.mjs`
+   - `testing/tauri-webdriver/specs/copy-chat.setup.mjs`
+2. The real `tauri-runtime` harness now also starts the existing fake LLM server before launching the desktop app:
+   - `testing/tauri-webdriver/wdio.conf.mjs`
+   - this makes the runtime lane capable of future chat-driven coverage instead of only filesystem/versioning checks
+3. The browser-backed `tauri-regression` attempt for `copy_chat` was intentionally rolled back:
+   - `e2e-tests/copy_chat.spec.ts` was restored unchanged
+   - reason: the first failure there was not product parity, but a bad fit between browser-backed route shells and chat-driven copy coverage
+4. Two concrete technical findings were confirmed during the runtime pilot:
+   - `src/routes/chat.tsx` still wraps the route in `LeptosRouteHost`, but `src/components/leptos/LeptosRouteHost.tsx` also renders the React body underneath the shell
+   - therefore `/chat` in Tauri is not a pure shell-only dead end; chat-driven runtime coverage is still the right target
+5. The current unresolved blocker is narrower than before:
+   - import works
+   - custom runtime test model setup through the Tauri bridge works
+   - the fake LLM server starts successfully
+   - but the first copied-message runtime flow still times out before a stable assistant-copy assertion is reached
+6. A useful negative signal was also confirmed:
+   - during the failing runtime pilot, the fake LLM server never logged a chat request
+   - this suggests the remaining gap is in chat/session/input state after import, not in fake LLM bootstrapping itself
+7. Another helper-level issue was fixed along the way:
+   - the runtime `clickButton()` helper originally matched only visible button text
+   - it now also matches `aria-label`, which is required for icon-only controls like `Send message`
+8. The next debugging move should not be another broad migration attempt.
+   - first inspect post-import chat/session state via the Tauri bridge (`get-chats`, `create-chat`, selected route/search state)
+   - then target the correct full `chat-input-container` rather than whichever Lexical editor appears first in the DOM
+
+## Additional Verification On 2026-03-26: Copy-Chat Runtime Pilot Passed
+
+1. The `copy-chat` runtime pilot now passes in the real Tauri webdriver lane.
+2. The working path is:
+   - import the `minimal-with-ai-rules` fixture
+   - wait for `/chat?id=...` and the imported app selection
+   - type the canned `[dyad-qa=write]` prompt into the actual Lexical editor with real key events
+   - click the real `Send message` button
+   - wait for the assistant copy button
+   - verify the copied markdown omits raw `<dyad-write>` tags
+3. Direct `chat:stream` invoke alone was not enough for this test because it bypasses the renderer-side stream client callbacks that populate the chat message store.
+4. Real keyboard input into Lexical is sufficient here and keeps the test aligned with the product path.
+5. This pilot passed with:
+   - `npx oxlint testing/tauri-webdriver/specs/copy-chat.e2e.mjs`
+   - `CHAEMERA_TAURI_RUNTIME_SETUP=./specs/copy-chat.setup.mjs npx wdio run wdio.conf.mjs --spec ./specs/copy-chat.e2e.mjs`
