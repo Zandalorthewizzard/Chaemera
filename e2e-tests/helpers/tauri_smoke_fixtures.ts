@@ -91,6 +91,7 @@ const tauriCommandToChannel = {
   chat_count_tokens: "chat:count-tokens",
   chat_add_dep: "chat:add-dep",
   nodejs_status: "nodejs-status",
+  test_set_node_mock: "test:set-node-mock",
   select_node_folder: "select-node-folder",
   select_app_folder: "select-app-folder",
   select_app_location: "select-app-location",
@@ -624,6 +625,15 @@ export const test = base.extend<{
           invocations: [] as Array<{ channel: string; payload: unknown }>,
           nextSelectedAppFolder: null as TauriSmokeSelectedAppFolder | null,
           nextSelectedAppLocation: null as TauriSmokeSelectedAppLocation | null,
+          nodeMockInstalled: (() => {
+            const raw = window.sessionStorage.getItem(
+              "chaemera-tauri-smoke-node-mock-installed",
+            );
+            if (raw === null) {
+              return null;
+            }
+            return raw === "true";
+          })() as boolean | null,
         };
         const appFolderSelectionsByPath = new Map<
           string,
@@ -664,6 +674,29 @@ export const test = base.extend<{
           files: globPath.trim() ? 1 : 0,
           tokens: globPath.trim() ? Math.max(16, globPath.length * 4) : 0,
         });
+
+        const getNodeStatus = () => {
+          const nodeInstalled = state.nodeMockInstalled !== false;
+          return {
+            nodeVersion: nodeInstalled ? "v24.0.0" : null,
+            pnpmVersion: nodeInstalled ? "9.0.0" : null,
+            nodeDownloadUrl: "https://nodejs.org/",
+          };
+        };
+
+        const persistNodeMockInstalled = (installed: boolean | null) => {
+          state.nodeMockInstalled = installed;
+          if (installed === null) {
+            window.sessionStorage.removeItem(
+              "chaemera-tauri-smoke-node-mock-installed",
+            );
+            return;
+          }
+          window.sessionStorage.setItem(
+            "chaemera-tauri-smoke-node-mock-installed",
+            installed ? "true" : "false",
+          );
+        };
 
         const on = (channel: string, listener: (payload: unknown) => void) => {
           const group = listeners.get(channel) ?? new Set();
@@ -761,11 +794,14 @@ export const test = base.extend<{
               return { version: "0.37.0-beta.2-tauri-smoke" };
             case "get-system-platform":
               return "tauri-smoke";
-            case "get-system-debug-info":
+            case "get-system-debug-info": {
+              const nodeStatus = getNodeStatus();
               return {
-                nodeVersion: "v24.0.0",
-                pnpmVersion: "9.0.0",
-                nodePath: "C:/Program Files/nodejs/node.exe",
+                nodeVersion: nodeStatus.nodeVersion,
+                pnpmVersion: nodeStatus.pnpmVersion,
+                nodePath: nodeStatus.nodeVersion
+                  ? "C:/Program Files/nodejs/node.exe"
+                  : null,
                 telemetryId: "tauri-smoke-user",
                 telemetryConsent: "unset",
                 telemetryUrl: "https://us.i.posthog.com",
@@ -775,6 +811,7 @@ export const test = base.extend<{
                 logs: "",
                 selectedLanguageModel: "auto:auto",
               };
+            }
             case "get-session-debug-bundle": {
               const chatId =
                 typeof payload === "object" &&
@@ -787,6 +824,7 @@ export const test = base.extend<{
               if (!chat || !app) {
                 throw new Error("Smoke debug bundle state is unavailable");
               }
+              const nodeStatus = getNodeStatus();
               return {
                 schemaVersion: 2,
                 exportedAt: "2026-03-01T00:05:00Z",
@@ -794,9 +832,11 @@ export const test = base.extend<{
                   dyadVersion: "0.37.0-beta.2-tauri-smoke",
                   platform: "tauri-smoke",
                   architecture: "x64",
-                  nodeVersion: "v24.0.0",
-                  pnpmVersion: "9.0.0",
-                  nodePath: "C:/Program Files/nodejs/node.exe",
+                  nodeVersion: nodeStatus.nodeVersion,
+                  pnpmVersion: nodeStatus.pnpmVersion,
+                  nodePath: nodeStatus.nodeVersion
+                    ? "C:/Program Files/nodejs/node.exe"
+                    : null,
                   electronVersion: "tauri-2",
                   telemetryId: "tauri-smoke-user",
                 },
@@ -2619,12 +2659,19 @@ export const test = base.extend<{
               return;
             case "does-release-note-exist":
               return { exists: false };
+            case "test:set-node-mock": {
+              const installed =
+                typeof payload === "object" &&
+                payload !== null &&
+                "installed" in payload
+                  ? ((payload as { installed?: boolean | null }).installed ??
+                    null)
+                  : null;
+              persistNodeMockInstalled(installed);
+              return;
+            }
             case "nodejs-status":
-              return {
-                nodeVersion: "v24.0.0",
-                pnpmVersion: "9.0.0",
-                nodeDownloadUrl: "https://nodejs.org/",
-              };
+              return getNodeStatus();
             case "select-node-folder":
               return {
                 path: "C:/Program Files/nodejs",

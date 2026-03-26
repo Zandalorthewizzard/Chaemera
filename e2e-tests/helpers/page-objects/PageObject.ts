@@ -472,9 +472,32 @@ export class PageObject {
    */
   async setNodeMock(installed: boolean | null) {
     await this.page.evaluate(async (installed) => {
-      await (window as any).electron.ipcRenderer.invoke("test:set-node-mock", {
-        installed,
-      });
+      const win = window as Window & {
+        electron?: {
+          ipcRenderer?: {
+            invoke: (channel: string, payload: unknown) => Promise<unknown>;
+          };
+        };
+        __CHAEMERA_TAURI_CORE__?: {
+          invoke: (channel: string, payload: unknown) => Promise<unknown>;
+        };
+      };
+
+      if (win.__CHAEMERA_TAURI_CORE__?.invoke) {
+        await win.__CHAEMERA_TAURI_CORE__.invoke("test:set-node-mock", {
+          installed,
+        });
+        return;
+      }
+
+      if (win.electron?.ipcRenderer?.invoke) {
+        await win.electron.ipcRenderer.invoke("test:set-node-mock", {
+          installed,
+        });
+        return;
+      }
+
+      throw new Error("No node mock transport is available.");
     }, installed);
   }
 }
