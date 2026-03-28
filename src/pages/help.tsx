@@ -10,14 +10,15 @@ export default function HelpPage() {
     <LeptosRouteHost routeId="help">
       <div className="mx-auto max-w-5xl px-8 py-6">
         <div className="rounded-2xl border border-border bg-(--background-lightest) p-6">
-          <h2 className="text-xl font-semibold">Legacy Help Tools</h2>
+          <h2 className="text-xl font-semibold">Support Tools</h2>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-            Advanced debug bundle export and issue-reporting tools still live in
-            the React compatibility layer during the first Leptos cut-in.
+            Advanced debug bundle export and issue-reporting tools live here
+            while the first Leptos cut-in still uses the React compatibility
+            layer.
           </p>
           <div className="mt-4">
             <Button onClick={() => setIsLegacyHelpOpen(true)}>
-              Open Legacy Help Tools
+              Open Support Tools
             </Button>
           </div>
         </div>
