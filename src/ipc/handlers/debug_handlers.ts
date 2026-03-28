@@ -1,4 +1,3 @@
-import { BrowserWindow, clipboard } from "electron";
 import { platform, arch } from "os";
 import { readSettings } from "../../main/settings";
 import { createTypedHandler } from "./base";
@@ -446,18 +445,4 @@ export function registerDebugHandlers() {
   });
 
   console.log("Registered debug IPC handlers");
-
-  createTypedHandler(systemContracts.takeScreenshot, async () => {
-    const win = BrowserWindow.getFocusedWindow();
-    if (!win) throw new Error("No focused window to capture");
-
-    // Capture the window's current contents as a NativeImage
-    const image = await win.capturePage();
-    // Validate image
-    if (!image || image.isEmpty()) {
-      throw new Error("Failed to capture screenshot");
-    }
-    // Write the image to the clipboard
-    clipboard.writeImage(image);
-  });
 }
