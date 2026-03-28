@@ -30,7 +30,7 @@ import fixPath from "fix-path";
 
 import killPort from "kill-port";
 import util from "util";
-import log from "electron-log";
+import { appLog as log } from "@/lib/app_logger";
 import {
   deploySupabaseFunction,
   getSupabaseProjectName,
@@ -762,7 +762,7 @@ async function searchAppFilesWithRipgrep({
 }
 
 export function registerAppHandlers() {
-  createTypedHandler(systemContracts.restartDyad, async () => {
+  createTypedHandler(systemContracts.restartDesktop, async () => {
     app.relaunch();
     app.quit();
   });

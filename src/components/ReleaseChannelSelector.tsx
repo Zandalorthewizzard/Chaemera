@@ -42,7 +42,7 @@ export function ReleaseChannelSelector() {
         action: {
           label: "Restart Chaemera",
           onClick: () => {
-            ipc.system.restartDyad();
+            ipc.system.restartDesktop();
           },
         },
       });

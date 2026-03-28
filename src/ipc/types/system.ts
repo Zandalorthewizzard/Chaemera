@@ -233,8 +233,8 @@ export const systemContracts = {
   }),
 
   // Restart
-  restartDyad: defineContract({
-    channel: "restart-dyad",
+  restartDesktop: defineContract({
+    channel: "restart-desktop",
     input: z.void(),
     output: z.void(),
   }),
