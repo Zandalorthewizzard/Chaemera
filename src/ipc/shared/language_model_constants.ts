@@ -537,9 +537,9 @@ export const CLOUD_PROVIDERS: Record<
     gatewayPrefix: "openrouter/",
   },
   auto: {
-    displayName: "Hosted",
-    websiteUrl: "https://academy.dyad.sh/subscription",
-    gatewayPrefix: "dyad/",
+    displayName: "Cloud AI",
+    websiteUrl: "https://example.invalid/cloud-ai",
+    gatewayPrefix: "cloud/",
   },
   azure: {
     displayName: "Azure OpenAI",

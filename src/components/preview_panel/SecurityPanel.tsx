@@ -223,6 +223,7 @@ function SecurityHeader({
 }) {
   const [isButtonVisible, setIsButtonVisible] = useState(false);
   const [shouldRender, setShouldRender] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (selectedCount > 0) {
@@ -254,11 +255,7 @@ function SecurityHeader({
             <p>
               <a
                 className="text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
-                onClick={() =>
-                  ipc.system.openExternalUrl(
-                    "https://www.dyad.sh/docs/guides/security-review",
-                  )
-                }
+                onClick={() => navigate({ to: "/help" })}
               >
                 Open Security Review docs
               </a>

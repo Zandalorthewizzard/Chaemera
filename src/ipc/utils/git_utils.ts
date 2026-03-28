@@ -11,7 +11,7 @@ import { promises as fsPromises } from "node:fs";
 import pathModule from "node:path";
 import { platform } from "node:os";
 import { readSettings } from "../../main/settings";
-import log from "electron-log";
+import { appLog as log } from "@/lib/app_logger";
 import { normalizePath } from "../../../shared/normalizePath";
 import type { UncommittedFile, UncommittedFileStatus } from "@/ipc/types";
 const logger = log.scope("git_utils");
@@ -21,7 +21,6 @@ const logger = log.scope("git_utils");
  * Filters out WSL-related PATH entries that can cause WSL interop issues.
  * On non-Windows platforms, returns undefined (use default environment).
  *
- * Issue: https://github.com/dyad-sh/dyad/issues/2194
  * When WSL is installed on Windows, the PATH can contain entries that cause
  * git commands to be intercepted by WSL's relay system, resulting in errors
  * like "execvpe(/bin/bash) failed: No such file or directory".

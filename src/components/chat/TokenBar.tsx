@@ -16,7 +16,7 @@ import {
 import { chatInputValueAtom } from "@/atoms/chatAtoms";
 import { useAtom } from "jotai";
 import { useSettings } from "@/hooks/useSettings";
-import { ipc } from "@/ipc/types";
+import { useNavigate } from "@tanstack/react-router";
 
 interface TokenBarProps {
   chatId?: number;
@@ -25,6 +25,7 @@ interface TokenBarProps {
 export function TokenBar({ chatId }: TokenBarProps) {
   const [inputValue] = useAtom(chatInputValueAtom);
   const { settings } = useSettings();
+  const navigate = useNavigate();
   const { result, error } = useCountTokens(chatId ?? null, inputValue);
 
   if (!chatId || !result) {
@@ -129,16 +130,11 @@ export function TokenBar({ chatId }: TokenBarProps) {
       {error && (
         <div className="text-red-500 text-xs mt-1">Failed to count tokens</div>
       )}
-      {(!settings?.enableProSmartFilesContextMode ||
-        !settings?.enableCloudAI) && (
+      {!settings?.enableProSmartFilesContextMode && (
         <div className="text-xs text-center text-muted-foreground mt-2">
           Optimize token usage with{" "}
           <a
-            onClick={() =>
-              ipc.system.openExternalUrl(
-                "https://www.dyad.sh/docs/guides/ai-models/context-management",
-              )
-            }
+            onClick={() => navigate({ to: "/help" })}
             className="text-blue-500 dark:text-blue-400 cursor-pointer hover:underline"
           >
             context management guidance

@@ -28,6 +28,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLoadApp } from "@/hooks/useLoadApp";
 import { useDeepLink } from "@/contexts/DeepLinkContext";
+import { useNavigate } from "@tanstack/react-router";
 
 // @ts-ignore
 import supabaseLogoLight from "../../assets/supabase/supabase-logo-wordmark--light.svg";
@@ -55,6 +56,7 @@ export function SupabaseConnector({ appId }: { appId: number }) {
   const { app, refreshApp } = useLoadApp(appId);
   const { lastDeepLink, clearLastDeepLink } = useDeepLink();
   const { isDarkMode } = useTheme();
+  const navigate = useNavigate();
 
   // Check if there are any connected organizations
   const isConnected = isSupabaseConnected(settings);
@@ -150,9 +152,7 @@ export function SupabaseConnector({ appId }: { appId: number }) {
         fakeProjectId: "fake-project-id",
       });
     } else {
-      await ipc.system.openExternalUrl(
-        "https://supabase-oauth.dyad.sh/api/connect-supabase/login",
-      );
+      navigate({ to: "/help" });
     }
   };
 

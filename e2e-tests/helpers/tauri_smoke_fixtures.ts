@@ -405,9 +405,9 @@ export const test = base.extend<{
             "auto",
             {
               id: "auto",
-              name: "Dyad",
-              websiteUrl: "https://academy.dyad.sh/subscription",
-              gatewayPrefix: "dyad/",
+              name: "Cloud AI",
+              websiteUrl: "https://example.invalid/cloud-ai",
+              gatewayPrefix: "cloud/",
               type: "cloud",
             },
           ],
@@ -2272,8 +2272,7 @@ export const test = base.extend<{
                   title: "Enable select component to edit",
                   description:
                     "Installs the component tagger Vite plugin and its dependencies.",
-                  manualUpgradeUrl:
-                    "https://dyad.sh/docs/upgrades/select-component",
+                  manualUpgradeUrl: "https://example.invalid/help",
                   isNeeded: true,
                 },
                 {
@@ -2281,8 +2280,7 @@ export const test = base.extend<{
                   title: "Upgrade to hybrid mobile app with Capacitor",
                   description:
                     "Adds Capacitor so the app can run on iOS and Android in addition to the web.",
-                  manualUpgradeUrl:
-                    "https://dyad.sh/docs/guides/mobile-app#upgrade-your-app",
+                  manualUpgradeUrl: "https://example.invalid/help",
                   isNeeded: true,
                 },
               ];
@@ -2585,7 +2583,7 @@ export const test = base.extend<{
               };
               emit("deep-link-received", {
                 type: "supabase-oauth-return",
-                url: "https://supabase-oauth.dyad.sh/api/connect-supabase/login",
+                url: "https://example.invalid/integrations/supabase/login",
               });
               return;
             }
@@ -2667,7 +2665,7 @@ export const test = base.extend<{
               };
               emit("deep-link-received", {
                 type: "neon-oauth-return",
-                url: "https://oauth.dyad.sh/api/integrations/neon/login",
+                url: "https://example.invalid/integrations/neon/login",
               });
               return;
             case "does-release-note-exist":

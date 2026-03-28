@@ -1,4 +1,3 @@
-import { ipc } from "@/ipc/types";
 import React from "react";
 
 // Types for the message system
@@ -29,20 +28,21 @@ export function Message({ spans }: MessageConfig) {
           if (span.type === "text") {
             return <span key={index}>{span.content}</span>;
           } else if (span.type === "link") {
+            if (!span.action) {
+              return (
+                <span key={index} className="text-blue-600 underline">
+                  {span.content}
+                </span>
+              );
+            }
             return (
-              <a
+              <button
                 key={index}
-                onClick={() => {
-                  if (span.action) {
-                    span.action();
-                  } else if (span.url) {
-                    ipc.system.openExternalUrl(span.url);
-                  }
-                }}
+                onClick={span.action}
                 className="text-blue-600 hover:text-blue-800 underline cursor-pointer"
               >
                 {span.content}
-              </a>
+              </button>
             );
           }
           return null;
@@ -59,7 +59,6 @@ export const TURBO_EDITS_PROMO_MESSAGE: MessageConfig = {
     {
       type: "link",
       content: " Try shorter, focused prompts",
-      url: "https://www.dyad.sh/docs/guides/prompting",
     },
     { type: "text", content: " and iterate in smaller steps." },
   ],
@@ -71,7 +70,6 @@ export const SMART_CONTEXT_PROMO_MESSAGE: MessageConfig = {
     {
       type: "link",
       content: "context management tips",
-      url: "https://www.dyad.sh/docs/guides/ai-models/context-management",
     },
   ],
 };
@@ -95,7 +93,6 @@ export const REDDIT_TIP: MessageConfig = {
     {
       type: "link",
       content: "Chaemera community",
-      url: "https://www.reddit.com/r/dyadbuilders/",
     },
   ],
 };
@@ -118,13 +115,11 @@ export const UPLOAD_CHAT_TIP: MessageConfig = {
     },
   ],
 };
-// https://www.youtube.com/watch?v=a7OoruOkkeg&list=PL1xR2pfIiRlW7mgr9AS95OkFQBtvrSlO5
 export const BUILD_A_BIBLE_APP_TIP: MessageConfig = {
   spans: [
     {
       type: "link",
       content: "Watch",
-      url: "https://www.youtube.com/watch?v=a7OoruOkkeg&list=PL1xR2pfIiRlW7mgr9AS95OkFQBtvrSlO5",
     },
     {
       type: "text",
@@ -142,12 +137,10 @@ export const DEBUGGING_TIPS_TIP: MessageConfig = {
     {
       type: "link",
       content: "debugging tips",
-      url: "https://www.dyad.sh/docs/guides/debugging",
     },
   ],
 };
 
-// Advanced tip: Customize your AI rules https://www.dyad.sh/docs/guides/ai-rules
 export const AI_RULES_TIP: MessageConfig = {
   spans: [
     {
@@ -157,7 +150,6 @@ export const AI_RULES_TIP: MessageConfig = {
     {
       type: "link",
       content: "AI rules",
-      url: "https://www.dyad.sh/docs/guides/ai-rules",
     },
   ],
 };
@@ -171,7 +163,6 @@ export const NEW_CHAT_TIP: MessageConfig = {
   ],
 };
 
-// Want to know what's next? Checkout our roadmap https://www.dyad.sh/docs/roadmap
 export const ROADMAP_TIP: MessageConfig = {
   spans: [
     {
@@ -181,12 +172,10 @@ export const ROADMAP_TIP: MessageConfig = {
     {
       type: "link",
       content: "roadmap",
-      url: "https://www.dyad.sh/docs/roadmap",
     },
   ],
 };
 
-// Like Chaemera? Star it on GitHub https://github.com/dyad-sh/dyad/
 export const GITHUB_TIP: MessageConfig = {
   spans: [
     {
@@ -196,7 +185,6 @@ export const GITHUB_TIP: MessageConfig = {
     {
       type: "link",
       content: "GitHub",
-      url: "https://github.com/dyad-sh/dyad",
     },
   ],
 };

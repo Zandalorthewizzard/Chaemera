@@ -3,11 +3,13 @@ import { Loader2 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Terminal } from "lucide-react";
 import { ipc, type AppUpgrade } from "@/ipc/types";
+import { useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/queryKeys";
 
 export function AppUpgrades({ appId }: { appId: number | null }) {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const {
     data: upgrades,
@@ -128,17 +130,16 @@ export function AppUpgrades({ appId }: { appId: number | null }) {
                     </AlertTitle>
                     <AlertDescription className="text-xs text-red-400 dark:text-red-300">
                       {(mutationError as Error).message}{" "}
-                      <a
+                      <button
+                        type="button"
                         onClick={(e) => {
                           e.stopPropagation();
-                          ipc.system.openExternalUrl(
-                            upgrade.manualUpgradeUrl ?? "https://dyad.sh/docs",
-                          );
+                          navigate({ to: "/help" });
                         }}
                         className="underline font-medium hover:dark:text-red-200"
                       >
                         Manual Upgrade Instructions
-                      </a>
+                      </button>
                     </AlertDescription>
                   </Alert>
                 )}

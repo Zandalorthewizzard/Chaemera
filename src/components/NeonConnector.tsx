@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ipc } from "@/ipc/types";
 import { toast } from "sonner";
 import { useSettings } from "@/hooks/useSettings";
+import { useNavigate } from "@tanstack/react-router";
 
 import { useDeepLink } from "@/contexts/DeepLinkContext";
 import { ExternalLink } from "lucide-react";
@@ -15,6 +16,7 @@ export function NeonConnector() {
   const { settings, refreshSettings } = useSettings();
   const { lastDeepLink, clearLastDeepLink } = useDeepLink();
   const { isDarkMode } = useTheme();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleDeepLink = async () => {
@@ -69,9 +71,7 @@ export function NeonConnector() {
             if (settings?.isTestMode) {
               await ipc.neon.fakeConnect();
             } else {
-              await ipc.system.openExternalUrl(
-                "https://oauth.dyad.sh/api/integrations/neon/login",
-              );
+              navigate({ to: "/help" });
             }
           }}
           className="w-auto h-10 cursor-pointer flex items-center justify-center px-4 py-2 rounded-md border-2 transition-colors font-medium text-sm dark:bg-gray-900 dark:border-gray-700"

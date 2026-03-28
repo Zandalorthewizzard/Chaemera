@@ -1,12 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
 import { withLock } from "../ipc/utils/lock_utils";
-import { readSettings, writeSettings } from "../main/settings";
+import { readSettings } from "../main/settings";
 import {
   SupabaseManagementAPI,
   SupabaseManagementAPIError,
 } from "@dyad-sh/supabase-management-js";
-import log from "electron-log";
+import { appLog as log } from "@/lib/app_logger";
 import { IS_TEST_BUILD } from "../ipc/utils/test_utils";
 import type { SupabaseOrganizationCredentials } from "../lib/schemas";
 import {
@@ -119,48 +119,10 @@ export async function refreshSupabaseToken(): Promise<void> {
     );
   }
 
-  try {
-    // Make request to Supabase refresh endpoint
-    const response = await fetch(
-      "https://supabase-oauth.dyad.sh/api/connect-supabase/refresh",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ refreshToken }),
-      },
-    );
-
-    if (!response.ok) {
-      throw new Error(
-        `Supabase token refresh failed. Try going to Settings to disconnect Supabase and then reconnect to Supabase. Error status: ${response.statusText}`,
-      );
-    }
-
-    const {
-      accessToken,
-      refreshToken: newRefreshToken,
-      expiresIn,
-    } = await response.json();
-
-    // Update settings with new tokens
-    writeSettings({
-      supabase: {
-        accessToken: {
-          value: accessToken,
-        },
-        refreshToken: {
-          value: newRefreshToken,
-        },
-        expiresIn,
-        tokenTimestamp: Math.floor(Date.now() / 1000), // Store current timestamp
-      },
-    });
-  } catch (error) {
-    logger.error("Error refreshing Supabase token:", error);
-    throw error;
-  }
+  logger.warn("Supabase token refresh is not supported in the public release.");
+  throw new Error(
+    "Supabase token refresh is not supported in this release. Reconnect manually if you need Supabase access.",
+  );
 }
 
 // Function to get the Supabase Management API client
@@ -249,58 +211,12 @@ async function refreshSupabaseTokenForOrganization(
     );
   }
 
-  try {
-    const response = await fetch(
-      "https://supabase-oauth.dyad.sh/api/connect-supabase/refresh",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ refreshToken }),
-      },
-    );
-
-    if (!response.ok) {
-      throw new Error(
-        `Supabase token refresh failed. Try going to Settings to disconnect Supabase and then reconnect. Error status: ${response.statusText}`,
-      );
-    }
-
-    const {
-      accessToken,
-      refreshToken: newRefreshToken,
-      expiresIn,
-    } = await response.json();
-
-    // Update the specific organization in settings
-    const existingOrgs = settings.supabase?.organizations ?? {};
-    writeSettings({
-      supabase: {
-        ...settings.supabase,
-        organizations: {
-          ...existingOrgs,
-          [organizationSlug]: {
-            ...org,
-            accessToken: {
-              value: accessToken,
-            },
-            refreshToken: {
-              value: newRefreshToken,
-            },
-            expiresIn,
-            tokenTimestamp: Math.floor(Date.now() / 1000),
-          },
-        },
-      },
-    });
-  } catch (error) {
-    logger.error(
-      `Error refreshing Supabase token for organization ${organizationSlug}:`,
-      error,
-    );
-    throw error;
-  }
+  logger.warn(
+    `Supabase token refresh is not supported for organization ${organizationSlug} in the public release.`,
+  );
+  throw new Error(
+    `Supabase token refresh is not supported in this release. Reconnect manually if you need access for organization ${organizationSlug}.`,
+  );
 }
 
 /**

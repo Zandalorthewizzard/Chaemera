@@ -1,5 +1,5 @@
 import { createLoggedHandler } from "./safe_handle";
-import log from "electron-log";
+import { appLog as log } from "@/lib/app_logger";
 import { AppUpgrade } from "@/ipc/types";
 import { db } from "../../db";
 import { apps } from "../../db/schema";
@@ -19,15 +19,15 @@ const availableUpgrades: Omit<AppUpgrade, "isNeeded">[] = [
     id: "component-tagger",
     title: "Enable select component to edit",
     description:
-      "Installs the Dyad component tagger Vite plugin and its dependencies.",
-    manualUpgradeUrl: "https://dyad.sh/docs/upgrades/select-component",
+      "Installs the component tagger Vite plugin and its dependencies.",
+    manualUpgradeUrl: "https://example.invalid/help",
   },
   {
     id: "capacitor",
     title: "Upgrade to hybrid mobile app with Capacitor",
     description:
       "Adds Capacitor to your app lets it run on iOS and Android in addition to the web.",
-    manualUpgradeUrl: "https://dyad.sh/docs/guides/mobile-app#upgrade-your-app",
+    manualUpgradeUrl: "https://example.invalid/help",
   },
 ];
 

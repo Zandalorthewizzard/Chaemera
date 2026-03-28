@@ -282,7 +282,7 @@ test("tauri regression harness preserves native side effects and callback events
   });
   expect(deepLinkPayload).toEqual({
     type: "supabase-oauth-return",
-    url: "https://supabase-oauth.dyad.sh/api/connect-supabase/login",
+    url: "https://example.invalid/integrations/supabase/login",
   });
 
   const connectedApp = await invokeViaTauriBridge<{

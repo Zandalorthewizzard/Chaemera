@@ -1,7 +1,7 @@
 import { withLock } from "../ipc/utils/lock_utils";
-import { readSettings, writeSettings } from "../main/settings";
+import { readSettings } from "../main/settings";
 import { Api, createApiClient } from "@neondatabase/api-client";
-import log from "electron-log";
+import { appLog as log } from "@/lib/app_logger";
 import { IS_TEST_BUILD } from "../ipc/utils/test_utils";
 
 const logger = log.scope("neon_management_client");
@@ -38,47 +38,10 @@ export async function refreshNeonToken(): Promise<void> {
     throw new Error("Neon refresh token not found. Please authenticate first.");
   }
 
-  try {
-    // Make request to Neon refresh endpoint
-    const response = await fetch(
-      "https://oauth.dyad.sh/api/integrations/neon/refresh",
-
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ refreshToken }),
-      },
-    );
-
-    if (!response.ok) {
-      throw new Error(`Token refresh failed: ${response.statusText}`);
-    }
-
-    const {
-      accessToken,
-      refreshToken: newRefreshToken,
-      expiresIn,
-    } = await response.json();
-
-    // Update settings with new tokens
-    writeSettings({
-      neon: {
-        accessToken: {
-          value: accessToken,
-        },
-        refreshToken: {
-          value: newRefreshToken,
-        },
-        expiresIn,
-        tokenTimestamp: Math.floor(Date.now() / 1000), // Store current timestamp
-      },
-    });
-  } catch (error) {
-    logger.error("Error refreshing Neon token:", error);
-    throw error;
-  }
+  logger.warn("Neon token refresh is not supported in the public release.");
+  throw new Error(
+    "Neon token refresh is not supported in this release. Reconnect manually if you need Neon access.",
+  );
 }
 
 // Function to get the Neon API client

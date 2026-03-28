@@ -1,4 +1,4 @@
-import log from "electron-log";
+import { appLog as log } from "@/lib/app_logger";
 import { db } from "../../db";
 import { eq } from "drizzle-orm";
 import { apps } from "../../db/schema";
@@ -268,7 +268,7 @@ export function registerSupabaseHandlers() {
       // Simulate the deep link event
       safeSend(event.sender, "deep-link-received", {
         type: "supabase-oauth-return",
-        url: "https://supabase-oauth.dyad.sh/api/connect-supabase/login",
+        url: "https://example.invalid/integrations/supabase/login",
       });
       logger.info(
         `Sent fake deep-link-received event for app ${appId} during testing.`,
