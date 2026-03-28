@@ -18,7 +18,7 @@ import {
   getXmlChatSummaryTag,
   getXmlCommandTags,
   getXmlSearchReplaceTags,
-} from "../utils/dyad_tag_parser";
+} from "../utils/xml_tag_parser";
 import { appLog as log } from "@/lib/app_logger";
 import { isServerFunction } from "../../supabase_admin/supabase_utils";
 import {

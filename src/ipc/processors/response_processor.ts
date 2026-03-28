@@ -36,7 +36,7 @@ import {
   getXmlAddDependencyTags,
   getXmlExecuteSqlTags,
   getXmlSearchReplaceTags,
-} from "../utils/dyad_tag_parser";
+} from "../utils/xml_tag_parser";
 import { applySearchReplace } from "./search_replace_processor";
 import { storeDbTimestampAtCurrentVersion } from "../utils/neon_timestamp_utils";
 

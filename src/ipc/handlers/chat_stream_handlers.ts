@@ -73,7 +73,7 @@ import {
   getXmlWriteTags,
   getXmlDeleteTags,
   getXmlRenameTags,
-} from "../utils/dyad_tag_parser";
+} from "../utils/xml_tag_parser";
 import { fileExists } from "../utils/file_utils";
 import { FileUploadsState } from "../utils/file_uploads_state";
 import { extractMentionedAppsCodebases } from "../utils/mention_apps";

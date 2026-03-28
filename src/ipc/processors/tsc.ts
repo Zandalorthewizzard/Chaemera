@@ -9,7 +9,7 @@ import {
   getXmlDeleteTags,
   getXmlRenameTags,
   getXmlWriteTags,
-} from "../utils/dyad_tag_parser";
+} from "../utils/xml_tag_parser";
 import { getTypeScriptCachePath } from "@/paths/paths";
 
 const logger = log.scope("tsc");

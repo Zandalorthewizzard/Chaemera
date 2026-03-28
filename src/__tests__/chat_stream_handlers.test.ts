@@ -5,7 +5,7 @@ import {
   getXmlRenameTags,
   getXmlAddDependencyTags,
   getXmlDeleteTags,
-} from "../ipc/utils/dyad_tag_parser";
+} from "../ipc/utils/xml_tag_parser";
 
 import { processFullResponseActions } from "../ipc/processors/response_processor";
 import {
