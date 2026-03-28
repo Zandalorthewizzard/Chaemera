@@ -94,7 +94,7 @@ export const REDDIT_TIP: MessageConfig = {
     },
     {
       type: "link",
-      content: "Dyad subreddit",
+      content: "Chaemera community",
       url: "https://www.reddit.com/r/dyadbuilders/",
     },
   ],
@@ -128,7 +128,7 @@ export const BUILD_A_BIBLE_APP_TIP: MessageConfig = {
     },
     {
       type: "text",
-      content: " the creator of Dyad build a Bible app step-by-step",
+      content: " a creator build a Bible app step-by-step",
     },
   ],
 };
@@ -186,12 +186,12 @@ export const ROADMAP_TIP: MessageConfig = {
   ],
 };
 
-// Like Dyad? Star it on GitHub https://github.com/dyad-sh/dyad/
+// Like Chaemera? Star it on GitHub https://github.com/dyad-sh/dyad/
 export const GITHUB_TIP: MessageConfig = {
   spans: [
     {
       type: "text",
-      content: "Like Dyad? Star it on ",
+      content: "Like Chaemera? Star it on ",
     },
     {
       type: "link",
