@@ -79,7 +79,7 @@ function formatSettingsLines(settings: UserSettings | null): string {
     `- Selected Model: ${settings.selectedModel?.provider}:${settings.selectedModel?.name}`,
     `- Chat Mode: ${settings.selectedChatMode ?? "default"}`,
     `- Auto Approve Changes: ${settings.autoApproveChanges ?? "n/a"}`,
-    `- Hosted AI Enabled: ${settings.enableDyadPro ?? "n/a"}`,
+    `- Cloud AI Enabled: ${settings.enableDyadPro ?? "n/a"}`,
     `- Thinking Budget: ${settings.thinkingBudget ?? "n/a"}`,
     `- Runtime Mode: ${settings.runtimeMode2 ?? "n/a"}`,
     `- Release Channel: ${settings.releaseChannel ?? "n/a"}`,
