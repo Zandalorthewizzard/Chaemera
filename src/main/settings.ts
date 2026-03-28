@@ -10,7 +10,7 @@ import {
   migrateStoredSettings,
 } from "../lib/schemas";
 import { v4 as uuidv4 } from "uuid";
-import log from "electron-log";
+import { appLog as log } from "@/lib/app_logger";
 import { DEFAULT_TEMPLATE_ID } from "@/shared/templates";
 import { DEFAULT_THEME_ID } from "@/shared/themes";
 import { IS_TEST_BUILD } from "@/ipc/utils/test_utils";
@@ -30,7 +30,7 @@ const DEFAULT_SETTINGS: UserSettings = {
   hasRunBefore: false,
   experiments: {},
   enableProLazyEditsMode: true,
-  enableProSmartFilesContextMode: true,
+  enableSmartFilesContextMode: true,
   selectedChatMode: "build",
   enableAutoFixProblems: false,
   enableAutoUpdate: true,
@@ -190,8 +190,8 @@ export function readSettings(): UserSettings {
     // Validate stored settings (allows deprecated values like "agent" chat mode)
     const storedSettings = StoredUserSettingsSchema.parse(combinedSettings);
     // "conservative" is deprecated, use undefined to use the default value
-    if (storedSettings.proSmartContextOption === "conservative") {
-      storedSettings.proSmartContextOption = undefined;
+    if (storedSettings.smartContextOption === "conservative") {
+      storedSettings.smartContextOption = undefined;
     }
     // Migrate stored settings to active settings (converts deprecated values)
     const migratedSettings = migrateStoredSettings(storedSettings);

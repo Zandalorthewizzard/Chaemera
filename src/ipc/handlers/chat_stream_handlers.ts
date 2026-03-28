@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from "uuid";
 import { createTypedHandler } from "./base";
 import { chatContracts } from "../types/chat";
 import {
@@ -85,16 +84,7 @@ import { replacePromptReference } from "../utils/replacePromptReference";
 import { parsePlanFile, validatePlanId } from "./planUtils";
 import { mcpManager } from "../utils/mcp_manager";
 import z from "zod";
-import {
-  isBasicAgentMode,
-  isSupabaseConnected,
-  isTurboEditsV2Enabled,
-} from "@/lib/schemas";
-import {
-  getFreeAgentQuotaStatus,
-  markMessageAsUsingFreeAgentQuota,
-  unmarkMessageAsUsingFreeAgentQuota,
-} from "./free_agent_quota_handlers";
+import { isSupabaseConnected, isTurboEditsV2Enabled } from "@/lib/schemas";
 import { AI_STREAMING_ERROR_MESSAGE_PREFIX } from "@/shared/texts";
 import { getCurrentCommitHash } from "../utils/git_utils";
 import {
@@ -458,12 +448,6 @@ ${componentSnippet}
         .returning({ id: messages.id });
       const userMessageId = insertedUserMessage.id;
       const settings = readSettings();
-      // Only hosted-engine requests have request ids.
-      if (settings.enableCloudAI) {
-        // Generate requestId early so it can be saved with the message
-        dyadRequestId = uuidv4();
-      }
-
       // Add a placeholder assistant message immediately
       const [placeholderAssistantMessage] = await db
         .insert(messages)
@@ -577,9 +561,9 @@ ${componentSnippet}
 
         const isDeepContextEnabled =
           isEngineEnabled &&
-          settings.enableProSmartFilesContextMode &&
+          settings.enableSmartFilesContextMode &&
           // Anything besides balanced will use deep context.
-          settings.proSmartContextOption !== "balanced" &&
+          settings.smartContextOption !== "balanced" &&
           mentionedAppsCodebases.length === 0;
         logger.log(`isDeepContextEnabled: ${isDeepContextEnabled}`);
 
@@ -689,7 +673,7 @@ ${componentSnippet}
           chatMode: settings.selectedChatMode,
           enableTurboEditsV2: isTurboEditsV2Enabled(settings),
           themePrompt,
-          basicAgentMode: isBasicAgentMode(settings),
+          basicAgentMode: false,
         });
 
         // Add information about mentioned apps if any
@@ -1154,49 +1138,12 @@ This conversation includes one or more image attachments. When the user uploads 
           settings.selectedChatMode === "local-agent" &&
           !mentionedAppsCodebases.length
         ) {
-          // Check quota for Basic Agent mode (non-Pro users)
-          const isBasicAgentModeRequest = isBasicAgentMode(settings);
-          if (isBasicAgentModeRequest) {
-            const quotaStatus = await getFreeAgentQuotaStatus();
-            if (quotaStatus.isQuotaExceeded) {
-              safeSend(event.sender, "chat:response:error", {
-                chatId: req.chatId,
-                error: JSON.stringify({
-                  type: "FREE_AGENT_QUOTA_EXCEEDED",
-                  hoursUntilReset: quotaStatus.hoursUntilReset,
-                  resetTime: quotaStatus.resetTime,
-                }),
-              });
-              return;
-            }
-          }
-
-          // Mark the user message as using quota BEFORE starting the stream
-          // to prevent race conditions with parallel requests
-          if (isBasicAgentModeRequest && userMessageId) {
-            await markMessageAsUsingFreeAgentQuota(userMessageId);
-          }
-
-          let streamSuccess = false;
-          try {
-            streamSuccess = await handleLocalAgentStream(
-              event,
-              req,
-              abortController,
-              {
-                placeholderMessageId: placeholderAssistantMessage.id,
-                systemPrompt,
-                dyadRequestId: dyadRequestId ?? "[no-request-id]",
-                messageOverride: isSummarizeIntent ? chatMessages : undefined,
-              },
-            );
-          } finally {
-            // If the stream failed, was aborted, or threw, refund the quota
-            if (isBasicAgentModeRequest && userMessageId && !streamSuccess) {
-              await unmarkMessageAsUsingFreeAgentQuota(userMessageId);
-            }
-          }
-
+          await handleLocalAgentStream(event, req, abortController, {
+            placeholderMessageId: placeholderAssistantMessage.id,
+            systemPrompt,
+            dyadRequestId: dyadRequestId ?? "[no-request-id]",
+            messageOverride: isSummarizeIntent ? chatMessages : undefined,
+          });
           return;
         }
 

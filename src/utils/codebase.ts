@@ -442,8 +442,7 @@ export async function extractCodebase({
   files: CodebaseFile[];
 }> {
   const settings = readSettings();
-  const isSmartContextEnabled =
-    settings?.enableCloudAI && settings?.enableProSmartFilesContextMode;
+  const isSmartContextEnabled = settings?.enableSmartFilesContextMode;
 
   try {
     await fsAsync.access(appPath);

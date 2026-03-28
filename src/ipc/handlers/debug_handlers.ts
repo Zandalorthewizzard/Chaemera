@@ -138,10 +138,9 @@ function sanitizeSettingsForDebug(settings: UserSettings) {
     previewDeviceMode: settings.previewDeviceMode ?? null,
     enableProLazyEditsMode: settings.enableProLazyEditsMode ?? null,
     proLazyEditsMode: settings.proLazyEditsMode ?? null,
-    enableProSmartFilesContextMode:
-      settings.enableProSmartFilesContextMode ?? null,
-    enableProWebSearch: settings.enableProWebSearch ?? null,
-    proSmartContextOption: settings.proSmartContextOption ?? null,
+    enableSmartFilesContextMode: settings.enableSmartFilesContextMode ?? null,
+    enableWebSearch: settings.enableWebSearch ?? null,
+    smartContextOption: settings.smartContextOption ?? null,
     enableSupabaseWriteSqlMigration:
       settings.enableSupabaseWriteSqlMigration ?? null,
     agentToolConsents: settings.agentToolConsents ?? null,

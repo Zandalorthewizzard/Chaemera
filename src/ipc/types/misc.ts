@@ -110,12 +110,12 @@ const DebugSettingsSchema = z.object({
   enableProLazyEditsMode: z.boolean().nullable(),
   /** Turbo edits mode variant: "off" | "v1" | "v2" */
   proLazyEditsMode: z.string().nullable(),
-  /** Whether smart files context mode is enabled (Pro) */
-  enableProSmartFilesContextMode: z.boolean().nullable(),
-  /** Whether web search is enabled (Pro) */
-  enableProWebSearch: z.boolean().nullable(),
+  /** Whether smart files context mode is enabled */
+  enableSmartFilesContextMode: z.boolean().nullable(),
+  /** Whether web search is enabled */
+  enableWebSearch: z.boolean().nullable(),
   /** Smart context option: "balanced" | "conservative" | "deep" */
-  proSmartContextOption: z.string().nullable(),
+  smartContextOption: z.string().nullable(),
   /** Whether Supabase write SQL migration is enabled */
   enableSupabaseWriteSqlMigration: z.boolean().nullable(),
   /** Agent tool consent settings per tool */

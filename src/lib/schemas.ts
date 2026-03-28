@@ -316,9 +316,9 @@ const BaseUserSettingsFields = {
   thinkingBudget: z.enum(["low", "medium", "high"]).optional(),
   enableProLazyEditsMode: z.boolean().optional(),
   proLazyEditsMode: z.enum(["off", "v1", "v2"]).optional(),
-  enableProSmartFilesContextMode: z.boolean().optional(),
-  enableProWebSearch: z.boolean().optional(),
-  proSmartContextOption: SmartContextModeSchema.optional(),
+  enableSmartFilesContextMode: z.boolean().optional(),
+  enableWebSearch: z.boolean().optional(),
+  smartContextOption: SmartContextModeSchema.optional(),
   selectedTemplateId: z.string(),
   selectedThemeId: z.string().optional(),
   enableSupabaseWriteSqlMigration: z.boolean().optional(),
@@ -417,14 +417,33 @@ export function migrateStoredSettings(
     dyadProBudget: _dyadProBudget,
     ...restStored
   } = stored;
+  const legacyStored = stored as Record<string, unknown>;
   const enableCloudAI =
     restStored.enableCloudAI ??
     (typeof stored.enableDyadPro === "boolean"
       ? stored.enableDyadPro
       : undefined);
+  const enableSmartFilesContextMode =
+    restStored.enableSmartFilesContextMode ??
+    (typeof legacyStored.enableProSmartFilesContextMode === "boolean"
+      ? legacyStored.enableProSmartFilesContextMode
+      : undefined);
+  const enableWebSearch =
+    restStored.enableWebSearch ??
+    (typeof legacyStored.enableProWebSearch === "boolean"
+      ? legacyStored.enableProWebSearch
+      : undefined);
+  const smartContextOption =
+    restStored.smartContextOption ??
+    (typeof legacyStored.proSmartContextOption === "string"
+      ? (legacyStored.proSmartContextOption as SmartContextMode | undefined)
+      : undefined);
   return {
     ...restStored,
     enableCloudAI,
+    enableSmartFilesContextMode,
+    enableWebSearch,
+    smartContextOption,
     selectedChatMode: migrateStoredChatMode(stored.selectedChatMode),
     defaultChatMode: migrateStoredChatMode(stored.defaultChatMode),
   };

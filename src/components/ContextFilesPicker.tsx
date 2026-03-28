@@ -115,7 +115,7 @@ export function ContextFilesPicker() {
     updateExcludePaths(newPaths);
   };
 
-  const isSmartContextEnabled = settings?.enableProSmartFilesContextMode;
+  const isSmartContextEnabled = settings?.enableSmartFilesContextMode;
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
