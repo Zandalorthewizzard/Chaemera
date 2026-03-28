@@ -310,7 +310,6 @@ const BaseUserSettingsFields = {
   telemetryUserId: z.string().optional(),
   hasRunBefore: z.boolean().optional(),
   enableCloudAI: z.boolean().optional(),
-  enableDyadPro: z.boolean().optional(),
   experiments: ExperimentsSchema.optional(),
   lastShownReleaseNotesVersion: z.string().optional(),
   maxChatTurnsInContext: z.number().optional(),
@@ -413,12 +412,11 @@ export function migrateStoredChatMode(
 export function migrateStoredSettings(
   stored: StoredUserSettings,
 ): UserSettings {
-  const enableCloudAI =
-    stored.enableCloudAI ?? stored.enableDyadPro ?? undefined;
+  const { enableDyadPro: _enableDyadPro, ...restStored } = stored;
+  const enableCloudAI = restStored.enableCloudAI ?? undefined;
   return {
-    ...stored,
+    ...restStored,
     enableCloudAI,
-    enableDyadPro: enableCloudAI,
     selectedChatMode: migrateStoredChatMode(stored.selectedChatMode),
     defaultChatMode: migrateStoredChatMode(stored.defaultChatMode),
   };
@@ -509,7 +507,6 @@ export function isSupabaseConnected(settings: UserSettings | null): boolean {
 
 export function isTurboEditsV2Enabled(settings: UserSettings): boolean {
   return Boolean(
-    isCloudAIEnabled(settings) &&
     settings.enableProLazyEditsMode === true &&
     settings.proLazyEditsMode === "v2",
   );
