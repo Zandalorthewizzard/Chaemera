@@ -7,6 +7,7 @@ import {
   getSettingsFilePath,
   encrypt,
   decrypt,
+  setSafeStorageOverride,
 } from "@/main/settings";
 import { getUserDataPath } from "@/paths/paths";
 import { UserSettings } from "@/lib/schemas";
@@ -38,9 +39,11 @@ describe("readSettings", () => {
     mockGetUserDataPath.mockReturnValue(mockUserDataPath);
     mockPath.join.mockReturnValue(mockSettingsPath);
     mockSafeStorage.isEncryptionAvailable.mockReturnValue(true);
+    setSafeStorageOverride(safeStorage as typeof safeStorage);
   });
 
   afterEach(() => {
+    setSafeStorageOverride(null);
     vi.restoreAllMocks();
   });
 
@@ -572,6 +575,14 @@ describe("encrypt", () => {
 });
 
 describe("decrypt", () => {
+  beforeEach(() => {
+    setSafeStorageOverride(safeStorage as typeof safeStorage);
+  });
+
+  afterEach(() => {
+    setSafeStorageOverride(null);
+  });
+
   it("should trim whitespace from plaintext secrets", () => {
     const result = decrypt({
       value: "  my-api-key\n",

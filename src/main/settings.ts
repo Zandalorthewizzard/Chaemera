@@ -9,7 +9,6 @@ import {
   VertexProviderSetting,
   migrateStoredSettings,
 } from "../lib/schemas";
-import { safeStorage } from "electron";
 import { v4 as uuidv4 } from "uuid";
 import log from "electron-log";
 import { DEFAULT_TEMPLATE_ID } from "@/shared/templates";
@@ -47,6 +46,27 @@ const DEFAULT_SETTINGS: UserSettings = {
 };
 
 const SETTINGS_FILE = "user-settings.json";
+
+type ElectronSafeStorage = {
+  isEncryptionAvailable: () => boolean;
+  encryptString: (data: string) => Buffer;
+  decryptString: (data: Buffer) => string;
+};
+
+let safeStorageOverride: ElectronSafeStorage | null = null;
+
+export function setSafeStorageOverride(
+  override: ElectronSafeStorage | null,
+): void {
+  safeStorageOverride = override;
+}
+
+function getSafeStorage(): ElectronSafeStorage | null {
+  if (safeStorageOverride) {
+    return safeStorageOverride;
+  }
+  return null;
+}
 
 export function getSettingsFilePath(): string {
   return path.join(getUserDataPath(), SETTINGS_FILE);
@@ -257,7 +277,8 @@ export function writeSettings(settings: Partial<UserSettings>): void {
 
 export function encrypt(data: string): Secret {
   const trimmed = data.trim();
-  if (safeStorage.isEncryptionAvailable() && !IS_TEST_BUILD) {
+  const safeStorage = getSafeStorage();
+  if (safeStorage?.isEncryptionAvailable() && !IS_TEST_BUILD) {
     return {
       value: safeStorage.encryptString(trimmed).toString("base64"),
       encryptionType: "electron-safe-storage",
@@ -270,7 +291,8 @@ export function encrypt(data: string): Secret {
 }
 
 export function decrypt(data: Secret): string {
-  if (data.encryptionType === "electron-safe-storage") {
+  const safeStorage = getSafeStorage();
+  if (data.encryptionType === "electron-safe-storage" && safeStorage) {
     return safeStorage.decryptString(Buffer.from(data.value, "base64")).trim();
   }
   return data.value.trim();
