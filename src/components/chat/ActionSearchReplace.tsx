@@ -6,24 +6,24 @@ import { CodeHighlight } from "./CodeHighlight";
 import { CustomTagState } from "./stateTypes";
 import { parseSearchReplaceBlocks } from "@/shared/search_replace_parser";
 import {
-  DyadCard,
-  DyadCardHeader,
-  DyadBadge,
-  DyadExpandIcon,
-  DyadStateIndicator,
-  DyadFilePath,
-  DyadDescription,
-  DyadCardContent,
-} from "./DyadCardPrimitives";
+  ActionCard,
+  ActionCardHeader,
+  ActionBadge,
+  ActionExpandIcon,
+  ActionStateIndicator,
+  ActionFilePath,
+  ActionDescription,
+  ActionCardContent,
+} from "./ActionCardPrimitives";
 
-interface DyadSearchReplaceProps {
+interface ActionSearchReplaceProps {
   children?: ReactNode;
   node?: any;
   path?: string;
   description?: string;
 }
 
-export const DyadSearchReplace: React.FC<DyadSearchReplaceProps> = ({
+export const ActionSearchReplace: React.FC<ActionSearchReplaceProps> = ({
   children,
   node,
   path: pathProp,
@@ -45,41 +45,41 @@ export const DyadSearchReplace: React.FC<DyadSearchReplaceProps> = ({
   const fileName = path ? path.split("/").pop() : "";
 
   return (
-    <DyadCard
+    <ActionCard
       state={state}
       accentColor="violet"
       isExpanded={isContentVisible}
       onClick={() => setIsContentVisible(!isContentVisible)}
       data-testid="dyad-search-replace"
     >
-      <DyadCardHeader icon={<Search size={15} />} accentColor="violet">
-        <DyadBadge color="violet">Search & Replace</DyadBadge>
+      <ActionCardHeader icon={<Search size={15} />} accentColor="violet">
+        <ActionBadge color="violet">Search & Replace</ActionBadge>
         {fileName && (
           <span className="font-medium text-sm text-foreground truncate">
             {fileName}
           </span>
         )}
         {inProgress && (
-          <DyadStateIndicator
+          <ActionStateIndicator
             state="pending"
             pendingLabel="Applying changes..."
           />
         )}
         {aborted && (
-          <DyadStateIndicator state="aborted" abortedLabel="Did not finish" />
+          <ActionStateIndicator state="aborted" abortedLabel="Did not finish" />
         )}
         <div className="ml-auto">
-          <DyadExpandIcon isExpanded={isContentVisible} />
+          <ActionExpandIcon isExpanded={isContentVisible} />
         </div>
-      </DyadCardHeader>
-      <DyadFilePath path={path} />
+      </ActionCardHeader>
+      <ActionFilePath path={path} />
       {description && (
-        <DyadDescription>
+        <ActionDescription>
           <span className="font-medium">Summary: </span>
           {description}
-        </DyadDescription>
+        </ActionDescription>
       )}
-      <DyadCardContent isExpanded={isContentVisible}>
+      <ActionCardContent isExpanded={isContentVisible}>
         <div
           className="text-xs cursor-text"
           onClick={(e) => e.stopPropagation()}
@@ -127,7 +127,7 @@ export const DyadSearchReplace: React.FC<DyadSearchReplaceProps> = ({
             </div>
           )}
         </div>
-      </DyadCardContent>
-    </DyadCard>
+      </ActionCardContent>
+    </ActionCard>
   );
 };

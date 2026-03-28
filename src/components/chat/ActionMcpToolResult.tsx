@@ -1,20 +1,20 @@
 import React, { useMemo, useState } from "react";
-import { Wrench } from "lucide-react";
+import { CheckCircle } from "lucide-react";
 import { CodeHighlight } from "./CodeHighlight";
 import {
-  DyadCard,
-  DyadCardHeader,
-  DyadBadge,
-  DyadExpandIcon,
-  DyadCardContent,
-} from "./DyadCardPrimitives";
+  ActionCard,
+  ActionCardHeader,
+  ActionBadge,
+  ActionExpandIcon,
+  ActionCardContent,
+} from "./ActionCardPrimitives";
 
-interface DyadMcpToolCallProps {
+interface ActionMcpToolResultProps {
   node?: any;
   children?: React.ReactNode;
 }
 
-export const DyadMcpToolCall: React.FC<DyadMcpToolCallProps> = ({
+export const ActionMcpToolResult: React.FC<ActionMcpToolResultProps> = ({
   node,
   children,
 }) => {
@@ -30,21 +30,21 @@ export const DyadMcpToolCall: React.FC<DyadMcpToolCallProps> = ({
       const parsed = JSON.parse(raw);
       return JSON.stringify(parsed, null, 2);
     } catch (e) {
-      console.error("Error parsing JSON for dyad-mcp-tool-call", e);
+      console.error("Error parsing JSON for dyad-mcp-tool-result", e);
       return raw;
     }
   }, [expanded, raw]);
 
   return (
-    <DyadCard
-      accentColor="blue"
+    <ActionCard
+      accentColor="emerald"
       isExpanded={expanded}
       onClick={() => setExpanded((v) => !v)}
     >
-      <DyadCardHeader icon={<Wrench size={15} />} accentColor="blue">
-        <DyadBadge color="blue">Tool Call</DyadBadge>
+      <ActionCardHeader icon={<CheckCircle size={15} />} accentColor="emerald">
+        <ActionBadge color="emerald">Tool Result</ActionBadge>
         {serverName && (
-          <span className="text-xs px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 ring-1 ring-inset ring-blue-200 dark:ring-blue-800">
+          <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 ring-1 ring-inset ring-emerald-200 dark:ring-emerald-800">
             {serverName}
           </span>
         )}
@@ -54,12 +54,12 @@ export const DyadMcpToolCall: React.FC<DyadMcpToolCallProps> = ({
           </span>
         )}
         <div className="ml-auto">
-          <DyadExpandIcon isExpanded={expanded} />
+          <ActionExpandIcon isExpanded={expanded} />
         </div>
-      </DyadCardHeader>
-      <DyadCardContent isExpanded={expanded}>
+      </ActionCardHeader>
+      <ActionCardContent isExpanded={expanded}>
         <CodeHighlight className="language-json">{prettyJson}</CodeHighlight>
-      </DyadCardContent>
-    </DyadCard>
+      </ActionCardContent>
+    </ActionCard>
   );
 };

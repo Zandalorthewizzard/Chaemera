@@ -3,7 +3,7 @@ import { Layers, ChevronDown, ChevronUp, Loader2 } from "lucide-react";
 import { PlainMarkdownParser } from "./ActionMarkdownParser";
 import { CustomTagState } from "./stateTypes";
 
-interface DyadCompactionProps {
+interface ActionCompactionProps {
   node: {
     properties: {
       title?: string;
@@ -13,7 +13,7 @@ interface DyadCompactionProps {
   children?: React.ReactNode;
 }
 
-export const DyadCompaction: React.FC<DyadCompactionProps> = ({
+export const ActionCompaction: React.FC<ActionCompactionProps> = ({
   children,
   node,
 }) => {

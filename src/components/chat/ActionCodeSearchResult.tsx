@@ -1,19 +1,19 @@
 import React, { useState, useMemo } from "react";
 import { FileCode, FileText } from "lucide-react";
 import {
-  DyadCard,
-  DyadCardHeader,
-  DyadBadge,
-  DyadExpandIcon,
-  DyadCardContent,
-} from "./DyadCardPrimitives";
+  ActionCard,
+  ActionCardHeader,
+  ActionBadge,
+  ActionExpandIcon,
+  ActionCardContent,
+} from "./ActionCardPrimitives";
 
-interface DyadCodeSearchResultProps {
+interface ActionCodeSearchResultProps {
   node?: any;
   children?: React.ReactNode;
 }
 
-export const DyadCodeSearchResult: React.FC<DyadCodeSearchResultProps> = ({
+export const ActionCodeSearchResult: React.FC<ActionCodeSearchResultProps> = ({
   children,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -41,23 +41,23 @@ export const DyadCodeSearchResult: React.FC<DyadCodeSearchResultProps> = ({
   }, [children]);
 
   return (
-    <DyadCard
+    <ActionCard
       accentColor="indigo"
       isExpanded={isExpanded}
       onClick={() => setIsExpanded(!isExpanded)}
     >
-      <DyadCardHeader icon={<FileCode size={15} />} accentColor="indigo">
-        <DyadBadge color="indigo">Code Search Result</DyadBadge>
+      <ActionCardHeader icon={<FileCode size={15} />} accentColor="indigo">
+        <ActionBadge color="indigo">Code Search Result</ActionBadge>
         {files.length > 0 && (
           <span className="text-xs text-muted-foreground">
             Found {files.length} file{files.length !== 1 ? "s" : ""}
           </span>
         )}
         <div className="ml-auto">
-          <DyadExpandIcon isExpanded={isExpanded} />
+          <ActionExpandIcon isExpanded={isExpanded} />
         </div>
-      </DyadCardHeader>
-      <DyadCardContent isExpanded={isExpanded}>
+      </ActionCardHeader>
+      <ActionCardContent isExpanded={isExpanded}>
         {files.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
             {files.map((file, index) => {
@@ -87,7 +87,7 @@ export const DyadCodeSearchResult: React.FC<DyadCodeSearchResultProps> = ({
             })}
           </div>
         )}
-      </DyadCardContent>
-    </DyadCard>
+      </ActionCardContent>
+    </ActionCard>
   );
 };

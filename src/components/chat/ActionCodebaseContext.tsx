@@ -2,15 +2,15 @@ import React, { useState, useEffect } from "react";
 import { Code2, FileText } from "lucide-react";
 import { CustomTagState } from "./stateTypes";
 import {
-  DyadCard,
-  DyadCardHeader,
-  DyadBadge,
-  DyadExpandIcon,
-  DyadStateIndicator,
-  DyadCardContent,
-} from "./DyadCardPrimitives";
+  ActionCard,
+  ActionCardHeader,
+  ActionBadge,
+  ActionExpandIcon,
+  ActionStateIndicator,
+  ActionCardContent,
+} from "./ActionCardPrimitives";
 
-interface DyadCodebaseContextProps {
+interface ActionCodebaseContextProps {
   children: React.ReactNode;
   node?: {
     properties?: {
@@ -20,7 +20,7 @@ interface DyadCodebaseContextProps {
   };
 }
 
-export const DyadCodebaseContext: React.FC<DyadCodebaseContextProps> = ({
+export const ActionCodebaseContext: React.FC<ActionCodebaseContextProps> = ({
   node,
 }) => {
   const state = node?.properties?.state as CustomTagState;
@@ -35,25 +35,25 @@ export const DyadCodebaseContext: React.FC<DyadCodebaseContextProps> = ({
   }, [inProgress]);
 
   return (
-    <DyadCard
+    <ActionCard
       state={state}
       accentColor="blue"
       onClick={() => setIsExpanded(!isExpanded)}
       isExpanded={isExpanded}
     >
-      <DyadCardHeader icon={<Code2 size={15} />} accentColor="blue">
-        <DyadBadge color="blue">Codebase Context</DyadBadge>
+      <ActionCardHeader icon={<Code2 size={15} />} accentColor="blue">
+        <ActionBadge color="blue">Codebase Context</ActionBadge>
         {files.length > 0 && (
           <span className="text-xs text-muted-foreground">
             Using {files.length} file{files.length !== 1 ? "s" : ""}
           </span>
         )}
-        {inProgress && <DyadStateIndicator state="pending" />}
+        {inProgress && <ActionStateIndicator state="pending" />}
         <div className="ml-auto">
-          <DyadExpandIcon isExpanded={isExpanded} />
+          <ActionExpandIcon isExpanded={isExpanded} />
         </div>
-      </DyadCardHeader>
-      <DyadCardContent isExpanded={isExpanded}>
+      </ActionCardHeader>
+      <ActionCardContent isExpanded={isExpanded}>
         {files.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
             {files.map((file, index) => {
@@ -83,7 +83,7 @@ export const DyadCodebaseContext: React.FC<DyadCodebaseContextProps> = ({
             })}
           </div>
         )}
-      </DyadCardContent>
-    </DyadCard>
+      </ActionCardContent>
+    </ActionCard>
   );
 };

@@ -2,15 +2,15 @@ import React, { useState } from "react";
 import { CustomTagState } from "./stateTypes";
 import { Database } from "lucide-react";
 import {
-  DyadCard,
-  DyadCardHeader,
-  DyadBadge,
-  DyadExpandIcon,
-  DyadStateIndicator,
-  DyadCardContent,
-} from "./DyadCardPrimitives";
+  ActionCard,
+  ActionCardHeader,
+  ActionBadge,
+  ActionExpandIcon,
+  ActionStateIndicator,
+  ActionCardContent,
+} from "./ActionCardPrimitives";
 
-interface DyadSupabaseProjectInfoProps {
+interface ActionSupabaseProjectInfoProps {
   node: {
     properties: {
       state?: CustomTagState;
@@ -19,10 +19,10 @@ interface DyadSupabaseProjectInfoProps {
   children: React.ReactNode;
 }
 
-export function DyadSupabaseProjectInfo({
+export function ActionSupabaseProjectInfo({
   node,
   children,
-}: DyadSupabaseProjectInfoProps) {
+}: ActionSupabaseProjectInfoProps) {
   const [isContentVisible, setIsContentVisible] = useState(false);
   const { state } = node.properties;
   const isLoading = state === "pending";
@@ -30,31 +30,31 @@ export function DyadSupabaseProjectInfo({
   const content = typeof children === "string" ? children : "";
 
   return (
-    <DyadCard
+    <ActionCard
       state={state}
       accentColor="teal"
       isExpanded={isContentVisible}
       onClick={() => setIsContentVisible(!isContentVisible)}
     >
-      <DyadCardHeader icon={<Database size={15} />} accentColor="teal">
-        <DyadBadge color="teal">Supabase Project Info</DyadBadge>
+      <ActionCardHeader icon={<Database size={15} />} accentColor="teal">
+        <ActionBadge color="teal">Supabase Project Info</ActionBadge>
         {isLoading && (
-          <DyadStateIndicator state="pending" pendingLabel="Fetching..." />
+          <ActionStateIndicator state="pending" pendingLabel="Fetching..." />
         )}
         {isAborted && (
-          <DyadStateIndicator state="aborted" abortedLabel="Did not finish" />
+          <ActionStateIndicator state="aborted" abortedLabel="Did not finish" />
         )}
         <div className="ml-auto">
-          <DyadExpandIcon isExpanded={isContentVisible} />
+          <ActionExpandIcon isExpanded={isContentVisible} />
         </div>
-      </DyadCardHeader>
-      <DyadCardContent isExpanded={isContentVisible}>
+      </ActionCardHeader>
+      <ActionCardContent isExpanded={isContentVisible}>
         {content && (
           <div className="p-3 text-xs font-mono whitespace-pre-wrap max-h-80 overflow-y-auto bg-muted/20 rounded-lg">
             {content}
           </div>
         )}
-      </DyadCardContent>
-    </DyadCard>
+      </ActionCardContent>
+    </ActionCard>
   );
 }

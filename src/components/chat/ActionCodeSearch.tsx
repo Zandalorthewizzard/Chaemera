@@ -3,20 +3,20 @@ import { useState, type ReactNode } from "react";
 import { FileCode } from "lucide-react";
 import { CustomTagState } from "./stateTypes";
 import {
-  DyadCard,
-  DyadCardHeader,
-  DyadBadge,
-  DyadExpandIcon,
-  DyadStateIndicator,
-  DyadCardContent,
-} from "./DyadCardPrimitives";
+  ActionCard,
+  ActionCardHeader,
+  ActionBadge,
+  ActionExpandIcon,
+  ActionStateIndicator,
+  ActionCardContent,
+} from "./ActionCardPrimitives";
 
-interface DyadCodeSearchProps {
+interface ActionCodeSearchProps {
   children?: ReactNode;
   node?: { properties?: { query?: string; state?: CustomTagState } };
 }
 
-export const DyadCodeSearch: React.FC<DyadCodeSearchProps> = ({
+export const ActionCodeSearch: React.FC<ActionCodeSearchProps> = ({
   children,
   node,
 }) => {
@@ -27,27 +27,27 @@ export const DyadCodeSearch: React.FC<DyadCodeSearchProps> = ({
   const inProgress = state === "pending";
 
   return (
-    <DyadCard
+    <ActionCard
       state={state}
       accentColor="indigo"
       onClick={() => setIsExpanded(!isExpanded)}
       isExpanded={isExpanded}
     >
-      <DyadCardHeader icon={<FileCode size={15} />} accentColor="indigo">
-        <DyadBadge color="indigo">Code Search</DyadBadge>
+      <ActionCardHeader icon={<FileCode size={15} />} accentColor="indigo">
+        <ActionBadge color="indigo">Code Search</ActionBadge>
         {!isExpanded && query && (
           <span className="text-sm text-muted-foreground italic truncate">
             {query}
           </span>
         )}
         {inProgress && (
-          <DyadStateIndicator state="pending" pendingLabel="Searching..." />
+          <ActionStateIndicator state="pending" pendingLabel="Searching..." />
         )}
         <div className="ml-auto">
-          <DyadExpandIcon isExpanded={isExpanded} />
+          <ActionExpandIcon isExpanded={isExpanded} />
         </div>
-      </DyadCardHeader>
-      <DyadCardContent isExpanded={isExpanded}>
+      </ActionCardHeader>
+      <ActionCardContent isExpanded={isExpanded}>
         <div className="text-sm text-muted-foreground space-y-2">
           {query && (
             <div>
@@ -68,7 +68,7 @@ export const DyadCodeSearch: React.FC<DyadCodeSearchProps> = ({
             </div>
           )}
         </div>
-      </DyadCardContent>
-    </DyadCard>
+      </ActionCardContent>
+    </ActionCard>
   );
 };

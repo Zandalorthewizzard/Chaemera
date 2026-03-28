@@ -11,8 +11,8 @@ import { ActionLogs } from "./ActionLogs";
 import { ActionGrep } from "./ActionGrep";
 import { ActionAddIntegration } from "./ActionAddIntegration";
 import { ActionEdit } from "./ActionEdit";
-import { DyadSearchReplace } from "./DyadSearchReplace";
-import { DyadCodebaseContext } from "./DyadCodebaseContext";
+import { ActionSearchReplace } from "./ActionSearchReplace";
+import { ActionCodebaseContext } from "./ActionCodebaseContext";
 import { ActionThink } from "./ActionThink";
 import { CodeHighlight } from "./CodeHighlight";
 import { useAtomValue } from "jotai";
@@ -21,22 +21,22 @@ import { CustomTagState } from "./stateTypes";
 import { ActionOutput } from "./ActionOutput";
 import { ActionProblemSummary } from "./ActionProblemSummary";
 import { ipc } from "@/ipc/types";
-import { DyadMcpToolCall } from "./DyadMcpToolCall";
-import { DyadMcpToolResult } from "./DyadMcpToolResult";
+import { ActionMcpToolCall } from "./ActionMcpToolCall";
+import { ActionMcpToolResult } from "./ActionMcpToolResult";
 import { ActionWebSearchResult } from "./ActionWebSearchResult";
 import { ActionWebSearch } from "./ActionWebSearch";
 import { ActionWebCrawl } from "./ActionWebCrawl";
-import { DyadCodeSearchResult } from "./DyadCodeSearchResult";
-import { DyadCodeSearch } from "./DyadCodeSearch";
-import { DyadRead } from "./DyadRead";
-import { DyadListFiles } from "./DyadListFiles";
-import { DyadDatabaseSchema } from "./DyadDatabaseSchema";
-import { DyadSupabaseTableSchema } from "./DyadSupabaseTableSchema";
-import { DyadSupabaseProjectInfo } from "./DyadSupabaseProjectInfo";
+import { ActionCodeSearchResult } from "./ActionCodeSearchResult";
+import { ActionCodeSearch } from "./ActionCodeSearch";
+import { ActionRead } from "./ActionRead";
+import { ActionListFiles } from "./ActionListFiles";
+import { ActionDatabaseSchema } from "./ActionDatabaseSchema";
+import { ActionSupabaseTableSchema } from "./ActionSupabaseTableSchema";
+import { ActionSupabaseProjectInfo } from "./ActionSupabaseProjectInfo";
 import { ActionStatus } from "./ActionStatus";
-import { DyadCompaction } from "./DyadCompaction";
-import { DyadWritePlan } from "./DyadWritePlan";
-import { DyadExitPlan } from "./DyadExitPlan";
+import { ActionCompaction } from "./ActionCompaction";
+import { ActionWritePlan } from "./ActionWritePlan";
+import { ActionExitPlan } from "./ActionExitPlan";
 import { mapActionToButton } from "./ChatInput";
 import { SuggestedAction } from "@/lib/schemas";
 import { FixAllErrorsButton } from "./FixAllErrorsButton";
@@ -348,7 +348,7 @@ function renderCustomTag(
   switch (tag) {
     case "dyad-read":
       return (
-        <DyadRead
+        <ActionRead
           node={{
             properties: {
               path: attributes.path || "",
@@ -358,7 +358,7 @@ function renderCustomTag(
           }}
         >
           {content}
-        </DyadRead>
+        </ActionRead>
       );
     case "dyad-web-search":
       return (
@@ -385,7 +385,7 @@ function renderCustomTag(
       );
     case "dyad-code-search":
       return (
-        <DyadCodeSearch
+        <ActionCodeSearch
           node={{
             properties: {
               query: attributes.query || "",
@@ -394,17 +394,17 @@ function renderCustomTag(
           }}
         >
           {content}
-        </DyadCodeSearch>
+        </ActionCodeSearch>
       );
     case "dyad-code-search-result":
       return (
-        <DyadCodeSearchResult
+        <ActionCodeSearchResult
           node={{
             properties: {},
           }}
         >
           {content}
-        </DyadCodeSearchResult>
+        </ActionCodeSearchResult>
       );
     case "dyad-web-search-result":
       return (
@@ -566,7 +566,7 @@ function renderCustomTag(
 
     case "dyad-search-replace":
       return (
-        <DyadSearchReplace
+        <ActionSearchReplace
           node={{
             properties: {
               path: attributes.path || "",
@@ -576,12 +576,12 @@ function renderCustomTag(
           }}
         >
           {content}
-        </DyadSearchReplace>
+        </ActionSearchReplace>
       );
 
     case "dyad-codebase-context":
       return (
-        <DyadCodebaseContext
+        <ActionCodebaseContext
           node={{
             properties: {
               files: attributes.files || "",
@@ -590,12 +590,12 @@ function renderCustomTag(
           }}
         >
           {content}
-        </DyadCodebaseContext>
+        </ActionCodebaseContext>
       );
 
     case "dyad-mcp-tool-call":
       return (
-        <DyadMcpToolCall
+        <ActionMcpToolCall
           node={{
             properties: {
               serverName: attributes.server || "",
@@ -604,12 +604,12 @@ function renderCustomTag(
           }}
         >
           {content}
-        </DyadMcpToolCall>
+        </ActionMcpToolCall>
       );
 
     case "dyad-mcp-tool-result":
       return (
-        <DyadMcpToolResult
+        <ActionMcpToolResult
           node={{
             properties: {
               serverName: attributes.server || "",
@@ -618,7 +618,7 @@ function renderCustomTag(
           }}
         >
           {content}
-        </DyadMcpToolResult>
+        </ActionMcpToolResult>
       );
 
     case "dyad-output":
@@ -653,7 +653,7 @@ function renderCustomTag(
 
     case "dyad-list-files":
       return (
-        <DyadListFiles
+        <ActionListFiles
           node={{
             properties: {
               directory: attributes.directory || "",
@@ -664,12 +664,12 @@ function renderCustomTag(
           }}
         >
           {content}
-        </DyadListFiles>
+        </ActionListFiles>
       );
 
     case "dyad-database-schema":
       return (
-        <DyadDatabaseSchema
+        <ActionDatabaseSchema
           node={{
             properties: {
               state: getState({ isStreaming, inProgress }),
@@ -677,12 +677,12 @@ function renderCustomTag(
           }}
         >
           {content}
-        </DyadDatabaseSchema>
+        </ActionDatabaseSchema>
       );
 
     case "dyad-supabase-table-schema":
       return (
-        <DyadSupabaseTableSchema
+        <ActionSupabaseTableSchema
           node={{
             properties: {
               table: attributes.table || "",
@@ -691,12 +691,12 @@ function renderCustomTag(
           }}
         >
           {content}
-        </DyadSupabaseTableSchema>
+        </ActionSupabaseTableSchema>
       );
 
     case "dyad-supabase-project-info":
       return (
-        <DyadSupabaseProjectInfo
+        <ActionSupabaseProjectInfo
           node={{
             properties: {
               state: getState({ isStreaming, inProgress }),
@@ -704,7 +704,7 @@ function renderCustomTag(
           }}
         >
           {content}
-        </DyadSupabaseProjectInfo>
+        </ActionSupabaseProjectInfo>
       );
 
     case "dyad-status":
@@ -723,7 +723,7 @@ function renderCustomTag(
 
     case "dyad-compaction":
       return (
-        <DyadCompaction
+        <ActionCompaction
           node={{
             properties: {
               title: attributes.title || "Compacting conversation",
@@ -732,12 +732,12 @@ function renderCustomTag(
           }}
         >
           {content}
-        </DyadCompaction>
+        </ActionCompaction>
       );
 
     case "dyad-write-plan":
       return (
-        <DyadWritePlan
+        <ActionWritePlan
           node={{
             properties: {
               title: attributes.title || "Implementation Plan",
@@ -748,12 +748,12 @@ function renderCustomTag(
           }}
         >
           {content}
-        </DyadWritePlan>
+        </ActionWritePlan>
       );
 
     case "dyad-exit-plan":
       return (
-        <DyadExitPlan
+        <ActionExitPlan
           node={{
             properties: {
               notes: attributes.notes,

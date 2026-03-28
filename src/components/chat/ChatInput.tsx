@@ -684,7 +684,7 @@ export function ChatInput({ chatId }: { chatId?: number }) {
               onChange={setInputValue}
               onSubmit={handleSubmit}
               onPaste={handlePaste}
-              placeholder={t("askDyadToBuild")}
+              placeholder={t("askToBuild")}
               excludeCurrentApp={true}
               disableSendButton={disableSendButton}
               messageHistory={userMessageHistory}

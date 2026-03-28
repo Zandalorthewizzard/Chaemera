@@ -25,7 +25,7 @@
   "deleteChatNote": "Nota: Quaisquer alterações de código já aceitas serão mantidas.",
   "scrollToBottom": "Rolar para o final",
   "dismissError": "Dispensar erro",
-  "askDyadToBuild": "Peça ao Chaemera para construir...",
+  "askToBuild": "Peça ao Chaemera para construir...",
   "cancelGeneration": "Cancelar geração",
   "sendMessage": "Enviar mensagem",
   "loadingProposal": "Carregando proposta...",
