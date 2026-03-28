@@ -36,6 +36,7 @@ import { useUserBudgetInfo } from "@/hooks/useUserBudgetInfo";
 import { type UserSettings } from "@/lib/schemas";
 import { type UserBudgetInfo } from "@/ipc/types/system";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "@tanstack/react-router";
 
 // =============================================================================
 // Animation constants
@@ -253,6 +254,7 @@ export function HelpDialog({ isOpen, onClose }: HelpDialogProps) {
   const selectedChatId = useAtomValue(selectedChatIdAtom);
   const { settings } = useSettings();
   const { userBudget } = useUserBudgetInfo();
+  const navigate = useNavigate();
 
   // ---------------------------------------------------------------------------
   // Navigation
@@ -441,10 +443,13 @@ ${formatLogsSection(debugInfo)}
         {/* Self-service help */}
         <Button
           variant="outline"
-          onClick={() => ipc.system.openExternalUrl("https://www.dyad.sh/docs")}
+          onClick={() => {
+            handleClose();
+            navigate({ to: "/help" });
+          }}
           className="w-full py-6 bg-(--background-lightest)"
         >
-          <BookOpenIcon className="mr-2 h-5 w-5" /> Open Help Docs
+          <BookOpenIcon className="mr-2 h-5 w-5" /> Open Help Tools
         </Button>
 
         {/* Divider */}
