@@ -9,11 +9,9 @@ import { Button } from "@/components/ui/button";
 import {
   BookOpenIcon,
   BugIcon,
-  UploadIcon,
   ChevronLeftIcon,
   CheckIcon,
   XIcon,
-  ExternalLinkIcon,
   AlertCircleIcon,
   MessageSquareIcon,
   CopyIcon,
@@ -64,14 +62,8 @@ const screenTransition = {
 };
 
 // =============================================================================
-// GitHub issue helpers (shared between Report a Bug & Upload Chat Session)
+// Support report helpers
 // =============================================================================
-
-const LEGACY_GITHUB_ISSUES_BASE =
-  "https://github.com/dyad-sh/dyad/issues/new" as const;
-
-const LEGACY_UPLOAD_LOGS_ENDPOINT =
-  "https://upload-logs.dyad.sh/generate-upload-url" as const;
 
 function formatSettingsLines(settings: UserSettings | null): string {
   if (!settings) return "Settings not available";
@@ -111,17 +103,8 @@ ${debugInfo.logs.slice(-3_500) || "No logs available"}
 \`\`\``;
 }
 
-function openGitHubIssue(params: {
-  title: string;
-  labels: string[];
-  body: string;
-}) {
-  const qs = new URLSearchParams({
-    title: params.title,
-    labels: params.labels.join(","),
-    body: params.body,
-  });
-  ipc.system.openExternalUrl(`${LEGACY_GITHUB_ISSUES_BASE}?${qs.toString()}`);
+async function copySupportReport(text: string) {
+  await navigator.clipboard.writeText(text);
 }
 
 // =============================================================================
@@ -311,14 +294,11 @@ ${formatSettingsLines(settings)}
 
 ${formatLogsSection(debugInfo)}
 `;
-      openGitHubIssue({
-        title: "[bug] <WRITE TITLE HERE>",
-        labels: ["bug"],
-        body,
-      });
+      await copySupportReport(body);
+      alert("Bug report copied to clipboard.");
     } catch (error) {
       console.error("Failed to prepare bug report:", error);
-      ipc.system.openExternalUrl(LEGACY_GITHUB_ISSUES_BASE);
+      showError("Failed to prepare bug report.");
     } finally {
       setIsLoading(false);
     }
@@ -335,9 +315,9 @@ ${formatLogsSection(debugInfo)}
       setDebugBundle(bundle);
       navigateTo("review");
     } catch (error) {
-      console.error("Failed to upload chat session:", error);
+      console.error("Failed to prepare support report:", error);
       alert(
-        "Failed to upload chat session. Please try again or report manually.",
+        "Failed to prepare support report. Please try again or report manually.",
       );
     } finally {
       setIsUploading(false);
@@ -348,29 +328,12 @@ ${formatLogsSection(debugInfo)}
     if (!debugBundle) return;
     setIsUploading(true);
     try {
-      const response = await fetch(LEGACY_UPLOAD_LOGS_ENDPOINT, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          extension: "json",
-          contentType: "application/json",
-        }),
-      });
-      if (!response.ok) {
-        showError(`Failed to get upload URL: ${response.statusText}`);
-        throw new Error(`Failed to get upload URL: ${response.statusText}`);
-      }
-      const { uploadUrl, filename } = await response.json();
-      await ipc.system.uploadToSignedUrl({
-        url: uploadUrl,
-        contentType: "application/json",
-        data: debugBundle,
-      });
-      setSessionId("v2:" + filename.replace(".json", ""));
+      await copySupportReport(JSON.stringify(debugBundle, null, 2));
+      setSessionId("Support report copied to clipboard.");
       navigateTo("upload-complete");
     } catch (error) {
-      console.error("Failed to upload chat logs:", error);
-      alert("Failed to upload chat logs. Please try again.");
+      console.error("Failed to copy chat logs:", error);
+      showError("Failed to copy support report.");
     } finally {
       setIsUploading(false);
     }
@@ -381,46 +344,9 @@ ${formatLogsSection(debugInfo)}
     setDebugBundle(null);
   };
 
-  const handleOpenGitHubIssue = async () => {
-    try {
-      const debugInfo = await ipc.system.getSystemDebugInfo();
-      const body = `\
-<!-- Please fill in all fields in English -->
-
-Session ID: ${sessionId}
-Session Schema: v2.0
-Account User ID: ${userBudget?.redactedUserId || "n/a"}
-
-## Issue Description (required)
-<!-- Please describe the issue you're experiencing -->
-
-## Expected Behavior (required)
-<!-- What did you expect to happen? -->
-
-## Actual Behavior (required)
-<!-- What actually happened? -->
-
-${formatSystemInfoSection(debugInfo, userBudget ?? undefined)}
-
-## Settings
-${formatSettingsLines(settings)}
-
-${formatLogsSection(debugInfo)}
-`;
-      openGitHubIssue({
-        title: "[session report] <add title>",
-        labels: ["support"],
-        body,
-      });
-    } catch (error) {
-      console.error("Failed to prepare session report:", error);
-      openGitHubIssue({
-        title: "[session report] <add title>",
-        labels: ["support"],
-        body: `Session ID: ${sessionId}\nSession Schema: v2.0\nAccount User ID: ${userBudget?.redactedUserId || "n/a"}`,
-      });
-    }
+  const handleOpenHelpPage = () => {
     handleClose();
+    navigate({ to: "/help" });
   };
 
   // ---------------------------------------------------------------------------
@@ -470,8 +396,8 @@ ${formatLogsSection(debugInfo)}
               <span className="text-sm font-semibold">AI issues</span>
             </div>
             <p className="text-sm text-muted-foreground">
-              Best for AI quality issues. Uploads your chat session and code for
-              the team to reproduce and fix the problem.
+              Best for AI quality issues. Copies your chat session and code so
+              you can attach them to a support request.
             </p>
             <Button
               variant="outline"
@@ -479,13 +405,13 @@ ${formatLogsSection(debugInfo)}
               disabled={isUploading || !selectedChatId}
               className="w-full bg-(--background-lightest)"
             >
-              <UploadIcon className="mr-2 h-4 w-4" />{" "}
-              {isUploading ? "Preparing Upload..." : "Upload Chat Session"}
+              <CopyIcon className="mr-2 h-4 w-4" />{" "}
+              {isUploading ? "Preparing Report..." : "Prepare Support Report"}
             </Button>
             {!selectedChatId && (
               <p className="text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
                 <AlertCircleIcon className="h-3 w-3 shrink-0" />
-                Open a chat first to upload a session.
+                Open a chat first to prepare a report.
               </p>
             )}
           </div>
@@ -534,13 +460,13 @@ ${formatLogsSection(debugInfo)}
             >
               <ChevronLeftIcon className="h-4 w-4" />
             </Button>
-            OK to upload chat session?
+            Review support report?
           </DialogTitle>
         </DialogHeader>
         <DialogDescription>
           Please review the information that will be submitted. Your chat
           messages, system information, and a snapshot of your codebase will be
-          included.
+          copied locally.
         </DialogDescription>
 
         <div className="space-y-2 overflow-y-auto flex-grow mt-4">
@@ -598,10 +524,10 @@ ${formatLogsSection(debugInfo)}
             disabled={isUploading}
           >
             {isUploading ? (
-              "Uploading..."
+              "Copying..."
             ) : (
               <>
-                <CheckIcon className="mr-2 h-4 w-4" /> Upload
+                <CheckIcon className="mr-2 h-4 w-4" /> Copy Report
               </>
             )}
           </Button>
@@ -612,12 +538,14 @@ ${formatLogsSection(debugInfo)}
   const renderUploadCompleteScreen = () => (
     <AnimatedScreen screenKey="upload-complete" direction={direction}>
       <DialogHeader>
-        <DialogTitle>Upload Complete</DialogTitle>
+        <DialogTitle>Report Ready</DialogTitle>
       </DialogHeader>
 
       <div className="flex items-center gap-2.5 mt-3">
         <CheckIcon className="h-5 w-5 text-green-600 dark:text-green-400 shrink-0" />
-        <span className="text-base font-medium">Chat session uploaded</span>
+        <span className="text-base font-medium">
+          Report copied to clipboard
+        </span>
       </div>
 
       <div className="bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-md flex items-center gap-2 font-mono text-sm mt-2">
@@ -626,23 +554,13 @@ ${formatLogsSection(debugInfo)}
       </div>
 
       <Button
-        onClick={handleOpenGitHubIssue}
+        onClick={handleOpenHelpPage}
         className="w-full py-5 text-base mt-4"
         size="lg"
       >
-        <ExternalLinkIcon className="mr-2 h-5 w-5" />
-        Create GitHub Issue
+        <BookOpenIcon className="mr-2 h-5 w-5" />
+        Open Help
       </Button>
-
-      <div className="border border-amber-300 dark:border-amber-600 bg-amber-50 dark:bg-amber-950/30 rounded-lg p-3 mt-3">
-        <div className="flex items-start gap-2">
-          <AlertCircleIcon className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
-          <p className="text-sm text-amber-700 dark:text-amber-400/80">
-            Your upload will not be reviewed without a linked GitHub issue. The
-            issue will be pre-filled with your session ID and system info.
-          </p>
-        </div>
-      </div>
     </AnimatedScreen>
   );
 

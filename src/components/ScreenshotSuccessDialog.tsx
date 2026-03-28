@@ -24,7 +24,7 @@ export function ScreenshotSuccessDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            Screenshot captured to clipboard! Please paste in GitHub issue.
+            Screenshot captured to clipboard! Paste it into your support report.
           </DialogTitle>
         </DialogHeader>
         <Button
@@ -33,7 +33,7 @@ export function ScreenshotSuccessDialog({
           className="w-full py-6 border-primary/50 shadow-sm shadow-primary/10 transition-all hover:shadow-md hover:shadow-primary/15"
         >
           <BugIcon className="mr-2 h-5 w-5" />{" "}
-          {isLoading ? "Preparing Report..." : "Create GitHub issue"}
+          {isLoading ? "Preparing Report..." : "Copy support report"}
         </Button>
       </DialogContent>
     </Dialog>

@@ -66,10 +66,11 @@ export function BugScreenshotDialog({
               <BugIcon className="mr-2 h-5 w-5" />{" "}
               {isLoading
                 ? "Preparing Report..."
-                : "File bug report without screenshot"}
+                : "Copy support report without screenshot"}
             </Button>
             <p className="text-sm text-muted-foreground px-2">
-              We'll still try to respond but might not be able to help as much.
+              We'll still try to help but the screenshot usually makes it
+              easier.
             </p>
           </div>
           {screenshotError && (
