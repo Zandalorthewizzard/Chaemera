@@ -1,11 +1,11 @@
-import { normalizePath } from "../../../shared/normalizePath";
+﻿import { normalizePath } from "../../../shared/normalizePath";
 import { unescapeXmlAttr, unescapeXmlContent } from "../../../shared/xmlEscape";
-import log from "electron-log";
+import { appLog as log } from "@/lib/app_logger";
 import { SqlQuery } from "../../lib/schemas";
 
 const logger = log.scope("dyad_tag_parser");
 
-export function getDyadWriteTags(fullResponse: string): {
+export function getXmlWriteTags(fullResponse: string): {
   path: string;
   content: string;
   description?: string;
@@ -50,7 +50,7 @@ export function getDyadWriteTags(fullResponse: string): {
   return tags;
 }
 
-export function getDyadRenameTags(fullResponse: string): {
+export function getXmlRenameTags(fullResponse: string): {
   from: string;
   to: string;
 }[] {
@@ -67,7 +67,7 @@ export function getDyadRenameTags(fullResponse: string): {
   return tags;
 }
 
-export function getDyadDeleteTags(fullResponse: string): string[] {
+export function getXmlDeleteTags(fullResponse: string): string[] {
   const dyadDeleteRegex =
     /<dyad-delete path="([^"]+)"[^>]*>([\s\S]*?)<\/dyad-delete>/g;
   let match;
@@ -78,7 +78,7 @@ export function getDyadDeleteTags(fullResponse: string): string[] {
   return paths;
 }
 
-export function getDyadAddDependencyTags(fullResponse: string): string[] {
+export function getXmlAddDependencyTags(fullResponse: string): string[] {
   const dyadAddDependencyRegex =
     /<dyad-add-dependency packages="([^"]+)">[^<]*<\/dyad-add-dependency>/g;
   let match;
@@ -89,7 +89,7 @@ export function getDyadAddDependencyTags(fullResponse: string): string[] {
   return packages;
 }
 
-export function getDyadChatSummaryTag(fullResponse: string): string | null {
+export function getXmlChatSummaryTag(fullResponse: string): string | null {
   const dyadChatSummaryRegex =
     /<dyad-chat-summary>([\s\S]*?)<\/dyad-chat-summary>/g;
   const match = dyadChatSummaryRegex.exec(fullResponse);
@@ -99,7 +99,7 @@ export function getDyadChatSummaryTag(fullResponse: string): string | null {
   return null;
 }
 
-export function getDyadExecuteSqlTags(fullResponse: string): SqlQuery[] {
+export function getXmlExecuteSqlTags(fullResponse: string): SqlQuery[] {
   const dyadExecuteSqlRegex =
     /<dyad-execute-sql([^>]*)>([\s\S]*?)<\/dyad-execute-sql>/g;
   const descriptionRegex = /description="([^"]+)"/;
@@ -130,7 +130,7 @@ export function getDyadExecuteSqlTags(fullResponse: string): SqlQuery[] {
   return queries;
 }
 
-export function getDyadCommandTags(fullResponse: string): string[] {
+export function getXmlCommandTags(fullResponse: string): string[] {
   const dyadCommandRegex =
     /<dyad-command type="([^"]+)"[^>]*><\/dyad-command>/g;
   let match;
@@ -143,7 +143,7 @@ export function getDyadCommandTags(fullResponse: string): string[] {
   return commands;
 }
 
-export function getDyadSearchReplaceTags(fullResponse: string): {
+export function getXmlSearchReplaceTags(fullResponse: string): {
   path: string;
   content: string;
   description?: string;

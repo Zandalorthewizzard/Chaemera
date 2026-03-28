@@ -10,14 +10,14 @@ import path from "node:path"; // Import path for basename
 // Import tag parsers
 import { processFullResponseActions } from "../processors/response_processor";
 import {
-  getDyadWriteTags,
-  getDyadRenameTags,
-  getDyadDeleteTags,
-  getDyadExecuteSqlTags,
-  getDyadAddDependencyTags,
-  getDyadChatSummaryTag,
-  getDyadCommandTags,
-  getDyadSearchReplaceTags,
+  getXmlWriteTags,
+  getXmlRenameTags,
+  getXmlDeleteTags,
+  getXmlExecuteSqlTags,
+  getXmlAddDependencyTags,
+  getXmlChatSummaryTag,
+  getXmlCommandTags,
+  getXmlSearchReplaceTags,
 } from "../utils/dyad_tag_parser";
 import { appLog as log } from "@/lib/app_logger";
 import { isServerFunction } from "../../supabase_admin/supabase_utils";
@@ -150,15 +150,15 @@ const getProposalHandler = async (
         );
         const messageContent = latestAssistantMessage.content;
 
-        const proposalTitle = getDyadChatSummaryTag(messageContent);
+        const proposalTitle = getXmlChatSummaryTag(messageContent);
 
-        const proposalWriteFiles = getDyadWriteTags(messageContent);
+        const proposalWriteFiles = getXmlWriteTags(messageContent);
         const proposalSearchReplaceFiles =
-          getDyadSearchReplaceTags(messageContent);
-        const proposalRenameFiles = getDyadRenameTags(messageContent);
-        const proposalDeleteFiles = getDyadDeleteTags(messageContent);
-        const proposalExecuteSqlQueries = getDyadExecuteSqlTags(messageContent);
-        const packagesAdded = getDyadAddDependencyTags(messageContent);
+          getXmlSearchReplaceTags(messageContent);
+        const proposalRenameFiles = getXmlRenameTags(messageContent);
+        const proposalDeleteFiles = getXmlDeleteTags(messageContent);
+        const proposalExecuteSqlQueries = getXmlExecuteSqlTags(messageContent);
+        const packagesAdded = getXmlAddDependencyTags(messageContent);
 
         const filesChanged = [
           ...proposalWriteFiles
@@ -225,7 +225,7 @@ const getProposalHandler = async (
       }
       const actions: ActionProposal["actions"] = [];
       if (latestAssistantMessage?.content) {
-        const writeTags = getDyadWriteTags(latestAssistantMessage.content);
+        const writeTags = getXmlWriteTags(latestAssistantMessage.content);
         const refactorTarget = writeTags.reduce(
           (largest, tag) => {
             const lineCount = tag.content.split("\n").length;
@@ -252,7 +252,7 @@ const getProposalHandler = async (
         }
 
         // Check for command tags and add corresponding actions
-        const commandTags = getDyadCommandTags(latestAssistantMessage.content);
+        const commandTags = getXmlCommandTags(latestAssistantMessage.content);
         if (commandTags.includes("rebuild")) {
           actions.push({
             id: "rebuild",
@@ -361,7 +361,7 @@ const approveProposalHandler = async (
   }
 
   // 2. Process the actions defined in the message content
-  const chatSummary = getDyadChatSummaryTag(messageToApprove.content);
+  const chatSummary = getXmlChatSummaryTag(messageToApprove.content);
   const processResult = await processFullResponseActions(
     messageToApprove.content,
     chatId,

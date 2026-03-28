@@ -69,10 +69,10 @@ import { createProblemFixPrompt } from "@/shared/problem_prompt";
 import { AsyncVirtualFileSystem } from "../../../shared/VirtualFilesystem";
 import { escapeXmlAttr, escapeXmlContent } from "../../../shared/xmlEscape";
 import {
-  getDyadAddDependencyTags,
-  getDyadWriteTags,
-  getDyadDeleteTags,
-  getDyadRenameTags,
+  getXmlAddDependencyTags,
+  getXmlWriteTags,
+  getXmlDeleteTags,
+  getXmlRenameTags,
 } from "../utils/dyad_tag_parser";
 import { fileExists } from "../utils/file_utils";
 import { FileUploadsState } from "../utils/file_uploads_state";
@@ -841,7 +841,7 @@ This conversation includes one or more image attachments. When the user uploads 
           // and eats up extra tokens.
           content:
             settings.selectedChatMode === "ask"
-              ? removeDyadTags(removeNonEssentialTags(msg.content))
+              ? removeXmlTags(removeNonEssentialTags(msg.content))
               : removeNonEssentialTags(msg.content),
           providerOptions: {
             "cloud-engine": {
@@ -1320,11 +1320,11 @@ ${formattedSearchReplaceIssues}`,
           if (
             !abortController.signal.aborted &&
             settings.selectedChatMode !== "ask" &&
-            hasUnclosedDyadWrite(fullResponse)
+            hasUnclosedXmlWrite(fullResponse)
           ) {
             let continuationAttempts = 0;
             while (
-              hasUnclosedDyadWrite(fullResponse) &&
+              hasUnclosedXmlWrite(fullResponse) &&
               continuationAttempts < 2 &&
               !abortController.signal.aborted
             ) {
@@ -1357,7 +1357,7 @@ ${formattedSearchReplaceIssues}`,
               }
             }
           }
-          const addDependencies = getDyadAddDependencyTags(fullResponse);
+          const addDependencies = getXmlAddDependencyTags(fullResponse);
           if (
             !abortController.signal.aborted &&
             // If there are dependencies, we don't want to auto-fix problems
@@ -1404,9 +1404,9 @@ ${problemReport.problems
                     readFile: (fileName: string) => readFileWithCache(fileName),
                   },
                 );
-                const writeTags = getDyadWriteTags(fullResponse);
-                const renameTags = getDyadRenameTags(fullResponse);
-                const deletePaths = getDyadDeleteTags(fullResponse);
+                const writeTags = getXmlWriteTags(fullResponse);
+                const renameTags = getXmlRenameTags(fullResponse);
+                const deletePaths = getXmlDeleteTags(fullResponse);
                 virtualFileSystem.applyResponseChanges({
                   deletePaths,
                   renameTags,
@@ -1799,12 +1799,12 @@ export function removeProblemReportTags(text: string): string {
   return text.replace(problemReportRegex, "").trim();
 }
 
-export function removeDyadTags(text: string): string {
+export function removeXmlTags(text: string): string {
   const dyadRegex = /<dyad-[^>]*>[\s\S]*?<\/dyad-[^>]*>/g;
   return text.replace(dyadRegex, "").trim();
 }
 
-export function hasUnclosedDyadWrite(text: string): boolean {
+export function hasUnclosedXmlWrite(text: string): boolean {
   // Find the last opening dyad-write tag
   const openRegex = /<dyad-write[^>]*>/g;
   let lastOpenIndex = -1;

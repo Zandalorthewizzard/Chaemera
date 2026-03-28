@@ -1,14 +1,14 @@
-import * as path from "node:path";
+﻿import * as path from "node:path";
 import { Worker } from "node:worker_threads";
 
 import { ProblemReport } from "@/ipc/types";
-import log from "electron-log";
+import { appLog as log } from "@/lib/app_logger";
 import { WorkerInput, WorkerOutput } from "../../../shared/tsc_types";
 
 import {
-  getDyadDeleteTags,
-  getDyadRenameTags,
-  getDyadWriteTags,
+  getXmlDeleteTags,
+  getXmlRenameTags,
+  getXmlWriteTags,
 } from "../utils/dyad_tag_parser";
 import { getTypeScriptCachePath } from "@/paths/paths";
 
@@ -58,9 +58,9 @@ export async function generateProblemReport({
       }
     });
 
-    const writeTags = getDyadWriteTags(fullResponse);
-    const renameTags = getDyadRenameTags(fullResponse);
-    const deletePaths = getDyadDeleteTags(fullResponse);
+    const writeTags = getXmlWriteTags(fullResponse);
+    const renameTags = getXmlRenameTags(fullResponse);
+    const deletePaths = getXmlDeleteTags(fullResponse);
     const virtualChanges = {
       deletePaths,
       renameTags,

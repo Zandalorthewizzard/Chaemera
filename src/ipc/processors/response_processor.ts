@@ -1,12 +1,12 @@
-import { db } from "../../db";
+﻿import { db } from "../../db";
 import { chats, messages } from "../../db/schema";
 import { and, eq } from "drizzle-orm";
 import fs from "node:fs";
-import { getDyadAppPath } from "../../paths/paths";
+import { getAppPath } from "../../paths/paths";
 import path from "node:path";
 import { safeJoin } from "../utils/path_utils";
 
-import log from "electron-log";
+import { appLog as log } from "@/lib/app_logger";
 import { executeAddDependency } from "./executeAddDependency";
 import {
   deleteSupabaseFunction,
@@ -30,12 +30,12 @@ import {
 import { readSettings } from "@/main/settings";
 import { writeMigrationFile } from "../utils/file_utils";
 import {
-  getDyadWriteTags,
-  getDyadRenameTags,
-  getDyadDeleteTags,
-  getDyadAddDependencyTags,
-  getDyadExecuteSqlTags,
-  getDyadSearchReplaceTags,
+  getXmlWriteTags,
+  getXmlRenameTags,
+  getXmlDeleteTags,
+  getXmlAddDependencyTags,
+  getXmlExecuteSqlTags,
+  getXmlSearchReplaceTags,
 } from "../utils/dyad_tag_parser";
 import { applySearchReplace } from "./search_replace_processor";
 import { storeDbTimestampAtCurrentVersion } from "../utils/neon_timestamp_utils";
@@ -58,8 +58,8 @@ export async function dryRunSearchReplace({
   appPath: string;
 }) {
   const issues: { filePath: string; error: string }[] = [];
-  const dyadSearchReplaceTags = getDyadSearchReplaceTags(fullResponse);
-  for (const tag of dyadSearchReplaceTags) {
+  const xmlSearchReplaceTags = getXmlSearchReplaceTags(fullResponse);
+  for (const tag of xmlSearchReplaceTags) {
     const filePath = tag.path;
     const fullFilePath = safeJoin(appPath, filePath);
     try {
@@ -144,7 +144,7 @@ export async function processFullResponseActions(
   }
 
   const settings: UserSettings = readSettings();
-  const appPath = getDyadAppPath(chatWithApp.app.path);
+  const appPath = getAppPath(chatWithApp.app.path);
   const writtenFiles: string[] = [];
   const renamedFiles: string[] = [];
   const deletedFiles: string[] = [];
@@ -157,12 +157,12 @@ export async function processFullResponseActions(
 
   try {
     // Extract all tags
-    const dyadWriteTags = getDyadWriteTags(fullResponse);
-    const dyadRenameTags = getDyadRenameTags(fullResponse);
-    const dyadDeletePaths = getDyadDeleteTags(fullResponse);
-    const dyadAddDependencyPackages = getDyadAddDependencyTags(fullResponse);
+    const xmlWriteTags = getXmlWriteTags(fullResponse);
+    const xmlRenameTags = getXmlRenameTags(fullResponse);
+    const xmlDeletePaths = getXmlDeleteTags(fullResponse);
+    const xmlAddDependencyPackages = getXmlAddDependencyTags(fullResponse);
     const dyadExecuteSqlQueries = chatWithApp.app.supabaseProjectId
-      ? getDyadExecuteSqlTags(fullResponse)
+      ? getXmlExecuteSqlTags(fullResponse)
       : [];
 
     const message = await db.query.messages.findFirst({
@@ -215,16 +215,16 @@ export async function processFullResponseActions(
     }
 
     // TODO: Handle add dependency tags
-    if (dyadAddDependencyPackages.length > 0) {
+    if (xmlAddDependencyPackages.length > 0) {
       try {
         await executeAddDependency({
-          packages: dyadAddDependencyPackages,
+          packages: xmlAddDependencyPackages,
           message: message,
           appPath,
         });
       } catch (error) {
         errors.push({
-          message: `Failed to add dependencies: ${dyadAddDependencyPackages.join(", ")}`,
+          message: `Failed to add dependencies: ${xmlAddDependencyPackages.join(", ")}`,
           error: error,
         });
       }
@@ -252,7 +252,7 @@ export async function processFullResponseActions(
     //////////////////////
 
     // Process all file deletions
-    for (const filePath of dyadDeletePaths) {
+    for (const filePath of xmlDeletePaths) {
       const fullFilePath = safeJoin(appPath, filePath);
 
       // Track if this is a shared module
@@ -298,7 +298,7 @@ export async function processFullResponseActions(
     }
 
     // Process all file renames
-    for (const tag of dyadRenameTags) {
+    for (const tag of xmlRenameTags) {
       const fromPath = safeJoin(appPath, tag.from);
       const toPath = safeJoin(appPath, tag.to);
 
@@ -362,8 +362,8 @@ export async function processFullResponseActions(
     }
 
     // Process all search-replace edits
-    const dyadSearchReplaceTags = getDyadSearchReplaceTags(fullResponse);
-    for (const tag of dyadSearchReplaceTags) {
+    const xmlSearchReplaceTags = getXmlSearchReplaceTags(fullResponse);
+    for (const tag of xmlSearchReplaceTags) {
       const filePath = tag.path;
       const fullFilePath = safeJoin(appPath, filePath);
 
@@ -417,7 +417,7 @@ export async function processFullResponseActions(
     }
 
     // Process all file writes
-    for (const tag of dyadWriteTags) {
+    for (const tag of xmlWriteTags) {
       const filePath = tag.path;
       let content: string | Buffer = tag.content;
       const fullFilePath = safeJoin(appPath, filePath);
@@ -518,7 +518,7 @@ export async function processFullResponseActions(
       writtenFiles.length > 0 ||
       renamedFiles.length > 0 ||
       deletedFiles.length > 0 ||
-      dyadAddDependencyPackages.length > 0;
+      xmlAddDependencyPackages.length > 0;
 
     let uncommittedFiles: string[] = [];
     let extraFilesError: string | undefined;
@@ -537,10 +537,8 @@ export async function processFullResponseActions(
         changes.push(`renamed ${renamedFiles.length} file(s)`);
       if (deletedFiles.length > 0)
         changes.push(`deleted ${deletedFiles.length} file(s)`);
-      if (dyadAddDependencyPackages.length > 0)
-        changes.push(
-          `added ${dyadAddDependencyPackages.join(", ")} package(s)`,
-        );
+      if (xmlAddDependencyPackages.length > 0)
+        changes.push(`added ${xmlAddDependencyPackages.join(", ")} package(s)`);
       if (dyadExecuteSqlQueries.length > 0)
         changes.push(`executed ${dyadExecuteSqlQueries.length} SQL queries`);
 
