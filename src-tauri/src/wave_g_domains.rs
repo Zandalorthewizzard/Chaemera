@@ -7,6 +7,7 @@ use std::env;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
+use std::sync::{Mutex, OnceLock};
 use tauri::{AppHandle, Manager, WebviewWindow};
 
 use crate::core_domains::read_settings;
@@ -59,6 +60,11 @@ fn system_path_from_shell() -> Option<String> {
     } else {
         Some(value)
     }
+}
+
+fn node_mock_state() -> &'static Mutex<Option<bool>> {
+    static NODE_MOCK_STATE: OnceLock<Mutex<Option<bool>>> = OnceLock::new();
+    NODE_MOCK_STATE.get_or_init(|| Mutex::new(None))
 }
 
 pub(crate) fn effective_path_value(app: &AppHandle) -> String {
@@ -255,11 +261,30 @@ pub fn get_system_debug_info(app: AppHandle) -> Result<Value, String> {
 
 #[tauri::command]
 pub fn nodejs_status(app: AppHandle) -> Result<Value, String> {
+    if let Ok(guard) = node_mock_state().lock() {
+      if let Some(installed) = *guard {
+        return Ok(json!({
+            "nodeVersion": if installed { Some("v24.0.0") } else { None::<&str> },
+            "pnpmVersion": if installed { Some("9.0.0") } else { None::<&str> },
+            "nodeDownloadUrl": node_download_url(),
+        }));
+      }
+    }
+
     Ok(json!({
         "nodeVersion": run_command_with_app_path(&app, "node", &["--version"]).ok(),
         "pnpmVersion": run_command_with_app_path(&app, "pnpm", &["--version"]).ok(),
         "nodeDownloadUrl": node_download_url(),
     }))
+}
+
+#[tauri::command]
+pub fn test_set_node_mock(installed: Option<bool>) -> Result<(), String> {
+    let mut guard = node_mock_state()
+        .lock()
+        .map_err(|error| format!("failed to lock node mock state: {error}"))?;
+    *guard = installed;
+    Ok(())
 }
 
 #[tauri::command]

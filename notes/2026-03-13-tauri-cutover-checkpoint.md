@@ -53,6 +53,92 @@ This checkpoint captures the current migration status and the clarified near-ter
 5. Any broader Leptos migration is now treated as a later separate stage rather than the gating requirement for the current release.
 6. Product and UI hardening should continue on the current stack unless a later spec explicitly reopens the Leptos migration as the next priority.
 
+## 2026-03-28 Electron Runtime Cleanup
+
+1. Removed the last Electron auto-update / installer-startup hooks from the main process:
+   - deleted `electron-squirrel-startup` usage from `src/main.ts`
+   - deleted `update-electron-app` usage from `src/main.ts`
+2. Removed the corresponding package dependencies from:
+   - `package.json`
+   - `package-lock.json`
+3. Added an explicit regression assertion in `src/__tests__/release_metadata.test.ts` so those dependencies stay out of the package manifest.
+4. Validation passed after the cleanup:
+   - `npm run ts`
+   - `npx vitest run src/__tests__/release_metadata.test.ts src/__tests__/tauri_build_config.test.ts`
+   - `node scripts/audit-electron-legacy-surface.js`
+5. Current audit result after cleanup:
+   - `electron-squirrel-startup` references: `0`
+   - `update-electron-app` references: `0`
+   - support-package import file count dropped from `74` to `72`
+6. Remaining Electron legacy surface is now concentrated in:
+   - `src/main.ts` Electron host itself
+   - `src/preload.ts`
+   - `forge.config.ts`
+   - Electron imports across runtime handlers, utils, and legacy tests
+7. The next high-value cutover step is now the broader Electron host/release tail, not the startup/update hooks.
+
+## 2026-03-28 Electron First-Run Prompt Cleanup
+
+1. Removed the stale macOS first-run prompt from `src/main.ts` that asked users to move the app to Applications for auto-update.
+2. Added a regression assertion in `src/__tests__/release_metadata.test.ts` so `src/main.ts` stays free of:
+   - `electron-squirrel-startup`
+   - `update-electron-app`
+   - the auto-update Applications-folder prompt text
+3. Validation passed after the cleanup:
+   - `npm run ts`
+   - `npx vitest run src/__tests__/release_metadata.test.ts src/__tests__/tauri_build_config.test.ts`
+4. The Electron legacy surface audit did not change further from the previous cleanup:
+   - `electron-squirrel-startup` references: `0`
+   - `update-electron-app` references: `0`
+   - `supportPackageImportFileCount`: `72`
+5. This confirms the updater/prompt tail is now fully removed from the Electron host, leaving the remaining tail concentrated in the actual Electron runtime and Forge packaging files.
+
+## 2026-03-28 Electron Forge Packaging Cleanup
+
+1. Removed the legacy Electron Forge packaging config files from the tracked tree:
+   - `forge.config.ts`
+   - `forge.env.d.ts`
+   - `vite.main.config.mts`
+   - `vite.preload.config.mts`
+2. Removed the corresponding top-level Forge-related devDependencies from `package.json`.
+3. Regenerated `package-lock.json` so the lockfile no longer retains the Forge package graph as a direct dependency surface.
+4. Extended `src/__tests__/tauri_build_config.test.ts` so it now asserts those config files stay deleted and the Forge packages stay absent from `package.json`.
+5. Validation passed after the cleanup:
+   - `npm run ts`
+   - `npx vitest run src/__tests__/release_metadata.test.ts src/__tests__/tauri_build_config.test.ts`
+   - `node scripts/audit-electron-legacy-surface.js`
+6. Current Electron legacy audit after Forge cleanup:
+   - `entrypointCount`: `2`
+   - `forgeReferenceFileCount`: `2`
+   - only remaining entrypoints are `src/main.ts` and `src/preload.ts`
+7. The broader Electron host/release tail is now materially smaller, and the next obvious targets are the live Electron host/preload files themselves rather than build scaffolding.
+
+## 2026-03-28 Electron Host Removal
+
+1. Deleted the final Electron host entrypoints from the repository:
+   - `src/main.ts`
+   - `src/preload.ts`
+2. Removed the stale Electron package entry metadata from `package.json`:
+   - deleted the `main` field that pointed at `.vite/build/main.js`
+3. Extended the migration tests so they now assert:
+   - `src/main.ts` does not exist
+   - `src/preload.ts` does not exist
+   - `package.json.main` is undefined
+4. Validation passed after the host removal:
+   - `npm run ts`
+   - `npx vitest run src/__tests__/release_metadata.test.ts src/__tests__/tauri_build_config.test.ts`
+   - `node scripts/audit-electron-legacy-surface.js`
+5. Current Electron legacy audit after host removal:
+   - `entrypointCount`: `0`
+   - `electronImportFileCount`: `28`
+   - `supportPackageImportFileCount`: `71`
+   - `forgeReferenceFileCount`: `2`
+6. The declared Electron runtime host is now gone. The remaining Electron surface is library-level and handler-level imports, which now need a separate decision: keep as compatibility/runtime debt for a while, or start pruning them module by module.
+7. Follow-up validation completed after the host removal:
+   - `npm run build` succeeded for the Tauri renderer bundle
+   - `npm run check:tauri` initially failed in generated Tauri Rust code, then passed after fixing the `Option<&str>` typing in `src-tauri/src/wave_g_domains.rs` and the unused binding warning in `src-tauri/src/wave_t_domains.rs`
+8. This confirms the cutover now has a clean renderer build and a clean Rust check with the Electron host/preload removed.
+
 ## Recommended Resume Order
 
 1. Reconcile canonical docs with the actual `Sprint 11` execution log.

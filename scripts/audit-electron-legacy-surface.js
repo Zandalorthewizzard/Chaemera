@@ -4,13 +4,7 @@ const { execFileSync } = require("node:child_process");
 
 const ROOT = process.cwd();
 
-const ENTRYPOINT_FILES = [
-  "src/main.ts",
-  "src/preload.ts",
-  "forge.config.ts",
-  "vite.main.config.mts",
-  "vite.preload.config.mts",
-];
+const ENTRYPOINT_FILES = ["src/main.ts", "src/preload.ts"];
 
 const IMPORT_PATTERNS = [
   {

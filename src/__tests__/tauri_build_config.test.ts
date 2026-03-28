@@ -13,6 +13,7 @@ describe("tauri build config", () => {
     const packageJson = readJson<{
       scripts: Record<string, string>;
       devDependencies: Record<string, string | undefined>;
+      main?: string;
     }>("package.json");
     const rootTauriConfig = readJson<{
       build: {
@@ -41,6 +42,7 @@ describe("tauri build config", () => {
     expect(packageJson.scripts["package:tauri"]).toBe(
       "npx @tauri-apps/cli build --config src-tauri/tauri.conf.json",
     );
+    expect(packageJson.main).toBeUndefined();
     expect(packageJson.scripts["check:tauri"]).toBe(
       "cargo check --manifest-path src-tauri/Cargo.toml",
     );
@@ -69,6 +71,18 @@ describe("tauri build config", () => {
     expect(
       packageJson.devDependencies["@electron-forge/publisher-github"],
     ).toBeUndefined();
+    expect(packageJson.devDependencies["@electron-forge/cli"]).toBeUndefined();
+    expect(
+      packageJson.devDependencies["@electron-forge/plugin-auto-unpack-natives"],
+    ).toBeUndefined();
+    expect(
+      packageJson.devDependencies["@electron-forge/plugin-fuses"],
+    ).toBeUndefined();
+    expect(
+      packageJson.devDependencies["@electron-forge/plugin-vite"],
+    ).toBeUndefined();
+    expect(packageJson.devDependencies["@electron/asar"]).toBeUndefined();
+    expect(packageJson.devDependencies["@electron/fuses"]).toBeUndefined();
     expect(packageJson.scripts["build:tauri-regression"]).toBe(
       "npx vite build --config vite.renderer.config.mts --outDir .tauri-smoke-dist",
     );
@@ -130,6 +144,22 @@ describe("tauri build config", () => {
     expect(srcTauriConfig.build.beforeBuildCommand).not.toBe("npm run build");
     expect(rootTauriConfig.build.frontendDist).toBe("./dist");
     expect(srcTauriConfig.build.frontendDist).toBe("../dist");
+    expect(fs.existsSync(path.join(process.cwd(), "forge.config.ts"))).toBe(
+      false,
+    );
+    expect(fs.existsSync(path.join(process.cwd(), "forge.env.d.ts"))).toBe(
+      false,
+    );
+    expect(
+      fs.existsSync(path.join(process.cwd(), "vite.main.config.mts")),
+    ).toBe(false);
+    expect(
+      fs.existsSync(path.join(process.cwd(), "vite.preload.config.mts")),
+    ).toBe(false);
+    expect(fs.existsSync(path.join(process.cwd(), "src/main.ts"))).toBe(false);
+    expect(fs.existsSync(path.join(process.cwd(), "src/preload.ts"))).toBe(
+      false,
+    );
   });
 
   it("keeps CI aware of the Tauri renderer and runtime checks", () => {

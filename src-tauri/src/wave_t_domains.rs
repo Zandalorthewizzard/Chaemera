@@ -280,7 +280,7 @@ pub fn github_merge_branch(app: AppHandle, request: GitBranchRequest) -> Result<
 
     match run_git_with_author(&app, &repo_path, &["merge", &merge_ref]) {
         Ok(_) => Ok(()),
-        Err(error) if git_merge_in_progress(&repo_path) || git_rebase_in_progress(&repo_path) => {
+        Err(_error) if git_merge_in_progress(&repo_path) || git_rebase_in_progress(&repo_path) => {
             Err(
                 "Merge conflict detected during merge. Please resolve conflicts before proceeding."
                     .to_string(),

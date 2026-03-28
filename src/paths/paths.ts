@@ -1,14 +1,13 @@
 import path from "node:path";
 import os from "node:os";
-import { IS_TEST_BUILD } from "../ipc/utils/test_utils";
 
 /**
  * Gets the base dyad-apps directory path (without a specific app subdirectory)
  */
 export function getDyadAppsBaseDirectory(): string {
-  if (IS_TEST_BUILD) {
-    const electron = getElectron();
-    return path.join(electron!.app.getPath("userData"), "dyad-apps");
+  const overrideDir = process.env.CHAEMERA_TAURI_DYAD_APPS_DIR;
+  if (overrideDir) {
+    return overrideDir;
   }
   return path.join(os.homedir(), "dyad-apps");
 }
@@ -23,8 +22,7 @@ export function getDyadAppPath(appPath: string): string {
 }
 
 export function getTypeScriptCachePath(): string {
-  const electron = getElectron();
-  return path.join(electron!.app.getPath("sessionData"), "typescript-cache");
+  return path.join(getUserDataPath(), "typescript-cache");
 }
 
 /**
@@ -34,29 +32,10 @@ export function getTypeScriptCachePath(): string {
  */
 
 export function getUserDataPath(): string {
-  const electron = getElectron();
-
-  // When running in Electron and app is ready
-  if (process.env.NODE_ENV !== "development" && electron) {
-    return electron!.app.getPath("userData");
+  const overrideDir = process.env.CHAEMERA_TAURI_APP_DATA_DIR;
+  if (overrideDir) {
+    return overrideDir;
   }
 
-  // For development or when the Electron app object isn't available
   return path.resolve("./userData");
-}
-
-/**
- * Get a reference to electron in a way that won't break in non-electron environments
- */
-export function getElectron(): typeof import("electron") | undefined {
-  let electron: typeof import("electron") | undefined;
-  try {
-    // Check if we're in an Electron environment
-    if (process.versions.electron) {
-      electron = require("electron");
-    }
-  } catch {
-    // Not in Electron environment
-  }
-  return electron;
 }

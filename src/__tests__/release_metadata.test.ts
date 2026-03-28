@@ -15,6 +15,8 @@ describe("release metadata", () => {
       productName: string;
       author: { name: string };
       repository: { url: string };
+      main?: string;
+      dependencies: Record<string, string>;
     }>("package.json");
     const packageLock = readJson<{
       name: string;
@@ -27,6 +29,11 @@ describe("release metadata", () => {
     expect(packageJson.repository.url).toBe(
       "https://github.com/Zandalorthewizzard/Chaemera.git",
     );
+    expect(packageJson.main).toBeUndefined();
+    expect(
+      packageJson.dependencies["electron-squirrel-startup"],
+    ).toBeUndefined();
+    expect(packageJson.dependencies["update-electron-app"]).toBeUndefined();
     expect(packageLock.name).toBe("chaemera");
     expect(packageLock.packages[""].name).toBe("chaemera");
   });
@@ -52,6 +59,15 @@ describe("release metadata", () => {
     expect(packageJson.scripts["package:electron"]).toBeUndefined();
     expect(packageJson.scripts.make).toBeUndefined();
     expect(packageJson.scripts.publish).toBeUndefined();
+    expect(fs.existsSync(path.join(process.cwd(), "src/main.ts"))).toBe(false);
+    expect(fs.existsSync(path.join(process.cwd(), "src/preload.ts"))).toBe(
+      false,
+    );
+    expect(
+      fs.existsSync(
+        path.join(process.cwd(), "src/ipc/handlers/window_handlers.ts"),
+      ),
+    ).toBe(false);
     expect(
       fs.existsSync(path.join(process.cwd(), ".github/workflows/release.yml")),
     ).toBe(false);
