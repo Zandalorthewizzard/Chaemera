@@ -18,7 +18,7 @@
   "selectingFolder": "正在选择文件夹...",
   "selectedFolder": "已选择文件夹：",
   "clearSelection": "清除选择",
-  "copyToDyadApps": "复制到 apps 文件夹",
+  "copyToApps": "复制到 apps 文件夹",
   "appNameExists": "此名称的应用已存在。请选择其他名称：",
   "appName": "应用名称",
   "appNameOptional": "应用名称（可选）",
@@ -70,7 +70,7 @@
   },
   "setup": {
     "buildNewApp": "构建新应用",
-    "setupDyad": "设置 Chaemera",
+    "setupChaemera": "设置 Chaemera",
     "installNodeJs": "1. 安装 Node.js（应用运行时）",
     "errorCheckingNode": "检查 Node.js 状态出错。请尝试安装 Node.js。",
     "nodeInstalled": "Node.js ({{version}}) 已安装。",

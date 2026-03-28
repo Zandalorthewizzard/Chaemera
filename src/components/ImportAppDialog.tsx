@@ -51,7 +51,7 @@ export function ImportAppDialog({ isOpen, onClose }: ImportAppDialogProps) {
   const [isCheckingName, setIsCheckingName] = useState<boolean>(false);
   const [installCommand, setInstallCommand] = useState("");
   const [startCommand, setStartCommand] = useState("");
-  const [copyToDyadApps, setCopyToDyadApps] = useState(true);
+  const [copyToApps, setCopyToApps] = useState(true);
   const navigate = useNavigate();
   const { streamMessage } = useStreamChat({ hasChatId: false });
   const { refreshApps } = useLoadApps();
@@ -75,12 +75,12 @@ export function ImportAppDialog({ isOpen, onClose }: ImportAppDialogProps) {
     }
   }, [isOpen]);
 
-  // Re-check app name when copyToDyadApps changes
+  // Re-check app name when copy-to-apps changes
   useEffect(() => {
     if (customAppName.trim() && selectedPath) {
-      checkAppName({ name: customAppName, skipCopy: !copyToDyadApps });
+      checkAppName({ name: customAppName, skipCopy: !copyToApps });
     }
-  }, [copyToDyadApps]);
+  }, [copyToApps]);
 
   const handleUrlBlur = async () => {
     if (!url.trim()) return;
@@ -236,7 +236,7 @@ export function ImportAppDialog({ isOpen, onClose }: ImportAppDialogProps) {
       // Use the folder name from the IPC response
       setCustomAppName(result.name);
       // Check if the app name already exists
-      await checkAppName({ name: result.name, skipCopy: !copyToDyadApps });
+      await checkAppName({ name: result.name, skipCopy: !copyToApps });
       return result;
     },
     onError: (error: Error) => {
@@ -252,7 +252,7 @@ export function ImportAppDialog({ isOpen, onClose }: ImportAppDialogProps) {
         appName: customAppName,
         installCommand: installCommand || undefined,
         startCommand: startCommand || undefined,
-        skipCopy: !copyToDyadApps,
+        skipCopy: !copyToApps,
       });
     },
     onSuccess: async (result) => {
@@ -291,7 +291,7 @@ export function ImportAppDialog({ isOpen, onClose }: ImportAppDialogProps) {
     setNameExists(false);
     setInstallCommand("");
     setStartCommand("");
-    setCopyToDyadApps(true);
+    setCopyToApps(true);
   };
 
   const handleAppNameChange = async (
@@ -300,7 +300,7 @@ export function ImportAppDialog({ isOpen, onClose }: ImportAppDialogProps) {
     const newName = e.target.value;
     setCustomAppName(newName);
     if (newName.trim()) {
-      await checkAppName({ name: newName, skipCopy: !copyToDyadApps });
+      await checkAppName({ name: newName, skipCopy: !copyToApps });
     }
   };
 
@@ -396,9 +396,9 @@ export function ImportAppDialog({ isOpen, onClose }: ImportAppDialogProps) {
                       <Checkbox
                         id="copy-to-dyad-apps"
                         aria-label="Copy to the apps folder"
-                        checked={copyToDyadApps}
+                        checked={copyToApps}
                         onCheckedChange={(checked) =>
-                          setCopyToDyadApps(checked === true)
+                          setCopyToApps(checked === true)
                         }
                         disabled={importAppMutation.isPending}
                       />
@@ -406,7 +406,7 @@ export function ImportAppDialog({ isOpen, onClose }: ImportAppDialogProps) {
                         htmlFor="copy-to-dyad-apps"
                         className="text-xs sm:text-sm cursor-pointer"
                       >
-                        {t("home:copyToDyadApps")}
+                        {t("home:copyToApps")}
                       </label>
                     </div>
 

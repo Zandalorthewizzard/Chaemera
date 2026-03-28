@@ -18,7 +18,7 @@
   "selectingFolder": "Selecionando pasta...",
   "selectedFolder": "Pasta selecionada:",
   "clearSelection": "Limpar seleção",
-  "copyToDyadApps": "Copiar para a pasta apps",
+  "copyToApps": "Copiar para a pasta apps",
   "appNameExists": "Já existe um app com este nome. Escolha um nome diferente:",
   "appName": "Nome do app",
   "appNameOptional": "Nome do app (opcional)",
@@ -70,7 +70,7 @@
   },
   "setup": {
     "buildNewApp": "Criar um novo app",
-    "setupDyad": "Configurar Chaemera",
+    "setupChaemera": "Configurar Chaemera",
     "installNodeJs": "1. Instalar Node.js (Runtime do App)",
     "errorCheckingNode": "Erro ao verificar o status do Node.js. Tente instalar o Node.js.",
     "nodeInstalled": "Node.js ({{version}}) instalado.",
