@@ -223,13 +223,6 @@ export const queryKeys = {
   },
 
   // ─────────────────────────────────────────────────────────────────────────────
-  // Free Agent Quota
-  // ─────────────────────────────────────────────────────────────────────────────
-  freeAgentQuota: {
-    status: ["freeAgentQuotaStatus"] as const,
-  },
-
-  // ─────────────────────────────────────────────────────────────────────────────
   // Leptos Shell
   // ─────────────────────────────────────────────────────────────────────────────
   leptosShell: {
@@ -364,9 +357,6 @@ export type AppQueryKey =
       (typeof queryKeys.languageModels)[keyof typeof queryKeys.languageModels]
     >
   | QueryKeyOf<(typeof queryKeys.userBudget)[keyof typeof queryKeys.userBudget]>
-  | QueryKeyOf<
-      (typeof queryKeys.freeAgentQuota)[keyof typeof queryKeys.freeAgentQuota]
-    >
   | QueryKeyOf<
       (typeof queryKeys.leptosShell)[keyof typeof queryKeys.leptosShell]
     >

@@ -48,7 +48,6 @@ export { upgradeContracts } from "./upgrade";
 export { visualEditingContracts } from "./visual-editing";
 export { securityContracts } from "./security";
 export { miscContracts, miscEvents } from "./misc";
-export { freeAgentQuotaContracts } from "./free_agent_quota";
 export { leptosContracts } from "./leptos";
 
 // =============================================================================
@@ -77,7 +76,6 @@ export { upgradeClient } from "./upgrade";
 export { visualEditingClient } from "./visual-editing";
 export { securityClient } from "./security";
 export { miscClient, miscEventClient } from "./misc";
-export { freeAgentQuotaClient } from "./free_agent_quota";
 export { leptosClient } from "./leptos";
 
 // =============================================================================
@@ -283,9 +281,6 @@ export type {
   AppOutput,
   EnvVar,
 } from "./misc";
-
-// Free agent quota types
-export type { FreeAgentQuotaStatus } from "./free_agent_quota";
 export type {
   LeptosRouteId,
   RenderLeptosRouteParams,
@@ -346,7 +341,6 @@ import { upgradeClient } from "./upgrade";
 import { visualEditingClient } from "./visual-editing";
 import { securityClient } from "./security";
 import { miscClient, miscEventClient } from "./misc";
-import { freeAgentQuotaClient } from "./free_agent_quota";
 import { leptosClient } from "./leptos";
 
 /**
@@ -400,7 +394,6 @@ export const ipc = {
   visualEditing: visualEditingClient,
   security: securityClient,
   misc: miscClient,
-  freeAgentQuota: freeAgentQuotaClient,
   leptos: leptosClient,
 
   // Event clients for main->renderer pub/sub

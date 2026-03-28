@@ -1,11 +1,4 @@
-import { ipc } from "@/ipc/types";
-import { AI_STREAMING_ERROR_MESSAGE_PREFIX } from "@/shared/texts";
-import {
-  X,
-  ExternalLink as ExternalLinkIcon,
-  CircleArrowUp,
-  MessageSquarePlus,
-} from "lucide-react";
+import { X, MessageSquarePlus } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import {
@@ -26,16 +19,8 @@ export function ChatErrorBox({
   if (error.includes("doesn't have a free quota tier")) {
     return (
       <ChatErrorContainer onDismiss={onDismiss}>
-        {error}
-        <span className="ml-1">
-          <ExternalLink
-            href="https://dyad.sh/docs/help/ai-rate-limit"
-            variant="primary"
-          >
-            Model access guide
-          </ExternalLink>
-        </span>{" "}
-        or switch to another model.
+        {error}. Check your model/provider configuration or switch to another
+        model.
       </ChatErrorContainer>
     );
   }
@@ -48,12 +33,7 @@ export function ChatErrorBox({
   ) {
     return (
       <ChatErrorContainer onDismiss={onDismiss}>
-        {error}
-        <div className="mt-2 space-y-2 space-x-2">
-          <ExternalLink href="https://dyad.sh/docs/help/ai-rate-limit">
-            Troubleshooting guide
-          </ExternalLink>
-        </div>
+        {error}. Try another model or provider.
       </ChatErrorContainer>
     );
   }
@@ -82,12 +62,6 @@ export function ChatErrorBox({
     <ChatErrorContainer onDismiss={onDismiss}>
       {error}
       <div className="mt-2 space-y-2 space-x-2">
-        {error.includes(AI_STREAMING_ERROR_MESSAGE_PREFIX) &&
-          !error.includes("TypeError: terminated") && (
-            <ExternalLink href="https://dyad.sh/docs/help/ai-rate-limit">
-              Troubleshooting guide
-            </ExternalLink>
-          )}
         {onStartNewChat && (
           <Tooltip>
             <TooltipTrigger
@@ -102,47 +76,8 @@ export function ChatErrorBox({
             </TooltipContent>
           </Tooltip>
         )}
-        <ExternalLink href="https://www.dyad.sh/docs/faq">
-          Read docs
-        </ExternalLink>
       </div>
     </ChatErrorContainer>
-  );
-}
-
-function ExternalLink({
-  href,
-  children,
-  variant = "secondary",
-  icon,
-}: {
-  href: string;
-  children: React.ReactNode;
-  variant?: "primary" | "secondary";
-  icon?: React.ReactNode;
-}) {
-  const baseClasses =
-    "cursor-pointer inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium shadow-sm focus:outline-none focus:ring-2";
-  const primaryClasses =
-    "bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500";
-  const secondaryClasses =
-    "bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 hover:border-blue-300 focus:ring-blue-200";
-  const iconElement =
-    icon ??
-    (variant === "primary" ? (
-      <CircleArrowUp size={18} />
-    ) : (
-      <ExternalLinkIcon size={14} />
-    ));
-
-  return (
-    <a
-      className={`${baseClasses} ${variant === "primary" ? primaryClasses : secondaryClasses}`}
-      onClick={() => ipc.system.openExternalUrl(href)}
-    >
-      <span>{children}</span>
-      {iconElement}
-    </a>
   );
 }
 
@@ -167,25 +102,7 @@ function ChatErrorContainer({
       <div className="pl-8 py-1 text-sm">
         <div className="text-red-700 text-wrap">
           {typeof children === "string" ? (
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
-              components={{
-                a: ({ children: linkChildren, ...props }) => (
-                  <a
-                    {...props}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      if (props.href) {
-                        ipc.system.openExternalUrl(props.href);
-                      }
-                    }}
-                    className="text-blue-500 hover:text-blue-700"
-                  >
-                    {linkChildren}
-                  </a>
-                ),
-              }}
-            >
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
               {children}
             </ReactMarkdown>
           ) : (

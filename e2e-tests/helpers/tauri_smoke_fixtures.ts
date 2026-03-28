@@ -73,7 +73,6 @@ const tauriCommandToChannel = {
   get_proposal: "get-proposal",
   approve_proposal: "approve-proposal",
   reject_proposal: "reject-proposal",
-  free_agent_quota_get_status: "free-agent-quota:get-status",
   create_app: "create-app",
   get_app: "get-app",
   list_apps: "list-apps",
@@ -931,7 +930,6 @@ export const test = base.extend<{
                     sourceCommitHash: message.sourceCommitHash ?? null,
                     commitHash: message.commitHash ?? null,
                     requestId: message.requestId ?? null,
-                    usingFreeAgentModeQuota: null,
                   })),
                 },
                 providers: {
@@ -2077,15 +2075,6 @@ export const test = base.extend<{
                 ],
                 timestamp: "2026-03-01T00:00:00.000Z",
                 chatId: 1,
-              };
-            case "free-agent-quota:get-status":
-              return {
-                messagesUsed: 0,
-                messagesLimit: 5,
-                isQuotaExceeded: false,
-                windowStartTime: null,
-                resetTime: null,
-                hoursUntilReset: null,
               };
             case "get-env-vars":
               return {};

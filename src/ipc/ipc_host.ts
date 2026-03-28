@@ -30,7 +30,6 @@ import { registerMcpHandlers } from "./handlers/mcp_handlers";
 import { registerSecurityHandlers } from "./handlers/security_handlers";
 import { registerVisualEditingHandlers } from "./handlers/visual_editing_handlers";
 import { registerAgentToolHandlers } from "./handlers/local_agent/agent_tool_handlers";
-import { registerFreeAgentQuotaHandlers } from "./handlers/free_agent_quota_handlers";
 import { registerPlanHandlers } from "./handlers/plan_handlers";
 
 export function registerIpcHandlers() {
@@ -67,6 +66,5 @@ export function registerIpcHandlers() {
   registerSecurityHandlers();
   registerVisualEditingHandlers();
   registerAgentToolHandlers();
-  registerFreeAgentQuotaHandlers();
   registerPlanHandlers();
 }

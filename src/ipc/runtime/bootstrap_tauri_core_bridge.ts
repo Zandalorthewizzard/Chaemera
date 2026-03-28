@@ -107,6 +107,8 @@ export function buildTauriInvokeArgs(
       return typeof payload === "number" ? { appId: payload } : undefined;
     case "set-user-settings":
       return payloadRecord ? { patch: payloadRecord } : undefined;
+    case "test:set-node-mock":
+      return payloadRecord ? { installed: payloadRecord.installed } : {};
     case "portal:migrate-create":
       return payloadRecord ? { request: payloadRecord } : undefined;
     case "get-proposal":
@@ -399,6 +401,7 @@ export function buildTauriInvokeArgs(
     case "cleanup-theme-images":
     case "apply-visual-editing-changes":
     case "analyze-component":
+    case "test:simulateQuotaTimeElapsed":
     case "leptos:render-route":
     case "add-log":
     case "clear-logs":
@@ -529,6 +532,8 @@ export function canInvokeViaTauri(channel: string, payload: unknown): boolean {
     case "chat:stream":
     case "chat:count-tokens":
     case "chat:cancel":
+    case "test:simulateQuotaTimeElapsed":
+    case "test:set-node-mock":
     case "stop-app":
     case "respond-to-app-input":
     case "agent-tool:set-consent":

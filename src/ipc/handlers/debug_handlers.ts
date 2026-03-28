@@ -346,7 +346,6 @@ export function registerDebugHandlers() {
             sourceCommitHash: msg.sourceCommitHash ?? null,
             commitHash: msg.commitHash ?? null,
             requestId: msg.requestId ?? null,
-            usingFreeAgentModeQuota: msg.usingFreeAgentModeQuota ?? null,
           })),
         },
 

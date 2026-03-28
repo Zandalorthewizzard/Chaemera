@@ -185,8 +185,6 @@ const DebugMessageSchema = z.object({
   commitHash: z.string().nullable(),
   /** Hosted request UUID for tracking */
   requestId: z.string().nullable(),
-  /** Whether this message used the free agent quota */
-  usingFreeAgentModeQuota: z.boolean().nullable(),
 });
 
 // -- Chat with messages --

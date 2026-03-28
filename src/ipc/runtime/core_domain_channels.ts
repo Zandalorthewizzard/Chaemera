@@ -14,7 +14,6 @@ export const TAURI_MIGRATION_CHANNEL_TO_COMMAND = {
   "get-proposal": "get_proposal",
   "approve-proposal": "approve_proposal",
   "reject-proposal": "reject_proposal",
-  "free-agent-quota:get-status": "free_agent_quota_get_status",
   "get-session-debug-bundle": "get_session_debug_bundle",
   "is-capacitor": "is_capacitor",
   "sync-capacitor": "sync_capacitor",
@@ -175,6 +174,8 @@ export const TAURI_MIGRATION_CHANNEL_TO_COMMAND = {
   "clear-logs": "clear_logs",
   "open-external-url": "open_external_url",
   "leptos:render-route": "leptos_render_route",
+  "test:simulateQuotaTimeElapsed": "test_simulate_quota_time_elapsed",
+  "test:set-node-mock": "test_set_node_mock",
 } as const;
 
 export const TAURI_MIGRATION_INVOKE_CHANNELS = Object.keys(
