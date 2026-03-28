@@ -228,6 +228,24 @@ Pack 2.0 baseline is initialized in `docs-new` for Chaemera.
 - use the Electron audit as a gate rather than the implementation strategy,
 - and keep post-release agent work out of this release-critical slice.
 
+62. A dedicated strict spec now exists for the future Rust logging backend:
+
+- it preserves the `src/lib/app_logger.ts` adapter contract,
+- it replaces the backend implementation with a Rust/Tauri-native subsystem,
+- it keeps support/debug bundle log tails intact,
+- and it keeps preview console state and version history separate from diagnostics logging.
+
+63. A dedicated strict spec now exists for the first production MVP release roadmap.
+64. That roadmap explicitly locks the current release-critical scope to:
+
+- final Tauri validation and real desktop runtime gating,
+- Tauri parity debts around secret storage and environment behavior,
+- Dyad-hosted and premium-shaped dependency detachment,
+- first-order Dyad branding cleanup in shipped surfaces,
+- and release acceptance plus packaging readiness.
+
+65. The same roadmap explicitly records that post-release agent work and logging-backend replacement are not part of the first production MVP unless they become direct ship blockers.
+
 ## Open / Deferred
 
 1. Full migration of prior docs from `docs/` is pending.
@@ -247,6 +265,7 @@ Pack 2.0 baseline is initialized in `docs-new` for Chaemera.
 13. The new structured-agent direction now has a canonical post-release architecture spec, but implementation remains deferred until after the current release line ships.
 14. Dedicated follow-up specs for protocol, session persistence, terminal behavior, and capability gateway semantics are still pending before post-release implementation begins.
 15. `electron-log` neutralization is still outside the scope of the final host-capability cutover spec and remains a separate follow-up concern.
+16. The new production MVP roadmap is governance-complete, but its implementation tasks remain open until the release-line work is actually executed and verified.
 
 ## Evidence
 
@@ -333,6 +352,12 @@ Pack 2.0 baseline is initialized in `docs-new` for Chaemera.
   lines: 1-420
 - path: `04-sprint-workflow/specs/2026-03-28-final-tauri-host-capability-cutover.md`
   symbol: `Canonical final host-capability cutover plan`
+  lines: 1-320
+- path: `04-sprint-workflow/specs/2026-03-28-rust-logging-backend-contract-and-migration-plan.md`
+  symbol: `Canonical Rust logging backend replacement contract and migration plan`
+  lines: 1-260
+- path: `04-sprint-workflow/specs/2026-03-28-prod-mvp-release-roadmap.md`
+  symbol: `Canonical production MVP release roadmap`
   lines: 1-320
 - path: `../scripts/audit-electron-legacy-surface.js`
   symbol: `Electron legacy surface audit summary`

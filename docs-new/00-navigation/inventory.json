@@ -659,6 +659,22 @@
       "focus": ["Final Tauri Host-Capability Cutover"],
       "status": "active",
       "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-spec-rust-logging-backend-contract-and-migration-plan-2026-03-28",
+      "path": "04-sprint-workflow/specs/2026-03-28-rust-logging-backend-contract-and-migration-plan.md",
+      "type": "spec",
+      "focus": ["Rust Logging Backend Replacement Contract and Migration Plan"],
+      "status": "active",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-spec-prod-mvp-release-roadmap-2026-03-28",
+      "path": "04-sprint-workflow/specs/2026-03-28-prod-mvp-release-roadmap.md",
+      "type": "spec",
+      "focus": ["Production MVP Release Roadmap"],
+      "status": "active",
+      "source_of_truth": "governance"
     }
   ]
 }

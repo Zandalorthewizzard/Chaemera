@@ -275,6 +275,24 @@ outline: []
     - GitHub flow affinity,
     - and only then the old invoke and stream registration spine.
 17. Synced navigation, inventory, progress, and validation docs to include the new final-cutover spec.
+18. Added a canonical strict spec for the future Rust logging backend:
+
+- `04-sprint-workflow/specs/2026-03-28-rust-logging-backend-contract-and-migration-plan.md`.
+
+19. Added a canonical orientational roadmap for the first production MVP release:
+
+- `04-sprint-workflow/specs/2026-03-28-prod-mvp-release-roadmap.md`.
+
+20. Locked the current production release scope to:
+
+- final Tauri validation and desktop runtime gating,
+- Tauri parity debts around secrets and environment behavior,
+- Dyad-hosted and premium-shaped detachment,
+- first-order branding cleanup,
+- and final release acceptance work.
+
+21. Explicitly kept post-release agent architecture and logging-backend replacement outside the immediate release critical path unless they become true ship blockers.
+22. Synced navigation, inventory, progress, and validation docs to include the new production MVP roadmap spec.
 
 ## Deferred
 
@@ -383,6 +401,12 @@ outline: []
 - path: `docs-new/04-sprint-workflow/specs/2026-03-28-post-release-agent-core-boundary-and-host-daemon-architecture.md`
   symbol: `Canonical post-release agent architecture boundary`
   lines: 1-420
+- path: `docs-new/04-sprint-workflow/specs/2026-03-28-rust-logging-backend-contract-and-migration-plan.md`
+  symbol: `Canonical Rust logging backend replacement contract and migration plan`
+  lines: 1-260
+- path: `docs-new/04-sprint-workflow/specs/2026-03-28-prod-mvp-release-roadmap.md`
+  symbol: `Canonical production MVP release roadmap`
+  lines: 1-320
 - path: `notes/2026-03-13-tauri-cutover-checkpoint.md`
   symbol: `Resume checkpoint and strategy update`
   lines: 1-200
