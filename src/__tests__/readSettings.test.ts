@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
-import { safeStorage } from "electron";
 import {
   readSettings,
   getSettingsFilePath,
@@ -12,14 +11,16 @@ import {
 import { getUserDataPath } from "@/paths/paths";
 import { UserSettings } from "@/lib/schemas";
 
+const mockSafeStorage = vi.hoisted(() => ({
+  isEncryptionAvailable: vi.fn(),
+  decryptString: vi.fn(),
+}));
+
 // Mock dependencies
 vi.mock("node:fs");
 vi.mock("node:path");
 vi.mock("electron", () => ({
-  safeStorage: {
-    isEncryptionAvailable: vi.fn(),
-    decryptString: vi.fn(),
-  },
+  safeStorage: mockSafeStorage,
 }));
 vi.mock("@/paths/paths", () => ({
   getUserDataPath: vi.fn(),
@@ -27,7 +28,6 @@ vi.mock("@/paths/paths", () => ({
 
 const mockFs = vi.mocked(fs);
 const mockPath = vi.mocked(path);
-const mockSafeStorage = vi.mocked(safeStorage);
 const mockGetUserDataPath = vi.mocked(getUserDataPath);
 
 describe("readSettings", () => {
@@ -39,7 +39,7 @@ describe("readSettings", () => {
     mockGetUserDataPath.mockReturnValue(mockUserDataPath);
     mockPath.join.mockReturnValue(mockSettingsPath);
     mockSafeStorage.isEncryptionAvailable.mockReturnValue(true);
-    setSafeStorageOverride(safeStorage as typeof safeStorage);
+    setSafeStorageOverride(mockSafeStorage as never);
   });
 
   afterEach(() => {
@@ -576,7 +576,7 @@ describe("encrypt", () => {
 
 describe("decrypt", () => {
   beforeEach(() => {
-    setSafeStorageOverride(safeStorage as typeof safeStorage);
+    setSafeStorageOverride(mockSafeStorage as never);
   });
 
   afterEach(() => {

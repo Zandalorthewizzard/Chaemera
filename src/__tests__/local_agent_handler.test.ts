@@ -1,5 +1,4 @@
 import { describe, it, expect } from "vitest";
-import type { IpcMainInvokeEvent } from "electron";
 import { handleLocalAgentStream } from "@/ipc/handlers/local_agent/local_agent_handler";
 import type { ChatStreamParams } from "@/ipc/types";
 
@@ -13,7 +12,7 @@ function createFakeEvent() {
           sentMessages.push({ channel, payload });
         },
       },
-    } as unknown as IpcMainInvokeEvent,
+    } as Parameters<typeof handleLocalAgentStream>[0],
     sentMessages,
   };
 }
