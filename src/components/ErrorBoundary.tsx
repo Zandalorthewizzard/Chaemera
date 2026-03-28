@@ -3,11 +3,13 @@ import { Button } from "@/components/ui/button";
 import { LightbulbIcon } from "lucide-react";
 import { ErrorComponentProps } from "@tanstack/react-router";
 import { usePostHog } from "posthog-js/react";
+import { useNavigate } from "@tanstack/react-router";
 import { ipc } from "@/ipc/types";
 
 export function ErrorBoundary({ error }: ErrorComponentProps) {
   const [isLoading, setIsLoading] = useState(false);
   const posthog = usePostHog();
+  const navigate = useNavigate();
 
   useEffect(() => {
     console.error("An error occurred in the route:", error);
@@ -20,7 +22,7 @@ export function ErrorBoundary({ error }: ErrorComponentProps) {
       // Get system debug info
       const debugInfo = await ipc.system.getSystemDebugInfo();
 
-      // Create a formatted issue body with the debug info and error information
+      // Create a formatted support report with the debug info and error information
       const issueBody = `
 ## Bug Description
 <!-- Please describe the issue you're experiencing -->
@@ -54,19 +56,11 @@ ${debugInfo.logs.slice(-3_500) || "No logs available"}
 \`\`\`
 `;
 
-      // Create the GitHub issue URL with the pre-filled body
-      const encodedBody = encodeURIComponent(issueBody);
-      const encodedTitle = encodeURIComponent(
-        "[bug] Error in Chaemera application",
-      );
-      const githubIssueUrl = `https://github.com/dyad-sh/dyad/issues/new?title=${encodedTitle}&labels=bug,filed-from-app,client-error&body=${encodedBody}`;
-
-      // Open the pre-filled GitHub issue page
-      await ipc.system.openExternalUrl(githubIssueUrl);
+      await navigator.clipboard.writeText(issueBody);
+      navigate({ to: "/help" });
     } catch (err) {
       console.error("Failed to prepare bug report:", err);
-      // Fallback to opening the regular GitHub issue page
-      ipc.system.openExternalUrl("https://github.com/dyad-sh/dyad/issues/new");
+      navigate({ to: "/help" });
     } finally {
       setIsLoading(false);
     }
@@ -94,7 +88,7 @@ ${debugInfo.logs.slice(-3_500) || "No logs available"}
 
         <div className="flex flex-col gap-2">
           <Button onClick={handleReportBug} disabled={isLoading}>
-            {isLoading ? "Preparing report..." : "Report Bug"}
+            {isLoading ? "Preparing report..." : "Copy support report"}
           </Button>
         </div>
 

@@ -101,6 +101,7 @@ export function SetupBanner() {
     behavior: "smooth",
     block: "start",
   });
+  const helpNavigate = useNavigate();
 
   const handleGoogleSetupClick = () => {
     posthog.capture("setup-flow:ai-provider-setup:google:click");
@@ -235,9 +236,7 @@ export function SetupBanner() {
                       <a
                         className="text-blue-500 dark:text-blue-400 hover:underline"
                         onClick={() => {
-                          ipc.system.openExternalUrl(
-                            "https://nodejs.org/en/download",
-                          );
+                          helpNavigate({ to: "/help" });
                         }}
                       >
                         {t("setup.moreDownloadOptions")}
@@ -284,7 +283,9 @@ export function SetupBanner() {
                   </div>
                 </div>
               )}
-              <NodeJsHelpCallout />
+              <NodeJsHelpCallout
+                onOpenHelp={() => helpNavigate({ to: "/help" })}
+              />
             </AccordionContent>
           </AccordionItem>
 
@@ -376,14 +377,14 @@ export function SetupBanner() {
   );
 }
 
-function NodeJsHelpCallout() {
+function NodeJsHelpCallout({ onOpenHelp }: { onOpenHelp: () => void }) {
   return (
     <div className="mt-3 p-3 bg-(--background-lighter) border rounded-lg text-sm">
       <p>
         If you run into issues, read our{" "}
         <a
           onClick={() => {
-            ipc.system.openExternalUrl("https://www.dyad.sh/docs/help/nodejs");
+            onOpenHelp();
           }}
           className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
         >
