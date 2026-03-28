@@ -1,7 +1,7 @@
 import fsAsync from "node:fs/promises";
 import path from "node:path";
 import { gitIsIgnored } from "../ipc/utils/git_utils";
-import log from "electron-log";
+import { appLog as log } from "@/lib/app_logger";
 import { IS_TEST_BUILD } from "../ipc/utils/test_utils";
 import { glob } from "glob";
 import { AppChatContext } from "../lib/schemas";
@@ -443,7 +443,7 @@ export async function extractCodebase({
 }> {
   const settings = readSettings();
   const isSmartContextEnabled =
-    settings?.enableDyadPro && settings?.enableProSmartFilesContextMode;
+    settings?.enableCloudAI && settings?.enableProSmartFilesContextMode;
 
   try {
     await fsAsync.access(appPath);

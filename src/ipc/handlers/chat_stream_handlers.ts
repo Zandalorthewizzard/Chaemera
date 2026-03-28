@@ -41,7 +41,7 @@ import {
 import { streamTestResponse } from "./testing_chat_handlers";
 import { getTestResponse } from "./testing_chat_handlers";
 import { getModelClient, ModelClient } from "../utils/get_model_client";
-import log from "electron-log";
+import { appLog as log } from "@/lib/app_logger";
 import { sendTelemetryEvent } from "../utils/telemetry";
 import {
   getSupabaseContext,
@@ -459,7 +459,7 @@ ${componentSnippet}
       const userMessageId = insertedUserMessage.id;
       const settings = readSettings();
       // Only hosted-engine requests have request ids.
-      if (settings.enableDyadPro) {
+      if (settings.enableCloudAI) {
         // Generate requestId early so it can be saved with the message
         dyadRequestId = uuidv4();
       }

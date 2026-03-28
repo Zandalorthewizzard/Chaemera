@@ -309,6 +309,7 @@ const BaseUserSettingsFields = {
   telemetryConsent: z.enum(["opted_in", "opted_out", "unset"]).optional(),
   telemetryUserId: z.string().optional(),
   hasRunBefore: z.boolean().optional(),
+  enableCloudAI: z.boolean().optional(),
   enableDyadPro: z.boolean().optional(),
   experiments: ExperimentsSchema.optional(),
   lastShownReleaseNotesVersion: z.string().optional(),
@@ -412,19 +413,31 @@ export function migrateStoredChatMode(
 export function migrateStoredSettings(
   stored: StoredUserSettings,
 ): UserSettings {
+  const enableCloudAI =
+    stored.enableCloudAI ?? stored.enableDyadPro ?? undefined;
   return {
     ...stored,
+    enableCloudAI,
+    enableDyadPro: enableCloudAI,
     selectedChatMode: migrateStoredChatMode(stored.selectedChatMode),
     defaultChatMode: migrateStoredChatMode(stored.defaultChatMode),
   };
 }
 
+export function isCloudAIEnabled(settings: UserSettings): boolean {
+  return settings.enableCloudAI === true && hasCloudAIKey(settings);
+}
+
+export function hasCloudAIKey(settings: UserSettings): boolean {
+  return !!settings.providerSettings?.auto?.apiKey?.value;
+}
+
 export function isDyadProEnabled(settings: UserSettings): boolean {
-  return settings.enableDyadPro === true && hasDyadProKey(settings);
+  return isCloudAIEnabled(settings);
 }
 
 export function hasDyadProKey(settings: UserSettings): boolean {
-  return !!settings.providerSettings?.auto?.apiKey?.value;
+  return hasCloudAIKey(settings);
 }
 
 /**
@@ -496,7 +509,7 @@ export function isSupabaseConnected(settings: UserSettings | null): boolean {
 
 export function isTurboEditsV2Enabled(settings: UserSettings): boolean {
   return Boolean(
-    isDyadProEnabled(settings) &&
+    isCloudAIEnabled(settings) &&
     settings.enableProLazyEditsMode === true &&
     settings.proLazyEditsMode === "v2",
   );

@@ -14,7 +14,7 @@ import type {
   AzureProviderSetting,
 } from "../../lib/schemas";
 import { getEnvVar } from "./read_env";
-import log from "electron-log";
+import { appLog as log } from "@/lib/app_logger";
 import {
   FREE_OPENROUTER_MODEL_NAMES,
   GEMINI_3_FLASH,
@@ -81,7 +81,7 @@ export async function getModelClient(
   }
 
   // Handle hosted-engine override
-  if (dyadApiKey && settings.enableDyadPro) {
+  if (dyadApiKey && settings.enableCloudAI) {
     // Check if the selected provider supports the hosted engine (has a gateway prefix) OR
     // we're using local engine.
     // IMPORTANT: some providers like OpenAI have an empty string gateway prefix,

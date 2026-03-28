@@ -130,7 +130,7 @@ export function TokenBar({ chatId }: TokenBarProps) {
         <div className="text-red-500 text-xs mt-1">Failed to count tokens</div>
       )}
       {(!settings?.enableProSmartFilesContextMode ||
-        !settings?.enableDyadPro) && (
+        !settings?.enableCloudAI) && (
         <div className="text-xs text-center text-muted-foreground mt-2">
           Optimize token usage with{" "}
           <a

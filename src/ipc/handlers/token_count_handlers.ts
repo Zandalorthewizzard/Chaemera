@@ -11,7 +11,7 @@ import {
   SUPABASE_NOT_AVAILABLE_SYSTEM_PROMPT,
 } from "../../prompts/supabase_prompt";
 import { getDyadAppPath } from "../../paths/paths";
-import log from "electron-log";
+import { appLog as log } from "@/lib/app_logger";
 import { extractCodebase } from "../../utils/codebase";
 import {
   getSupabaseContext,
@@ -108,7 +108,7 @@ export function registerTokenCountHandlers() {
           chatContext: validateChatContext(chat.app.chatContext),
         });
         codebaseInfo = formattedOutput;
-        if (settings.enableDyadPro && settings.enableProSmartFilesContextMode) {
+        if (settings.enableCloudAI && settings.enableProSmartFilesContextMode) {
           codebaseTokens = estimateTokens(
             files
               // It doesn't need to be the exact format but it's just to get a token estimate
