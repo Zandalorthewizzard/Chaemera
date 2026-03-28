@@ -1,8 +1,8 @@
-import log from "electron-log";
+import type { AppLogger } from "@/lib/app_logger";
 import { IS_TEST_BUILD } from "../utils/test_utils";
 import { ipcMain, type IpcMainInvokeEvent } from "./electron_compat";
 
-export function createLoggedHandler(logger: log.LogFunctions) {
+export function createLoggedHandler(logger: AppLogger) {
   return (
     channel: string,
     fn: (event: IpcMainInvokeEvent, ...args: any[]) => Promise<any>,
@@ -29,7 +29,7 @@ export function createLoggedHandler(logger: log.LogFunctions) {
   };
 }
 
-export function createTestOnlyLoggedHandler(logger: log.LogFunctions) {
+export function createTestOnlyLoggedHandler(logger: AppLogger) {
   if (!IS_TEST_BUILD) {
     // Returns a no-op function for non-e2e test builds.
     return () => {};

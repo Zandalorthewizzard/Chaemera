@@ -14,9 +14,9 @@ vi.mock("@/ipc/utils/git_utils", () => ({
   isGitStatusClean: vi.fn().mockResolvedValue(true),
 }));
 
-// Mock electron-log
-vi.mock("electron-log", () => ({
-  default: {
+// Mock app_logger
+vi.mock("@/lib/app_logger", () => ({
+  appLog: {
     scope: () => ({
       warn: vi.fn(),
       error: vi.fn(),

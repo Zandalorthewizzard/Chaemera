@@ -5,12 +5,12 @@ const logSpies = vi.hoisted(() => ({
   debug: vi.fn(),
 }));
 
-vi.mock("electron-log", () => ({
-  default: {
+vi.mock("@/lib/app_logger", () => ({
+  appLog: {
     scope: () => ({
       warn: logSpies.warn,
+      debug: logSpies.debug,
     }),
-    debug: logSpies.debug,
   },
 }));
 
