@@ -13,19 +13,19 @@ import { ActionAddIntegration } from "./ActionAddIntegration";
 import { ActionEdit } from "./ActionEdit";
 import { DyadSearchReplace } from "./DyadSearchReplace";
 import { DyadCodebaseContext } from "./DyadCodebaseContext";
-import { DyadThink } from "./DyadThink";
+import { ActionThink } from "./ActionThink";
 import { CodeHighlight } from "./CodeHighlight";
 import { useAtomValue } from "jotai";
 import { isStreamingByIdAtom, selectedChatIdAtom } from "@/atoms/chatAtoms";
 import { CustomTagState } from "./stateTypes";
-import { DyadOutput } from "./DyadOutput";
-import { DyadProblemSummary } from "./DyadProblemSummary";
+import { ActionOutput } from "./ActionOutput";
+import { ActionProblemSummary } from "./ActionProblemSummary";
 import { ipc } from "@/ipc/types";
 import { DyadMcpToolCall } from "./DyadMcpToolCall";
 import { DyadMcpToolResult } from "./DyadMcpToolResult";
-import { DyadWebSearchResult } from "./DyadWebSearchResult";
-import { DyadWebSearch } from "./DyadWebSearch";
-import { DyadWebCrawl } from "./DyadWebCrawl";
+import { ActionWebSearchResult } from "./ActionWebSearchResult";
+import { ActionWebSearch } from "./ActionWebSearch";
+import { ActionWebCrawl } from "./ActionWebCrawl";
 import { DyadCodeSearchResult } from "./DyadCodeSearchResult";
 import { DyadCodeSearch } from "./DyadCodeSearch";
 import { DyadRead } from "./DyadRead";
@@ -33,7 +33,7 @@ import { DyadListFiles } from "./DyadListFiles";
 import { DyadDatabaseSchema } from "./DyadDatabaseSchema";
 import { DyadSupabaseTableSchema } from "./DyadSupabaseTableSchema";
 import { DyadSupabaseProjectInfo } from "./DyadSupabaseProjectInfo";
-import { DyadStatus } from "./DyadStatus";
+import { ActionStatus } from "./ActionStatus";
 import { DyadCompaction } from "./DyadCompaction";
 import { DyadWritePlan } from "./DyadWritePlan";
 import { DyadExitPlan } from "./DyadExitPlan";
@@ -362,7 +362,7 @@ function renderCustomTag(
       );
     case "dyad-web-search":
       return (
-        <DyadWebSearch
+        <ActionWebSearch
           node={{
             properties: {
               query: attributes.query || "",
@@ -371,17 +371,17 @@ function renderCustomTag(
           }}
         >
           {content}
-        </DyadWebSearch>
+        </ActionWebSearch>
       );
     case "dyad-web-crawl":
       return (
-        <DyadWebCrawl
+        <ActionWebCrawl
           node={{
             properties: {},
           }}
         >
           {content}
-        </DyadWebCrawl>
+        </ActionWebCrawl>
       );
     case "dyad-code-search":
       return (
@@ -408,7 +408,7 @@ function renderCustomTag(
       );
     case "dyad-web-search-result":
       return (
-        <DyadWebSearchResult
+        <ActionWebSearchResult
           node={{
             properties: {
               state: getState({ isStreaming, inProgress }),
@@ -416,11 +416,11 @@ function renderCustomTag(
           }}
         >
           {content}
-        </DyadWebSearchResult>
+        </ActionWebSearchResult>
       );
     case "think":
       return (
-        <DyadThink
+        <ActionThink
           node={{
             properties: {
               state: getState({ isStreaming, inProgress }),
@@ -428,7 +428,7 @@ function renderCustomTag(
           }}
         >
           {content}
-        </DyadThink>
+        </ActionThink>
       );
     case "dyad-write":
       return (
@@ -623,19 +623,19 @@ function renderCustomTag(
 
     case "dyad-output":
       return (
-        <DyadOutput
+        <ActionOutput
           type={attributes.type as "warning" | "error"}
           message={attributes.message}
         >
           {content}
-        </DyadOutput>
+        </ActionOutput>
       );
 
     case "dyad-problem-report":
       return (
-        <DyadProblemSummary summary={attributes.summary}>
+        <ActionProblemSummary summary={attributes.summary}>
           {content}
-        </DyadProblemSummary>
+        </ActionProblemSummary>
       );
 
     case "dyad-chat-summary":
@@ -709,7 +709,7 @@ function renderCustomTag(
 
     case "dyad-status":
       return (
-        <DyadStatus
+        <ActionStatus
           node={{
             properties: {
               title: attributes.title || "Processing...",
@@ -718,7 +718,7 @@ function renderCustomTag(
           }}
         >
           {content}
-        </DyadStatus>
+        </ActionStatus>
       );
 
     case "dyad-compaction":
