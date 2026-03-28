@@ -293,6 +293,11 @@ outline: []
 
 21. Explicitly kept post-release agent architecture and logging-backend replacement outside the immediate release critical path unless they become true ship blockers.
 22. Synced navigation, inventory, progress, and validation docs to include the new production MVP roadmap spec.
+23. Added a canonical hosted-paywall inventory and archive policy spec that:
+
+- classifies the current hosted-paywall, premium UI, hosted-service, branding, and test surfaces;
+- keeps the future optional subscription reference material in a local-only archive outside the public release tree;
+- and explicitly separates public BYOK-first product behavior from archival subscription scaffolding.
 
 ## Deferred
 

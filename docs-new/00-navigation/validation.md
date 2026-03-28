@@ -245,6 +245,11 @@ Pack 2.0 baseline is initialized in `docs-new` for Chaemera.
 - and release acceptance plus packaging readiness.
 
 65. The same roadmap explicitly records that post-release agent work and logging-backend replacement are not part of the first production MVP unless they become direct ship blockers.
+66. A canonical hosted-paywall inventory and archive policy spec now exists, and it explicitly separates:
+
+- public BYOK-first release behavior,
+- local-only archive material for future optional subscriptions,
+- and the neutral naming policy that should be used if a future subscription layer is rebuilt.
 
 ## Open / Deferred
 

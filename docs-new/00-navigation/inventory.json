@@ -675,6 +675,14 @@
       "focus": ["Production MVP Release Roadmap"],
       "status": "active",
       "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-spec-hosted-paywall-surface-inventory-and-archive-policy-2026-03-28",
+      "path": "04-sprint-workflow/specs/2026-03-28-hosted-paywall-surface-inventory-and-archive-policy.md",
+      "type": "spec",
+      "focus": ["Hosted Paywall Surface Inventory and Archive Policy"],
+      "status": "active",
+      "source_of_truth": "governance"
     }
   ]
 }

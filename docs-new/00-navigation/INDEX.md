@@ -66,6 +66,9 @@ related:
     [
       ../04-sprint-workflow/specs/2026-03-28-rust-logging-backend-contract-and-migration-plan.md,
     ],
+    [
+      ../04-sprint-workflow/specs/2026-03-28-hosted-paywall-surface-inventory-and-archive-policy.md,
+    ],
     [../04-sprint-workflow/specs/2026-03-28-prod-mvp-release-roadmap.md],
     [../04-sprint-workflow/sprints/README.md],
     [../04-sprint-workflow/sprints/partitioning-v2.md],
@@ -124,6 +127,7 @@ outline: []
 - [[../04-sprint-workflow/specs/2026-03-28-post-release-agent-core-boundary-and-host-daemon-architecture.md]]
 - [[../04-sprint-workflow/specs/2026-03-28-final-tauri-host-capability-cutover.md]]
 - [[../04-sprint-workflow/specs/2026-03-28-rust-logging-backend-contract-and-migration-plan.md]]
+- [[../04-sprint-workflow/specs/2026-03-28-hosted-paywall-surface-inventory-and-archive-policy.md]]
 - [[../04-sprint-workflow/specs/2026-03-28-prod-mvp-release-roadmap.md]]
 - [[../04-sprint-workflow/sprints/README.md]]
 - [[../04-sprint-workflow/sprints/partitioning-v2.md]]

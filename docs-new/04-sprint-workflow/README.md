@@ -12,6 +12,7 @@ related:
     [specs/2026-02-23-tauri2-leptos-migration-master-plan.md],
     [specs/2026-03-01-post-migration-ui-redesign-track.md],
     [specs/2026-03-02-chaemera-next-phase-product-roadmap.md],
+    [specs/2026-03-28-hosted-paywall-surface-inventory-and-archive-policy.md],
     [sprints/README.md],
   ]
 depends_on: [[../01-concepts/discussion-first.md]]
@@ -29,6 +30,7 @@ Use this folder to produce sprint packs from discussions.
 - [[specs/2026-02-23-tauri2-leptos-migration-master-plan.md]]
 - [[specs/2026-03-01-post-migration-ui-redesign-track.md]]
 - [[specs/2026-03-02-chaemera-next-phase-product-roadmap.md]]
+- [[specs/2026-03-28-hosted-paywall-surface-inventory-and-archive-policy.md]]
 
 ## Active Sprint Packs
 
