@@ -1280,7 +1280,7 @@ This conversation includes one or more image attachments. When the user uploads 
               fullResponse,
               appPath: getDyadAppPath(updatedChat.app.path),
             });
-            sendTelemetryEvent("search_replace:fix", {
+            sendTelemetryEvent(event.sender, "search_replace:fix", {
               attemptNumber: 0,
               success: issues.length === 0,
               issueCount: issues.length,
@@ -1360,7 +1360,7 @@ ${formattedSearchReplaceIssues}`,
                 appPath: getDyadAppPath(updatedChat.app.path),
               });
 
-              sendTelemetryEvent("search_replace:fix", {
+              sendTelemetryEvent(event.sender, "search_replace:fix", {
                 attemptNumber: searchReplaceFixAttempts,
                 success: issues.length === 0,
                 issueCount: issues.length,

@@ -1,5 +1,5 @@
-import type { IpcMainInvokeEvent } from "electron";
 import type { ChatResponseEnd, ChatStreamParams } from "@/ipc/types";
+import type { IpcEventLike } from "@/ipc/utils/ipc_sender_types";
 import { safeSend } from "../../utils/safe_sender";
 
 export interface HandleLocalAgentStreamOptions {
@@ -22,7 +22,7 @@ function getModeLabel(options: HandleLocalAgentStreamOptions): string {
 }
 
 export async function handleLocalAgentStream(
-  event: IpcMainInvokeEvent,
+  event: IpcEventLike,
   req: ChatStreamParams,
   _abortController: AbortController,
   options: HandleLocalAgentStreamOptions,

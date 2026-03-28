@@ -1,4 +1,3 @@
-import { type IpcMainInvokeEvent } from "electron";
 import type {
   CodeProposal,
   ProposalResult,
@@ -122,7 +121,7 @@ async function getCodebaseTokenCount(
 }
 
 const getProposalHandler = async (
-  _event: IpcMainInvokeEvent,
+  _event: unknown,
   { chatId }: { chatId: number },
 ): Promise<ProposalResult | null> => {
   return withLock("get-proposal:" + chatId, async () => {
@@ -334,7 +333,7 @@ const getProposalHandler = async (
 
 // Handler to approve a proposal (process actions and update message)
 const approveProposalHandler = async (
-  _event: IpcMainInvokeEvent,
+  _event: unknown,
   { chatId, messageId }: { chatId: number; messageId: number },
 ): Promise<ApproveProposalResult> => {
   const settings = readSettings();
@@ -387,7 +386,7 @@ const approveProposalHandler = async (
 
 // Handler to reject a proposal (just update message state)
 const rejectProposalHandler = async (
-  _event: IpcMainInvokeEvent,
+  _event: unknown,
   { chatId, messageId }: { chatId: number; messageId: number },
 ): Promise<void> => {
   logger.log(

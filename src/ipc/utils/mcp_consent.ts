@@ -1,8 +1,8 @@
 import { db } from "../../db";
 import { mcpToolConsents } from "../../db/schema";
 import { and, eq } from "drizzle-orm";
-import { IpcMainInvokeEvent } from "electron";
 import crypto from "node:crypto";
+import type { IpcEventLike } from "./ipc_sender_types";
 
 export type Consent = "ask" | "always" | "denied";
 
@@ -77,7 +77,7 @@ export async function setStoredConsent(
 }
 
 export async function requireMcpToolConsent(
-  event: IpcMainInvokeEvent,
+  event: IpcEventLike,
   params: {
     serverId: number;
     serverName: string;
@@ -92,7 +92,7 @@ export async function requireMcpToolConsent(
 
   // Ask renderer for a decision via event bridge
   const requestId = `${params.serverId}:${params.toolName}:${crypto.randomUUID()}`;
-  (event.sender as any).send("mcp:tool-consent-request", {
+  event.sender.send("mcp:tool-consent-request", {
     requestId,
     ...params,
   });
