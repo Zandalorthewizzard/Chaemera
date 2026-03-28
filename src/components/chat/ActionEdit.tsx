@@ -5,23 +5,23 @@ import { Zap } from "lucide-react";
 import { CodeHighlight } from "./CodeHighlight";
 import { CustomTagState } from "./stateTypes";
 import {
-  DyadCard,
-  DyadCardHeader,
-  DyadBadge,
-  DyadExpandIcon,
-  DyadStateIndicator,
-  DyadDescription,
-  DyadCardContent,
-} from "./DyadCardPrimitives";
+  ActionCard,
+  ActionCardHeader,
+  ActionBadge,
+  ActionExpandIcon,
+  ActionStateIndicator,
+  ActionDescription,
+  ActionCardContent,
+} from "./ActionCardPrimitives";
 
-interface DyadEditProps {
+interface ActionEditProps {
   children?: ReactNode;
   node?: any;
   path?: string;
   description?: string;
 }
 
-export const DyadEdit: React.FC<DyadEditProps> = ({
+export const ActionEdit: React.FC<ActionEditProps> = ({
   children,
   node,
   path: pathProp,
@@ -38,13 +38,13 @@ export const DyadEdit: React.FC<DyadEditProps> = ({
   const fileName = path ? path.split("/").pop() : "";
 
   return (
-    <DyadCard
+    <ActionCard
       state={state}
       accentColor="sky"
       onClick={() => setIsContentVisible(!isContentVisible)}
       isExpanded={isContentVisible}
     >
-      <DyadCardHeader icon={<Zap size={15} />} accentColor="sky">
+      <ActionCardHeader icon={<Zap size={15} />} accentColor="sky">
         <div className="min-w-0 truncate">
           {fileName && (
             <span className="font-medium text-sm text-foreground truncate block">
@@ -58,25 +58,25 @@ export const DyadEdit: React.FC<DyadEditProps> = ({
           )}
         </div>
         {inProgress && (
-          <DyadStateIndicator state="pending" pendingLabel="Editing..." />
+          <ActionStateIndicator state="pending" pendingLabel="Editing..." />
         )}
         {aborted && (
-          <DyadStateIndicator state="aborted" abortedLabel="Did not finish" />
+          <ActionStateIndicator state="aborted" abortedLabel="Did not finish" />
         )}
         <div className="ml-auto flex items-center gap-1">
-          <DyadBadge color="sky">Turbo Edit</DyadBadge>
-          <DyadExpandIcon isExpanded={isContentVisible} />
+          <ActionBadge color="sky">Turbo Edit</ActionBadge>
+          <ActionExpandIcon isExpanded={isContentVisible} />
         </div>
-      </DyadCardHeader>
+      </ActionCardHeader>
       {description && (
-        <DyadDescription>
+        <ActionDescription>
           <span className={!isContentVisible ? "line-clamp-2" : undefined}>
             <span className="font-medium">Summary: </span>
             {description}
           </span>
-        </DyadDescription>
+        </ActionDescription>
       )}
-      <DyadCardContent isExpanded={isContentVisible}>
+      <ActionCardContent isExpanded={isContentVisible}>
         <div
           className="text-xs cursor-text"
           onClick={(e) => e.stopPropagation()}
@@ -85,7 +85,7 @@ export const DyadEdit: React.FC<DyadEditProps> = ({
             {children}
           </CodeHighlight>
         </div>
-      </DyadCardContent>
-    </DyadCard>
+      </ActionCardContent>
+    </ActionCard>
   );
 };

@@ -2,22 +2,22 @@ import type React from "react";
 import type { ReactNode } from "react";
 import { FileEdit } from "lucide-react";
 import {
-  DyadCard,
-  DyadCardHeader,
-  DyadBadge,
-  DyadFilePath,
-  DyadDescription,
-} from "./DyadCardPrimitives";
+  ActionCard,
+  ActionCardHeader,
+  ActionBadge,
+  ActionFilePath,
+  ActionDescription,
+} from "./ActionCardPrimitives";
 import { CustomTagState } from "./stateTypes";
 
-interface DyadRenameProps {
+interface ActionRenameProps {
   children?: ReactNode;
   node?: any;
   from?: string;
   to?: string;
 }
 
-export const DyadRename: React.FC<DyadRenameProps> = ({
+export const ActionRename: React.FC<ActionRenameProps> = ({
   children,
   node,
   from: fromProp,
@@ -36,18 +36,18 @@ export const DyadRename: React.FC<DyadRenameProps> = ({
       : fromFileName || toFileName || "";
 
   return (
-    <DyadCard accentColor="amber" state={state}>
-      <DyadCardHeader icon={<FileEdit size={15} />} accentColor="amber">
+    <ActionCard accentColor="amber" state={state}>
+      <ActionCardHeader icon={<FileEdit size={15} />} accentColor="amber">
         {displayTitle && (
           <span className="font-medium text-sm text-foreground truncate">
             {displayTitle}
           </span>
         )}
-        <DyadBadge color="amber">Rename</DyadBadge>
-      </DyadCardHeader>
-      {from && <DyadFilePath path={`From: ${from}`} />}
-      {to && <DyadFilePath path={`To: ${to}`} />}
-      {children && <DyadDescription>{children}</DyadDescription>}
-    </DyadCard>
+        <ActionBadge color="amber">Rename</ActionBadge>
+      </ActionCardHeader>
+      {from && <ActionFilePath path={`From: ${from}`} />}
+      {to && <ActionFilePath path={`To: ${to}`} />}
+      {children && <ActionDescription>{children}</ActionDescription>}
+    </ActionCard>
   );
 };

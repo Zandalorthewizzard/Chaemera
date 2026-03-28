@@ -2,15 +2,15 @@ import React, { useMemo } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
-import { DyadWrite } from "./DyadWrite";
-import { DyadRename } from "./DyadRename";
-import { DyadDelete } from "./DyadDelete";
+import { ActionWrite } from "./ActionWrite";
+import { ActionRename } from "./ActionRename";
+import { ActionDelete } from "./ActionDelete";
 import { DyadAddDependency } from "./DyadAddDependency";
 import { DyadExecuteSql } from "./DyadExecuteSql";
 import { DyadLogs } from "./DyadLogs";
 import { DyadGrep } from "./DyadGrep";
 import { DyadAddIntegration } from "./DyadAddIntegration";
-import { DyadEdit } from "./DyadEdit";
+import { ActionEdit } from "./ActionEdit";
 import { DyadSearchReplace } from "./DyadSearchReplace";
 import { DyadCodebaseContext } from "./DyadCodebaseContext";
 import { DyadThink } from "./DyadThink";
@@ -432,7 +432,7 @@ function renderCustomTag(
       );
     case "dyad-write":
       return (
-        <DyadWrite
+        <ActionWrite
           node={{
             properties: {
               path: attributes.path || "",
@@ -442,12 +442,12 @@ function renderCustomTag(
           }}
         >
           {content}
-        </DyadWrite>
+        </ActionWrite>
       );
 
     case "dyad-rename":
       return (
-        <DyadRename
+        <ActionRename
           node={{
             properties: {
               from: attributes.from || "",
@@ -456,12 +456,12 @@ function renderCustomTag(
           }}
         >
           {content}
-        </DyadRename>
+        </ActionRename>
       );
 
     case "dyad-delete":
       return (
-        <DyadDelete
+        <ActionDelete
           node={{
             properties: {
               path: attributes.path || "",
@@ -469,7 +469,7 @@ function renderCustomTag(
           }}
         >
           {content}
-        </DyadDelete>
+        </ActionDelete>
       );
 
     case "dyad-add-dependency":
@@ -551,7 +551,7 @@ function renderCustomTag(
 
     case "dyad-edit":
       return (
-        <DyadEdit
+        <ActionEdit
           node={{
             properties: {
               path: attributes.path || "",
@@ -561,7 +561,7 @@ function renderCustomTag(
           }}
         >
           {content}
-        </DyadEdit>
+        </ActionEdit>
       );
 
     case "dyad-search-replace":

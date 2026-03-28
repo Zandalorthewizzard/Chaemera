@@ -2,21 +2,21 @@ import type React from "react";
 import type { ReactNode } from "react";
 import { Trash2 } from "lucide-react";
 import {
-  DyadCard,
-  DyadCardHeader,
-  DyadBadge,
-  DyadFilePath,
-  DyadDescription,
-} from "./DyadCardPrimitives";
+  ActionCard,
+  ActionCardHeader,
+  ActionBadge,
+  ActionFilePath,
+  ActionDescription,
+} from "./ActionCardPrimitives";
 import { CustomTagState } from "./stateTypes";
 
-interface DyadDeleteProps {
+interface ActionDeleteProps {
   children?: ReactNode;
   node?: any;
   path?: string;
 }
 
-export const DyadDelete: React.FC<DyadDeleteProps> = ({
+export const ActionDelete: React.FC<ActionDeleteProps> = ({
   children,
   node,
   path: pathProp,
@@ -26,17 +26,17 @@ export const DyadDelete: React.FC<DyadDeleteProps> = ({
   const fileName = path ? path.split("/").pop() : "";
 
   return (
-    <DyadCard accentColor="red" state={state}>
-      <DyadCardHeader icon={<Trash2 size={15} />} accentColor="red">
+    <ActionCard accentColor="red" state={state}>
+      <ActionCardHeader icon={<Trash2 size={15} />} accentColor="red">
         {fileName && (
           <span className="font-medium text-sm text-foreground truncate">
             {fileName}
           </span>
         )}
-        <DyadBadge color="red">Delete</DyadBadge>
-      </DyadCardHeader>
-      <DyadFilePath path={path} />
-      {children && <DyadDescription>{children}</DyadDescription>}
-    </DyadCard>
+        <ActionBadge color="red">Delete</ActionBadge>
+      </ActionCardHeader>
+      <ActionFilePath path={path} />
+      {children && <ActionDescription>{children}</ActionDescription>}
+    </ActionCard>
   );
 };
