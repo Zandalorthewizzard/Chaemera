@@ -88,8 +88,6 @@ const DebugSettingsSchema = z.object({
   autoApproveChanges: z.boolean().nullable(),
   /** Whether cloud AI access is enabled */
   enableCloudAI: z.boolean().nullable(),
-  /** Legacy alias for cloud AI access */
-  enableDyadPro: z.boolean().nullable(),
   /** Thinking budget level: "low" | "medium" | "high" */
   thinkingBudget: z.string().nullable(),
   /** Max chat turns kept in context window */
