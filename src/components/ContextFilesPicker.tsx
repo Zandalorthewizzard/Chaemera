@@ -115,8 +115,7 @@ export function ContextFilesPicker() {
     updateExcludePaths(newPaths);
   };
 
-  const isSmartContextEnabled =
-    settings?.enableCloudAI && settings?.enableProSmartFilesContextMode;
+  const isSmartContextEnabled = settings?.enableProSmartFilesContextMode;
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -142,11 +141,11 @@ export function ContextFilesPicker() {
                   <TooltipContent className="max-w-[300px]">
                     {isSmartContextEnabled ? (
                       <p>
-                        With Smart Context, Dyad uses the most relevant files as
-                        context.
+                        With Smart Context, Chaemera uses the most relevant
+                        files as context.
                       </p>
                     ) : (
-                      <p>By default, Dyad uses your whole codebase.</p>
+                      <p>By default, Chaemera uses your whole codebase.</p>
                     )}
                   </TooltipContent>
                 </Tooltip>
@@ -215,8 +214,8 @@ export function ContextFilesPicker() {
               <div className="rounded-md border border-dashed p-4 text-center">
                 <p className="text-sm text-muted-foreground">
                   {isSmartContextEnabled
-                    ? "Dyad will use Smart Context to automatically find the most relevant files to use as context."
-                    : "Dyad will use the entire codebase as context."}
+                    ? "Chaemera will use Smart Context to automatically find the most relevant files to use as context."
+                    : "Chaemera will use the entire codebase as context."}
                 </p>
               </div>
             )}
