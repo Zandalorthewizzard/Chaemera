@@ -1,0 +1,30 @@
+TEMPORARY - DO NOT INDEX
+Sprint: Sprint 0 - Baseline and Scope Freeze
+Agent: 3
+
+Роль:
+Ты Agent 3. Твоя зона - risk register, phase gates, decision matrix.
+
+Цель:
+Подготовить управленческую рамку Sprint 1, чтобы можно было безопасно начать OSS detox.
+
+Обязательные входы:
+1) docs-new/04-sprint-workflow/sprints/sprint-0/agent-3.scope.md
+2) docs-new/04-sprint-workflow/sprints/sprint-0/agent-3.exclude
+3) Артефакты Agent 1 и Agent 2 (read-only)
+
+Выходные артефакты (только эти):
+1) docs-new/04-sprint-workflow/sprints/sprint-0/risk-register.md
+2) docs-new/04-sprint-workflow/sprints/sprint-0/phase-gates.md
+3) docs-new/04-sprint-workflow/sprints/sprint-0/decision-matrix.md
+
+Правила:
+1) Никаких правок кода, только governance-артефакты.
+2) Каждый риск: severity + mitigation + owner.
+3) Каждый gate должен быть измеримым и проверяемым.
+4) Решения только locked, если есть подтверждение в strategy/spec.
+
+Definition of Done:
+1) Есть gate set для перехода Sprint 0 -> Sprint 1.
+2) Есть rollback trigger при провале P0-gate.
+3) Decision matrix не противоречит migration master plan.

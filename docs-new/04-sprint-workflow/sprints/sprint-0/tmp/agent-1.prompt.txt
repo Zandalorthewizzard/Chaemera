@@ -1,0 +1,29 @@
+TEMPORARY - DO NOT INDEX
+Sprint: Sprint 0 - Baseline and Scope Freeze
+Agent: 1
+
+Роль:
+Ты Agent 1. Твоя зона - acceptance baseline и feature matrix.
+
+Цель:
+Зафиксировать текущий OSS-функционал как baseline до изменений в коде.
+
+Обязательные входы:
+1) docs-new/04-sprint-workflow/sprints/sprint-0/agent-1.scope.md
+2) docs-new/04-sprint-workflow/sprints/sprint-0/agent-1.exclude
+3) e2e-tests/*.spec.ts
+
+Выходные артефакты (только эти):
+1) docs-new/04-sprint-workflow/sprints/sprint-0/acceptance-matrix.md
+2) docs-new/04-sprint-workflow/sprints/sprint-0/baseline-feature-catalog.md
+
+Правила:
+1) Не редактируй файлы вне своего слайса.
+2) Любой спорный пункт помечай как UNKNOWN, не придумывай.
+3) Фиксируй приоритет P0/P1/P2 и gate type (must-pass/phase-gate).
+4) Ничего не меняй в src/ и e2e-tests/, только анализ.
+
+Definition of Done:
+1) Матрица покрывает ключевые домены (app lifecycle, chat, settings, files, integrations).
+2) У каждого P0 есть ссылка на конкретный e2e тест.
+3) Каталог фич синхронизирован с матрицей.

@@ -1,0 +1,49 @@
+Sprint: Sprint 2 - Tauri 2 Bootstrap
+Role: Agent 3 (Long Slice C)
+
+Read first:
+1) docs-new/04-sprint-workflow/sprints/sprint-2-tauri2-bootstrap.md
+2) docs-new/04-sprint-workflow/sprints/sprint-2/ownership-map.md
+3) docs-new/04-sprint-workflow/sprints/sprint-2/interface-lock.md
+4) docs-new/04-sprint-workflow/sprints/sprint-2/agent-3.scope.md
+5) docs-new/04-sprint-workflow/sprints/sprint-2/agent-3.exclude
+
+Mission:
+Prepare build/test/CI harness path for Tauri bootstrap with deterministic migration flow.
+
+Owned write paths:
+- package.json
+- playwright.config.ts
+- e2e-tests/helpers/**
+- testing/**
+- .github/workflows/**
+- scripts/** (except scripts/tauri/**)
+
+Hard deny:
+- src-tauri/**
+- Cargo.toml
+- tauri.conf.json
+- src/ipc/types/**
+- src/ipc/contracts/**
+- src/ipc/preload/**
+- src/ipc/adapters/**
+- src/renderer.tsx
+- src/router.ts
+- scripts/tauri/**
+- docs-new/04-sprint-workflow/sprints/sprint-2/**
+
+Must do:
+1) Add bootstrap scripts/CI glue for Tauri dev/test path.
+2) Introduce/adjust smoke harness for startup/navigation/settings checks.
+3) Keep fake-LLM and test orchestration deterministic.
+4) Use handoff requests if runtime/bridge changes are required.
+
+Must not do:
+1) No shell or bridge runtime edits.
+2) No documentation updates during slice execution.
+3) Tests may be written, but execution is deferred until full Sprint 2 completion.
+
+Delivery:
+1) One coherent code commit for Slice C.
+2) Short change report: tooling/harness/CI changes, touched files, blockers for orchestrator.
+

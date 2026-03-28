@@ -1,0 +1,17 @@
+TEMPORARY SLICE - AGENT 1
+
+ALLOW WRITE:
+1) docs-new/04-sprint-workflow/sprints/sprint-0/acceptance-matrix.md
+2) docs-new/04-sprint-workflow/sprints/sprint-0/baseline-feature-catalog.md
+
+ALLOW READ:
+1) e2e-tests/**/*.spec.ts
+2) src/**/*.ts
+3) src/**/*.tsx
+4) docs-new/04-sprint-workflow/sprints/sprint-0/agent-1.scope.md
+5) docs-new/04-sprint-workflow/sprints/sprint-0/agent-1.exclude
+
+DENY WRITE:
+1) src/**
+2) e2e-tests/**
+3) Любые файлы sprint-0, кроме двух ALLOW WRITE

@@ -1,0 +1,51 @@
+Sprint: Sprint 1 - OSS Detox
+Role: Agent 2 (Long Slice B)
+
+Read first:
+1) docs-new/04-sprint-workflow/sprints/sprint-1-oss-detox.md
+2) docs-new/04-sprint-workflow/sprints/sprint-1/ownership-map.md
+3) docs-new/04-sprint-workflow/sprints/sprint-1/interface-lock.md
+4) docs-new/04-sprint-workflow/sprints/sprint-1/agent-2.scope.md
+5) docs-new/04-sprint-workflow/sprints/sprint-1/agent-2.exclude
+
+Mission:
+Remove proprietary/pro/brand-locked frontend and i18n behavior while preserving OSS user flows.
+
+Owned write paths:
+- src/app/**
+- src/components/**
+- src/pages/**
+- src/routes/**
+- src/renderer.tsx
+- src/hooks/**
+- src/i18n/**
+- src/lib/schemas.ts
+
+Hard deny:
+- src/main.ts
+- src/main/**
+- src/preload.ts
+- src/ipc/**
+- src/paths/**
+- src/utils/codebase.ts
+- e2e-tests/**
+- src/__tests__/**
+- testing/**
+- docs-new/04-sprint-workflow/sprints/sprint-1/**
+
+Must do:
+1) Remove pro UI toggles/dialogs/banners/paywall surfaces.
+2) Remove/replace pro labels and locale strings.
+3) Keep non-pro deep-link UX compatibility (supabase-oauth-return, neon-oauth-return, add-mcp-server, add-prompt).
+4) Keep contracts stable for backend-facing calls.
+5) Add/update tests if needed in owned frontend test-adjacent files only when allowed by ownership.
+
+Must not do:
+1) No edits outside owned paths.
+2) No documentation updates.
+3) No acceptance test execution at slice level.
+
+Delivery:
+1) One coherent code commit for slice B.
+2) Short change report: removed surfaces, changed files, open blockers for orchestrator.
+3) If blocked by backend contract, file handoff note (no direct cross-slice edits).

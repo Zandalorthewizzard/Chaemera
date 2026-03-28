@@ -1,0 +1,49 @@
+Sprint: Sprint 2 - Tauri 2 Bootstrap
+Role: Agent 2 (Long Slice B)
+
+Read first:
+1) docs-new/04-sprint-workflow/sprints/sprint-2-tauri2-bootstrap.md
+2) docs-new/04-sprint-workflow/sprints/sprint-2/ownership-map.md
+3) docs-new/04-sprint-workflow/sprints/sprint-2/interface-lock.md
+4) docs-new/04-sprint-workflow/sprints/sprint-2/agent-2.scope.md
+5) docs-new/04-sprint-workflow/sprints/sprint-2/agent-2.exclude
+
+Mission:
+Build TypeScript command/event compatibility bridge for Tauri migration while keeping renderer-facing API stable.
+
+Owned write paths:
+- src/ipc/types/**
+- src/ipc/contracts/**
+- src/ipc/preload/**
+- src/ipc/adapters/** (if introduced)
+- src/renderer.tsx
+- src/router.ts
+
+Hard deny:
+- src-tauri/**
+- Cargo.toml
+- tauri.conf.json
+- package.json
+- playwright.config.ts
+- scripts/**
+- .github/workflows/**
+- e2e-tests/**
+- testing/**
+- docs-new/04-sprint-workflow/sprints/sprint-2/**
+
+Must do:
+1) Implement compatibility adapters so existing IPC client function names remain available.
+2) Keep renderer bootstrap consumption shape stable for core paths.
+3) Add temporary shims where needed instead of breaking public interfaces.
+4) If interface lock must change, file handoff request and pause dependent edits.
+
+Must not do:
+1) No native shell edits.
+2) No CI/tooling track edits.
+3) No documentation updates during slice execution.
+4) No per-slice acceptance test execution.
+
+Delivery:
+1) One coherent code commit for Slice B.
+2) Short change report: contracts/adapters delivered, touched files, lock risks/handoffs.
+

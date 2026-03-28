@@ -1,0 +1,8 @@
+# Sprint 0 Agent 1 hard-deny paths
+docs-new/04-sprint-workflow/sprints/sprint-0/proprietary-surface-map.md
+docs-new/04-sprint-workflow/sprints/sprint-0/removal-candidate-list.md
+docs-new/04-sprint-workflow/sprints/sprint-0/risk-register.md
+docs-new/04-sprint-workflow/sprints/sprint-0/phase-gates.md
+docs-new/04-sprint-workflow/sprints/sprint-0/decision-matrix.md
+src/**
+e2e-tests/**

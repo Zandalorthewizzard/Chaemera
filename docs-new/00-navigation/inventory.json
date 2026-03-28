@@ -1,0 +1,664 @@
+{
+  "generated_at": "2026-03-28",
+  "scope": "chaemera-docs-new",
+  "docs": [
+    {
+      "id": "chaemera-nav-index",
+      "path": "00-navigation/INDEX.md",
+      "type": "navigation",
+      "focus": ["Chaemera Documentation Index"],
+      "status": "active",
+      "source_of_truth": "navigation"
+    },
+    {
+      "id": "chaemera-nav-progress",
+      "path": "00-navigation/progress.md",
+      "type": "utility",
+      "focus": ["Chaemera Documentation Progress"],
+      "status": "active",
+      "source_of_truth": "progress"
+    },
+    {
+      "id": "chaemera-nav-validation",
+      "path": "00-navigation/validation.md",
+      "type": "utility",
+      "focus": ["Chaemera Validation Report"],
+      "status": "active",
+      "source_of_truth": "mixed"
+    },
+    {
+      "id": "chaemera-concept-ai-driven",
+      "path": "01-concepts/ai-driven-development.md",
+      "type": "concept",
+      "focus": ["AI-Driven Development Philosophy"],
+      "status": "draft",
+      "source_of_truth": "process"
+    },
+    {
+      "id": "chaemera-concept-discussion-first",
+      "path": "01-concepts/discussion-first.md",
+      "type": "concept",
+      "focus": ["Discussion-First Workflow"],
+      "status": "draft",
+      "source_of_truth": "process"
+    },
+    {
+      "id": "chaemera-concept-strict-specs",
+      "path": "01-concepts/strict-specs.md",
+      "type": "concept",
+      "focus": ["Strict Task Specifications"],
+      "status": "draft",
+      "source_of_truth": "process"
+    },
+    {
+      "id": "chaemera-guide-agent-navigation",
+      "path": "02-guides/agent-navigation.md",
+      "type": "guide",
+      "focus": ["Agent Navigation Guide"],
+      "status": "draft",
+      "source_of_truth": "process"
+    },
+    {
+      "id": "chaemera-guide-working-notes",
+      "path": "02-guides/working-notes.md",
+      "type": "guide",
+      "focus": ["Agent Working Notes Guide"],
+      "status": "active",
+      "source_of_truth": "process"
+    },
+    {
+      "id": "chaemera-guide-doc-replication",
+      "path": "02-guides/documentation-replication.md",
+      "type": "guide",
+      "focus": ["Documentation Replication and Migration"],
+      "status": "draft",
+      "source_of_truth": "process"
+    },
+    {
+      "id": "chaemera-guide-acceptance-testing",
+      "path": "02-guides/operations/acceptance-testing.md",
+      "type": "guide",
+      "focus": ["Acceptance Testing Guidance"],
+      "status": "draft",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-guide-doc-sync",
+      "path": "02-guides/operations/documentation-sync.md",
+      "type": "guide",
+      "focus": ["Documentation Synchronization Procedure"],
+      "status": "draft",
+      "source_of_truth": "process"
+    },
+    {
+      "id": "chaemera-guide-promotion-governance",
+      "path": "02-guides/promotion-governance.md",
+      "type": "guide",
+      "focus": ["Promotion Governance Principles"],
+      "status": "draft",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-guide-sprint-authoring",
+      "path": "02-guides/sprint-authoring.md",
+      "type": "guide",
+      "focus": ["Sprint Authoring Guide"],
+      "status": "draft",
+      "source_of_truth": "process"
+    },
+    {
+      "id": "chaemera-guide-integrations-reference",
+      "path": "02-guides/integrations-reference.md",
+      "type": "guide",
+      "focus": ["Integrations Reference and Native vs MCP Comparison"],
+      "status": "active",
+      "source_of_truth": "code-audit"
+    },
+    {
+      "id": "chaemera-template-agents",
+      "path": "03-templates/AGENTS.template.md",
+      "type": "template",
+      "focus": ["AGENTS Documentation Rules Template"],
+      "status": "draft",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-template-external-ref",
+      "path": "03-templates/external-reference-policy.template.md",
+      "type": "template",
+      "focus": ["External Reference Policy Template"],
+      "status": "draft",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-template-index",
+      "path": "03-templates/INDEX.template.md",
+      "type": "template",
+      "focus": ["Project Index Template"],
+      "status": "draft",
+      "source_of_truth": "navigation"
+    },
+    {
+      "id": "chaemera-template-migration-checklist",
+      "path": "03-templates/migration-checklist.template.md",
+      "type": "template",
+      "focus": ["Migration Checklist Template"],
+      "status": "draft",
+      "source_of_truth": "process"
+    },
+    {
+      "id": "chaemera-template-progress",
+      "path": "03-templates/progress.template.md",
+      "type": "template",
+      "focus": ["Progress Template"],
+      "status": "draft",
+      "source_of_truth": "progress"
+    },
+    {
+      "id": "chaemera-templates-readme",
+      "path": "03-templates/README.md",
+      "type": "guide",
+      "focus": ["Chaemera Templates Layer"],
+      "status": "draft",
+      "source_of_truth": "process"
+    },
+    {
+      "id": "chaemera-template-strict-spec",
+      "path": "03-templates/strict-spec.template.md",
+      "type": "template",
+      "focus": ["Strict AI Task Spec Template"],
+      "status": "draft",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-template-validation",
+      "path": "03-templates/validation.template.md",
+      "type": "template",
+      "focus": ["Validation Template"],
+      "status": "draft",
+      "source_of_truth": "mixed"
+    },
+    {
+      "id": "chaemera-sprint-decision-matrix-template",
+      "path": "04-sprint-workflow/decision-matrix.template.md",
+      "type": "template",
+      "focus": ["Decision Matrix Template"],
+      "status": "draft",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-sprint-hub",
+      "path": "04-sprint-workflow/README.md",
+      "type": "hub",
+      "focus": ["Sprint Workflow Hub"],
+      "status": "draft",
+      "source_of_truth": "process"
+    },
+    {
+      "id": "chaemera-spec-post-migration-ui-redesign-track-2026-03-01",
+      "path": "04-sprint-workflow/specs/2026-03-01-post-migration-ui-redesign-track.md",
+      "type": "spec",
+      "focus": ["Post-Migration UI Redesign Track"],
+      "status": "active",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-sprint-runbook",
+      "path": "04-sprint-workflow/runbook.md",
+      "type": "guide",
+      "focus": ["Sprint Pack Runbook"],
+      "status": "active",
+      "source_of_truth": "process"
+    },
+    {
+      "id": "chaemera-sprint-spec-template",
+      "path": "04-sprint-workflow/spec-template.md",
+      "type": "template",
+      "focus": ["Sprint Spec Template"],
+      "status": "draft",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-spec-tauri2-leptos-migration-master-plan-2026-02-23",
+      "path": "04-sprint-workflow/specs/2026-02-23-tauri2-leptos-migration-master-plan.md",
+      "type": "spec",
+      "focus": ["Migration Master Plan (Leptos + Tauri 2)"],
+      "status": "active",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-sprint-12-chat-count-tokens-context-port",
+      "path": "04-sprint-workflow/sprints/sprint-12-chat-count-tokens-context-port.md",
+      "type": "sprint",
+      "focus": ["Sprint 12 - Chat Count Tokens and Context Accounting"],
+      "status": "planned",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-sprint-partitioning-v2",
+      "path": "04-sprint-workflow/sprints/partitioning-v2.md",
+      "type": "guide",
+      "focus": ["Sprint Partitioning v2 (Long Slice Model)"],
+      "status": "active",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-sprint-parallel-hub",
+      "path": "04-sprint-workflow/sprints/README.md",
+      "type": "guide",
+      "focus": ["Sprint Execution Hub (Parallel 3-Agent)"],
+      "status": "active",
+      "source_of_truth": "process"
+    },
+    {
+      "id": "chaemera-sprint-0-baseline-scope-freeze",
+      "path": "04-sprint-workflow/sprints/sprint-0-baseline-scope-freeze.md",
+      "type": "sprint",
+      "focus": ["Sprint 0 - Baseline and Scope Freeze"],
+      "status": "completed",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-sprint-0-acceptance-matrix",
+      "path": "04-sprint-workflow/sprints/sprint-0/acceptance-matrix.md",
+      "type": "artifact",
+      "focus": ["Sprint 0 Acceptance Matrix"],
+      "status": "active",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-sprint-0-agent-1-scope",
+      "path": "04-sprint-workflow/sprints/sprint-0/agent-1.scope.md",
+      "type": "task",
+      "focus": ["Sprint 0 Agent 1 Scope"],
+      "status": "planned",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-sprint-0-agent-2-scope",
+      "path": "04-sprint-workflow/sprints/sprint-0/agent-2.scope.md",
+      "type": "task",
+      "focus": ["Sprint 0 Agent 2 Scope"],
+      "status": "planned",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-sprint-0-agent-3-scope",
+      "path": "04-sprint-workflow/sprints/sprint-0/agent-3.scope.md",
+      "type": "task",
+      "focus": ["Sprint 0 Agent 3 Scope"],
+      "status": "planned",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-sprint-0-baseline-feature-catalog",
+      "path": "04-sprint-workflow/sprints/sprint-0/baseline-feature-catalog.md",
+      "type": "artifact",
+      "focus": ["Sprint 0 Baseline Feature Catalog"],
+      "status": "active",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-sprint-0-decision-matrix",
+      "path": "04-sprint-workflow/sprints/sprint-0/decision-matrix.md",
+      "type": "artifact",
+      "focus": ["Sprint 0 Decision Matrix"],
+      "status": "active",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-sprint-0-phase-gates",
+      "path": "04-sprint-workflow/sprints/sprint-0/phase-gates.md",
+      "type": "artifact",
+      "focus": ["Sprint 0 Phase Gates"],
+      "status": "active",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-sprint-0-proprietary-surface-map",
+      "path": "04-sprint-workflow/sprints/sprint-0/proprietary-surface-map.md",
+      "type": "artifact",
+      "focus": ["Sprint 0 Proprietary Surface Map"],
+      "status": "active",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-sprint-0-hub",
+      "path": "04-sprint-workflow/sprints/sprint-0/README.md",
+      "type": "hub",
+      "focus": ["Sprint 0 Workspace"],
+      "status": "completed",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-sprint-0-removal-candidate-list",
+      "path": "04-sprint-workflow/sprints/sprint-0/removal-candidate-list.md",
+      "type": "artifact",
+      "focus": ["Sprint 0 Removal Candidate List"],
+      "status": "active",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-sprint-0-risk-register",
+      "path": "04-sprint-workflow/sprints/sprint-0/risk-register.md",
+      "type": "artifact",
+      "focus": ["Sprint 0 Risk Register"],
+      "status": "active",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-sprint-1-oss-detox",
+      "path": "04-sprint-workflow/sprints/sprint-1-oss-detox.md",
+      "type": "sprint",
+      "focus": ["Sprint 1 - OSS Detox"],
+      "status": "planned",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-sprint-1-agent-1-scope",
+      "path": "04-sprint-workflow/sprints/sprint-1/agent-1.scope.md",
+      "type": "task",
+      "focus": ["Sprint 1 Agent 1 Scope"],
+      "status": "planned",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-sprint-1-agent-2-scope",
+      "path": "04-sprint-workflow/sprints/sprint-1/agent-2.scope.md",
+      "type": "task",
+      "focus": ["Sprint 1 Agent 2 Scope"],
+      "status": "planned",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-sprint-1-agent-3-scope",
+      "path": "04-sprint-workflow/sprints/sprint-1/agent-3.scope.md",
+      "type": "task",
+      "focus": ["Sprint 1 Agent 3 Scope"],
+      "status": "planned",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-sprint-1-interface-lock",
+      "path": "04-sprint-workflow/sprints/sprint-1/interface-lock.md",
+      "type": "artifact",
+      "focus": ["Sprint 1 Interface Lock"],
+      "status": "active",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-sprint-1-ownership-map",
+      "path": "04-sprint-workflow/sprints/sprint-1/ownership-map.md",
+      "type": "artifact",
+      "focus": ["Sprint 1 Ownership Map (Long Slice v2)"],
+      "status": "active",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-sprint-1-hub",
+      "path": "04-sprint-workflow/sprints/sprint-1/README.md",
+      "type": "hub",
+      "focus": ["Sprint 1 Workspace"],
+      "status": "planned",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-sprint-2-tauri2-bootstrap",
+      "path": "04-sprint-workflow/sprints/sprint-2-tauri2-bootstrap.md",
+      "type": "sprint",
+      "focus": ["Sprint 2 - Tauri 2 Bootstrap"],
+      "status": "planned",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-sprint-2-agent-1-scope",
+      "path": "04-sprint-workflow/sprints/sprint-2/agent-1.scope.md",
+      "type": "task",
+      "focus": ["Sprint 2 Agent 1 Scope"],
+      "status": "planned",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-sprint-2-agent-2-scope",
+      "path": "04-sprint-workflow/sprints/sprint-2/agent-2.scope.md",
+      "type": "task",
+      "focus": ["Sprint 2 Agent 2 Scope"],
+      "status": "planned",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-sprint-2-agent-3-scope",
+      "path": "04-sprint-workflow/sprints/sprint-2/agent-3.scope.md",
+      "type": "task",
+      "focus": ["Sprint 2 Agent 3 Scope"],
+      "status": "planned",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-sprint-2-interface-lock",
+      "path": "04-sprint-workflow/sprints/sprint-2/interface-lock.md",
+      "type": "artifact",
+      "focus": ["Sprint 2 Interface Lock"],
+      "status": "active",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-sprint-2-ownership-map",
+      "path": "04-sprint-workflow/sprints/sprint-2/ownership-map.md",
+      "type": "artifact",
+      "focus": ["Sprint 2 Ownership Map (Long Slice v2)"],
+      "status": "active",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-sprint-2-hub",
+      "path": "04-sprint-workflow/sprints/sprint-2/README.md",
+      "type": "hub",
+      "focus": ["Sprint 2 Workspace"],
+      "status": "planned",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-sprint-slicing-rules",
+      "path": "04-sprint-workflow/sprints/sprint-slicing-rules.md",
+      "type": "guide",
+      "focus": ["Sprint and Slice Rules (Hard Requirements)"],
+      "status": "active",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-discussion-template",
+      "path": "05-discussion-templates/discussion-template.md",
+      "type": "template",
+      "focus": ["Discussion Template"],
+      "status": "draft",
+      "source_of_truth": "discussion"
+    },
+    {
+      "id": "chaemera-discussion-tauri2-leptos-migration-strategy-2026-02-23",
+      "path": "05-discussion-templates/discussions/2026-02-23-tauri2-leptos-migration-strategy.md",
+      "type": "discussion",
+      "focus": ["Migration Strategy Discussion (Leptos + Tauri 2)"],
+      "status": "active",
+      "source_of_truth": "discussion"
+    },
+    {
+      "id": "chaemera-discussion-leptos-ui-wrapper-baseline-2026-03-01",
+      "path": "05-discussion-templates/discussions/2026-03-01-leptos-ui-wrapper-baseline.md",
+      "type": "discussion",
+      "focus": ["Leptos UI Wrapper Baseline"],
+      "status": "active",
+      "source_of_truth": "discussion"
+    },
+    {
+      "id": "chaemera-discussion-upstream-patch-adaptation-workflow-2026-03-01",
+      "path": "05-discussion-templates/discussions/2026-03-01-upstream-patch-adaptation-workflow.md",
+      "type": "discussion",
+      "focus": ["Upstream Patch Adaptation Workflow"],
+      "status": "active",
+      "source_of_truth": "discussion"
+    },
+    {
+      "id": "chaemera-discussion-tauri-release-cutover-vs-regression-2026-03-01",
+      "path": "05-discussion-templates/discussions/2026-03-01-tauri-release-cutover-vs-regression.md",
+      "type": "discussion",
+      "focus": ["Tauri Release Cutover vs Wider Regression"],
+      "status": "active",
+      "source_of_truth": "discussion"
+    },
+    {
+      "id": "chaemera-issue-help-bot-oss-equivalent-2026-03-01",
+      "path": "05-discussion-templates/discussions/2026-03-01-help-bot-oss-equivalent-issue.md",
+      "type": "issue",
+      "focus": ["Help Bot OSS Equivalent Decision"],
+      "status": "open",
+      "source_of_truth": "discussion"
+    },
+    {
+      "id": "chaemera-issue-template",
+      "path": "05-discussion-templates/issue-template.md",
+      "type": "template",
+      "focus": ["Issue Template"],
+      "status": "draft",
+      "source_of_truth": "discussion"
+    },
+    {
+      "id": "chaemera-discussion-hub",
+      "path": "05-discussion-templates/README.md",
+      "type": "hub",
+      "focus": ["Discussion Templates Hub"],
+      "status": "draft",
+      "source_of_truth": "discussion"
+    },
+    {
+      "id": "chaemera-task-bridge-template",
+      "path": "05-discussion-templates/task-template.md",
+      "type": "template",
+      "focus": ["Discussion to Task Bridge Template"],
+      "status": "draft",
+      "source_of_truth": "discussion"
+    },
+    {
+      "id": "chaemera-experimental-ad-gates",
+      "path": "06-experemental/ad-gate-checklist.template.md",
+      "type": "template",
+      "focus": ["AD Gate Checklist Template"],
+      "status": "draft",
+      "source_of_truth": "discussion"
+    },
+    {
+      "id": "chaemera-experimental-boundary-question",
+      "path": "06-experemental/boundary-question.template.md",
+      "type": "template",
+      "focus": ["Boundary Question Template"],
+      "status": "draft",
+      "source_of_truth": "discussion"
+    },
+    {
+      "id": "chaemera-experimental-iteration-card",
+      "path": "06-experemental/iteration-card.template.md",
+      "type": "template",
+      "focus": ["Iteration Card Template"],
+      "status": "draft",
+      "source_of_truth": "discussion"
+    },
+    {
+      "id": "chaemera-experimental-hub",
+      "path": "06-experemental/README.md",
+      "type": "hub",
+      "focus": ["Experimental Layer Hub"],
+      "status": "draft",
+      "source_of_truth": "discussion"
+    },
+    {
+      "id": "chaemera-experimental-iterative-pipeline",
+      "path": "06-experemental/semi-autonomous-iterative-discussion-pipeline.md",
+      "type": "guide",
+      "focus": ["Semi-Autonomous Iterative Discussion Pipeline"],
+      "status": "draft",
+      "source_of_truth": "discussion"
+    },
+    {
+      "id": "chaemera-docs-readme",
+      "path": "README.md",
+      "type": "guide",
+      "focus": ["Chaemera Documentation System"],
+      "status": "draft",
+      "source_of_truth": "process"
+    },
+    {
+      "id": "chaemera-discussion-ts-rust-leptos-layer-boundaries-2026-03-02",
+      "path": "05-discussion-templates/discussions/2026-03-02-ts-rust-leptos-layer-boundaries.md",
+      "type": "discussion",
+      "focus": ["TypeScript, Rust, and Leptos Layer Boundaries"],
+      "status": "active",
+      "source_of_truth": "discussion"
+    },
+    {
+      "id": "chaemera-discussion-current-ai-runtime-state-2026-03-28",
+      "path": "05-discussion-templates/discussions/2026-03-28-current-ai-runtime-state.md",
+      "type": "discussion",
+      "focus": ["Current AI Runtime State"],
+      "status": "active",
+      "source_of_truth": "code-audit"
+    },
+    {
+      "id": "chaemera-discussion-structured-agent-core-with-legacy-xml-mode-2026-03-28",
+      "path": "05-discussion-templates/discussions/2026-03-28-structured-agent-core-with-legacy-xml-mode.md",
+      "type": "discussion",
+      "focus": ["Structured Agent Core with Legacy XML Expert Mode"],
+      "status": "active",
+      "source_of_truth": "discussion"
+    },
+    {
+      "id": "chaemera-discussion-legacy-xml-agent-surface-audit-and-extraction-boundary-2026-03-28",
+      "path": "05-discussion-templates/discussions/2026-03-28-legacy-xml-agent-surface-audit-and-extraction-boundary.md",
+      "type": "discussion",
+      "focus": ["Legacy XML Agent Surface Audit and Extraction Boundary"],
+      "status": "active",
+      "source_of_truth": "code-audit"
+    },
+    {
+      "id": "chaemera-discussion-codex-like-agent-core-reference-and-transfer-plan-2026-03-28",
+      "path": "05-discussion-templates/discussions/2026-03-28-codex-like-agent-core-reference-and-transfer-plan.md",
+      "type": "discussion",
+      "focus": ["Codex-Like Agent Core Reference and Transfer Plan"],
+      "status": "active",
+      "source_of_truth": "code-audit"
+    },
+    {
+      "id": "chaemera-spec-next-phase-product-roadmap-2026-03-02",
+      "path": "04-sprint-workflow/specs/2026-03-02-chaemera-next-phase-product-roadmap.md",
+      "type": "spec",
+      "focus": ["Chaemera Next-Phase Product Roadmap"],
+      "status": "active",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-spec-agent-access-foundation-and-hosted-entitlement-detachment-2026-03-26",
+      "path": "04-sprint-workflow/specs/2026-03-26-agent-access-foundation-and-hosted-entitlement-detachment.md",
+      "type": "spec",
+      "focus": ["Agent Access Foundation and Hosted Entitlement Detachment"],
+      "status": "active",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-spec-post-release-agent-core-boundary-and-host-daemon-architecture-2026-03-28",
+      "path": "04-sprint-workflow/specs/2026-03-28-post-release-agent-core-boundary-and-host-daemon-architecture.md",
+      "type": "spec",
+      "focus": [
+        "Post-Release Agent Core Boundary and Host-Daemon Architecture"
+      ],
+      "status": "active",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-spec-final-tauri-host-capability-cutover-2026-03-28",
+      "path": "04-sprint-workflow/specs/2026-03-28-final-tauri-host-capability-cutover.md",
+      "type": "spec",
+      "focus": ["Final Tauri Host-Capability Cutover"],
+      "status": "active",
+      "source_of_truth": "governance"
+    }
+  ]
+}

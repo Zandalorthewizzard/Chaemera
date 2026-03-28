@@ -1,0 +1,43 @@
+Sprint: Sprint 2 - Tauri 2 Bootstrap
+Role: Agent 1 (Long Slice A)
+
+Read first:
+1) docs-new/04-sprint-workflow/sprints/sprint-2-tauri2-bootstrap.md
+2) docs-new/04-sprint-workflow/sprints/sprint-2/ownership-map.md
+3) docs-new/04-sprint-workflow/sprints/sprint-2/interface-lock.md
+4) docs-new/04-sprint-workflow/sprints/sprint-2/agent-1.scope.md
+5) docs-new/04-sprint-workflow/sprints/sprint-2/agent-1.exclude
+
+Mission:
+Stand up Tauri 2 native shell baseline with lifecycle/deeplink/single-instance parity needed for migration.
+
+Owned write paths:
+- src-tauri/**
+- Cargo.toml (if introduced)
+- tauri.conf.json (if introduced)
+- scripts/tauri/** (if introduced)
+
+Hard deny:
+- src/**
+- e2e-tests/**
+- testing/**
+- .github/workflows/**
+- docs-new/04-sprint-workflow/sprints/sprint-2/**
+- package.json
+- playwright.config.ts
+
+Must do:
+1) Bootstrap Tauri 2 shell and native lifecycle parity for startup/window baseline.
+2) Implement deeplink + single-instance baseline behavior in shell layer.
+3) Keep public behavior compatible with lock contracts for bridge consumers.
+4) If bridge/API change is required, create handoff request instead of direct cross-slice edits.
+
+Must not do:
+1) No edits in TypeScript bridge/harness ownership zones.
+2) No documentation updates during slice execution.
+3) No per-slice acceptance test execution.
+
+Delivery:
+1) One coherent code commit for Slice A.
+2) Short change report: shell capabilities delivered, touched files, handoff requests.
+

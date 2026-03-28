@@ -1,0 +1,52 @@
+Sprint: Sprint 1 - OSS Detox
+Role: Agent 3 (Long Slice C)
+
+Read first:
+1) docs-new/04-sprint-workflow/sprints/sprint-1-oss-detox.md
+2) docs-new/04-sprint-workflow/sprints/sprint-1/ownership-map.md
+3) docs-new/04-sprint-workflow/sprints/sprint-1/interface-lock.md
+4) docs-new/04-sprint-workflow/sprints/sprint-1/agent-3.scope.md
+5) docs-new/04-sprint-workflow/sprints/sprint-1/agent-3.exclude
+
+Mission:
+Realign tests and tooling to OSS detox behavior without touching runtime/frontend implementation.
+
+Owned write paths:
+- e2e-tests/**
+- src/__tests__/**
+- testing/**
+- README.md
+- CONTRIBUTING.md
+
+Hard deny:
+- src/main.ts
+- src/main/**
+- src/preload.ts
+- src/ipc/**
+- src/app/**
+- src/lib/schemas.ts
+- src/paths/**
+- src/utils/codebase.ts
+- src/components/**
+- src/pages/**
+- src/routes/**
+- src/i18n/**
+- src/renderer.tsx
+- src/hooks/**
+- docs-new/04-sprint-workflow/sprints/sprint-1/**
+
+Must do:
+1) Update e2e/unit/harness expectations from pro behavior to OSS behavior.
+2) Remove pro-oriented fixtures/setup helpers.
+3) Add missing coverage for OSS-safe routes and flows impacted by sprint.
+4) Keep interface-lock assumptions unchanged.
+
+Must not do:
+1) No runtime/frontend code edits.
+2) No documentation updates.
+3) Do not execute tests inside this slice; execution is full-sprint stage only.
+
+Delivery:
+1) One coherent code commit for slice C.
+2) Short change report: updated tests/tooling, known gaps, blockers for orchestrator.
+3) If implementation mismatch is found, file handoff note instead of cross-slice edits.

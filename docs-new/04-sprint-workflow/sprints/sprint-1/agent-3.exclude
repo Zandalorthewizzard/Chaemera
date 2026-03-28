@@ -1,0 +1,16 @@
+# Sprint 1 Agent 3 hard-deny paths
+src/main.ts
+src/main/**
+src/preload.ts
+src/ipc/**
+src/app/**
+src/lib/schemas.ts
+src/paths/**
+src/utils/codebase.ts
+src/components/**
+src/pages/**
+src/routes/**
+src/i18n/**
+src/renderer.tsx
+src/hooks/**
+docs-new/04-sprint-workflow/sprints/sprint-1/**

@@ -1,0 +1,8 @@
+# Sprint 0 Agent 2 hard-deny paths
+docs-new/04-sprint-workflow/sprints/sprint-0/acceptance-matrix.md
+docs-new/04-sprint-workflow/sprints/sprint-0/baseline-feature-catalog.md
+docs-new/04-sprint-workflow/sprints/sprint-0/risk-register.md
+docs-new/04-sprint-workflow/sprints/sprint-0/phase-gates.md
+docs-new/04-sprint-workflow/sprints/sprint-0/decision-matrix.md
+src/**
+e2e-tests/**

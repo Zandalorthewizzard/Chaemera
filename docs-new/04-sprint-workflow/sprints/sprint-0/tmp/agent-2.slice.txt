@@ -1,0 +1,18 @@
+TEMPORARY SLICE - AGENT 2
+
+ALLOW WRITE:
+1) docs-new/04-sprint-workflow/sprints/sprint-0/proprietary-surface-map.md
+2) docs-new/04-sprint-workflow/sprints/sprint-0/removal-candidate-list.md
+
+ALLOW READ:
+1) src/**
+2) e2e-tests/**
+3) README.md
+4) CONTRIBUTING.md
+5) docs-new/04-sprint-workflow/sprints/sprint-0/agent-2.scope.md
+6) docs-new/04-sprint-workflow/sprints/sprint-0/agent-2.exclude
+
+DENY WRITE:
+1) src/**
+2) e2e-tests/**
+3) Любые файлы sprint-0, кроме двух ALLOW WRITE

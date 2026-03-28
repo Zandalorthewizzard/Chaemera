@@ -1,0 +1,20 @@
+TEMPORARY SLICE - AGENT 3
+
+ALLOW WRITE:
+1) docs-new/04-sprint-workflow/sprints/sprint-0/risk-register.md
+2) docs-new/04-sprint-workflow/sprints/sprint-0/phase-gates.md
+3) docs-new/04-sprint-workflow/sprints/sprint-0/decision-matrix.md
+
+ALLOW READ:
+1) docs-new/04-sprint-workflow/sprints/sprint-0/acceptance-matrix.md
+2) docs-new/04-sprint-workflow/sprints/sprint-0/baseline-feature-catalog.md
+3) docs-new/04-sprint-workflow/sprints/sprint-0/proprietary-surface-map.md
+4) docs-new/04-sprint-workflow/sprints/sprint-0/removal-candidate-list.md
+5) docs-new/04-sprint-workflow/specs/2026-02-23-tauri2-leptos-migration-master-plan.md
+6) docs-new/04-sprint-workflow/sprints/sprint-0/agent-3.scope.md
+7) docs-new/04-sprint-workflow/sprints/sprint-0/agent-3.exclude
+
+DENY WRITE:
+1) src/**
+2) e2e-tests/**
+3) Любые файлы sprint-0, кроме трех ALLOW WRITE
