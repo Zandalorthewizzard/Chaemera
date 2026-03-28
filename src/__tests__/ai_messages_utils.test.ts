@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+﻿import { describe, it, expect } from "vitest";
 import {
   parseAiMessagesJson,
   getAiMessagesJsonIfWithinLimit,
@@ -507,7 +507,7 @@ describe("parseAiMessagesJson", () => {
                   text: "Mixed",
                   providerOptions: {
                     openai: { itemId: "msg_strip" },
-                    "dyad-engine": { someFlag: true },
+                    "cloud-engine": { someFlag: true },
                   },
                 },
               ],
@@ -519,7 +519,7 @@ describe("parseAiMessagesJson", () => {
       const result = parseAiMessagesJson(msg);
       const part = (result[0].content as any[])[0];
       expect(part.providerOptions.openai).toBeUndefined();
-      expect(part.providerOptions["dyad-engine"]).toEqual({ someFlag: true });
+      expect(part.providerOptions["cloud-engine"]).toEqual({ someFlag: true });
     });
 
     it("should not modify string content messages", () => {

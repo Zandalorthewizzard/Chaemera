@@ -844,7 +844,7 @@ This conversation includes one or more image attachments. When the user uploads 
               ? removeDyadTags(removeNonEssentialTags(msg.content))
               : removeNonEssentialTags(msg.content),
           providerOptions: {
-            "dyad-engine": {
+            "cloud-engine": {
               sourceCommitHash: msg.sourceCommitHash,
               commitHash: msg.commitHash,
             },

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+﻿import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import {
   getDyadWriteTags,
@@ -58,9 +58,9 @@ vi.mock("../ipc/utils/git_utils", () => ({
   getGitUncommittedFiles: vi.fn().mockResolvedValue([]),
 }));
 
-// Mock paths module to control getDyadAppPath
+// Mock paths module to control getAppPath
 vi.mock("../paths/paths", () => ({
-  getDyadAppPath: vi.fn().mockImplementation((appPath) => {
+  getAppPath: vi.fn().mockImplementation((appPath) => {
     return `/mock/user/data/path/${appPath}`;
   }),
   getUserDataPath: vi.fn().mockReturnValue("/mock/user/data/path"),

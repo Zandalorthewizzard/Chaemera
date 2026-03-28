@@ -1,7 +1,7 @@
-import { CodebaseFile, CodebaseFileReference } from "@/utils/codebase";
+﻿import { CodebaseFile, CodebaseFileReference } from "@/utils/codebase";
 import { ModelMessage } from "@ai-sdk/provider-utils";
 import crypto from "node:crypto";
-import log from "electron-log";
+import { appLog as log } from "@/lib/app_logger";
 import {
   getCurrentCommitHash,
   getFileAtCommit,
@@ -19,7 +19,7 @@ export interface VersionedFiles {
   hasExternalChanges: boolean;
 }
 
-interface DyadEngineProviderOptions {
+interface CloudEngineProviderOptions {
   sourceCommitHash: string | null;
   commitHash: string | null;
 }
@@ -139,8 +139,8 @@ export async function processChatMessagesWithVersionedFiles({
 
     // Extract sourceCommitHash from providerOptions
     const engineOptions = message.providerOptions?.[
-      "dyad-engine"
-    ] as unknown as DyadEngineProviderOptions;
+      "cloud-engine"
+    ] as unknown as CloudEngineProviderOptions;
     const sourceCommitHash = engineOptions?.sourceCommitHash;
 
     // Skip messages without sourceCommitHash
@@ -225,8 +225,8 @@ export async function processChatMessagesWithVersionedFiles({
     const message = chatMessages[i];
     if (message.role === "assistant") {
       const engineOptions = message.providerOptions?.[
-        "dyad-engine"
-      ] as unknown as DyadEngineProviderOptions;
+        "cloud-engine"
+      ] as unknown as CloudEngineProviderOptions;
       if (engineOptions?.commitHash) {
         latestCommitHash = engineOptions.commitHash;
         break;

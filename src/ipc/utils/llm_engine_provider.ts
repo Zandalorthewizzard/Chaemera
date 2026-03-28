@@ -1,4 +1,4 @@
-import { OpenAICompatibleChatLanguageModel } from "@ai-sdk/openai-compatible";
+﻿import { OpenAICompatibleChatLanguageModel } from "@ai-sdk/openai-compatible";
 import { OpenAIResponsesLanguageModel } from "@ai-sdk/openai/internal";
 import {
   FetchFunction,
@@ -6,12 +6,12 @@ import {
   withoutTrailingSlash,
 } from "@ai-sdk/provider-utils";
 
-import log from "electron-log";
+import { appLog as log } from "@/lib/app_logger";
 import { getExtraProviderOptions } from "./thinking_utils";
 import type { UserSettings } from "../../lib/schemas";
 import type { LanguageModel } from "ai";
 
-const logger = log.scope("llm_engine_provider");
+const logger = log.scope("cloud_engine_provider");
 
 export type ExampleChatModelId = string & {};
 export interface ChatParams {
@@ -40,7 +40,7 @@ or to provide a custom fetch implementation for e.g. testing.
 */
   fetch?: FetchFunction;
 
-  dyadOptions: {
+  engineOptions: {
     enableLazyEdits?: boolean;
     enableSmartFilesContext?: boolean;
     enableWebSearch?: boolean;
@@ -48,7 +48,7 @@ or to provide a custom fetch implementation for e.g. testing.
   settings: UserSettings;
 }
 
-export interface DyadEngineProvider {
+export interface CloudEngineProvider {
   /**
 Creates a model for text generation.
 */
@@ -62,11 +62,11 @@ Creates a chat model for text generation.
   responses(modelId: ExampleChatModelId, chatParams: ChatParams): LanguageModel;
 }
 
-export function createDyadEngine(
+export function createCloudEngine(
   options: ExampleProviderSettings,
-): DyadEngineProvider {
+): CloudEngineProvider {
   const baseURL = withoutTrailingSlash(options.baseURL);
-  logger.info("creating dyad engine with baseURL", baseURL);
+  logger.info("creating cloud engine with baseURL", baseURL);
 
   // Track request ID attempts
   const requestIdAttempts = new Map<string, number>();
@@ -74,7 +74,7 @@ export function createDyadEngine(
   const getHeaders = () => ({
     Authorization: `Bearer ${loadApiKey({
       apiKey: options.apiKey,
-      environmentVariableName: "DYAD_PRO_API_KEY",
+      environmentVariableName: "CHAEMERA_CLOUD_AI_API_KEY",
       description: "Example API key",
     })}`,
     ...options.headers,
@@ -88,7 +88,7 @@ export function createDyadEngine(
   }
 
   const getCommonModelConfig = (): CommonModelConfig => ({
-    provider: `dyad-engine`,
+    provider: `cloud-engine`,
     url: ({ path }) => {
       const url = new URL(`${baseURL}${path}`);
       if (options.queryParams) {
@@ -101,7 +101,7 @@ export function createDyadEngine(
   });
 
   // Custom fetch implementation that adds dyad-specific options to the request
-  const createDyadFetch = ({
+  const createCloudFetch = ({
     providerId,
   }: {
     providerId: string;
@@ -160,11 +160,11 @@ export function createDyadEngine(
           parsedBody.dyad_options = {
             files: dyadFiles,
             versioned_files: dyadVersionedFiles,
-            enable_lazy_edits: options.dyadOptions.enableLazyEdits,
+            enable_lazy_edits: options.engineOptions.enableLazyEdits,
             enable_smart_files_context:
-              options.dyadOptions.enableSmartFilesContext,
+              options.engineOptions.enableSmartFilesContext,
             smart_context_mode: dyadSmartContextMode,
-            enable_web_search: options.dyadOptions.enableWebSearch,
+            enable_web_search: options.engineOptions.enableWebSearch,
             app_id: dyadAppId,
           };
           if (dyadMentionedApps?.length) {
@@ -200,7 +200,7 @@ export function createDyadEngine(
   ) => {
     const config = {
       ...getCommonModelConfig(),
-      fetch: createDyadFetch({ providerId: chatParams.providerId }),
+      fetch: createCloudFetch({ providerId: chatParams.providerId }),
     };
 
     return new OpenAICompatibleChatLanguageModel(modelId, config);
@@ -212,7 +212,7 @@ export function createDyadEngine(
   ) => {
     const config = {
       ...getCommonModelConfig(),
-      fetch: createDyadFetch({ providerId: chatParams.providerId }),
+      fetch: createCloudFetch({ providerId: chatParams.providerId }),
     };
 
     return new OpenAIResponsesLanguageModel(modelId, config);
