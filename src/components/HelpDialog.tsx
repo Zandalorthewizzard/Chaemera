@@ -89,7 +89,7 @@ function formatSystemInfoSection(
   userBudget: UserBudgetInfo | undefined,
 ): string {
   return `## System Information
-- Dyad Version: ${debugInfo.dyadVersion}
+- Chaemera Version: ${debugInfo.dyadVersion}
 - Platform: ${debugInfo.platform}
 - Architecture: ${debugInfo.architecture}
 - Node Version: ${debugInfo.nodeVersion || "n/a"}
@@ -432,7 +432,7 @@ ${formatLogsSection(debugInfo)}
       skipInitial={!hasNavigated.current}
     >
       <DialogHeader>
-        <DialogTitle>Need help with Dyad?</DialogTitle>
+        <DialogTitle>Need help with Chaemera?</DialogTitle>
       </DialogHeader>
       <DialogDescription>
         If you need help or want to report an issue, here are some options:
@@ -444,7 +444,7 @@ ${formatLogsSection(debugInfo)}
           onClick={() => ipc.system.openExternalUrl("https://www.dyad.sh/docs")}
           className="w-full py-6 bg-(--background-lightest)"
         >
-          <BookOpenIcon className="mr-2 h-5 w-5" /> Open Docs
+          <BookOpenIcon className="mr-2 h-5 w-5" /> Open Help Docs
         </Button>
 
         {/* Divider */}
@@ -492,8 +492,8 @@ ${formatLogsSection(debugInfo)}
               <span className="text-sm font-semibold">Non-AI issues</span>
             </div>
             <p className="text-sm text-muted-foreground">
-              Includes error logs to troubleshoot non-AI issues with Dyad (UI
-              bugs, crashes, setup problems, etc.).
+              Includes error logs to troubleshoot non-AI issues with Chaemera
+              (UI bugs, crashes, setup problems, etc.).
             </p>
             <Button
               variant="outline"
@@ -559,7 +559,7 @@ ${formatLogsSection(debugInfo)}
           </ReviewDetailsSection>
 
           <ReviewDetailsSection title="System Information" mono={false}>
-            <p>Dyad Version: {debugBundle.system.dyadVersion}</p>
+            <p>Chaemera Version: {debugBundle.system.dyadVersion}</p>
             <p>Platform: {debugBundle.system.platform}</p>
             <p>Architecture: {debugBundle.system.architecture}</p>
             <p>
