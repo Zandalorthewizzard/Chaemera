@@ -1,20 +1,20 @@
-/**
+﻿/**
  * DO NOT USE LOGGER HERE.
  * Environment variables are sensitive and should not be logged.
  */
 
-import { getDyadAppPath } from "@/paths/paths";
+import { getAppPath } from "@/paths/paths";
 import { EnvVar } from "@/ipc/types";
 import path from "path";
 import fs from "fs";
-import log from "electron-log";
+import { appLog as log } from "@/lib/app_logger";
 
 const logger = log.scope("app_env_var_utils");
 
 export const ENV_FILE_NAME = ".env.local";
 
 function getEnvFilePath({ appPath }: { appPath: string }): string {
-  return path.join(getDyadAppPath(appPath), ENV_FILE_NAME);
+  return path.join(getAppPath(appPath), ENV_FILE_NAME);
 }
 
 export async function updatePostgresUrlEnvVar({

@@ -47,14 +47,14 @@ export function getRuntimeUserDataDir() {
   return userDataDir;
 }
 
-export function getRuntimeDyadAppsDir() {
-  const dyadAppsDir = process.env.CHAEMERA_TAURI_DYAD_APPS_DIR;
-  if (!dyadAppsDir) {
+export function getRuntimeAppsDir() {
+  const appsDir = process.env.CHAEMERA_TAURI_APPS_DIR;
+  if (!appsDir) {
     throw new Error(
-      "CHAEMERA_TAURI_DYAD_APPS_DIR is not set for the runtime session.",
+      "CHAEMERA_TAURI_APPS_DIR is not set for the runtime session.",
     );
   }
-  return dyadAppsDir;
+  return appsDir;
 }
 
 export function getUserSettingsPath() {

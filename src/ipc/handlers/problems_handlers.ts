@@ -1,9 +1,9 @@
-import { db } from "../../db";
+﻿import { db } from "../../db";
 import { apps } from "../../db/schema";
 import { eq } from "drizzle-orm";
 import { generateProblemReport } from "../processors/tsc";
-import { getDyadAppPath } from "@/paths/paths";
-import log from "electron-log";
+import { getAppPath } from "@/paths/paths";
+import { appLog as log } from "@/lib/app_logger";
 import { createTypedHandler } from "./base";
 import { miscContracts } from "../types/misc";
 
@@ -21,7 +21,7 @@ export function registerProblemsHandlers() {
         throw new Error(`App not found: ${params.appId}`);
       }
 
-      const appPath = getDyadAppPath(app.path);
+      const appPath = getAppPath(app.path);
 
       // Call autofix with empty full response to just run TypeScript checking
       const problemReport = await generateProblemReport({

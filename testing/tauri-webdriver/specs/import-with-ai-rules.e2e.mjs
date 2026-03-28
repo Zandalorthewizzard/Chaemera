@@ -89,13 +89,13 @@ describe("Chaemera Tauri import flow", () => {
     );
 
     logStep("verifying imported files exist in the isolated Tauri profile");
-    const dyadAppsDir = process.env.CHAEMERA_TAURI_DYAD_APPS_DIR;
+    const appsDir = process.env.CHAEMERA_TAURI_APPS_DIR;
     assert.ok(
-      dyadAppsDir,
-      "Expected CHAEMERA_TAURI_DYAD_APPS_DIR to be available in the runtime test process.",
+      appsDir,
+      "Expected CHAEMERA_TAURI_APPS_DIR to be available in the runtime test process.",
     );
 
-    const importedAppDir = path.join(dyadAppsDir, "minimal-imported-app");
+    const importedAppDir = path.join(appsDir, "minimal-imported-app");
     const importedAiRulesPath = path.join(importedAppDir, "AI_RULES.md");
     const importedAppEntryPath = path.join(importedAppDir, "src", "App.tsx");
 
@@ -107,7 +107,7 @@ describe("Chaemera Tauri import flow", () => {
         timeout: 120_000,
         interval: 250,
         timeoutMsg:
-          "Expected the imported app files to be copied into the isolated dyad-apps directory.",
+          "Expected the imported app files to be copied into the isolated app-roots directory.",
       },
     );
 

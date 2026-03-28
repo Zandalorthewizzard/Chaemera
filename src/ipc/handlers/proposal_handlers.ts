@@ -1,4 +1,4 @@
-import type {
+﻿import type {
   CodeProposal,
   ProposalResult,
   ActionProposal,
@@ -19,7 +19,7 @@ import {
   getDyadCommandTags,
   getDyadSearchReplaceTags,
 } from "../utils/dyad_tag_parser";
-import log from "electron-log";
+import { appLog as log } from "@/lib/app_logger";
 import { isServerFunction } from "../../supabase_admin/supabase_utils";
 import {
   estimateMessagesTokens,
@@ -27,7 +27,7 @@ import {
   getContextWindow,
 } from "../utils/token_utils";
 import { extractCodebase } from "../../utils/codebase";
-import { getDyadAppPath } from "../../paths/paths";
+import { getAppPath } from "../../paths/paths";
 import { withLock } from "../utils/lock_utils";
 import { createLoggedHandler } from "./safe_handle";
 import { ApproveProposalResult } from "@/ipc/types";
@@ -101,7 +101,7 @@ async function getCodebaseTokenCount(
   logger.log(`Calculating codebase token count for chatId: ${chatId}`);
   const codebase = (
     await extractCodebase({
-      appPath: getDyadAppPath(appPath),
+      appPath: getAppPath(appPath),
       chatContext: validateChatContext(chatContext),
     })
   ).formattedOutput;

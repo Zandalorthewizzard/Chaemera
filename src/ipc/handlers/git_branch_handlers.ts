@@ -1,4 +1,4 @@
-import { readSettings } from "../../main/settings";
+﻿import { readSettings } from "../../main/settings";
 import {
   gitMergeAbort,
   gitFetch,
@@ -19,11 +19,11 @@ import {
   gitAddAll,
   gitCommit,
 } from "../utils/git_utils";
-import { getDyadAppPath } from "../../paths/paths";
+import { getAppPath } from "../../paths/paths";
 import { db } from "../../db";
 import { apps } from "../../db/schema";
 import { eq } from "drizzle-orm";
-import log from "electron-log";
+import { appLog as log } from "@/lib/app_logger";
 import { withLock } from "../utils/lock_utils";
 import { updateAppGithubRepo, ensureCleanWorkspace } from "./github_handlers";
 import { createTypedHandler } from "./base";
@@ -44,7 +44,7 @@ async function handleAbortMerge(
 ): Promise<void> {
   const app = await db.query.apps.findFirst({ where: eq(apps.id, appId) });
   if (!app) throw new Error("App not found");
-  const appPath = getDyadAppPath(app.path);
+  const appPath = getAppPath(app.path);
 
   await gitMergeAbort({ path: appPath });
 }
@@ -63,7 +63,7 @@ async function handleFetchFromGithub(
   if (!app || !app.githubOrg || !app.githubRepo) {
     throw new Error("App is not linked to a GitHub repo.");
   }
-  const appPath = getDyadAppPath(app.path);
+  const appPath = getAppPath(app.path);
 
   await gitFetch({
     path: appPath,
@@ -97,7 +97,7 @@ async function handleCreateBranch(
   }
   const app = await db.query.apps.findFirst({ where: eq(apps.id, appId) });
   if (!app) throw new Error("App not found");
-  const appPath = getDyadAppPath(app.path);
+  const appPath = getAppPath(app.path);
 
   await gitCreateBranch({
     path: appPath,
@@ -112,7 +112,7 @@ async function handleDeleteBranch(
 ): Promise<void> {
   const app = await db.query.apps.findFirst({ where: eq(apps.id, appId) });
   if (!app) throw new Error("App not found");
-  const appPath = getDyadAppPath(app.path);
+  const appPath = getAppPath(app.path);
 
   await gitDeleteBranch({
     path: appPath,
@@ -126,7 +126,7 @@ async function handleSwitchBranch(
 ): Promise<void> {
   const app = await db.query.apps.findFirst({ where: eq(apps.id, appId) });
   if (!app) throw new Error("App not found");
-  const appPath = getDyadAppPath(app.path);
+  const appPath = getAppPath(app.path);
 
   // Check for merge or rebase in progress before attempting to switch
   // This provides structured error codes instead of relying on string matching
@@ -185,7 +185,7 @@ async function handleRenameBranch(
 ): Promise<void> {
   const app = await db.query.apps.findFirst({ where: eq(apps.id, appId) });
   if (!app) throw new Error("App not found");
-  const appPath = getDyadAppPath(app.path);
+  const appPath = getAppPath(app.path);
 
   // Check if we're renaming the current branch BEFORE renaming to avoid race conditions
   const currentBranch = await gitCurrentBranch({ path: appPath });
@@ -223,7 +223,7 @@ async function handleMergeBranch(
 ): Promise<void> {
   const app = await db.query.apps.findFirst({ where: eq(apps.id, appId) });
   if (!app) throw new Error("App not found");
-  const appPath = getDyadAppPath(app.path);
+  const appPath = getAppPath(app.path);
 
   // Check if branch exists locally, if not, check if it's a remote branch
   const localBranches = await gitListBranches({ path: appPath });
@@ -284,7 +284,7 @@ async function handleListLocalBranches(
 ): Promise<{ branches: string[]; current: string | null }> {
   const app = await db.query.apps.findFirst({ where: eq(apps.id, appId) });
   if (!app) throw new Error("App not found");
-  const appPath = getDyadAppPath(app.path);
+  const appPath = getAppPath(app.path);
 
   const branches = await gitListBranches({ path: appPath });
   const current = await gitCurrentBranch({ path: appPath });
@@ -297,7 +297,7 @@ async function handleListRemoteBranches(
 ): Promise<string[]> {
   const app = await db.query.apps.findFirst({ where: eq(apps.id, appId) });
   if (!app) throw new Error("App not found");
-  const appPath = getDyadAppPath(app.path);
+  const appPath = getAppPath(app.path);
 
   const branches = await gitListRemoteBranches({ path: appPath, remote });
   return branches;
@@ -309,7 +309,7 @@ async function handleGetUncommittedFiles(
 ): Promise<UncommittedFile[]> {
   const app = await db.query.apps.findFirst({ where: eq(apps.id, appId) });
   if (!app) throw new Error("App not found");
-  const appPath = getDyadAppPath(app.path);
+  const appPath = getAppPath(app.path);
 
   return getGitUncommittedFilesWithStatus({ path: appPath });
 }
@@ -320,7 +320,7 @@ async function handleCommitChanges(
 ): Promise<string> {
   const app = await db.query.apps.findFirst({ where: eq(apps.id, appId) });
   if (!app) throw new Error("App not found");
-  const appPath = getDyadAppPath(app.path);
+  const appPath = getAppPath(app.path);
 
   return withLock(appId, async () => {
     // Check for merge or rebase in progress
@@ -362,7 +362,7 @@ async function handlePullFromGithub(
   if (!app || !app.githubOrg || !app.githubRepo) {
     throw new Error("App is not linked to a GitHub repo.");
   }
-  const appPath = getDyadAppPath(app.path);
+  const appPath = getAppPath(app.path);
   const currentBranch = await gitCurrentBranch({ path: appPath });
 
   try {

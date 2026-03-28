@@ -1,4 +1,4 @@
-// db.ts
+﻿// db.ts
 import {
   type BetterSQLite3Database,
   drizzle,
@@ -8,8 +8,8 @@ import * as schema from "./schema";
 import { migrate } from "drizzle-orm/better-sqlite3/migrator";
 import path from "node:path";
 import fs from "node:fs";
-import { getDyadAppPath, getUserDataPath } from "../paths/paths";
-import log from "electron-log";
+import { getAppPath, getUserDataPath } from "../paths/paths";
+import { appLog as log } from "@/lib/app_logger";
 
 const logger = log.scope("db");
 
@@ -48,7 +48,7 @@ export function initializeDatabase(): BetterSQLite3Database<typeof schema> & {
   }
 
   fs.mkdirSync(getUserDataPath(), { recursive: true });
-  fs.mkdirSync(getDyadAppPath("."), { recursive: true });
+  fs.mkdirSync(getAppPath("."), { recursive: true });
 
   const sqlite = new Database(dbPath, { timeout: 10000 });
   sqlite.pragma("foreign_keys = ON");

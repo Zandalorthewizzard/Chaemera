@@ -1,4 +1,4 @@
-import { platform, arch } from "os";
+﻿import { platform, arch } from "os";
 import { readSettings } from "../../main/settings";
 import { createTypedHandler } from "./base";
 import { systemContracts } from "../types/system";
@@ -22,7 +22,7 @@ import {
   mcpServers,
 } from "../../db/schema";
 import { eq } from "drizzle-orm";
-import { getDyadAppPath } from "../../paths/paths";
+import { getAppPath } from "../../paths/paths";
 import { validateChatContext } from "../utils/context_paths_utils";
 
 // Shared function to get system debug info
@@ -274,7 +274,7 @@ export function registerDebugHandlers() {
           db.select().from(language_models),
           db.select().from(mcpServers),
           extractCodebase({
-            appPath: getDyadAppPath(app.path),
+            appPath: getAppPath(app.path),
             chatContext: validateChatContext(app.chatContext),
           }).then((result) => result.formattedOutput),
         ]);

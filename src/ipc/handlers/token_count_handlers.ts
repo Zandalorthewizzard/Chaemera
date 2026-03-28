@@ -1,4 +1,4 @@
-import { db } from "../../db";
+﻿import { db } from "../../db";
 import { chats } from "../../db/schema";
 import { eq } from "drizzle-orm";
 import {
@@ -10,7 +10,7 @@ import {
   getSupabaseAvailableSystemPrompt,
   SUPABASE_NOT_AVAILABLE_SYSTEM_PROMPT,
 } from "../../prompts/supabase_prompt";
-import { getDyadAppPath } from "../../paths/paths";
+import { getAppPath } from "../../paths/paths";
 import { appLog as log } from "@/lib/app_logger";
 import { extractCodebase } from "../../utils/codebase";
 import {
@@ -67,7 +67,7 @@ export function registerTokenCountHandlers() {
       // Migration on read converts "agent" to "build", so no need to check for it here
       const themePrompt = await getThemePromptById(chat.app?.themeId ?? null);
       let systemPrompt = constructSystemPrompt({
-        aiRules: await readAiRules(getDyadAppPath(chat.app.path)),
+        aiRules: await readAiRules(getAppPath(chat.app.path)),
         chatMode:
           settings.selectedChatMode === "local-agent"
             ? "build"
@@ -102,7 +102,7 @@ export function registerTokenCountHandlers() {
       let codebaseTokens = 0;
 
       if (chat.app) {
-        const appPath = getDyadAppPath(chat.app.path);
+        const appPath = getAppPath(chat.app.path);
         const { formattedOutput, files } = await extractCodebase({
           appPath,
           chatContext: validateChatContext(chat.app.chatContext),

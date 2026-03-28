@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
-import { getRuntimeDyadAppsDir } from "../runtime_profile.mjs";
+import { getRuntimeAppsDir } from "../runtime_profile.mjs";
 import {
   assertNoSevereBrowserLogs,
   invokeCoreCommand,
@@ -27,7 +27,7 @@ describe("Chaemera Tauri app storage", () => {
     await waitForDesktopShell();
 
     const appName = "runtime-storage-app";
-    const originalPath = path.join(getRuntimeDyadAppsDir(), appName);
+    const originalPath = path.join(getRuntimeAppsDir(), appName);
     const relocatedBasePath = path.join(getProfileRoot(), "alt-app-storage");
     const relocatedAppPath = path.join(relocatedBasePath, appName);
 

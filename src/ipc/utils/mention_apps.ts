@@ -1,8 +1,8 @@
-import { db } from "../../db";
-import { getDyadAppPath } from "../../paths/paths";
+﻿import { db } from "../../db";
+import { getAppPath } from "../../paths/paths";
 import { CodebaseFile, extractCodebase } from "../../utils/codebase";
 import { validateChatContext } from "../utils/context_paths_utils";
-import log from "electron-log";
+import { appLog as log } from "@/lib/app_logger";
 
 const logger = log.scope("mention_apps");
 
@@ -33,7 +33,7 @@ export async function extractMentionedAppsCodebases(
 
   for (const app of mentionedApps) {
     try {
-      const appPath = getDyadAppPath(app.path);
+      const appPath = getAppPath(app.path);
       const chatContext = validateChatContext(app.chatContext);
 
       const { formattedOutput, files } = await extractCodebase({

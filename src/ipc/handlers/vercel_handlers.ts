@@ -1,15 +1,15 @@
-import { Vercel } from "@vercel/sdk";
+﻿import { Vercel } from "@vercel/sdk";
 import { writeSettings, readSettings } from "../../main/settings";
 import * as schema from "../../db/schema";
 import { db } from "../../db";
 import { apps } from "../../db/schema";
 import { eq } from "drizzle-orm";
-import log from "electron-log";
+import { appLog as log } from "@/lib/app_logger";
 import { IS_TEST_BUILD } from "../utils/test_utils";
 import * as fs from "fs";
 import * as path from "path";
 import { CreateProjectFramework } from "@vercel/sdk/models/createprojectop.js";
-import { getDyadAppPath } from "@/paths/paths";
+import { getAppPath } from "@/paths/paths";
 import { createTypedHandler } from "./base";
 import {
   vercelContracts,
@@ -311,7 +311,7 @@ async function handleCreateProject(
     }
 
     // Detect the framework from the app's directory
-    const detectedFramework = await detectFramework(getDyadAppPath(app.path));
+    const detectedFramework = await detectFramework(getAppPath(app.path));
 
     logger.info(
       `Detected framework: ${detectedFramework || "none detected"} for app at ${app.path}`,

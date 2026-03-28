@@ -1,4 +1,4 @@
-import { createTypedHandler } from "./base";
+﻿import { createTypedHandler } from "./base";
 import { chatContracts } from "../types/chat";
 import {
   ModelMessage,
@@ -25,7 +25,7 @@ import {
   getSupabaseAvailableSystemPrompt,
   SUPABASE_NOT_AVAILABLE_SYSTEM_PROMPT,
 } from "../../prompts/supabase_prompt";
-import { getDyadAppPath } from "../../paths/paths";
+import { getAppPath } from "../../paths/paths";
 import { readSettings } from "../../main/settings";
 import type { ChatResponseEnd, ChatStreamParams } from "@/ipc/types";
 import {
@@ -368,7 +368,7 @@ export function registerChatStreamHandlers() {
           implementPlanDisplayPrompt = userPrompt;
           const planSlug = implementPlanMatch[1];
           validatePlanId(planSlug);
-          const appPath = getDyadAppPath(chat.app.path);
+          const appPath = getAppPath(chat.app.path);
           const planFilePath = path.join(
             appPath,
             ".dyad",
@@ -403,7 +403,7 @@ You may update the plan at \`${planPath}\` to mark your progress.`;
           let componentSnippet = "[component snippet not available]";
           try {
             const componentFileContent = await readFile(
-              path.join(getDyadAppPath(chat.app.path), component.relativePath),
+              path.join(getAppPath(chat.app.path), component.relativePath),
               "utf8",
             );
             const lines = componentFileContent.split(/\r?\n/);
@@ -458,7 +458,7 @@ ${componentSnippet}
           requestId: dyadRequestId,
           model: settings.selectedModel.name,
           sourceCommitHash: await getCurrentCommitHash({
-            path: getDyadAppPath(chat.app.path),
+            path: getAppPath(chat.app.path),
           }),
         })
         .returning();
@@ -504,7 +504,7 @@ ${componentSnippet}
         const { modelClient, isEngineEnabled, isSmartContextEnabled } =
           await getModelClient(settings.selectedModel, settings);
 
-        const appPath = getDyadAppPath(updatedChat.app.path);
+        const appPath = getAppPath(updatedChat.app.path);
         // When we don't have smart context enabled, we
         // only include the selected components' files for codebase context.
         //
@@ -659,7 +659,7 @@ ${componentSnippet}
           );
         }
 
-        const aiRules = await readAiRules(getDyadAppPath(updatedChat.app.path));
+        const aiRules = await readAiRules(getAppPath(updatedChat.app.path));
 
         // Get theme prompt for the app (null themeId means "no theme")
         const themePrompt = await getThemePromptById(updatedChat.app.themeId);
@@ -690,7 +690,7 @@ ${componentSnippet}
         if (isSecurityReviewIntent) {
           systemPrompt = SECURITY_REVIEW_SYSTEM_PROMPT;
           try {
-            const appPath = getDyadAppPath(updatedChat.app.path);
+            const appPath = getAppPath(updatedChat.app.path);
             const rulesPath = path.join(appPath, "SECURITY_RULES.md");
             let securityRules = "";
 
@@ -1172,9 +1172,7 @@ This conversation includes one or more image attachments. When the user uploads 
                 },
               },
               systemPromptOverride: constructSystemPrompt({
-                aiRules: await readAiRules(
-                  getDyadAppPath(updatedChat.app.path),
-                ),
+                aiRules: await readAiRules(getAppPath(updatedChat.app.path)),
                 chatMode: "build",
                 enableTurboEditsV2: false,
               }),
@@ -1225,7 +1223,7 @@ This conversation includes one or more image attachments. When the user uploads 
           ) {
             let issues = await dryRunSearchReplace({
               fullResponse,
-              appPath: getDyadAppPath(updatedChat.app.path),
+              appPath: getAppPath(updatedChat.app.path),
             });
             sendTelemetryEvent(event.sender, "search_replace:fix", {
               attemptNumber: 0,
@@ -1304,7 +1302,7 @@ ${formattedSearchReplaceIssues}`,
               // Re-check for issues after the fix attempt
               issues = await dryRunSearchReplace({
                 fullResponse: result.incrementalResponse,
-                appPath: getDyadAppPath(updatedChat.app.path),
+                appPath: getAppPath(updatedChat.app.path),
               });
 
               sendTelemetryEvent(event.sender, "search_replace:fix", {
@@ -1373,7 +1371,7 @@ ${formattedSearchReplaceIssues}`,
               // IF auto-fix is enabled
               let problemReport = await generateProblemReport({
                 fullResponse,
-                appPath: getDyadAppPath(updatedChat.app.path),
+                appPath: getAppPath(updatedChat.app.path),
               });
 
               let autoFixAttempts = 0;
@@ -1400,7 +1398,7 @@ ${problemReport.problems
                 const problemFixPrompt = createProblemFixPrompt(problemReport);
 
                 const virtualFileSystem = new AsyncVirtualFileSystem(
-                  getDyadAppPath(updatedChat.app.path),
+                  getAppPath(updatedChat.app.path),
                   {
                     fileExists: (fileName: string) => fileExists(fileName),
                     readFile: (fileName: string) => readFileWithCache(fileName),
@@ -1471,7 +1469,7 @@ ${problemReport.problems
 
                 problemReport = await generateProblemReport({
                   fullResponse,
-                  appPath: getDyadAppPath(updatedChat.app.path),
+                  appPath: getAppPath(updatedChat.app.path),
                 });
               }
             } catch (error) {
@@ -1835,7 +1833,7 @@ function escapeDyadTags(text: string): string {
   // and are mishandled by:
   // 1. FE markdown parser
   // 2. Main process response processor
-  return text.replace(/<dyad/g, "＜dyad").replace(/<\/dyad/g, "＜/dyad");
+  return text.replace(/<dyad/g, "пјњdyad").replace(/<\/dyad/g, "пјњ/dyad");
 }
 
 const CODEBASE_PROMPT_PREFIX = "This is my codebase.";

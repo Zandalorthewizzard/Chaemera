@@ -1,4 +1,4 @@
-import { db, getDatabasePath } from "../../db";
+﻿import { db, getDatabasePath } from "../../db";
 import { apps, chats, messages } from "../../db/schema";
 import { desc, eq, like } from "drizzle-orm";
 import { createTypedHandler } from "./base";
@@ -8,7 +8,7 @@ import { miscContracts } from "../types/misc";
 import { systemContracts } from "../types/system";
 import fs from "node:fs";
 import path from "node:path";
-import { getDyadAppPath, getUserDataPath } from "../../paths/paths";
+import { getAppPath, getUserDataPath } from "../../paths/paths";
 import { ChildProcess, spawn } from "node:child_process";
 import { promises as fsPromises } from "node:fs";
 
@@ -328,7 +328,7 @@ function listenToProcess({
     }
 
     // Check if this is an interactive prompt requiring user input
-    const inputRequestPattern = /\s*›\s*\([yY]\/[nN]\)\s*$/;
+    const inputRequestPattern = /\s*вЂє\s*\([yY]\/[nN]\)\s*$/;
     const isInputRequest = inputRequestPattern.test(message);
     if (isInputRequest) {
       // Send special input-requested event for interactive prompts
@@ -769,7 +769,7 @@ export function registerAppHandlers() {
 
   createTypedHandler(appContracts.createApp, async (_, params) => {
     const appPath = params.name;
-    const fullAppPath = getDyadAppPath(appPath);
+    const fullAppPath = getAppPath(appPath);
     if (fs.existsSync(fullAppPath)) {
       throw new Error(`App already exists at: ${fullAppPath}`);
     }
@@ -843,8 +843,8 @@ export function registerAppHandlers() {
       throw new Error("Original app not found.");
     }
 
-    const originalAppPath = getDyadAppPath(originalApp.path);
-    const newAppPath = getDyadAppPath(newAppName);
+    const originalAppPath = getAppPath(originalApp.path);
+    const newAppPath = getAppPath(newAppName);
 
     // 3. Copy the app folder
     try {
@@ -908,7 +908,7 @@ export function registerAppHandlers() {
     }
 
     // Get app files
-    const appPath = getDyadAppPath(app.path);
+    const appPath = getAppPath(app.path);
     let files: string[] = [];
 
     try {
@@ -956,7 +956,7 @@ export function registerAppHandlers() {
     });
     const appsWithResolvedPath = allApps.map((app) => ({
       ...app,
-      resolvedPath: getDyadAppPath(app.path),
+      resolvedPath: getAppPath(app.path),
     }));
     return {
       apps: appsWithResolvedPath,
@@ -973,7 +973,7 @@ export function registerAppHandlers() {
       throw new Error("App not found");
     }
 
-    const appPath = getDyadAppPath(app.path);
+    const appPath = getAppPath(app.path);
     const fullPath = path.join(appPath, filePath);
 
     // Check if the path is within the app directory (security check)
@@ -1025,7 +1025,7 @@ export function registerAppHandlers() {
 
       logger.debug(`Starting app ${appId} in path ${app.path}`);
 
-      const appPath = getDyadAppPath(app.path);
+      const appPath = getAppPath(app.path);
       try {
         // There may have been a previous run that left a process on this port.
         await cleanUpPort(getAppPort(appId));
@@ -1130,7 +1130,7 @@ export function registerAppHandlers() {
           throw new Error("App not found");
         }
 
-        const appPath = getDyadAppPath(app.path);
+        const appPath = getAppPath(app.path);
 
         // Remove node_modules if requested
         if (removeNodeModules) {
@@ -1203,7 +1203,7 @@ export function registerAppHandlers() {
       throw new Error("App not found");
     }
 
-    const appPath = getDyadAppPath(app.path);
+    const appPath = getAppPath(app.path);
     const fullPath = path.join(appPath, filePath);
 
     // Check if the path is within the app directory (security check)
@@ -1334,7 +1334,7 @@ export function registerAppHandlers() {
       }
 
       // Delete app files
-      const appPath = getDyadAppPath(app.path);
+      const appPath = getAppPath(app.path);
       try {
         await fsPromises.rm(appPath, { recursive: true, force: true });
       } catch (error: any) {
@@ -1436,10 +1436,10 @@ export function registerAppHandlers() {
 
       // If the current path is absolute, preserve the directory and only change the folder name
       // Otherwise, resolve the new path using the default base path
-      const currentResolvedPath = getDyadAppPath(app.path);
+      const currentResolvedPath = getAppPath(app.path);
       const newAppPath = path.isAbsolute(app.path)
         ? path.join(path.dirname(app.path), appPath)
-        : getDyadAppPath(appPath);
+        : getAppPath(appPath);
 
       let hasPathConflict = false;
       if (pathChanged) {
@@ -1448,7 +1448,7 @@ export function registerAppHandlers() {
           if (existingApp.id === appId) {
             return false;
           }
-          return getDyadAppPath(existingApp.path) === newAppPath;
+          return getAppPath(existingApp.path) === newAppPath;
         });
       }
 
@@ -1602,7 +1602,7 @@ export function registerAppHandlers() {
     // Doing this last because it's the most time-consuming and the least important
     // in terms of resetting the app state.
     logger.log("removing all app files...");
-    const dyadAppPath = getDyadAppPath(".");
+    const dyadAppPath = getAppPath(".");
     if (fs.existsSync(dyadAppPath)) {
       await fsPromises.rm(dyadAppPath, { recursive: true, force: true });
       // Recreate the base directory
@@ -1629,7 +1629,7 @@ export function registerAppHandlers() {
       throw new Error("App not found");
     }
 
-    const appPath = getDyadAppPath(app.path);
+    const appPath = getAppPath(app.path);
 
     return withLock(appId, async () => {
       try {
@@ -1711,7 +1711,7 @@ export function registerAppHandlers() {
       throw new Error("App not found");
     }
 
-    const appPath = getDyadAppPath(appRecord.path);
+    const appPath = getAppPath(appRecord.path);
 
     // Search file contents with ripgrep
     const contentMatches = await searchAppFilesWithRipgrep({
@@ -1893,7 +1893,7 @@ export function registerAppHandlers() {
         throw new Error("App not found");
       }
 
-      const currentResolvedPath = getDyadAppPath(app.path);
+      const currentResolvedPath = getAppPath(app.path);
       // Extract app folder name from current path (works for both absolute and relative paths)
       const appFolderName = path.basename(
         path.isAbsolute(app.path) ? app.path : currentResolvedPath,
@@ -1917,7 +1917,7 @@ export function registerAppHandlers() {
       const conflict = allApps.some(
         (existingApp) =>
           existingApp.id !== appId &&
-          getDyadAppPath(existingApp.path) === nextResolvedPath,
+          getAppPath(existingApp.path) === nextResolvedPath,
       );
 
       if (conflict) {

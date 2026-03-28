@@ -1,24 +1,24 @@
-import path from "node:path";
+﻿import path from "node:path";
 import os from "node:os";
 
 /**
  * Gets the base dyad-apps directory path (without a specific app subdirectory)
  */
-export function getDyadAppsBaseDirectory(): string {
-  const overrideDir = process.env.CHAEMERA_TAURI_DYAD_APPS_DIR;
+export function getAppsBaseDirectory(): string {
+  const overrideDir = process.env.CHAEMERA_TAURI_APPS_DIR;
   if (overrideDir) {
     return overrideDir;
   }
   return path.join(os.homedir(), "dyad-apps");
 }
 
-export function getDyadAppPath(appPath: string): string {
+export function getAppPath(appPath: string): string {
   // If appPath is already absolute, use it as-is
   if (path.isAbsolute(appPath)) {
     return appPath;
   }
   // Otherwise, use the default base path
-  return path.join(getDyadAppsBaseDirectory(), appPath);
+  return path.join(getAppsBaseDirectory(), appPath);
 }
 
 export function getTypeScriptCachePath(): string {

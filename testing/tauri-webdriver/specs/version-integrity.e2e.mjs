@@ -6,7 +6,7 @@ import {
   assertNoSevereBrowserLogs,
   waitForDesktopShell,
 } from "../test_helpers.mjs";
-import { getRuntimeDyadAppsDir } from "../runtime_profile.mjs";
+import { getRuntimeAppsDir } from "../runtime_profile.mjs";
 
 const IMPORTED_APP_NAME = "version-integrity-app";
 const INITIAL_VERSION_MESSAGE = "Init Chaemera app";
@@ -205,10 +205,7 @@ describe("Chaemera Tauri version integrity", () => {
       },
     );
 
-    const importedAppDir = path.join(
-      getRuntimeDyadAppsDir(),
-      IMPORTED_APP_NAME,
-    );
+    const importedAppDir = path.join(getRuntimeAppsDir(), IMPORTED_APP_NAME);
     const initialSnapshot = snapshotAppTree(importedAppDir);
 
     logStep("applying add/edit/delete commit");

@@ -7,6 +7,13 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 const rootDir = path.resolve(__dirname, "..", "..");
 const debugDir = path.join(rootDir, "src-tauri", "target", "debug");
+const fakeLlmServerEntryPath = path.join(
+  rootDir,
+  "testing",
+  "fake-llm-server",
+  "dist",
+  "index.js",
+);
 const profileRoot = path.join(
   os.tmpdir(),
   `chaemera-tauri-webdriver-${Date.now()}`,
@@ -17,7 +24,7 @@ const tauriAppIdentifier = "io.chaemera.app";
 const tauriAppDataDir = path.join(appDataDir, tauriAppIdentifier);
 const tauriLocalDataDir = path.join(localAppDataDir, tauriAppIdentifier);
 const tauriUserDataDir = path.join(profileRoot, "userData");
-const tauriDyadAppsDir = path.join(profileRoot, "dyad-apps");
+const tauriAppsDir = path.join(profileRoot, "app-roots");
 const tauriDriverPath = path.join(
   os.homedir(),
   ".cargo",
@@ -32,8 +39,10 @@ const nativeDriverPath = path.join(
 );
 const runtimeSetupModulePath = process.env.CHAEMERA_TAURI_RUNTIME_SETUP ?? null;
 const keepRuntimeProfile = process.env.CHAEMERA_TAURI_KEEP_PROFILE === "true";
+const fakeLlmPort = process.env.FAKE_LLM_PORT ?? "3500";
 
 let tauriDriver;
+let fakeLlmServer;
 let exit = false;
 
 function resolveTauriApplication() {
@@ -75,6 +84,66 @@ function resolveTauriApplication() {
 function closeTauriDriver() {
   exit = true;
   tauriDriver?.kill();
+}
+
+function closeFakeLlmServer() {
+  fakeLlmServer?.kill();
+}
+
+async function waitForHttpReady(url, timeoutMs = 30_000) {
+  const startedAt = Date.now();
+  let lastError = null;
+
+  while (Date.now() - startedAt < timeoutMs) {
+    try {
+      const response = await fetch(url);
+      if (response.ok) {
+        return;
+      }
+      lastError = new Error(`Unexpected status ${response.status}`);
+    } catch (error) {
+      lastError = error;
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 250));
+  }
+
+  throw new Error(
+    `Timed out waiting for ${url}: ${String(lastError ?? "unknown error")}`,
+  );
+}
+
+async function startFakeLlmServer() {
+  if (!fs.existsSync(fakeLlmServerEntryPath)) {
+    throw new Error(`Expected fake LLM server at ${fakeLlmServerEntryPath}.`);
+  }
+
+  fakeLlmServer = spawn(
+    "node",
+    [fakeLlmServerEntryPath, `--port=${fakeLlmPort}`],
+    {
+      cwd: path.dirname(fakeLlmServerEntryPath),
+      stdio: [null, process.stdout, process.stderr],
+      env: {
+        ...process.env,
+        PORT: fakeLlmPort,
+      },
+    },
+  );
+
+  fakeLlmServer.on("error", (error) => {
+    console.error("fake-llm-server error:", error);
+    process.exit(1);
+  });
+
+  fakeLlmServer.on("exit", (code) => {
+    if (!exit && code !== 0) {
+      console.error("fake-llm-server exited with code:", code);
+      process.exit(1);
+    }
+  });
+
+  await waitForHttpReady(`http://127.0.0.1:${fakeLlmPort}/health`);
 }
 
 function registerShutdownCleanup(fn) {
@@ -136,12 +205,13 @@ async function runRuntimeSetupHook() {
     tauriAppDataDir,
     tauriLocalDataDir,
     tauriUserDataDir,
-    tauriDyadAppsDir,
+    tauriAppsDir,
   });
 }
 
 registerShutdownCleanup(() => {
   closeTauriDriver();
+  closeFakeLlmServer();
 });
 
 export const config = {
@@ -170,14 +240,18 @@ export const config = {
     fs.mkdirSync(tauriAppDataDir, { recursive: true });
     fs.mkdirSync(tauriLocalDataDir, { recursive: true });
     fs.mkdirSync(tauriUserDataDir, { recursive: true });
-    fs.mkdirSync(tauriDyadAppsDir, { recursive: true });
+    fs.mkdirSync(tauriAppsDir, { recursive: true });
 
     process.env.CHAEMERA_TAURI_PROFILE_ROOT = profileRoot;
     process.env.CHAEMERA_TAURI_APP_IDENTIFIER = tauriAppIdentifier;
     process.env.CHAEMERA_TAURI_APP_DATA_DIR = tauriAppDataDir;
     process.env.CHAEMERA_TAURI_LOCAL_DATA_DIR = tauriLocalDataDir;
     process.env.CHAEMERA_TAURI_USER_DATA_DIR = tauriUserDataDir;
-    process.env.CHAEMERA_TAURI_DYAD_APPS_DIR = tauriDyadAppsDir;
+    process.env.CHAEMERA_TAURI_APPS_DIR = tauriAppsDir;
+    process.env.FAKE_LLM_PORT = fakeLlmPort;
+    process.env.TEST_AZURE_BASE_URL = `http://127.0.0.1:${fakeLlmPort}/azure`;
+
+    await startFakeLlmServer();
 
     await runRuntimeSetupHook();
 
@@ -195,7 +269,9 @@ export const config = {
           CHAEMERA_TAURI_APP_DATA_DIR: tauriAppDataDir,
           CHAEMERA_TAURI_LOCAL_DATA_DIR: tauriLocalDataDir,
           CHAEMERA_TAURI_USER_DATA_DIR: tauriUserDataDir,
-          CHAEMERA_TAURI_DYAD_APPS_DIR: tauriDyadAppsDir,
+          CHAEMERA_TAURI_APPS_DIR: tauriAppsDir,
+          FAKE_LLM_PORT: fakeLlmPort,
+          TEST_AZURE_BASE_URL: `http://127.0.0.1:${fakeLlmPort}/azure`,
           OPENAI_API_KEY: "sk-test",
           E2E_TEST_BUILD: "true",
         },
@@ -216,12 +292,15 @@ export const config = {
   },
   afterSession: () => {
     closeTauriDriver();
+    closeFakeLlmServer();
     delete process.env.CHAEMERA_TAURI_PROFILE_ROOT;
     delete process.env.CHAEMERA_TAURI_APP_IDENTIFIER;
     delete process.env.CHAEMERA_TAURI_APP_DATA_DIR;
     delete process.env.CHAEMERA_TAURI_LOCAL_DATA_DIR;
     delete process.env.CHAEMERA_TAURI_USER_DATA_DIR;
-    delete process.env.CHAEMERA_TAURI_DYAD_APPS_DIR;
+    delete process.env.CHAEMERA_TAURI_APPS_DIR;
+    delete process.env.FAKE_LLM_PORT;
+    delete process.env.TEST_AZURE_BASE_URL;
     if (keepRuntimeProfile) {
       console.log(`Preserving Tauri runtime profile at ${profileRoot}`);
       return;

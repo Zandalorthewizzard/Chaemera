@@ -1,4 +1,4 @@
-import { db } from "@/db";
+﻿import { db } from "@/db";
 import { apps } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
@@ -9,8 +9,8 @@ import {
 } from "@/lib/schemas";
 import { estimateTokens } from "../utils/token_utils";
 import { createLoggedHandler } from "./safe_handle";
-import log from "electron-log";
-import { getDyadAppPath } from "@/paths/paths";
+import { appLog as log } from "@/lib/app_logger";
+import { getAppPath } from "@/paths/paths";
 import { extractCodebase } from "@/utils/codebase";
 import { validateChatContext } from "../utils/context_paths_utils";
 
@@ -34,7 +34,7 @@ export function registerContextPathsHandlers() {
       if (!app.path) {
         throw new Error("App path not set");
       }
-      const appPath = getDyadAppPath(app.path);
+      const appPath = getAppPath(app.path);
 
       const results: ContextPathResults = {
         contextPaths: [],
