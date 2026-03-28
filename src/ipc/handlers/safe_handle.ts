@@ -1,6 +1,6 @@
-import { ipcMain, IpcMainInvokeEvent } from "electron";
 import log from "electron-log";
 import { IS_TEST_BUILD } from "../utils/test_utils";
+import { ipcMain, type IpcMainInvokeEvent } from "./electron_compat";
 
 export function createLoggedHandler(logger: log.LogFunctions) {
   return (

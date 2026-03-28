@@ -1,5 +1,4 @@
 import { v4 as uuidv4 } from "uuid";
-import { ipcMain, IpcMainInvokeEvent } from "electron";
 import { createTypedHandler } from "./base";
 import { chatContracts } from "../types/chat";
 import {
@@ -103,6 +102,7 @@ import {
   VersionedFiles,
 } from "../utils/versioned_codebase_context";
 import { getAiMessagesJsonIfWithinLimit } from "../utils/ai_messages_utils";
+import { ipcMain, type IpcMainInvokeEvent } from "./electron_compat";
 
 type AsyncIterableStream<T> = AsyncIterable<T> & ReadableStream<T>;
 

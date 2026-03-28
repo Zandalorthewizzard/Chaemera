@@ -1,4 +1,3 @@
-import { ipcMain, app, dialog } from "electron";
 import { db, getDatabasePath } from "../../db";
 import { apps, chats, messages } from "../../db/schema";
 import { desc, eq, like } from "drizzle-orm";
@@ -66,6 +65,7 @@ import {
   MAX_FILE_SEARCH_SIZE,
   RIPGREP_EXCLUDED_GLOBS,
 } from "../utils/ripgrep_utils";
+import { app, dialog, ipcMain } from "./electron_compat";
 
 const logger = log.scope("app_handlers");
 const handle = createLoggedHandler(logger);

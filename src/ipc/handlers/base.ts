@@ -1,6 +1,6 @@
-import { ipcMain, IpcMainInvokeEvent } from "electron";
 import { z } from "zod";
 import type { IpcContract } from "../contracts/core";
+import { ipcMain, type IpcMainInvokeEvent } from "./electron_compat";
 
 /**
  * Creates a typed IPC handler from a contract.

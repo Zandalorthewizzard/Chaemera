@@ -1,4 +1,3 @@
-import { BrowserWindow, IpcMainInvokeEvent } from "electron";
 import fetch from "node-fetch"; // Use node-fetch for making HTTP requests in main process
 import { writeSettings, readSettings } from "../../main/settings";
 import {
@@ -38,6 +37,7 @@ import { withLock } from "../utils/lock_utils";
 import { createTypedHandler } from "./base";
 import { githubContracts } from "../types/github";
 import type { CloneRepoParams, CloneRepoResult } from "../types/github";
+import { BrowserWindow, type IpcMainInvokeEvent } from "./electron_compat";
 
 const logger = log.scope("github_handlers");
 
