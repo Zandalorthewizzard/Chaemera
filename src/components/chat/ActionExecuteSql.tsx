@@ -5,21 +5,21 @@ import { Database } from "lucide-react";
 import { CodeHighlight } from "./CodeHighlight";
 import { CustomTagState } from "./stateTypes";
 import {
-  DyadCard,
-  DyadCardHeader,
-  DyadBadge,
-  DyadExpandIcon,
-  DyadStateIndicator,
-  DyadCardContent,
-} from "./DyadCardPrimitives";
+  ActionCard,
+  ActionCardHeader,
+  ActionBadge,
+  ActionExpandIcon,
+  ActionStateIndicator,
+  ActionCardContent,
+} from "./ActionCardPrimitives";
 
-interface DyadExecuteSqlProps {
+interface ActionExecuteSqlProps {
   children?: ReactNode;
   node?: any;
   description?: string;
 }
 
-export const DyadExecuteSql: React.FC<DyadExecuteSqlProps> = ({
+export const ActionExecuteSql: React.FC<ActionExecuteSqlProps> = ({
   children,
   node,
   description,
@@ -31,34 +31,34 @@ export const DyadExecuteSql: React.FC<DyadExecuteSqlProps> = ({
   const queryDescription = description || node?.properties?.description;
 
   return (
-    <DyadCard
+    <ActionCard
       state={state}
       accentColor="teal"
       isExpanded={isContentVisible}
       onClick={() => setIsContentVisible(!isContentVisible)}
     >
-      <DyadCardHeader icon={<Database size={15} />} accentColor="teal">
-        <DyadBadge color="teal">SQL</DyadBadge>
+      <ActionCardHeader icon={<Database size={15} />} accentColor="teal">
+        <ActionBadge color="teal">SQL</ActionBadge>
         {queryDescription && (
           <span className="font-medium text-sm text-foreground truncate">
             {queryDescription}
           </span>
         )}
         {inProgress && (
-          <DyadStateIndicator state="pending" pendingLabel="Executing..." />
+          <ActionStateIndicator state="pending" pendingLabel="Executing..." />
         )}
         {aborted && (
-          <DyadStateIndicator state="aborted" abortedLabel="Did not finish" />
+          <ActionStateIndicator state="aborted" abortedLabel="Did not finish" />
         )}
         <div className="ml-auto">
-          <DyadExpandIcon isExpanded={isContentVisible} />
+          <ActionExpandIcon isExpanded={isContentVisible} />
         </div>
-      </DyadCardHeader>
-      <DyadCardContent isExpanded={isContentVisible}>
+      </ActionCardHeader>
+      <ActionCardContent isExpanded={isContentVisible}>
         <div className="text-xs">
           <CodeHighlight className="language-sql">{children}</CodeHighlight>
         </div>
-      </DyadCardContent>
-    </DyadCard>
+      </ActionCardContent>
+    </ActionCard>
   );
 };

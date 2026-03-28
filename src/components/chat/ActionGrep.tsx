@@ -5,15 +5,15 @@ import { Search } from "lucide-react";
 import { CodeHighlight } from "./CodeHighlight";
 import { CustomTagState } from "./stateTypes";
 import {
-  DyadCard,
-  DyadCardHeader,
-  DyadBadge,
-  DyadExpandIcon,
-  DyadStateIndicator,
-  DyadCardContent,
-} from "./DyadCardPrimitives";
+  ActionCard,
+  ActionCardHeader,
+  ActionBadge,
+  ActionExpandIcon,
+  ActionStateIndicator,
+  ActionCardContent,
+} from "./ActionCardPrimitives";
 
-interface DyadGrepProps {
+interface ActionGrepProps {
   children?: ReactNode;
   node?: {
     properties?: {
@@ -29,7 +29,7 @@ interface DyadGrepProps {
   };
 }
 
-export const DyadGrep: React.FC<DyadGrepProps> = ({ children, node }) => {
+export const ActionGrep: React.FC<ActionGrepProps> = ({ children, node }) => {
   const [isContentVisible, setIsContentVisible] = useState(false);
 
   const state = node?.properties?.state as CustomTagState;
@@ -62,15 +62,15 @@ export const DyadGrep: React.FC<DyadGrepProps> = ({ children, node }) => {
     : "";
 
   return (
-    <DyadCard
+    <ActionCard
       state={state}
       accentColor="violet"
       onClick={() => setIsContentVisible(!isContentVisible)}
       isExpanded={isContentVisible}
       data-testid="dyad-grep"
     >
-      <DyadCardHeader icon={<Search size={15} />} accentColor="violet">
-        <DyadBadge color="violet">GREP</DyadBadge>
+      <ActionCardHeader icon={<Search size={15} />} accentColor="violet">
+        <ActionBadge color="violet">GREP</ActionBadge>
         <span className="font-medium text-sm text-foreground truncate">
           {description}
         </span>
@@ -80,20 +80,20 @@ export const DyadGrep: React.FC<DyadGrepProps> = ({ children, node }) => {
           </span>
         )}
         {inProgress && (
-          <DyadStateIndicator state="pending" pendingLabel="Searching..." />
+          <ActionStateIndicator state="pending" pendingLabel="Searching..." />
         )}
         {aborted && (
-          <DyadStateIndicator state="aborted" abortedLabel="Did not finish" />
+          <ActionStateIndicator state="aborted" abortedLabel="Did not finish" />
         )}
         <div className="ml-auto">
-          <DyadExpandIcon isExpanded={isContentVisible} />
+          <ActionExpandIcon isExpanded={isContentVisible} />
         </div>
-      </DyadCardHeader>
-      <DyadCardContent isExpanded={isContentVisible}>
+      </ActionCardHeader>
+      <ActionCardContent isExpanded={isContentVisible}>
         <div className="text-xs" onClick={(e) => e.stopPropagation()}>
           <CodeHighlight className="language-log">{children}</CodeHighlight>
         </div>
-      </DyadCardContent>
-    </DyadCard>
+      </ActionCardContent>
+    </ActionCard>
   );
 };

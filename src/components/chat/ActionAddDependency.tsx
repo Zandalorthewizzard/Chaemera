@@ -7,20 +7,20 @@ import { ipc } from "@/ipc/types";
 import { Package } from "lucide-react";
 import { CodeHighlight } from "./CodeHighlight";
 import {
-  DyadCard,
-  DyadCardHeader,
-  DyadBadge,
-  DyadExpandIcon,
-  DyadCardContent,
-} from "./DyadCardPrimitives";
+  ActionCard,
+  ActionCardHeader,
+  ActionBadge,
+  ActionExpandIcon,
+  ActionCardContent,
+} from "./ActionCardPrimitives";
 
-interface DyadAddDependencyProps {
+interface ActionAddDependencyProps {
   children?: ReactNode;
   node?: any;
   packages?: string;
 }
 
-export const DyadAddDependency: React.FC<DyadAddDependencyProps> = ({
+export const ActionAddDependency: React.FC<ActionAddDependencyProps> = ({
   children,
   node,
 }) => {
@@ -31,21 +31,21 @@ export const DyadAddDependency: React.FC<DyadAddDependencyProps> = ({
   const hasChildren = !!children;
 
   return (
-    <DyadCard
+    <ActionCard
       accentColor="blue"
       isExpanded={isContentVisible}
       onClick={
         hasChildren ? () => setIsContentVisible(!isContentVisible) : undefined
       }
     >
-      <DyadCardHeader icon={<Package size={15} />} accentColor="blue">
-        <DyadBadge color="blue">Add Packages</DyadBadge>
+      <ActionCardHeader icon={<Package size={15} />} accentColor="blue">
+        <ActionBadge color="blue">Add Packages</ActionBadge>
         {hasChildren && (
           <div className="ml-auto">
-            <DyadExpandIcon isExpanded={isContentVisible} />
+            <ActionExpandIcon isExpanded={isContentVisible} />
           </div>
         )}
-      </DyadCardHeader>
+      </ActionCardHeader>
       {packages.length > 0 && (
         <div className="px-3 pb-2">
           <div className="text-sm text-foreground mb-1">
@@ -72,13 +72,13 @@ export const DyadAddDependency: React.FC<DyadAddDependencyProps> = ({
           </div>
         </div>
       )}
-      <DyadCardContent isExpanded={isContentVisible}>
+      <ActionCardContent isExpanded={isContentVisible}>
         {hasChildren && (
           <div className="text-xs">
             <CodeHighlight className="language-shell">{children}</CodeHighlight>
           </div>
         )}
-      </DyadCardContent>
-    </DyadCard>
+      </ActionCardContent>
+    </ActionCard>
   );
 };

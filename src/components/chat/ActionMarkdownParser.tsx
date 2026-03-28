@@ -5,11 +5,11 @@ import remarkGfm from "remark-gfm";
 import { ActionWrite } from "./ActionWrite";
 import { ActionRename } from "./ActionRename";
 import { ActionDelete } from "./ActionDelete";
-import { DyadAddDependency } from "./DyadAddDependency";
-import { DyadExecuteSql } from "./DyadExecuteSql";
-import { DyadLogs } from "./DyadLogs";
-import { DyadGrep } from "./DyadGrep";
-import { DyadAddIntegration } from "./DyadAddIntegration";
+import { ActionAddDependency } from "./ActionAddDependency";
+import { ActionExecuteSql } from "./ActionExecuteSql";
+import { ActionLogs } from "./ActionLogs";
+import { ActionGrep } from "./ActionGrep";
+import { ActionAddIntegration } from "./ActionAddIntegration";
 import { ActionEdit } from "./ActionEdit";
 import { DyadSearchReplace } from "./DyadSearchReplace";
 import { DyadCodebaseContext } from "./DyadCodebaseContext";
@@ -474,7 +474,7 @@ function renderCustomTag(
 
     case "dyad-add-dependency":
       return (
-        <DyadAddDependency
+        <ActionAddDependency
           node={{
             properties: {
               packages: attributes.packages || "",
@@ -482,12 +482,12 @@ function renderCustomTag(
           }}
         >
           {content}
-        </DyadAddDependency>
+        </ActionAddDependency>
       );
 
     case "dyad-execute-sql":
       return (
-        <DyadExecuteSql
+        <ActionExecuteSql
           node={{
             properties: {
               state: getState({ isStreaming, inProgress }),
@@ -496,12 +496,12 @@ function renderCustomTag(
           }}
         >
           {content}
-        </DyadExecuteSql>
+        </ActionExecuteSql>
       );
 
     case "dyad-read-logs":
       return (
-        <DyadLogs
+        <ActionLogs
           node={{
             properties: {
               state: getState({ isStreaming, inProgress }),
@@ -513,12 +513,12 @@ function renderCustomTag(
           }}
         >
           {content}
-        </DyadLogs>
+        </ActionLogs>
       );
 
     case "dyad-grep":
       return (
-        <DyadGrep
+        <ActionGrep
           node={{
             properties: {
               state: getState({ isStreaming, inProgress }),
@@ -533,12 +533,12 @@ function renderCustomTag(
           }}
         >
           {content}
-        </DyadGrep>
+        </ActionGrep>
       );
 
     case "dyad-add-integration":
       return (
-        <DyadAddIntegration
+        <ActionAddIntegration
           node={{
             properties: {
               provider: attributes.provider || "",
@@ -546,7 +546,7 @@ function renderCustomTag(
           }}
         >
           {content}
-        </DyadAddIntegration>
+        </ActionAddIntegration>
       );
 
     case "dyad-edit":

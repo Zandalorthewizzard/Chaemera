@@ -5,20 +5,20 @@ import { FileText } from "lucide-react";
 import { CodeHighlight } from "./CodeHighlight";
 import { CustomTagState } from "./stateTypes";
 import {
-  DyadCard,
-  DyadCardHeader,
-  DyadBadge,
-  DyadExpandIcon,
-  DyadStateIndicator,
-  DyadCardContent,
-} from "./DyadCardPrimitives";
+  ActionCard,
+  ActionCardHeader,
+  ActionBadge,
+  ActionExpandIcon,
+  ActionStateIndicator,
+  ActionCardContent,
+} from "./ActionCardPrimitives";
 
-interface DyadLogsProps {
+interface ActionLogsProps {
   children?: ReactNode;
   node?: any;
 }
 
-export const DyadLogs: React.FC<DyadLogsProps> = ({ children, node }) => {
+export const ActionLogs: React.FC<ActionLogsProps> = ({ children, node }) => {
   const [isContentVisible, setIsContentVisible] = useState(false);
 
   const state = node?.properties?.state as CustomTagState;
@@ -38,32 +38,32 @@ export const DyadLogs: React.FC<DyadLogsProps> = ({ children, node }) => {
   const displayText = `Reading ${hasResults ? `${logCount} ` : ""}logs${filterDesc}`;
 
   return (
-    <DyadCard
+    <ActionCard
       state={state}
       accentColor="slate"
       isExpanded={isContentVisible}
       onClick={() => setIsContentVisible(!isContentVisible)}
     >
-      <DyadCardHeader icon={<FileText size={15} />} accentColor="slate">
-        <DyadBadge color="slate">LOGS</DyadBadge>
+      <ActionCardHeader icon={<FileText size={15} />} accentColor="slate">
+        <ActionBadge color="slate">LOGS</ActionBadge>
         <span className="font-medium text-sm text-foreground truncate">
           {displayText}
         </span>
         {inProgress && (
-          <DyadStateIndicator state="pending" pendingLabel="Reading..." />
+          <ActionStateIndicator state="pending" pendingLabel="Reading..." />
         )}
         {aborted && (
-          <DyadStateIndicator state="aborted" abortedLabel="Did not finish" />
+          <ActionStateIndicator state="aborted" abortedLabel="Did not finish" />
         )}
         <div className="ml-auto">
-          <DyadExpandIcon isExpanded={isContentVisible} />
+          <ActionExpandIcon isExpanded={isContentVisible} />
         </div>
-      </DyadCardHeader>
-      <DyadCardContent isExpanded={isContentVisible}>
+      </ActionCardHeader>
+      <ActionCardContent isExpanded={isContentVisible}>
         <div className="text-xs">
           <CodeHighlight className="language-log">{children}</CodeHighlight>
         </div>
-      </DyadCardContent>
-    </DyadCard>
+      </ActionCardContent>
+    </ActionCard>
   );
 };

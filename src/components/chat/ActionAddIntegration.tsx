@@ -8,9 +8,13 @@ import { showError } from "@/lib/toast";
 import { useLoadApp } from "@/hooks/useLoadApp";
 import { useStreamChat } from "@/hooks/useStreamChat";
 import { CheckCircle2, Plug } from "lucide-react";
-import { DyadCard, DyadCardHeader, DyadBadge } from "./DyadCardPrimitives";
+import {
+  ActionCard,
+  ActionCardHeader,
+  ActionBadge,
+} from "./ActionCardPrimitives";
 
-interface DyadAddIntegrationProps {
+interface ActionAddIntegrationProps {
   node: {
     properties: {
       provider: string;
@@ -19,7 +23,7 @@ interface DyadAddIntegrationProps {
   children: React.ReactNode;
 }
 
-export const DyadAddIntegration: React.FC<DyadAddIntegrationProps> = ({
+export const ActionAddIntegration: React.FC<ActionAddIntegrationProps> = ({
   node,
   children,
 }) => {
@@ -52,13 +56,13 @@ export const DyadAddIntegration: React.FC<DyadAddIntegrationProps> = ({
 
   if (app?.supabaseProjectName) {
     return (
-      <DyadCard accentColor="green" state="finished">
-        <DyadCardHeader icon={<CheckCircle2 size={15} />} accentColor="green">
-          <DyadBadge color="green">Integration Complete</DyadBadge>
+      <ActionCard accentColor="green" state="finished">
+        <ActionCardHeader icon={<CheckCircle2 size={15} />} accentColor="green">
+          <ActionBadge color="green">Integration Complete</ActionBadge>
           <span className="text-sm font-medium text-foreground">
             Supabase integration complete
           </span>
-        </DyadCardHeader>
+        </ActionCardHeader>
         <div className="px-3 pb-3">
           <p className="text-sm text-muted-foreground mb-2">
             This app is connected to Supabase project:{" "}
@@ -75,24 +79,24 @@ export const DyadAddIntegration: React.FC<DyadAddIntegrationProps> = ({
             Continue
           </Button>
         </div>
-      </DyadCard>
+      </ActionCard>
     );
   }
 
   return (
-    <DyadCard accentColor="blue">
-      <DyadCardHeader icon={<Plug size={15} />} accentColor="blue">
-        <DyadBadge color="blue">Integration</DyadBadge>
+    <ActionCard accentColor="blue">
+      <ActionCardHeader icon={<Plug size={15} />} accentColor="blue">
+        <ActionBadge color="blue">Integration</ActionBadge>
         <span className="text-sm font-medium text-foreground">
           Integrate with {provider}?
         </span>
-      </DyadCardHeader>
+      </ActionCardHeader>
       <div className="px-3 pb-3">
         <div className="text-xs text-muted-foreground mb-3">{children}</div>
         <Button onClick={handleSetupClick} className="w-full" size="sm">
           Set up {provider}
         </Button>
       </div>
-    </DyadCard>
+    </ActionCard>
   );
 };
