@@ -215,11 +215,11 @@ export const ExperimentsSchema = z.object({
 });
 export type Experiments = z.infer<typeof ExperimentsSchema>;
 
-export const DyadProBudgetSchema = z.object({
+export const CloudAIBudgetSchema = z.object({
   budgetResetAt: z.string(),
   maxBudget: z.number(),
 });
-export type DyadProBudget = z.infer<typeof DyadProBudgetSchema>;
+export type CloudAIBudget = z.infer<typeof CloudAIBudgetSchema>;
 
 export const GlobPathSchema = z.object({
   globPath: z.string(),
@@ -291,7 +291,7 @@ const BaseUserSettingsFields = {
   // DEPRECATED.
   ////////////////////////////////
   enableProSaverMode: z.boolean().optional(),
-  dyadProBudget: DyadProBudgetSchema.optional(),
+  cloudAIBudget: CloudAIBudgetSchema.optional(),
   runtimeMode: RuntimeModeSchema.optional(),
 
   ////////////////////////////////
@@ -412,8 +412,16 @@ export function migrateStoredChatMode(
 export function migrateStoredSettings(
   stored: StoredUserSettings,
 ): UserSettings {
-  const { enableDyadPro: _enableDyadPro, ...restStored } = stored;
-  const enableCloudAI = restStored.enableCloudAI ?? undefined;
+  const {
+    enableDyadPro: _enableDyadPro,
+    dyadProBudget: _dyadProBudget,
+    ...restStored
+  } = stored;
+  const enableCloudAI =
+    restStored.enableCloudAI ??
+    (typeof stored.enableDyadPro === "boolean"
+      ? stored.enableDyadPro
+      : undefined);
   return {
     ...restStored,
     enableCloudAI,
@@ -428,14 +436,6 @@ export function isCloudAIEnabled(settings: UserSettings): boolean {
 
 export function hasCloudAIKey(settings: UserSettings): boolean {
   return !!settings.providerSettings?.auto?.apiKey?.value;
-}
-
-export function isDyadProEnabled(settings: UserSettings): boolean {
-  return isCloudAIEnabled(settings);
-}
-
-export function hasDyadProKey(settings: UserSettings): boolean {
-  return hasCloudAIKey(settings);
 }
 
 /**

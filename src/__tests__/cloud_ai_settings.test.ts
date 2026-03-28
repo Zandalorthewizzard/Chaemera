@@ -29,7 +29,7 @@ describe("cloud AI settings alias", () => {
     const migrated = migrateStoredSettings(stored);
 
     expect(migrated.enableCloudAI).toBe(true);
-    expect(migrated.enableDyadPro).toBe(true);
+    expect((migrated as Record<string, unknown>).enableDyadPro).toBeUndefined();
     expect(isCloudAIEnabled(migrated)).toBe(true);
     expect(hasCloudAIKey(migrated)).toBe(true);
   });
@@ -56,7 +56,7 @@ describe("cloud AI settings alias", () => {
     const migrated = migrateStoredSettings(stored);
 
     expect(migrated.enableCloudAI).toBe(true);
-    expect(migrated.enableDyadPro).toBe(true);
+    expect((migrated as Record<string, unknown>).enableDyadPro).toBeUndefined();
     expect(isCloudAIEnabled(migrated)).toBe(true);
   });
 });
