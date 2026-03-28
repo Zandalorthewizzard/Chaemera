@@ -1,4 +1,3 @@
-import { IpcMainInvokeEvent } from "electron";
 import { readSettings } from "../../main/settings";
 import {
   gitMergeAbort,
@@ -40,7 +39,7 @@ import type {
 const logger = log.scope("git_branch_handlers");
 
 async function handleAbortMerge(
-  event: IpcMainInvokeEvent,
+  _event: unknown,
   { appId }: GitBranchAppIdParams,
 ): Promise<void> {
   const app = await db.query.apps.findFirst({ where: eq(apps.id, appId) });
@@ -52,7 +51,7 @@ async function handleAbortMerge(
 
 // --- GitHub Fetch Handler ---
 async function handleFetchFromGithub(
-  event: IpcMainInvokeEvent,
+  _event: unknown,
   { appId }: GitBranchAppIdParams,
 ): Promise<void> {
   const settings = readSettings();
@@ -75,7 +74,7 @@ async function handleFetchFromGithub(
 
 // --- GitHub Branch Handlers ---
 async function handleCreateBranch(
-  event: IpcMainInvokeEvent,
+  _event: unknown,
   { appId, branch, from }: CreateGitBranchParams,
 ): Promise<void> {
   // Validate branch name
@@ -108,7 +107,7 @@ async function handleCreateBranch(
 }
 
 async function handleDeleteBranch(
-  event: IpcMainInvokeEvent,
+  _event: unknown,
   { appId, branch }: GitBranchParams,
 ): Promise<void> {
   const app = await db.query.apps.findFirst({ where: eq(apps.id, appId) });
@@ -122,7 +121,7 @@ async function handleDeleteBranch(
 }
 
 async function handleSwitchBranch(
-  event: IpcMainInvokeEvent,
+  _event: unknown,
   { appId, branch }: GitBranchParams,
 ): Promise<void> {
   const app = await db.query.apps.findFirst({ where: eq(apps.id, appId) });
@@ -181,7 +180,7 @@ async function handleSwitchBranch(
 }
 
 async function handleRenameBranch(
-  event: IpcMainInvokeEvent,
+  _event: unknown,
   { appId, oldBranch, newBranch }: RenameGitBranchParams,
 ): Promise<void> {
   const app = await db.query.apps.findFirst({ where: eq(apps.id, appId) });
@@ -219,7 +218,7 @@ class MergeConflictError extends Error {
 }
 
 async function handleMergeBranch(
-  event: IpcMainInvokeEvent,
+  _event: unknown,
   { appId, branch }: GitBranchParams,
 ): Promise<void> {
   const app = await db.query.apps.findFirst({ where: eq(apps.id, appId) });
@@ -280,7 +279,7 @@ async function handleMergeBranch(
 }
 
 async function handleListLocalBranches(
-  event: IpcMainInvokeEvent,
+  _event: unknown,
   { appId }: GitBranchAppIdParams,
 ): Promise<{ branches: string[]; current: string | null }> {
   const app = await db.query.apps.findFirst({ where: eq(apps.id, appId) });
@@ -293,7 +292,7 @@ async function handleListLocalBranches(
 }
 
 async function handleListRemoteBranches(
-  event: IpcMainInvokeEvent,
+  _event: unknown,
   { appId, remote = "origin" }: { appId: number; remote?: string },
 ): Promise<string[]> {
   const app = await db.query.apps.findFirst({ where: eq(apps.id, appId) });
@@ -305,7 +304,7 @@ async function handleListRemoteBranches(
 }
 
 async function handleGetUncommittedFiles(
-  event: IpcMainInvokeEvent,
+  _event: unknown,
   { appId }: GitBranchAppIdParams,
 ): Promise<UncommittedFile[]> {
   const app = await db.query.apps.findFirst({ where: eq(apps.id, appId) });
@@ -316,7 +315,7 @@ async function handleGetUncommittedFiles(
 }
 
 async function handleCommitChanges(
-  event: IpcMainInvokeEvent,
+  _event: unknown,
   { appId, message }: { appId: number; message: string },
 ): Promise<string> {
   const app = await db.query.apps.findFirst({ where: eq(apps.id, appId) });
@@ -351,7 +350,7 @@ async function handleCommitChanges(
 
 // --- GitHub Pull Handler ---
 async function handlePullFromGithub(
-  event: IpcMainInvokeEvent,
+  _event: unknown,
   { appId }: GitBranchAppIdParams,
 ): Promise<void> {
   const settings = readSettings();

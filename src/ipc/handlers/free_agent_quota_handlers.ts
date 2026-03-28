@@ -83,7 +83,7 @@ export function registerFreeAgentQuotaHandlers() {
   if (IS_TEST_BUILD) {
     ipcMain.handle(
       "test:simulateQuotaTimeElapsed",
-      async (_event, hoursAgo: number) => {
+      async (_event: unknown, hoursAgo: number) => {
         const secondsAgo = hoursAgo * 60 * 60;
         const newTimestamp = Math.floor(Date.now() / 1000) - secondsAgo;
 

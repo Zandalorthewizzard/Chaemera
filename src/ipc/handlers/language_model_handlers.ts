@@ -19,7 +19,6 @@ import {
   language_models as languageModelsSchema,
 } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
-import { IpcMainInvokeEvent } from "electron";
 
 const logger = log.scope("language_model_handlers");
 const handle = createLoggedHandler(logger);
@@ -35,7 +34,7 @@ export function registerLanguageModelHandlers() {
   handle(
     "create-custom-language-model-provider",
     async (
-      event: IpcMainInvokeEvent,
+      _event: unknown,
       params: CreateCustomLanguageModelProviderParams,
     ): Promise<LanguageModelProvider> => {
       const { id, name, apiBaseUrl, envVarName } = params;
@@ -87,7 +86,7 @@ export function registerLanguageModelHandlers() {
   handle(
     "create-custom-language-model",
     async (
-      event: IpcMainInvokeEvent,
+      _event: unknown,
       params: CreateCustomLanguageModelParams,
     ): Promise<void> => {
       const {
@@ -132,7 +131,7 @@ export function registerLanguageModelHandlers() {
   handle(
     "edit-custom-language-model-provider",
     async (
-      event: IpcMainInvokeEvent,
+      _event: unknown,
       params: CreateCustomLanguageModelProviderParams,
     ): Promise<LanguageModelProvider> => {
       const { id, name, apiBaseUrl, envVarName } = params;
@@ -193,10 +192,7 @@ export function registerLanguageModelHandlers() {
 
   handle(
     "delete-custom-language-model",
-    async (
-      event: IpcMainInvokeEvent,
-      params: { modelId: string },
-    ): Promise<void> => {
+    async (_event: unknown, params: { modelId: string }): Promise<void> => {
       const { modelId: apiName } = params;
 
       // Validation
@@ -229,7 +225,7 @@ export function registerLanguageModelHandlers() {
   handle(
     "delete-custom-model",
     async (
-      _event: IpcMainInvokeEvent,
+      _event: unknown,
       params: { providerId: string; modelApiName: string },
     ): Promise<void> => {
       const { providerId, modelApiName } = params;
@@ -278,10 +274,7 @@ export function registerLanguageModelHandlers() {
 
   handle(
     "delete-custom-language-model-provider",
-    async (
-      event: IpcMainInvokeEvent,
-      params: { providerId: string },
-    ): Promise<void> => {
+    async (_event: unknown, params: { providerId: string }): Promise<void> => {
       const { providerId } = params;
 
       // Validation
@@ -345,7 +338,7 @@ export function registerLanguageModelHandlers() {
   handle(
     "get-language-models",
     async (
-      event: IpcMainInvokeEvent,
+      _event: unknown,
       params: { providerId: string },
     ): Promise<LanguageModel[]> => {
       if (!params || typeof params.providerId !== "string") {
