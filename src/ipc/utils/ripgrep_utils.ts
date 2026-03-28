@@ -2,7 +2,6 @@
  * Shared utilities for ripgrep integration
  */
 
-import { app } from "electron";
 import path from "node:path";
 import os from "node:os";
 
@@ -20,10 +19,10 @@ export const RIPGREP_EXCLUDED_GLOBS = [
 export function getRgExecutablePath(): string {
   const isWindows = os.platform() === "win32";
   const executableName = isWindows ? "rg.exe" : "rg";
-  if (!app.isPackaged) {
-    // Dev: app.getAppPath() is the project root (same pattern as dugite)
+  if (process.env.NODE_ENV === "development") {
+    // Dev: the current working directory is the project root.
     return path.join(
-      app.getAppPath(),
+      process.cwd(),
       "node_modules",
       "@vscode",
       "ripgrep",
