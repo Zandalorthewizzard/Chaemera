@@ -67,8 +67,11 @@ const screenTransition = {
 // GitHub issue helpers (shared between Report a Bug & Upload Chat Session)
 // =============================================================================
 
-const GITHUB_ISSUES_BASE =
+const LEGACY_GITHUB_ISSUES_BASE =
   "https://github.com/dyad-sh/dyad/issues/new" as const;
+
+const LEGACY_UPLOAD_LOGS_ENDPOINT =
+  "https://upload-logs.dyad.sh/generate-upload-url" as const;
 
 function formatSettingsLines(settings: UserSettings | null): string {
   if (!settings) return "Settings not available";
@@ -118,7 +121,7 @@ function openGitHubIssue(params: {
     labels: params.labels.join(","),
     body: params.body,
   });
-  ipc.system.openExternalUrl(`${GITHUB_ISSUES_BASE}?${qs.toString()}`);
+  ipc.system.openExternalUrl(`${LEGACY_GITHUB_ISSUES_BASE}?${qs.toString()}`);
 }
 
 // =============================================================================
@@ -315,7 +318,7 @@ ${formatLogsSection(debugInfo)}
       });
     } catch (error) {
       console.error("Failed to prepare bug report:", error);
-      ipc.system.openExternalUrl(GITHUB_ISSUES_BASE);
+      ipc.system.openExternalUrl(LEGACY_GITHUB_ISSUES_BASE);
     } finally {
       setIsLoading(false);
     }
@@ -345,17 +348,14 @@ ${formatLogsSection(debugInfo)}
     if (!debugBundle) return;
     setIsUploading(true);
     try {
-      const response = await fetch(
-        "https://upload-logs.dyad.sh/generate-upload-url",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            extension: "json",
-            contentType: "application/json",
-          }),
-        },
-      );
+      const response = await fetch(LEGACY_UPLOAD_LOGS_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          extension: "json",
+          contentType: "application/json",
+        }),
+      });
       if (!response.ok) {
         showError(`Failed to get upload URL: ${response.statusText}`);
         throw new Error(`Failed to get upload URL: ${response.statusText}`);
