@@ -1,11 +1,11 @@
-import type { ChatResponseEnd, ChatStreamParams } from "@/ipc/types";
+﻿import type { ChatResponseEnd, ChatStreamParams } from "@/ipc/types";
 import type { IpcEventLike } from "@/ipc/utils/ipc_sender_types";
 import { safeSend } from "../../utils/safe_sender";
 
 export interface HandleLocalAgentStreamOptions {
   placeholderMessageId: number;
   systemPrompt: string;
-  dyadRequestId: string;
+  cloudRequestId: string;
   readOnly?: boolean;
   planModeOnly?: boolean;
   messageOverride?: unknown;

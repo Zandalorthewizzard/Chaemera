@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Utility functions for normalizing test data to ensure deterministic snapshots.
  */
 
@@ -69,7 +69,7 @@ export function normalizeToolCallIds(dump: any): void {
  * based on content sorting.
  */
 export function normalizeVersionedFiles(dump: any): void {
-  const vf = dump?.body?.dyad_options?.versioned_files;
+  const vf = dump?.body?.cloud_options?.versioned_files;
   if (!vf?.fileIdToContent) {
     return;
   }

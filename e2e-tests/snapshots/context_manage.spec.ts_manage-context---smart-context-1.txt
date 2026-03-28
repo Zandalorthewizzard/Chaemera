@@ -1,4 +1,4 @@
-{
+﻿{
   "body": {
     "model": "gemini/gemini-2.5-pro",
     "max_tokens": 65535,
@@ -19,7 +19,7 @@
       "include_thoughts": true,
       "budget_tokens": 4000
     },
-    "dyad_options": {
+    "cloud_options": {
       "versioned_files": {
         "fileIdToContent": {
           "[[FILE_ID_0]]": "",

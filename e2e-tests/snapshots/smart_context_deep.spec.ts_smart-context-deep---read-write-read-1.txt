@@ -1,4 +1,4 @@
-{
+﻿{
   "body": {
     "model": "dyad/auto",
     "max_tokens": 32000,
@@ -38,7 +38,7 @@
       }
     ],
     "stream": true,
-    "dyad_options": {
+    "cloud_options": {
       "versioned_files": {
         "fileIdToContent": {
           "[[FILE_ID_0]]": "{\n  \"$schema\": \"https://openapi.vercel.sh/vercel.json\",\n  \"rewrites\": [\n    {\n      \"source\": \"/(.*)\",\n      \"destination\": \"/index.html\"\n    }\n  ]\n}\n",

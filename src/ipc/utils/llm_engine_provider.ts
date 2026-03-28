@@ -118,33 +118,33 @@ export function createCloudEngine(
           ...JSON.parse(init.body),
           ...getExtraProviderOptions(providerId, options.settings),
         };
-        const dyadVersionedFiles = parsedBody.dyadVersionedFiles;
-        if ("dyadVersionedFiles" in parsedBody) {
-          delete parsedBody.dyadVersionedFiles;
+        const cloudVersionedFiles = parsedBody.cloudVersionedFiles;
+        if ("cloudVersionedFiles" in parsedBody) {
+          delete parsedBody.cloudVersionedFiles;
         }
-        const dyadFiles = parsedBody.dyadFiles;
-        if ("dyadFiles" in parsedBody) {
-          delete parsedBody.dyadFiles;
+        const cloudFiles = parsedBody.cloudFiles;
+        if ("cloudFiles" in parsedBody) {
+          delete parsedBody.cloudFiles;
         }
-        const requestId = parsedBody.dyadRequestId;
-        if ("dyadRequestId" in parsedBody) {
-          delete parsedBody.dyadRequestId;
+        const requestId = parsedBody.cloudRequestId;
+        if ("cloudRequestId" in parsedBody) {
+          delete parsedBody.cloudRequestId;
         }
-        const dyadAppId = parsedBody.dyadAppId;
-        if ("dyadAppId" in parsedBody) {
-          delete parsedBody.dyadAppId;
+        const cloudAppId = parsedBody.cloudAppId;
+        if ("cloudAppId" in parsedBody) {
+          delete parsedBody.cloudAppId;
         }
-        const dyadDisableFiles = parsedBody.dyadDisableFiles;
-        if ("dyadDisableFiles" in parsedBody) {
-          delete parsedBody.dyadDisableFiles;
+        const cloudDisableFiles = parsedBody.cloudDisableFiles;
+        if ("cloudDisableFiles" in parsedBody) {
+          delete parsedBody.cloudDisableFiles;
         }
-        const dyadMentionedApps = parsedBody.dyadMentionedApps;
-        if ("dyadMentionedApps" in parsedBody) {
-          delete parsedBody.dyadMentionedApps;
+        const cloudMentionedApps = parsedBody.cloudMentionedApps;
+        if ("cloudMentionedApps" in parsedBody) {
+          delete parsedBody.cloudMentionedApps;
         }
-        const dyadSmartContextMode = parsedBody.dyadSmartContextMode;
-        if ("dyadSmartContextMode" in parsedBody) {
-          delete parsedBody.dyadSmartContextMode;
+        const cloudSmartContextMode = parsedBody.cloudSmartContextMode;
+        if ("cloudSmartContextMode" in parsedBody) {
+          delete parsedBody.cloudSmartContextMode;
         }
 
         // Track and modify requestId with attempt number
@@ -156,19 +156,19 @@ export function createCloudEngine(
         }
 
         // Add files to the request if they exist
-        if (!dyadDisableFiles) {
-          parsedBody.dyad_options = {
-            files: dyadFiles,
-            versioned_files: dyadVersionedFiles,
+        if (!cloudDisableFiles) {
+          parsedBody.cloud_options = {
+            files: cloudFiles,
+            versioned_files: cloudVersionedFiles,
             enable_lazy_edits: options.engineOptions.enableLazyEdits,
             enable_smart_files_context:
               options.engineOptions.enableSmartFilesContext,
-            smart_context_mode: dyadSmartContextMode,
+            smart_context_mode: cloudSmartContextMode,
             enable_web_search: options.engineOptions.enableWebSearch,
-            app_id: dyadAppId,
+            app_id: cloudAppId,
           };
-          if (dyadMentionedApps?.length) {
-            parsedBody.dyad_options.mentioned_apps = dyadMentionedApps;
+          if (cloudMentionedApps?.length) {
+            parsedBody.cloud_options.mentioned_apps = cloudMentionedApps;
           }
         }
 
@@ -178,7 +178,7 @@ export function createCloudEngine(
           headers: {
             ...init.headers,
             ...(modifiedRequestId && {
-              "X-Dyad-Request-Id": modifiedRequestId,
+              "X-Request-Id": modifiedRequestId,
             }),
           },
           body: JSON.stringify(parsedBody),

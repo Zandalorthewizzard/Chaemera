@@ -1,10 +1,10 @@
-/**
+﻿/**
  * Context Compaction Handler
  * Orchestrates the compaction of long conversations to stay within context limits.
  */
 
 import { streamText, ModelMessage } from "ai";
-import log from "electron-log";
+import { appLog as log } from "@/lib/app_logger";
 import { eq } from "drizzle-orm";
 
 import { db } from "@/db";
@@ -114,7 +114,7 @@ export async function performCompaction(
   event: IpcEventLike,
   chatId: number,
   appPath: string,
-  dyadRequestId: string,
+  cloudRequestId: string,
   onSummaryChunk?: (accumulatedText: string) => void,
   options?: {
     createdAtStrategy?: "before-latest-user" | "now";
@@ -178,9 +178,9 @@ export async function performCompaction(
         builtinProviderId: modelClient.builtinProviderId,
       }),
       providerOptions: getProviderOptions({
-        dyadAppId: 0,
-        dyadRequestId,
-        dyadDisableFiles: true,
+        cloudAppId: 0,
+        cloudRequestId,
+        cloudDisableFiles: true,
         files: [],
         mentionedAppsCodebases: [],
         builtinProviderId: modelClient.builtinProviderId,
@@ -215,7 +215,7 @@ Note: This file may be large. Read only the sections you need or use grep to sea
     // 1. Messages are ordered by createdAt, and the compaction summary must
     //    appear before the new user message in the message array.
     // 2. The local_agent_handler slices from the last compaction summary onward
-    //    to build the LLM's message history — if the summary comes after the
+    //    to build the LLM's message history вЂ” if the summary comes after the
     //    user message, the user's prompt is excluded from the LLM context.
     // 3. sendResponseChunk updates the last assistant message, so the summary
     //    must not be the last assistant message (the placeholder should be).

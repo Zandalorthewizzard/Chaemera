@@ -1,4 +1,4 @@
-{
+﻿{
   "body": {
     "model": "anthropic/claude-opus-4-5",
     "max_tokens": 32000,
@@ -14,7 +14,7 @@
       }
     ],
     "stream": true,
-    "dyad_options": {
+    "cloud_options": {
       "files": [
         {
           "path": ".gitignore",

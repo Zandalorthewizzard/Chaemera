@@ -11,9 +11,9 @@ export interface MentionedAppCodebase {
 }
 
 export interface GetProviderOptionsParams {
-  dyadAppId: number;
-  dyadRequestId?: string;
-  dyadDisableFiles?: boolean;
+  cloudAppId: number;
+  cloudRequestId?: string;
+  cloudDisableFiles?: boolean;
   smartContextMode?: SmartContextMode;
   files: CodebaseFile[];
   versionedFiles?: VersionedFiles;
@@ -27,9 +27,9 @@ export interface GetProviderOptionsParams {
  * Handles provider-specific configuration including thinking configs for Google/Vertex.
  */
 export function getProviderOptions({
-  dyadAppId,
-  dyadRequestId,
-  dyadDisableFiles,
+  cloudAppId,
+  cloudRequestId,
+  cloudDisableFiles,
   smartContextMode,
   files,
   versionedFiles,
@@ -39,18 +39,18 @@ export function getProviderOptions({
 }: GetProviderOptionsParams): Record<string, any> {
   const providerOptions: Record<string, any> = {
     "cloud-engine": {
-      dyadAppId,
-      dyadRequestId,
-      dyadDisableFiles,
-      dyadSmartContextMode: smartContextMode,
-      dyadFiles: versionedFiles ? undefined : files,
-      dyadVersionedFiles: versionedFiles,
-      dyadMentionedApps: mentionedAppsCodebases.map(({ files, appName }) => ({
+      cloudAppId,
+      cloudRequestId,
+      cloudDisableFiles,
+      cloudSmartContextMode: smartContextMode,
+      cloudFiles: versionedFiles ? undefined : files,
+      cloudVersionedFiles: versionedFiles,
+      cloudMentionedApps: mentionedAppsCodebases.map(({ files, appName }) => ({
         appName,
         files,
       })),
     },
-    "dyad-gateway": getExtraProviderOptions(builtinProviderId, settings),
+    "cloud-gateway": getExtraProviderOptions(builtinProviderId, settings),
     openai: {
       reasoningSummary: "auto",
     } satisfies OpenAIResponsesProviderOptions,

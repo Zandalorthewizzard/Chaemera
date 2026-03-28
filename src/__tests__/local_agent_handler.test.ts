@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+﻿import { describe, it, expect } from "vitest";
 import { handleLocalAgentStream } from "@/ipc/handlers/local_agent/local_agent_handler";
 import type { ChatStreamParams } from "@/ipc/types";
 
@@ -32,7 +32,7 @@ describe("handleLocalAgentStream", () => {
       {
         placeholderMessageId: 10,
         systemPrompt: "You are helpful",
-        dyadRequestId: "req-1",
+        cloudRequestId: "req-1",
       },
     );
 
@@ -64,7 +64,7 @@ describe("handleLocalAgentStream", () => {
       {
         placeholderMessageId: 11,
         systemPrompt: "You are helpful",
-        dyadRequestId: "req-2",
+        cloudRequestId: "req-2",
         readOnly: true,
       },
     );
@@ -89,7 +89,7 @@ describe("handleLocalAgentStream", () => {
       {
         placeholderMessageId: 12,
         systemPrompt: "You are helpful",
-        dyadRequestId: "req-3",
+        cloudRequestId: "req-3",
         planModeOnly: true,
       },
     );

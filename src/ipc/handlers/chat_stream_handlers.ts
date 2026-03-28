@@ -225,7 +225,7 @@ export function registerChatStreamHandlers() {
       const fileUploadsState = FileUploadsState.getInstance();
       // Clear any stale state from previous requests for this chat
       fileUploadsState.clear(req.chatId);
-      let dyadRequestId: string | undefined;
+      let cloudRequestId: string | undefined;
       // Create an AbortController for this stream
       const abortController = new AbortController();
       activeStreams.set(req.chatId, abortController);
@@ -455,7 +455,7 @@ ${componentSnippet}
           chatId: req.chatId,
           role: "assistant",
           content: "", // Start with empty content
-          requestId: dyadRequestId,
+          requestId: cloudRequestId,
           model: settings.selectedModel.name,
           sourceCommitHash: await getCurrentCommitHash({
             path: getAppPath(chat.app.path),
@@ -915,7 +915,7 @@ This conversation includes one or more image attachments. When the user uploads 
           modelClient,
           tools,
           systemPromptOverride = systemPrompt,
-          dyadDisableFiles = false,
+          cloudDisableFiles = false,
           files,
         }: {
           chatMessages: ModelMessage[];
@@ -923,12 +923,12 @@ This conversation includes one or more image attachments. When the user uploads 
           files: CodebaseFile[];
           tools?: ToolSet;
           systemPromptOverride?: string;
-          dyadDisableFiles?: boolean;
+          cloudDisableFiles?: boolean;
         }) => {
           if (isEngineEnabled) {
             logger.log(
               "sending AI request to engine with request id:",
-              dyadRequestId,
+              cloudRequestId,
             );
           } else {
             logger.log("sending AI request");
@@ -945,9 +945,9 @@ This conversation includes one or more image attachments. When the user uploads 
             ? "deep"
             : "balanced";
           const providerOptions = getProviderOptions({
-            dyadAppId: updatedChat.app.id,
-            dyadRequestId,
-            dyadDisableFiles,
+            cloudAppId: updatedChat.app.id,
+            cloudRequestId,
+            cloudDisableFiles,
             smartContextMode,
             files,
             versionedFiles,
@@ -1004,7 +1004,7 @@ This conversation includes one or more image attachments. When the user uploads 
               }
               const message = errorMessage || JSON.stringify(error);
               const requestIdPrefix = isEngineEnabled
-                ? `[Request ID: ${dyadRequestId}] `
+                ? `[Request ID: ${cloudRequestId}] `
                 : "";
               logger.error(
                 `AI stream text error for request: ${requestIdPrefix} errorMessage=${errorMessage} error=`,
@@ -1094,7 +1094,7 @@ This conversation includes one or more image attachments. When the user uploads 
               // This is OK because those intents should always happen in a new chat
               // and new chats will default to non-ask modes.
               systemPrompt: readOnlySystemPrompt,
-              dyadRequestId: dyadRequestId ?? "[no-request-id]",
+              cloudRequestId: cloudRequestId ?? "[no-request-id]",
               readOnly: true,
               messageOverride: isSummarizeIntent ? chatMessages : undefined,
             },
@@ -1124,7 +1124,7 @@ This conversation includes one or more image attachments. When the user uploads 
           await handleLocalAgentStream(event, req, abortController, {
             placeholderMessageId: placeholderAssistantMessage.id,
             systemPrompt: planModeSystemPrompt,
-            dyadRequestId: dyadRequestId ?? "[no-request-id]",
+            cloudRequestId: cloudRequestId ?? "[no-request-id]",
             planModeOnly: true,
             messageOverride: isSummarizeIntent ? chatMessages : undefined,
           });
@@ -1141,7 +1141,7 @@ This conversation includes one or more image attachments. When the user uploads 
           await handleLocalAgentStream(event, req, abortController, {
             placeholderMessageId: placeholderAssistantMessage.id,
             systemPrompt,
-            dyadRequestId: dyadRequestId ?? "[no-request-id]",
+            cloudRequestId: cloudRequestId ?? "[no-request-id]",
             messageOverride: isSummarizeIntent ? chatMessages : undefined,
           });
           return;
@@ -1177,7 +1177,7 @@ This conversation includes one or more image attachments. When the user uploads 
                 enableTurboEditsV2: false,
               }),
               files: files,
-              dyadDisableFiles: true,
+              cloudDisableFiles: true,
             });
 
             const result = await processStreamChunks({
