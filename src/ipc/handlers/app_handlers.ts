@@ -65,7 +65,12 @@ import {
   MAX_FILE_SEARCH_SIZE,
   RIPGREP_EXCLUDED_GLOBS,
 } from "../utils/ripgrep_utils";
-import { app, dialog, ipcMain } from "./electron_compat";
+import {
+  app,
+  dialog,
+  ipcMain,
+  type IpcMainInvokeEvent,
+} from "./electron_compat";
 
 const logger = log.scope("app_handlers");
 const handle = createLoggedHandler(logger);
@@ -166,7 +171,7 @@ async function executeApp({
 }: {
   appPath: string;
   appId: number;
-  event: Electron.IpcMainInvokeEvent;
+  event: IpcMainInvokeEvent;
   isNeon: boolean;
   installCommand?: string | null;
   startCommand?: string | null;
@@ -209,7 +214,7 @@ async function executeAppLocalNode({
 }: {
   appPath: string;
   appId: number;
-  event: Electron.IpcMainInvokeEvent;
+  event: IpcMainInvokeEvent;
   isNeon: boolean;
   installCommand?: string | null;
   startCommand?: string | null;
@@ -291,7 +296,7 @@ function listenToProcess({
   process: ChildProcess;
   appId: number;
   isNeon: boolean;
-  event: Electron.IpcMainInvokeEvent;
+  event: IpcMainInvokeEvent;
 }) {
   // Log output
   spawnedProcess.stdout?.on("data", async (data) => {
@@ -406,7 +411,7 @@ async function executeAppInDocker({
 }: {
   appPath: string;
   appId: number;
-  event: Electron.IpcMainInvokeEvent;
+  event: IpcMainInvokeEvent;
   isNeon: boolean;
   installCommand?: string | null;
   startCommand?: string | null;

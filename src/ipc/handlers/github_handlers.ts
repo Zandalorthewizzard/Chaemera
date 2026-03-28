@@ -80,7 +80,7 @@ interface DeviceFlowState {
   interval: number;
   timeoutId: NodeJS.Timeout | null;
   isPolling: boolean;
-  window: BrowserWindow | null; // Reference to the window that initiated the flow
+  window: ReturnType<typeof BrowserWindow.fromWebContents> | null; // Reference to the window that initiated the flow
 }
 
 // Simple map to track ongoing flows (key could be appId or a unique flow ID if needed)
