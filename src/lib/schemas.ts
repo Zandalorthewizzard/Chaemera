@@ -314,8 +314,8 @@ const BaseUserSettingsFields = {
   lastShownReleaseNotesVersion: z.string().optional(),
   maxChatTurnsInContext: z.number().optional(),
   thinkingBudget: z.enum(["low", "medium", "high"]).optional(),
-  enableProLazyEditsMode: z.boolean().optional(),
-  proLazyEditsMode: z.enum(["off", "v1", "v2"]).optional(),
+  enableTurboEditsV2: z.boolean().optional(),
+  turboEditsMode: z.enum(["off", "v1", "v2"]).optional(),
   enableSmartFilesContextMode: z.boolean().optional(),
   enableWebSearch: z.boolean().optional(),
   smartContextOption: SmartContextModeSchema.optional(),
@@ -415,6 +415,8 @@ export function migrateStoredSettings(
   const {
     enableDyadPro: _enableDyadPro,
     dyadProBudget: _dyadProBudget,
+    enableProLazyEditsMode: _enableProLazyEditsMode,
+    proLazyEditsMode: _proLazyEditsMode,
     ...restStored
   } = stored;
   const legacyStored = stored as Record<string, unknown>;
@@ -433,6 +435,16 @@ export function migrateStoredSettings(
     (typeof legacyStored.enableProWebSearch === "boolean"
       ? legacyStored.enableProWebSearch
       : undefined);
+  const enableTurboEditsV2 =
+    restStored.enableTurboEditsV2 ??
+    (typeof legacyStored.enableProLazyEditsMode === "boolean"
+      ? legacyStored.enableProLazyEditsMode
+      : undefined);
+  const turboEditsMode =
+    restStored.turboEditsMode ??
+    (typeof legacyStored.proLazyEditsMode === "string"
+      ? (legacyStored.proLazyEditsMode as "off" | "v1" | "v2" | undefined)
+      : undefined);
   const smartContextOption =
     restStored.smartContextOption ??
     (typeof legacyStored.proSmartContextOption === "string"
@@ -443,6 +455,8 @@ export function migrateStoredSettings(
     enableCloudAI,
     enableSmartFilesContextMode,
     enableWebSearch,
+    enableTurboEditsV2,
+    turboEditsMode,
     smartContextOption,
     selectedChatMode: migrateStoredChatMode(stored.selectedChatMode),
     defaultChatMode: migrateStoredChatMode(stored.defaultChatMode),
@@ -526,8 +540,7 @@ export function isSupabaseConnected(settings: UserSettings | null): boolean {
 
 export function isTurboEditsV2Enabled(settings: UserSettings): boolean {
   return Boolean(
-    settings.enableProLazyEditsMode === true &&
-    settings.proLazyEditsMode === "v2",
+    settings.enableTurboEditsV2 === true && settings.turboEditsMode === "v2",
   );
 }
 

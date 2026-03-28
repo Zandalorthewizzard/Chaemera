@@ -66,8 +66,8 @@ describe("readSettings", () => {
           "enableAutoUpdate": true,
           "enableContextCompaction": true,
           "enableNativeGit": true,
-          "enableProLazyEditsMode": true,
           "enableSmartFilesContextMode": true,
+          "enableTurboEditsV2": true,
           "experiments": {},
           "hasRunBefore": false,
           "isRunning": false,
@@ -95,6 +95,8 @@ describe("readSettings", () => {
           name: "gpt-4",
           provider: "openai",
         },
+        enableProLazyEditsMode: false,
+        proLazyEditsMode: "v2",
         telemetryConsent: "opted_in",
         hasRunBefore: true,
       };
@@ -112,6 +114,8 @@ describe("readSettings", () => {
         name: "gpt-4",
         provider: "openai",
       });
+      expect(result.enableTurboEditsV2).toBe(true);
+      expect(result.turboEditsMode).toBe("v2");
       expect(result.telemetryConsent).toBe("opted_in");
       expect(result.hasRunBefore).toBe(true);
       // Should still have defaults for missing properties
@@ -457,8 +461,8 @@ describe("readSettings", () => {
           "enableAutoUpdate": true,
           "enableContextCompaction": true,
           "enableNativeGit": true,
-          "enableProLazyEditsMode": true,
           "enableSmartFilesContextMode": true,
+          "enableTurboEditsV2": true,
           "experiments": {},
           "hasRunBefore": false,
           "isRunning": false,

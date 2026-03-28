@@ -107,9 +107,9 @@ const DebugSettingsSchema = z.object({
   /** Preview device mode: "desktop" | "tablet" | "mobile" */
   previewDeviceMode: z.string().nullable(),
   /** Whether turbo edits mode is enabled */
-  enableProLazyEditsMode: z.boolean().nullable(),
+  enableTurboEditsV2: z.boolean().nullable(),
   /** Turbo edits mode variant: "off" | "v1" | "v2" */
-  proLazyEditsMode: z.string().nullable(),
+  turboEditsMode: z.string().nullable(),
   /** Whether smart files context mode is enabled */
   enableSmartFilesContextMode: z.boolean().nullable(),
   /** Whether web search is enabled */
