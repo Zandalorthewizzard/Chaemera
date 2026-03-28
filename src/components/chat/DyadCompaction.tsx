@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Layers, ChevronDown, ChevronUp, Loader2 } from "lucide-react";
-import { VanillaMarkdownParser } from "./DyadMarkdownParser";
+import { PlainMarkdownParser } from "./ActionMarkdownParser";
 import { CustomTagState } from "./stateTypes";
 
 interface DyadCompactionProps {
@@ -85,7 +85,7 @@ export const DyadCompaction: React.FC<DyadCompactionProps> = ({
       >
         <div className="px-4 pb-3 text-sm text-gray-600 dark:text-gray-300 max-h-[360px] overflow-y-auto">
           {content ? (
-            <VanillaMarkdownParser content={content} />
+            <PlainMarkdownParser content={content} />
           ) : inProgress ? (
             <span className="text-xs text-gray-400 italic">
               Generating summary...

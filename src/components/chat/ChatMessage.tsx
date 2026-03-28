@@ -1,8 +1,8 @@
 import type { Message } from "@/ipc/types";
 import {
-  DyadMarkdownParser,
-  VanillaMarkdownParser,
-} from "./DyadMarkdownParser";
+  ActionMarkdownParser,
+  PlainMarkdownParser,
+} from "./ActionMarkdownParser";
 import { useStreamChat } from "@/hooks/useStreamChat";
 import { StreamingLoadingAnimation } from "./StreamingLoadingAnimation";
 import {
@@ -105,13 +105,13 @@ const ChatMessage = ({ message, isLastMessage }: ChatMessageProps) => {
             >
               {message.role === "assistant" ? (
                 <>
-                  <DyadMarkdownParser content={message.content} />
+                  <ActionMarkdownParser content={message.content} />
                   {isLastMessage && isStreaming && (
                     <StreamingLoadingAnimation variant="streaming" />
                   )}
                 </>
               ) : (
-                <VanillaMarkdownParser content={message.content} />
+                <PlainMarkdownParser content={message.content} />
               )}
             </div>
           )}

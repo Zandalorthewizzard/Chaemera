@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Globe } from "lucide-react";
-import { VanillaMarkdownParser } from "./DyadMarkdownParser";
+import { PlainMarkdownParser } from "./ActionMarkdownParser";
 import { CustomTagState } from "./stateTypes";
 import {
   DyadCard,
@@ -49,7 +49,7 @@ export const DyadWebSearchResult: React.FC<DyadWebSearchResultProps> = ({
       <DyadCardContent isExpanded={isExpanded}>
         <div className="text-sm text-muted-foreground">
           {typeof children === "string" ? (
-            <VanillaMarkdownParser content={children} />
+            <PlainMarkdownParser content={children} />
           ) : (
             children
           )}

@@ -34,7 +34,7 @@ import type {
   SecurityReviewResult,
 } from "@/ipc/types/security";
 import { useState, useEffect } from "react";
-import { VanillaMarkdownParser } from "@/components/chat/DyadMarkdownParser";
+import { PlainMarkdownParser } from "@/components/chat/ActionMarkdownParser";
 import { showSuccess, showWarning } from "@/lib/toast";
 import { useLoadAppFile } from "@/hooks/useLoadAppFile";
 import { useQueryClient } from "@tanstack/react-query";
@@ -558,7 +558,7 @@ function FindingsTable({
                       {finding.title}
                     </div>
                     <div className="text-sm text-gray-700 dark:text-gray-300 prose prose-sm dark:prose-invert max-w-none">
-                      <VanillaMarkdownParser content={displayDescription} />
+                      <PlainMarkdownParser content={displayDescription} />
                     </div>
                     {isLongDescription && (
                       <Button
@@ -644,7 +644,7 @@ function FindingDetailsDialog({
           </DialogTitle>
         </DialogHeader>
         <div className="text-sm text-gray-700 dark:text-gray-300 prose prose-sm dark:prose-invert max-w-none break-words max-h-[60vh] overflow-auto">
-          {finding && <VanillaMarkdownParser content={finding.description} />}
+          {finding && <PlainMarkdownParser content={finding.description} />}
         </div>
         <DialogFooter>
           <Button

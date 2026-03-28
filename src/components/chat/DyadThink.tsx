@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ChevronRight } from "lucide-react";
-import { VanillaMarkdownParser } from "./DyadMarkdownParser";
+import { PlainMarkdownParser } from "./ActionMarkdownParser";
 import { CustomTagState } from "./stateTypes";
 import { DyadTokenSavings } from "./DyadTokenSavings";
 
@@ -104,7 +104,7 @@ export const DyadThink: React.FC<DyadThinkProps> = ({ children, node }) => {
             <div className="text-sm text-muted-foreground pb-2 pt-1">
               {hasExpanded ? (
                 typeof children === "string" ? (
-                  <VanillaMarkdownParser content={children} />
+                  <PlainMarkdownParser content={children} />
                 ) : (
                   children
                 )

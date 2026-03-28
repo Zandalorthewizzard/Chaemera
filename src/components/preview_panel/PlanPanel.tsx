@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useAtomValue, useSetAtom } from "jotai";
 import { Button } from "@/components/ui/button";
 import { Check, FileText } from "lucide-react";
-import { VanillaMarkdownParser } from "@/components/chat/DyadMarkdownParser";
+import { PlainMarkdownParser } from "@/components/chat/ActionMarkdownParser";
 import { planStateAtom } from "@/atoms/planAtoms";
 import { previewModeAtom } from "@/atoms/appAtoms";
 import { selectedChatIdAtom } from "@/atoms/chatAtoms";
@@ -73,7 +73,7 @@ export const PlanPanel: React.FC = () => {
           </div>
           <div className="p-4">
             <div className="prose dark:prose-invert prose-sm max-w-none">
-              <VanillaMarkdownParser content={currentPlan} />
+              <PlainMarkdownParser content={currentPlan} />
             </div>
           </div>
         </div>
