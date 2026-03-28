@@ -11,10 +11,12 @@ import { toast } from "sonner";
 import { ipc } from "@/ipc/types";
 import type { ReleaseChannel } from "@/lib/schemas";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "@tanstack/react-router";
 
 export function ReleaseChannelSelector() {
   const { settings, updateSettings } = useSettings();
   const { t } = useTranslation("settings");
+  const navigate = useNavigate();
 
   if (!settings) {
     return null;
@@ -27,9 +29,9 @@ export function ReleaseChannelSelector() {
         description:
           "You'll stay on your current version until a newer stable release is available, or you can manually downgrade now.",
         action: {
-          label: "Download Stable",
+          label: "Open Help",
           onClick: () => {
-            ipc.system.openExternalUrl("https://dyad.sh/download");
+            navigate({ to: "/help" });
           },
         },
       });

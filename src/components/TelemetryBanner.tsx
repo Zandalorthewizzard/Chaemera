@@ -1,9 +1,9 @@
 import { useTranslation } from "react-i18next";
-import { ipc } from "@/ipc/types";
 import React from "react";
 import { Button } from "./ui/button";
 import { atom, useAtom } from "jotai";
 import { useSettings } from "@/hooks/useSettings";
+import { useNavigate } from "@tanstack/react-router";
 
 const hideBannerAtom = atom(false);
 
@@ -11,6 +11,7 @@ export function PrivacyBanner() {
   const [hideBanner, setHideBanner] = useAtom(hideBannerAtom);
   const { settings, updateSettings } = useSettings();
   const { t } = useTranslation("settings");
+  const navigate = useNavigate();
   // TODO: Implement state management for banner visibility and user choice
   // TODO: Implement functionality for Accept, Reject, Ask me later buttons
   // TODO: Add state to hide/show banner based on user choice
@@ -32,9 +33,7 @@ export function PrivacyBanner() {
             <br />
             <a
               onClick={() => {
-                ipc.system.openExternalUrl(
-                  "https://dyad.sh/docs/policies/privacy-policy",
-                );
+                navigate({ to: "/help" });
               }}
               className="cursor-pointer text-sm text-blue-600 dark:text-blue-400 hover:underline"
             >

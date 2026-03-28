@@ -3,6 +3,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { ipc } from "@/ipc/types";
 import { showSuccess } from "@/lib/toast";
+import { useNavigate } from "@tanstack/react-router";
 import {
   Smartphone,
   TabletSmartphone,
@@ -40,6 +41,7 @@ export function CapacitorControls({ appId }: CapacitorControlsProps) {
   } | null>(null);
   const [iosStatus, setIosStatus] = useState<CapacitorStatus>("idle");
   const [androidStatus, setAndroidStatus] = useState<CapacitorStatus>("idle");
+  const navigate = useNavigate();
 
   // Check if Capacitor is installed
   const { data: isCapacitor, isLoading } = useQuery({
@@ -135,10 +137,7 @@ export function CapacitorControls({ appId }: CapacitorControlsProps) {
               variant="ghost"
               size="sm"
               onClick={() => {
-                // TODO: Add actual help link
-                ipc.system.openExternalUrl(
-                  "https://dyad.sh/docs/guides/mobile-app#troubleshooting",
-                );
+                navigate({ to: "/help" });
               }}
               className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 flex items-center gap-1"
             >

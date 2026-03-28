@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ExternalLink, Database, Loader2 } from "lucide-react";
 import { showSuccess, showError } from "@/lib/toast";
 import { useVersions } from "@/hooks/useVersions";
+import { useNavigate } from "@tanstack/react-router";
 
 interface PortalMigrateProps {
   appId: number;
@@ -14,6 +15,7 @@ interface PortalMigrateProps {
 export const PortalMigrate = ({ appId }: PortalMigrateProps) => {
   const [output, setOutput] = useState<string>("");
   const { refreshVersions } = useVersions(appId);
+  const navigate = useNavigate();
 
   const migrateMutation = useMutation({
     mutationFn: async () => {
@@ -40,9 +42,7 @@ export const PortalMigrate = ({ appId }: PortalMigrateProps) => {
   };
 
   const openDocs = () => {
-    ipc.system.openExternalUrl(
-      "https://www.dyad.sh/docs/templates/portal#create-a-database-migration",
-    );
+    navigate({ to: "/help" });
   };
 
   return (
@@ -84,7 +84,7 @@ export const PortalMigrate = ({ appId }: PortalMigrateProps) => {
             className="text-sm"
           >
             <ExternalLink className="w-3 h-3 mr-1" />
-            Docs
+            Help
           </Button>
         </div>
 
