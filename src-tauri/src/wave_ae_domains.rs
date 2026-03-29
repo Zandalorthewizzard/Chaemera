@@ -504,7 +504,7 @@ pub fn get_app_upgrades(
             title: "Enable select component to edit".to_string(),
             description: "Installs the component tagger Vite plugin and its dependencies."
                 .to_string(),
-            manual_upgrade_url: "https://dyad.sh/docs/upgrades/select-component".to_string(),
+            manual_upgrade_url: "https://example.invalid/help".to_string(),
             is_needed: is_component_tagger_upgrade_needed(&app_path),
         },
         AppUpgradeDto {
@@ -513,8 +513,7 @@ pub fn get_app_upgrades(
             description:
                 "Adds Capacitor so the app can run on iOS and Android in addition to the web."
                     .to_string(),
-            manual_upgrade_url: "https://dyad.sh/docs/guides/mobile-app#upgrade-your-app"
-                .to_string(),
+            manual_upgrade_url: "https://example.invalid/help".to_string(),
             is_needed: is_capacitor_upgrade_needed(&app_path),
         },
     ])
