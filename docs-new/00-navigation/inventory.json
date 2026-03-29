@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-03-28",
+  "generated_at": "2026-03-29",
   "scope": "chaemera-docs-new",
   "docs": [
     {
@@ -512,6 +512,14 @@
       "type": "issue",
       "focus": ["Help Bot OSS Equivalent Decision"],
       "status": "open",
+      "source_of_truth": "discussion"
+    },
+    {
+      "id": "chaemera-issue-dyad-brokered-neon-and-supabase-oauth-2026-03-29",
+      "path": "05-discussion-templates/discussions/2026-03-29-dyad-brokered-neon-and-supabase-oauth-issue.md",
+      "type": "issue",
+      "focus": ["Dyad-Brokered Neon and Supabase OAuth"],
+      "status": "deferred",
       "source_of_truth": "discussion"
     },
     {

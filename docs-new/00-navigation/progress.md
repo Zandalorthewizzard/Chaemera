@@ -299,6 +299,13 @@ outline: []
 - keeps the future optional subscription reference material in a local-only archive outside the public release tree;
 - and explicitly separates public BYOK-first product behavior from archival subscription scaffolding.
 
+## 2026-03-29
+
+1. Added a deferred issue artifact for the remaining Dyad-brokered Neon and Supabase OAuth boundary:
+   - `05-discussion-templates/discussions/2026-03-29-dyad-brokered-neon-and-supabase-oauth-issue.md`.
+2. Explicitly recorded that this brokered OAuth path is not part of the current MVP cut and must not be restored as an active public runtime path.
+3. Synced the discussion hub, navigation index, inventory, and validation docs to include the new deferred integration issue.
+
 ## Deferred
 
 1. Migrate existing `docs/` canonical content into `docs-new` references and architecture docs.

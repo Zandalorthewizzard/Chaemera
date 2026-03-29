@@ -25,6 +25,9 @@ related:
       ../05-discussion-templates/discussions/2026-03-01-help-bot-oss-equivalent-issue.md,
     ],
     [
+      ../05-discussion-templates/discussions/2026-03-29-dyad-brokered-neon-and-supabase-oauth-issue.md,
+    ],
+    [
       ../05-discussion-templates/discussions/2026-03-01-upstream-patch-adaptation-workflow.md,
     ],
     [
@@ -113,6 +116,7 @@ outline: []
 - [[../05-discussion-templates/discussions/2026-02-23-tauri2-leptos-migration-strategy.md]]
 - [[../05-discussion-templates/discussions/2026-03-01-leptos-ui-wrapper-baseline.md]]
 - [[../05-discussion-templates/discussions/2026-03-01-help-bot-oss-equivalent-issue.md]]
+- [[../05-discussion-templates/discussions/2026-03-29-dyad-brokered-neon-and-supabase-oauth-issue.md]]
 - [[../05-discussion-templates/discussions/2026-03-01-upstream-patch-adaptation-workflow.md]]
 - [[../05-discussion-templates/discussions/2026-03-01-tauri-release-cutover-vs-regression.md]]
 - [[../05-discussion-templates/discussions/2026-03-02-ts-rust-leptos-layer-boundaries.md]]

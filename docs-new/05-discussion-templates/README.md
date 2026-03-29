@@ -13,6 +13,7 @@ related:
     [discussions/2026-02-23-orchestrator-glue-and-resilience.md],
     [discussions/2026-03-01-leptos-ui-wrapper-baseline.md],
     [discussions/2026-03-01-help-bot-oss-equivalent-issue.md],
+    [discussions/2026-03-29-dyad-brokered-neon-and-supabase-oauth-issue.md],
     [discussions/2026-03-01-upstream-patch-adaptation-workflow.md],
     [discussions/2026-03-01-tauri-release-cutover-vs-regression.md],
     [discussions/2026-03-02-ts-rust-leptos-layer-boundaries.md],
@@ -49,6 +50,7 @@ outline: []
 ## Active Issues
 
 - [[discussions/2026-03-01-help-bot-oss-equivalent-issue.md]]
+- [[discussions/2026-03-29-dyad-brokered-neon-and-supabase-oauth-issue.md]]
 
 ## Links
 
@@ -61,6 +63,7 @@ outline: []
 - [[discussions/2026-03-01-tauri-release-cutover-vs-regression.md]]
 - [[discussions/2026-03-02-ts-rust-leptos-layer-boundaries.md]]
 - [[discussions/2026-03-01-help-bot-oss-equivalent-issue.md]]
+- [[discussions/2026-03-29-dyad-brokered-neon-and-supabase-oauth-issue.md]]
 - [[discussions/2026-03-01-upstream-patch-adaptation-workflow.md]]
 - [[discussions/2026-03-28-current-ai-runtime-state.md]]
 - [[discussions/2026-03-28-structured-agent-core-with-legacy-xml-mode.md]]

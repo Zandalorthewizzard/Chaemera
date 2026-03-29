@@ -251,6 +251,9 @@ Pack 2.0 baseline is initialized in `docs-new` for Chaemera.
 - local-only archive material for future optional subscriptions,
 - and the neutral naming policy that should be used if a future subscription layer is rebuilt.
 
+67. A dedicated deferred issue now exists for the remaining Dyad-brokered Neon and Supabase OAuth path.
+68. That issue explicitly records that the MVP should not restore the old brokered auth flow and must either replace it or continue to keep it unavailable.
+
 ## Open / Deferred
 
 1. Full migration of prior docs from `docs/` is pending.
@@ -271,6 +274,7 @@ Pack 2.0 baseline is initialized in `docs-new` for Chaemera.
 14. Dedicated follow-up specs for protocol, session persistence, terminal behavior, and capability gateway semantics are still pending before post-release implementation begins.
 15. `electron-log` neutralization is still outside the scope of the final host-capability cutover spec and remains a separate follow-up concern.
 16. The new production MVP roadmap is governance-complete, but its implementation tasks remain open until the release-line work is actually executed and verified.
+17. Dyad-brokered Neon and Supabase OAuth remains intentionally deferred until after the MVP release line ships.
 
 ## Evidence
 
@@ -364,6 +368,9 @@ Pack 2.0 baseline is initialized in `docs-new` for Chaemera.
 - path: `04-sprint-workflow/specs/2026-03-28-prod-mvp-release-roadmap.md`
   symbol: `Canonical production MVP release roadmap`
   lines: 1-320
+- path: `05-discussion-templates/discussions/2026-03-29-dyad-brokered-neon-and-supabase-oauth-issue.md`
+  symbol: `Deferred Dyad-brokered Neon and Supabase OAuth issue`
+  lines: 1-80
 - path: `../scripts/audit-electron-legacy-surface.js`
   symbol: `Electron legacy surface audit summary`
   lines: 159-175
