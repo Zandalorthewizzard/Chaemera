@@ -1,5 +1,6 @@
 import { safeSend } from "../utils/safe_sender";
 import { cleanFullResponse } from "../utils/cleanFullResponse";
+import type { IpcEventLike } from "../utils/ipc_sender_types";
 
 // e.g. [dyad-qa=add-dep]
 // Canned responses for test prompts
@@ -66,7 +67,7 @@ export function getTestResponse(prompt: string): string | null {
  * @returns The full streamed response
  */
 export async function streamTestResponse(
-  event: Electron.IpcMainInvokeEvent,
+  event: IpcEventLike,
   chatId: number,
   testResponse: string,
   abortController: AbortController,
