@@ -25,6 +25,12 @@ related:
       ../05-discussion-templates/discussions/2026-03-01-help-bot-oss-equivalent-issue.md,
     ],
     [
+      ../05-discussion-templates/discussions/2026-03-29-help-entrypoint-docs-link-issue.md,
+    ],
+    [
+      ../05-discussion-templates/discussions/2026-03-29-large-repo-import-v2-issue.md,
+    ],
+    [
       ../05-discussion-templates/discussions/2026-03-29-dyad-brokered-neon-and-supabase-oauth-issue.md,
     ],
     [
@@ -73,6 +79,15 @@ related:
       ../04-sprint-workflow/specs/2026-03-28-hosted-paywall-surface-inventory-and-archive-policy.md,
     ],
     [../04-sprint-workflow/specs/2026-03-28-prod-mvp-release-roadmap.md],
+    [
+      ../04-sprint-workflow/specs/2026-03-29-tauri-chat-runtime-migration-plan.md,
+    ],
+    [
+      ../04-sprint-workflow/specs/2026-03-29-tauri-chat-runtime-phase-1-foundation-spec.md,
+    ],
+    [
+      ../04-sprint-workflow/specs/2026-03-29-non-chat-release-smoke-checklist.md,
+    ],
     [../04-sprint-workflow/sprints/README.md],
     [../04-sprint-workflow/sprints/partitioning-v2.md],
     [../04-sprint-workflow/sprints/sprint-slicing-rules.md],
@@ -116,6 +131,8 @@ outline: []
 - [[../05-discussion-templates/discussions/2026-02-23-tauri2-leptos-migration-strategy.md]]
 - [[../05-discussion-templates/discussions/2026-03-01-leptos-ui-wrapper-baseline.md]]
 - [[../05-discussion-templates/discussions/2026-03-01-help-bot-oss-equivalent-issue.md]]
+- [[../05-discussion-templates/discussions/2026-03-29-help-entrypoint-docs-link-issue.md]]
+- [[../05-discussion-templates/discussions/2026-03-29-large-repo-import-v2-issue.md]]
 - [[../05-discussion-templates/discussions/2026-03-29-dyad-brokered-neon-and-supabase-oauth-issue.md]]
 - [[../05-discussion-templates/discussions/2026-03-01-upstream-patch-adaptation-workflow.md]]
 - [[../05-discussion-templates/discussions/2026-03-01-tauri-release-cutover-vs-regression.md]]
@@ -133,6 +150,9 @@ outline: []
 - [[../04-sprint-workflow/specs/2026-03-28-rust-logging-backend-contract-and-migration-plan.md]]
 - [[../04-sprint-workflow/specs/2026-03-28-hosted-paywall-surface-inventory-and-archive-policy.md]]
 - [[../04-sprint-workflow/specs/2026-03-28-prod-mvp-release-roadmap.md]]
+- [[../04-sprint-workflow/specs/2026-03-29-tauri-chat-runtime-migration-plan.md]]
+- [[../04-sprint-workflow/specs/2026-03-29-tauri-chat-runtime-phase-1-foundation-spec.md]]
+- [[../04-sprint-workflow/specs/2026-03-29-non-chat-release-smoke-checklist.md]]
 - [[../04-sprint-workflow/sprints/README.md]]
 - [[../04-sprint-workflow/sprints/partitioning-v2.md]]
 - [[../04-sprint-workflow/sprints/sprint-slicing-rules.md]]

@@ -515,6 +515,26 @@
       "source_of_truth": "discussion"
     },
     {
+      "id": "chaemera-issue-help-entrypoint-docs-link-2026-03-29",
+      "path": "05-discussion-templates/discussions/2026-03-29-help-entrypoint-docs-link-issue.md",
+      "type": "issue",
+      "focus": [
+        "Help Entrypoint Should Resolve to Real Chaemera Documentation"
+      ],
+      "status": "deferred",
+      "source_of_truth": "discussion"
+    },
+    {
+      "id": "chaemera-issue-large-repo-import-v2-2026-03-29",
+      "path": "05-discussion-templates/discussions/2026-03-29-large-repo-import-v2-issue.md",
+      "type": "issue",
+      "focus": [
+        "Large-Repo Import v2 for Existing External and Legacy App Folders"
+      ],
+      "status": "open",
+      "source_of_truth": "discussion"
+    },
+    {
       "id": "chaemera-issue-dyad-brokered-neon-and-supabase-oauth-2026-03-29",
       "path": "05-discussion-templates/discussions/2026-03-29-dyad-brokered-neon-and-supabase-oauth-issue.md",
       "type": "issue",
@@ -681,6 +701,30 @@
       "path": "04-sprint-workflow/specs/2026-03-28-prod-mvp-release-roadmap.md",
       "type": "spec",
       "focus": ["Production MVP Release Roadmap"],
+      "status": "active",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-spec-tauri-chat-runtime-migration-plan-2026-03-29",
+      "path": "04-sprint-workflow/specs/2026-03-29-tauri-chat-runtime-migration-plan.md",
+      "type": "spec",
+      "focus": ["Tauri Chat Runtime Migration Plan"],
+      "status": "active",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-spec-tauri-chat-runtime-phase-1-foundation-2026-03-29",
+      "path": "04-sprint-workflow/specs/2026-03-29-tauri-chat-runtime-phase-1-foundation-spec.md",
+      "type": "spec",
+      "focus": ["Tauri Chat Runtime Phase 1 Foundation Spec"],
+      "status": "active",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-spec-non-chat-release-smoke-checklist-2026-03-29",
+      "path": "04-sprint-workflow/specs/2026-03-29-non-chat-release-smoke-checklist.md",
+      "type": "spec",
+      "focus": ["Non-Chat Release Smoke Checklist"],
       "status": "active",
       "source_of_truth": "governance"
     },

@@ -13,6 +13,73 @@ outline: []
 
 # Documentation Progress
 
+## 2026-03-29
+
+1. Added a canonical non-chat release smoke checklist for the current packaged Tauri stage:
+
+- `04-sprint-workflow/specs/2026-03-29-non-chat-release-smoke-checklist.md`
+
+2. The checklist explicitly excludes chat migration, Neon/Supabase OAuth remediation, and post-release agent work from the current smoke scope.
+3. The current release stage is now framed as `non-chat release hardening` rather than full product completion.
+4. The latest manual packaged smoke pass now closes the in-scope non-chat release checklist on the current Windows artifact:
+
+- shell launch
+- home and navigation
+- app lifecycle
+- runtime controls
+- preview and console
+- file and editor basics
+- version history and revert
+- settings and provider configuration
+- help and diagnostics
+- visual regression review
+
+5. The remaining non-chat items are now explicitly limited to deferred follow-up, not active smoke blockers:
+
+- large installed repo import reliability (`Import v2`)
+- future docs-linked help entry
+
+6. Added two new issue artifacts for the current non-chat release follow-up set:
+
+- `05-discussion-templates/discussions/2026-03-29-large-repo-import-v2-issue.md`
+- `05-discussion-templates/discussions/2026-03-29-help-entrypoint-docs-link-issue.md`
+
+7. The new import issue records the long-term Rust-owned `Import v2` direction:
+
+- strategy-based import modes,
+- preflight scan,
+- staging and atomic move,
+- explicit reparse-point handling,
+- and structured import results for the renderer.
+
+8. The new help issue records that the main help entry should eventually point to real Chaemera docs, while `/help` remains a local support-tools surface.
+9. Added a canonical post-smoke migration spec for the next release-critical gap:
+
+- `04-sprint-workflow/specs/2026-03-29-tauri-chat-runtime-migration-plan.md`
+
+10. The new chat-runtime spec locks the recommended migration shape as:
+
+- stable renderer contract
+- Rust host session manager
+- host-neutral TypeScript chat runtime extraction
+- Node worker over a structured stdio protocol
+- no premature Rust rewrite of the current build-mode AI pipeline
+
+11. Added a more detailed implementation-ready Phase 1 spec for that migration:
+
+- `04-sprint-workflow/specs/2026-03-29-tauri-chat-runtime-phase-1-foundation-spec.md`
+
+12. Added a practical resume pack for the next session:
+
+- `notes/2026-03-29-chat-runtime-migration-resume-pack.md`
+
+13. The new Phase 1 spec narrows the first executable slice to:
+
+- extracting host-neutral TypeScript build-mode runtime code
+- preserving Electron behavior during extraction
+- defining the worker protocol early
+- explicitly not trying to solve full Tauri parity or a Rust rewrite in one pass
+
 ## 2026-02-23
 
 1. Initialized `docs-new` with Pack 2.0 layered structure (`00..06`).
@@ -305,6 +372,11 @@ outline: []
    - `05-discussion-templates/discussions/2026-03-29-dyad-brokered-neon-and-supabase-oauth-issue.md`.
 2. Explicitly recorded that this brokered OAuth path is not part of the current MVP cut and must not be restored as an active public runtime path.
 3. Synced the discussion hub, navigation index, inventory, and validation docs to include the new deferred integration issue.
+4. Added an open issue artifact for the large-repo import gap:
+   - `05-discussion-templates/discussions/2026-03-29-large-repo-import-v2-issue.md`.
+5. Added a deferred issue artifact for the help-entrypoint/docs-link cleanup:
+   - `05-discussion-templates/discussions/2026-03-29-help-entrypoint-docs-link-issue.md`.
+6. Synced the discussion hub, navigation index, inventory, and validation docs to include both new issue records.
 
 ## Deferred
 

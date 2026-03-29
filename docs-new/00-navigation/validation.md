@@ -17,6 +17,8 @@ outline: []
 
 Pack 2.0 baseline is initialized in `docs-new` for Chaemera.
 
+The current non-chat release smoke checklist is now present, linked through navigation, and manually passed for the current in-scope packaged Windows non-chat surface. Chat migration, brokered OAuth cleanup, large-repo import hardening, and the final docs-linked help entry remain deferred. A canonical chat-runtime migration spec now defines the next release-critical step.
+
 ## Verified Claims
 
 1. Layered docs structure exists (`00..06`).
@@ -129,8 +131,16 @@ Pack 2.0 baseline is initialized in `docs-new` for Chaemera.
 - run a targeted wider regression first,
 - then replace the legacy Electron release path with a Tauri-first release path.
 
-40. A dedicated architecture discussion now exists for layer ownership during the migration.
-41. That discussion explicitly records the current operating split:
+40. A canonical non-chat release smoke checklist now exists for the current packaged Tauri stage, and it is linked through navigation as an explicit executable release artifact:
+
+- the checklist is present in `docs-new/04-sprint-workflow/specs/2026-03-29-non-chat-release-smoke-checklist.md`,
+- the checklist excludes chat migration and brokered OAuth cleanup from the current scope,
+- the checklist is intended as a pass/fail handoff surface for the remaining non-chat release stage.
+
+41. A dedicated architecture discussion now exists for layer ownership during the migration.
+
+42. The non-chat release smoke checklist now records a real manual packaged smoke pass with the current in-scope non-chat surfaces marked `PASS`, while keeping large-repo import hardening and the future docs-linked help entry explicitly deferred.
+43. That discussion explicitly records the current operating split:
 
 - remove Electron as the required foundation,
 - move native/runtime duties to Rust and Tauri,
@@ -253,6 +263,29 @@ Pack 2.0 baseline is initialized in `docs-new` for Chaemera.
 
 67. A dedicated deferred issue now exists for the remaining Dyad-brokered Neon and Supabase OAuth path.
 68. That issue explicitly records that the MVP should not restore the old brokered auth flow and must either replace it or continue to keep it unavailable.
+69. A dedicated open issue now exists for large-repo import reliability, and it explicitly records a Rust-owned `Import v2` direction with:
+
+- strategy-based import modes,
+- preflight scanning,
+- staging plus atomic move,
+- explicit reparse-point handling,
+- and structured renderer-facing diagnostics.
+
+70. A dedicated deferred issue now exists for the help entrypoint and future docs-link behavior, and it explicitly records that the main help action should eventually resolve to real Chaemera documentation rather than remain an ambiguous local-route action.
+71. A canonical spec now exists for the Tauri chat runtime migration, and it explicitly locks the recommended architecture as:
+
+- stable renderer contract
+- Rust session manager in the Tauri host
+- host-neutral TypeScript runtime extraction
+- Node worker protocol for real BYOK build-mode execution
+- no release-line full Rust rewrite of the current chat pipeline
+
+72. A second canonical spec now exists for the first executable slice of that migration, and it explicitly locks Phase 1 to:
+
+- extracting a host-neutral TypeScript runtime boundary
+- preserving the Electron adapter during extraction
+- defining worker protocol types early
+- and refusing to expand Phase 1 into a full Rust or full-parity rewrite
 
 ## Open / Deferred
 
@@ -275,6 +308,10 @@ Pack 2.0 baseline is initialized in `docs-new` for Chaemera.
 15. `electron-log` neutralization is still outside the scope of the final host-capability cutover spec and remains a separate follow-up concern.
 16. The new production MVP roadmap is governance-complete, but its implementation tasks remain open until the release-line work is actually executed and verified.
 17. Dyad-brokered Neon and Supabase OAuth remains intentionally deferred until after the MVP release line ships.
+18. Large-repo import reliability remains open until a true `Import v2` pipeline exists; current import should still be treated as limited for large installed pnpm workspaces.
+19. The help entrypoint/docs-link cleanup remains intentionally deferred until the public Chaemera docs surface is ready.
+20. Real packaged Tauri chat execution remains open until the new chat-runtime migration plan is implemented and validated.
+21. The detailed Phase 1 extraction slice remains open until the reusable runtime boundary and protocol types actually land in code.
 
 ## Evidence
 
@@ -371,6 +408,18 @@ Pack 2.0 baseline is initialized in `docs-new` for Chaemera.
 - path: `05-discussion-templates/discussions/2026-03-29-dyad-brokered-neon-and-supabase-oauth-issue.md`
   symbol: `Deferred Dyad-brokered Neon and Supabase OAuth issue`
   lines: 1-80
+- path: `05-discussion-templates/discussions/2026-03-29-large-repo-import-v2-issue.md`
+  symbol: `Open Large-Repo Import v2 issue`
+  lines: 1-120
+- path: `05-discussion-templates/discussions/2026-03-29-help-entrypoint-docs-link-issue.md`
+  symbol: `Deferred help entrypoint and docs-link issue`
+  lines: 1-100
+- path: `04-sprint-workflow/specs/2026-03-29-tauri-chat-runtime-migration-plan.md`
+  symbol: `Canonical Tauri Chat Runtime Migration Plan`
+  lines: 1-220
+- path: `04-sprint-workflow/specs/2026-03-29-tauri-chat-runtime-phase-1-foundation-spec.md`
+  symbol: `Canonical Tauri Chat Runtime Phase 1 Foundation Spec`
+  lines: 1-220
 - path: `../scripts/audit-electron-legacy-surface.js`
   symbol: `Electron legacy surface audit summary`
   lines: 159-175
