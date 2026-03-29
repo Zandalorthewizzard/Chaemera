@@ -11,7 +11,7 @@ const overrideConfigPath = path.join(
 );
 const mergedConfig = {
   build: {
-    beforeBuildCommand: `npm --prefix ${repoRootForNpm} run build:renderer`,
+    beforeBuildCommand: `npm --prefix ${repoRootForNpm} run build:renderer && npm --prefix ${repoRootForNpm} run build:chat-worker`,
   },
 };
 

@@ -5,7 +5,7 @@
   "identifier": "io.chaemera.app",
   "build": {
     "beforeDevCommand": "npm run dev:renderer",
-    "beforeBuildCommand": "npm run build:renderer",
+    "beforeBuildCommand": "npm run build:renderer && npm run build:chat-worker",
     "devUrl": "http://localhost:5173",
     "frontendDist": "../dist"
   },
@@ -31,6 +31,8 @@
       "../worker/dyad-sw-register.js",
       "../worker/dyad-sw.js",
       "../worker/dyad-visual-editor-client.js",
+      "../worker/chat_worker_runner.js",
+      "../.vite/build/chat_worker.js",
       "../worker/proxy_server.js",
       "../worker/proxy_server_cli.js",
       "../worker/tsc_worker_runner.js",

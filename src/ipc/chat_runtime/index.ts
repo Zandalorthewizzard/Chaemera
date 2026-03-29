@@ -36,3 +36,12 @@ export {
 } from "./helpers";
 
 export type { AsyncIterableStream } from "./helpers";
+
+export {
+  serializeWorkerMessage,
+  parseWorkerInbound,
+  writeWorkerMessage,
+  writeWorkerLog,
+} from "./worker_stdio";
+
+export { ChatWorkerSessionManager } from "./worker_session_manager";
