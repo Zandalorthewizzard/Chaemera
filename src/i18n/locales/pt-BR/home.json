@@ -59,14 +59,14 @@
   "deleteItemTitle": "Excluir {{itemType}}",
   "deleteItemConfirmation": "Tem certeza de que deseja excluir \"{{itemName}}\"? Esta ação não pode ser desfeita.",
   "proBanner": {
-    "manageDyadPro": "Gerenciar Cloud AI",
-    "alreadyHavePro": "Já tem o Cloud AI? Adicione sua chave",
-    "accessLeadingModels": "Acesse os melhores modelos de IA com um único plano",
-    "getDyadPro": "Obtenha o Cloud AI",
+    "alreadyHavePro": "Ja tem chaves de API? Adicione-as",
+    "accessLeadingModels": "Conecte provedores de IA principais",
+    "getDyadPro": "Configurar provedores",
     "upTo3xCheaper": "Até 3x mais barato",
     "byUsingSmartContext": "usando o Contexto Inteligente",
     "generateCode4x": "Gere código 4-10x mais rápido",
-    "withTurboModels": "com Turbo Models e Turbo Edits"
+    "withTurboModels": "com Turbo Models e Turbo Edits",
+    "manageCloudAccess": "Gerenciar provedores"
   },
   "setup": {
     "buildNewApp": "Criar um novo app",
@@ -90,11 +90,11 @@
     "notSureWatchVideo": "Não sabe o que fazer? Assista ao vídeo de introdução acima",
     "setupGeminiApiKey": "Configurar Chave de API do Google Gemini",
     "setupOpenRouterApiKey": "Configurar Chave de API do OpenRouter",
-    "setupDyadPro": "Configurar Cloud AI",
-    "accessAllModels": "Acesse todos os modelos de IA com um único plano",
+    "accessAllModels": "Use suas proprias chaves de provedores de IA",
     "setupOtherProviders": "Configurar outros provedores",
     "openAiAnthropicMore": "OpenAI, Anthropic e mais",
-    "freeModelsAvailable": "Modelos gratuitos disponíveis"
+    "freeModelsAvailable": "Modelos gratuitos disponíveis",
+    "setupCloudAccess": "Configurar provedores"
   },
   "customTheme": {
     "createTitle": "Criar Tema Personalizado",
@@ -330,8 +330,8 @@
       "addToChat": "Adicionar ao Chat",
       "closeAnnotator": "Fechar Anotador",
       "proFeatureTitle": "Recurso de anotação",
-      "proFeatureDescription": "Desbloqueie a capacidade de anotar capturas de tela e aprimore seu fluxo de trabalho com o Cloud AI.",
-      "getDyadPro": "Obtenha o Cloud AI"
+      "proFeatureDescription": "Desbloqueie a capacidade de anotar capturas de tela e aprimore seu fluxo de trabalho com um provedor de IA configurado.",
+      "getDyadPro": "Configurar um provedor"
     }
   },
   "integrations": {
@@ -539,7 +539,10 @@
       "branchNotFound": "Branch não encontrada",
       "branchSelected": "Branch selecionada",
       "failedSetBranch": "Falha ao definir branch: {{error}}",
-      "failedDisconnectProject": "Falha ao desconectar projeto do app"
+      "failedDisconnectProject": "Falha ao desconectar projeto do app",
+      "legacyCredentialsTitle": "As credenciais legadas do Supabase precisam ser redefinidas",
+      "legacyCredentialsDescription": "Esta conexao foi importada do aplicativo Electron antigo e usa um armazenamento seguro que a versao Tauri nao consegue descriptografar. Desconecte-a agora e reconecte depois, quando a autenticacao nativa do Supabase voltar.",
+      "resetLegacyConnection": "Redefinir conexao legada"
     },
     "neon": {
       "title": "Integração com Neon",
@@ -551,7 +554,9 @@
       "connectedSuccess": "Conectado ao Neon com sucesso!",
       "disconnect": "Desconectar do Neon",
       "disconnected": "Desconectado do Neon com sucesso",
-      "failedDisconnect": "Falha ao desconectar do Neon"
+      "failedDisconnect": "Falha ao desconectar do Neon",
+      "legacyCredentialsTitle": "As credenciais legadas do Neon precisam ser redefinidas",
+      "legacyCredentialsDescription": "Esta conexao foi importada do aplicativo Electron antigo e usa um armazenamento seguro que a versao Tauri nao consegue descriptografar. Desconecte-a agora e reconecte depois, quando a autenticacao nativa do Neon voltar."
     }
   }
 }

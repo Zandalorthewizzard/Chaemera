@@ -7,6 +7,7 @@ import type { Template } from "@/shared/templates";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { showWarning } from "@/lib/toast";
+import { isNeonConnected } from "@/lib/schemas";
 
 interface TemplateCardProps {
   template: Template;
@@ -31,7 +32,7 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({
       return;
     }
 
-    if (template.requiresNeon && !settings?.neon?.accessToken) {
+    if (template.requiresNeon && !isNeonConnected(settings)) {
       showWarning("Please connect your Neon account to use this template.");
       return;
     }

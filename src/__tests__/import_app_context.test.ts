@@ -3,7 +3,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/main/settings", () => ({
   readSettings: vi.fn(() => ({
-    enableCloudAI: false,
     enableSmartFilesContextMode: false,
   })),
 }));

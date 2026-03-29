@@ -126,7 +126,6 @@ function sanitizeSettingsForDebug(settings: UserSettings) {
     selectedChatMode: settings.selectedChatMode ?? null,
     defaultChatMode: settings.defaultChatMode ?? null,
     autoApproveChanges: settings.autoApproveChanges ?? null,
-    enableCloudAI: settings.enableCloudAI ?? null,
     thinkingBudget: settings.thinkingBudget ?? null,
     maxChatTurnsInContext: settings.maxChatTurnsInContext ?? null,
     enableAutoFixProblems: settings.enableAutoFixProblems ?? null,

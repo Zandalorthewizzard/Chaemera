@@ -59,14 +59,14 @@
   "deleteItemTitle": "Delete {{itemType}}",
   "deleteItemConfirmation": "Are you sure you want to delete \"{{itemName}}\"? This action cannot be undone.",
   "proBanner": {
-    "manageDyadPro": "Manage Cloud AI",
-    "alreadyHavePro": "Already have Cloud AI? Add your key",
-    "accessLeadingModels": "Access leading AI models with one plan",
-    "getDyadPro": "Get Cloud AI",
+    "alreadyHavePro": "Already have API keys? Add them",
+    "accessLeadingModels": "Connect leading AI providers",
+    "getDyadPro": "Set up providers",
     "upTo3xCheaper": "Up to 3x cheaper",
     "byUsingSmartContext": "by using Smart Context",
     "generateCode4x": "Generate code 4-10x faster",
-    "withTurboModels": "with Turbo Models & Turbo Edits"
+    "withTurboModels": "with Turbo Models & Turbo Edits",
+    "manageCloudAccess": "Manage providers"
   },
   "setup": {
     "buildNewApp": "Build a new app",
@@ -90,11 +90,11 @@
     "notSureWatchVideo": "Not sure what to do? Watch the Get Started video above",
     "setupGeminiApiKey": "Setup Google Gemini API Key",
     "setupOpenRouterApiKey": "Setup OpenRouter API Key",
-    "setupDyadPro": "Setup Cloud AI",
-    "accessAllModels": "Access all AI models with one plan",
+    "accessAllModels": "Use your own AI provider keys",
     "setupOtherProviders": "Setup other AI providers",
     "openAiAnthropicMore": "OpenAI, Anthropic and more",
-    "freeModelsAvailable": "Free models available"
+    "freeModelsAvailable": "Free models available",
+    "setupCloudAccess": "Set up providers"
   },
   "customTheme": {
     "createTitle": "Create Custom Theme",
@@ -330,8 +330,8 @@
       "addToChat": "Add to Chat",
       "closeAnnotator": "Close Annotator",
       "proFeatureTitle": "Annotator feature",
-      "proFeatureDescription": "Unlock the ability to annotate screenshots and enhance your workflow with Cloud AI.",
-      "getDyadPro": "Get Cloud AI"
+      "proFeatureDescription": "Unlock the ability to annotate screenshots and enhance your workflow with a configured AI provider.",
+      "getDyadPro": "Set up a provider"
     }
   },
   "integrations": {
@@ -539,7 +539,10 @@
       "branchNotFound": "Branch not found",
       "branchSelected": "Branch selected",
       "failedSetBranch": "Failed to set branch: {{error}}",
-      "failedDisconnectProject": "Failed to disconnect project from app"
+      "failedDisconnectProject": "Failed to disconnect project from app",
+      "legacyCredentialsTitle": "Legacy Supabase credentials need to be reset",
+      "legacyCredentialsDescription": "This connection was imported from the old Electron app and uses secure storage that the Tauri release cannot decrypt. Disconnect it now and reconnect later once native Supabase auth returns.",
+      "resetLegacyConnection": "Reset legacy connection"
     },
     "neon": {
       "title": "Neon Integration",
@@ -551,7 +554,9 @@
       "connectedSuccess": "Successfully connected to Neon!",
       "disconnect": "Disconnect from Neon",
       "disconnected": "Disconnected from Neon successfully",
-      "failedDisconnect": "Failed to disconnect from Neon"
+      "failedDisconnect": "Failed to disconnect from Neon",
+      "legacyCredentialsTitle": "Legacy Neon credentials need to be reset",
+      "legacyCredentialsDescription": "This connection was imported from the old Electron app and uses secure storage that the Tauri release cannot decrypt. Disconnect it now and reconnect later once native Neon auth returns."
     }
   }
 }

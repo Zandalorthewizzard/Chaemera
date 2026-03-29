@@ -14,7 +14,8 @@ import {
 import { useSettings } from "@/hooks/useSettings";
 import { useSupabase } from "@/hooks/useSupabase";
 import { showSuccess, showError } from "@/lib/toast";
-import { isSupabaseConnected } from "@/lib/schemas";
+import { hasLegacySupabaseSecrets, isSupabaseConnected } from "@/lib/schemas";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export function SupabaseIntegration() {
   const { t } = useTranslation(["home", "common"]);
@@ -22,6 +23,7 @@ export function SupabaseIntegration() {
   const [isDisconnecting, setIsDisconnecting] = useState(false);
 
   // Check if there are any connected organizations
+  const hasLegacyCredentials = hasLegacySupabaseSecrets(settings);
   const isConnected = isSupabaseConnected(settings);
 
   const { organizations, refetchOrganizations, deleteOrganization } =
@@ -81,6 +83,33 @@ export function SupabaseIntegration() {
       showError(err.message || "Failed to update setting");
     }
   };
+
+  if (hasLegacyCredentials) {
+    return (
+      <div className="space-y-3">
+        <Alert variant="destructive">
+          <AlertTitle>
+            {t("integrations.supabase.legacyCredentialsTitle")}
+          </AlertTitle>
+          <AlertDescription>
+            {t("integrations.supabase.legacyCredentialsDescription")}
+          </AlertDescription>
+        </Alert>
+        <Button
+          onClick={handleDisconnectAllFromSupabase}
+          variant="destructive"
+          size="sm"
+          disabled={isDisconnecting}
+          className="flex items-center gap-2"
+        >
+          {isDisconnecting
+            ? t("common:disconnecting")
+            : t("integrations.supabase.resetLegacyConnection")}
+          <DatabaseZap className="h-4 w-4" />
+        </Button>
+      </div>
+    );
+  }
 
   if (!isConnected) {
     return null;

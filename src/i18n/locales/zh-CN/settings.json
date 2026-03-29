@@ -78,12 +78,12 @@
     "errorLoadingSettings": "加载设置出错",
     "couldNotLoadProvider": "无法加载提供商数据：{{message}}",
     "couldNotLoadSettings": "无法加载配置数据：{{message}}",
-    "enableDyadPro": "启用 Cloud AI",
-    "toggleDyadPro": "切换以启用 Cloud AI",
     "apiKeyEmpty": "API 密钥不能为空。",
-    "errorTogglingPro": "切换 Cloud AI 时出错：{{error}}",
     "failedSaveApiKey": "保存 API 密钥失败。",
-    "failedDeleteApiKey": "删除 API 密钥失败。"
+    "failedDeleteApiKey": "删除 API 密钥失败。",
+    "enableCloudAccess": "启用提供商访问",
+    "toggleCloudAccess": "切换提供商访问",
+    "errorTogglingCloudAccess": "切换提供商访问时出错：{{error}}"
   },
   "telemetry": {
     "title": "遥测",
@@ -255,6 +255,6 @@
     "updateProvider": "更新提供商",
     "failedCreate": "创建自定义提供商失败"
   },
-  "manageDyadPro": "管理 Cloud AI 订阅",
-  "setupDyadPro": "设置 Cloud AI 订阅"
+  "manageCloudAccess": "管理提供商访问",
+  "setupCloudAccess": "设置提供商访问"
 }

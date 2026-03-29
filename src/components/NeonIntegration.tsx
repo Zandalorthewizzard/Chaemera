@@ -1,12 +1,14 @@
 import { useTranslation } from "react-i18next";
 import { useSettings } from "@/hooks/useSettings";
 import { NeonDisconnectButton } from "@/components/NeonDisconnectButton";
+import { hasLegacyNeonSecrets, isNeonConnected } from "@/lib/schemas";
 
 export function NeonIntegration() {
   const { t } = useTranslation("home");
   const { settings } = useSettings();
+  const hasLegacyCredentials = hasLegacyNeonSecrets(settings);
 
-  const isConnected = !!settings?.neon?.accessToken;
+  const isConnected = isNeonConnected(settings) || hasLegacyCredentials;
 
   if (!isConnected) {
     return null;
@@ -19,7 +21,9 @@ export function NeonIntegration() {
           {t("integrations.neon.title")}
         </h3>
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-          {t("integrations.neon.connected")}
+          {hasLegacyCredentials
+            ? t("integrations.neon.legacyCredentialsTitle")
+            : t("integrations.neon.connected")}
         </p>
       </div>
 

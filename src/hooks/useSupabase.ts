@@ -11,7 +11,7 @@ import {
   SupabaseBranch,
 } from "@/ipc/types";
 import { useSettings } from "./useSettings";
-import { isSupabaseConnected } from "@/lib/schemas";
+import { hasLegacySupabaseSecrets, isSupabaseConnected } from "@/lib/schemas";
 import { queryKeys } from "@/lib/queryKeys";
 
 export interface UseSupabaseOptions {
@@ -23,7 +23,8 @@ export function useSupabase(options: UseSupabaseOptions = {}) {
   const { branchesProjectId, branchesOrganizationSlug } = options;
   const queryClient = useQueryClient();
   const { settings } = useSettings();
-  const isConnected = isSupabaseConnected(settings);
+  const isConnected =
+    isSupabaseConnected(settings) && !hasLegacySupabaseSecrets(settings);
 
   const setConsoleEntries = useSetAtom(appConsoleEntriesAtom);
   const selectedAppId = useAtomValue(selectedAppIdAtom);

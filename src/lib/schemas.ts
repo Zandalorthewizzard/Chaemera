@@ -215,12 +215,6 @@ export const ExperimentsSchema = z.object({
 });
 export type Experiments = z.infer<typeof ExperimentsSchema>;
 
-export const CloudAIBudgetSchema = z.object({
-  budgetResetAt: z.string(),
-  maxBudget: z.number(),
-});
-export type CloudAIBudget = z.infer<typeof CloudAIBudgetSchema>;
-
 export const GlobPathSchema = z.object({
   globPath: z.string(),
 });
@@ -291,7 +285,6 @@ const BaseUserSettingsFields = {
   // DEPRECATED.
   ////////////////////////////////
   enableProSaverMode: z.boolean().optional(),
-  cloudAIBudget: CloudAIBudgetSchema.optional(),
   runtimeMode: RuntimeModeSchema.optional(),
 
   ////////////////////////////////
@@ -309,7 +302,6 @@ const BaseUserSettingsFields = {
   telemetryConsent: z.enum(["opted_in", "opted_out", "unset"]).optional(),
   telemetryUserId: z.string().optional(),
   hasRunBefore: z.boolean().optional(),
-  enableCloudAI: z.boolean().optional(),
   experiments: ExperimentsSchema.optional(),
   lastShownReleaseNotesVersion: z.string().optional(),
   maxChatTurnsInContext: z.number().optional(),
@@ -412,19 +404,15 @@ export function migrateStoredChatMode(
 export function migrateStoredSettings(
   stored: StoredUserSettings,
 ): UserSettings {
+  const legacyStored = stored as StoredUserSettings & Record<string, unknown>;
   const {
     enableDyadPro: _enableDyadPro,
+    enableCloudAI: _enableCloudAI,
     dyadProBudget: _dyadProBudget,
     enableProLazyEditsMode: _enableProLazyEditsMode,
     proLazyEditsMode: _proLazyEditsMode,
     ...restStored
-  } = stored;
-  const legacyStored = stored as Record<string, unknown>;
-  const enableCloudAI =
-    restStored.enableCloudAI ??
-    (typeof stored.enableDyadPro === "boolean"
-      ? stored.enableDyadPro
-      : undefined);
+  } = legacyStored;
   const enableSmartFilesContextMode =
     restStored.enableSmartFilesContextMode ??
     (typeof legacyStored.enableProSmartFilesContextMode === "boolean"
@@ -452,7 +440,6 @@ export function migrateStoredSettings(
       : undefined);
   return {
     ...restStored,
-    enableCloudAI,
     enableSmartFilesContextMode,
     enableWebSearch,
     enableTurboEditsV2,
@@ -463,33 +450,71 @@ export function migrateStoredSettings(
   };
 }
 
-export function isCloudAIEnabled(settings: UserSettings): boolean {
-  return settings.enableCloudAI === true && hasCloudAIKey(settings);
+export function isLegacyElectronSafeStorageSecret(
+  secret: Secret | null | undefined,
+): boolean {
+  return secret?.encryptionType === "electron-safe-storage";
 }
 
-export function hasCloudAIKey(settings: UserSettings): boolean {
-  return !!settings.providerSettings?.auto?.apiKey?.value;
+function hasUsableSecret(secret: Secret | null | undefined): boolean {
+  return (
+    Boolean(secret?.value?.trim()) && !isLegacyElectronSafeStorageSecret(secret)
+  );
+}
+
+export function hasLegacyNeonSecrets(settings: UserSettings | null): boolean {
+  return Boolean(
+    settings &&
+    (isLegacyElectronSafeStorageSecret(settings.neon?.accessToken) ||
+      isLegacyElectronSafeStorageSecret(settings.neon?.refreshToken)),
+  );
+}
+
+export function isNeonConnected(settings: UserSettings | null): boolean {
+  return hasUsableSecret(settings?.neon?.accessToken);
+}
+
+function hasLegacySupabaseOrganizationSecrets(
+  settings: UserSettings | null,
+): boolean {
+  return Object.values(settings?.supabase?.organizations ?? {}).some(
+    (organization) =>
+      isLegacyElectronSafeStorageSecret(organization.accessToken) ||
+      isLegacyElectronSafeStorageSecret(organization.refreshToken),
+  );
+}
+
+function hasUsableSupabaseOrganizationConnection(
+  settings: UserSettings | null,
+): boolean {
+  return Object.values(settings?.supabase?.organizations ?? {}).some(
+    (organization) => hasUsableSecret(organization.accessToken),
+  );
+}
+
+export function hasLegacySupabaseSecrets(
+  settings: UserSettings | null,
+): boolean {
+  return Boolean(
+    settings &&
+    (isLegacyElectronSafeStorageSecret(settings.supabase?.accessToken) ||
+      isLegacyElectronSafeStorageSecret(settings.supabase?.refreshToken) ||
+      hasLegacySupabaseOrganizationSecrets(settings)),
+  );
+}
+
+export function hasUsableSupabaseConnection(
+  settings: UserSettings | null,
+): boolean {
+  return Boolean(
+    hasUsableSecret(settings?.supabase?.accessToken) ||
+    hasUsableSupabaseOrganizationConnection(settings),
+  );
 }
 
 /**
- * Hosted agent access is intentionally disabled in the current Chaemera
- * release line. The underlying entitlement layer stays in place for a future
- * optional subscription model.
- */
-export function hasHostedAgentAccess(_settings: UserSettings): boolean {
-  return false;
-}
-
-/**
- * Gets the effective default chat mode based on settings, cloud access, and free quota availability.
- * - If defaultChatMode is set and valid for the user's cloud access status, use it
- * - If defaultChatMode is "local-agent" but user does not have cloud access:
- *   - If free agent quota available AND OpenAI/Anthropic is set up, use "local-agent" (basic agent mode)
- *   - Otherwise, fall back to "build"
- * - If defaultChatMode is NOT set:
- *   - Cloud users: use "local-agent"
- *   - Non-cloud users with quota AND OpenAI/Anthropic set up: use "local-agent" (basic agent mode)
- *   - Non-cloud users without quota or provider: use "build"
+ * Gets the effective default chat mode based on settings and whether a
+ * paid-capable provider is configured for local-agent usage.
  */
 export function getEffectiveDefaultChatMode(
   settings: UserSettings,
@@ -514,28 +539,8 @@ export function getEffectiveDefaultChatMode(
   return "build";
 }
 
-/**
- * Determines if the current session is using Basic Agent mode (hosted access gated by quota).
- * Basic Agent mode is when:
- * - User does NOT have hosted access
- * - User is using local-agent chat mode
- */
-export function isBasicAgentMode(settings: UserSettings): boolean {
-  return (
-    hasHostedAgentAccess(settings) &&
-    settings.selectedChatMode === "local-agent"
-  );
-}
-
 export function isSupabaseConnected(settings: UserSettings | null): boolean {
-  if (!settings) {
-    return false;
-  }
-  return Boolean(
-    settings.supabase?.accessToken ||
-    (settings.supabase?.organizations &&
-      Object.keys(settings.supabase.organizations).length > 0),
-  );
+  return hasUsableSupabaseConnection(settings);
 }
 
 export function isTurboEditsV2Enabled(settings: UserSettings): boolean {

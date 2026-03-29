@@ -45,10 +45,7 @@ import { planEvents, planContracts } from "../types/plan";
 const CHAT_STREAM_CHANNELS = getStreamChannels(chatStreamContract);
 
 // Test-only channels (handler only registered in E2E test builds, but channel always allowed)
-const TEST_INVOKE_CHANNELS = [
-  "test:simulateQuotaTimeElapsed",
-  "test:set-node-mock",
-] as const;
+const TEST_INVOKE_CHANNELS = ["test:set-node-mock"] as const;
 
 /**
  * All valid invoke channels derived from contracts.

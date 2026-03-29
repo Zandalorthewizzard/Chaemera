@@ -59,14 +59,14 @@
   "deleteItemTitle": "删除{{itemType}}",
   "deleteItemConfirmation": "确定要删除「{{itemName}}」吗？此操作无法撤销。",
   "proBanner": {
-    "manageDyadPro": "管理 Cloud AI",
-    "alreadyHavePro": "已有 Cloud AI？添加您的密钥",
-    "accessLeadingModels": "一个计划即可访问领先的 AI 模型",
-    "getDyadPro": "获取 Cloud AI",
+    "alreadyHavePro": "已有 API 密钥？添加它们",
+    "accessLeadingModels": "连接主流 AI 提供商",
+    "getDyadPro": "设置提供商",
     "upTo3xCheaper": "便宜高达 3 倍",
     "byUsingSmartContext": "通过使用智能上下文",
     "generateCode4x": "代码生成速度提升 4-10 倍",
-    "withTurboModels": "使用 Turbo 模型和 Turbo Edits"
+    "withTurboModels": "使用 Turbo 模型和 Turbo Edits",
+    "manageCloudAccess": "管理提供商"
   },
   "setup": {
     "buildNewApp": "构建新应用",
@@ -90,11 +90,11 @@
     "notSureWatchVideo": "不确定该怎么做？观看上方的入门视频",
     "setupGeminiApiKey": "设置 Google Gemini API 密钥",
     "setupOpenRouterApiKey": "设置 OpenRouter API 密钥",
-    "setupDyadPro": "设置 Cloud AI",
-    "accessAllModels": "一个计划即可访问所有 AI 模型",
+    "accessAllModels": "使用您自己的 AI 提供商密钥",
     "setupOtherProviders": "设置其他 AI 提供商",
     "openAiAnthropicMore": "OpenAI、Anthropic 等",
-    "freeModelsAvailable": "有免费模型可用"
+    "freeModelsAvailable": "有免费模型可用",
+    "setupCloudAccess": "设置提供商"
   },
   "customTheme": {
     "createTitle": "创建自定义主题",
@@ -330,8 +330,8 @@
       "addToChat": "添加到聊天",
       "closeAnnotator": "关闭标注器",
       "proFeatureTitle": "标注器功能",
-      "proFeatureDescription": "解锁截图标注功能，使用 Cloud AI 提升您的工作流程。",
-      "getDyadPro": "获取 Cloud AI"
+      "proFeatureDescription": "通过已配置的 AI 提供商解锁屏幕标注能力，并增强您的工作流程。",
+      "getDyadPro": "设置提供商"
     }
   },
   "integrations": {
@@ -539,7 +539,10 @@
       "branchNotFound": "未找到分支",
       "branchSelected": "已选择分支",
       "failedSetBranch": "设置分支失败：{{error}}",
-      "failedDisconnectProject": "断开应用的项目连接失败"
+      "failedDisconnectProject": "断开应用的项目连接失败",
+      "legacyCredentialsTitle": "需要重置 Supabase 旧版凭据",
+      "legacyCredentialsDescription": "此连接是从旧版 Electron 应用导入的，使用了 Tauri 版本无法解密的安全存储。请现在断开连接，并在 Supabase 原生认证回归后重新连接。",
+      "resetLegacyConnection": "重置旧版连接"
     },
     "neon": {
       "title": "Neon 集成",
@@ -551,7 +554,9 @@
       "connectedSuccess": "已成功连接到 Neon！",
       "disconnect": "断开与 Neon 的连接",
       "disconnected": "已成功断开与 Neon 的连接",
-      "failedDisconnect": "断开与 Neon 的连接失败"
+      "failedDisconnect": "断开与 Neon 的连接失败",
+      "legacyCredentialsTitle": "需要重置 Neon 旧版凭据",
+      "legacyCredentialsDescription": "此连接是从旧版 Electron 应用导入的，使用了 Tauri 版本无法解密的安全存储。请现在断开连接，并在 Neon 原生认证回归后重新连接。"
     }
   }
 }

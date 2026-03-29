@@ -9,7 +9,6 @@ mod wave_ad_domains;
 mod wave_ae_domains;
 mod wave_af_domains;
 mod wave_ag_domains;
-mod wave_ah_domains;
 mod wave_ai_domains;
 mod wave_aj_domains;
 mod wave_ak_domains;
@@ -68,7 +67,6 @@ pub fn run() {
             wave_ag_domains::get_proposal,
             wave_an_domains::approve_proposal,
             wave_ag_domains::reject_proposal,
-            wave_ah_domains::free_agent_quota_get_status,
             wave_ab_domains::get_env_vars,
             wave_ab_domains::get_app_env_vars,
             wave_ab_domains::set_app_env_vars,
@@ -115,6 +113,7 @@ pub fn run() {
             wave_r_domains::git_get_uncommitted_files,
             wave_t_domains::git_commit_changes,
             wave_g_domains::nodejs_status,
+            wave_g_domains::test_set_node_mock,
             wave_g_domains::select_node_folder,
             wave_g_domains::get_node_path,
             core_domains::get_user_settings,

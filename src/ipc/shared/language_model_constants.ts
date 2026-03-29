@@ -537,7 +537,7 @@ export const CLOUD_PROVIDERS: Record<
     gatewayPrefix: "openrouter/",
   },
   auto: {
-    displayName: "Cloud AI",
+    displayName: "Auto",
     websiteUrl: "https://example.invalid/cloud-ai",
     gatewayPrefix: "cloud/",
   },

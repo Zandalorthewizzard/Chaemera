@@ -174,7 +174,6 @@ export const TAURI_MIGRATION_CHANNEL_TO_COMMAND = {
   "clear-logs": "clear_logs",
   "open-external-url": "open_external_url",
   "leptos:render-route": "leptos_render_route",
-  "test:simulateQuotaTimeElapsed": "test_simulate_quota_time_elapsed",
   "test:set-node-mock": "test_set_node_mock",
 } as const;
 

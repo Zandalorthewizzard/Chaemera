@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useSettings } from "@/hooks/useSettings";
+import { hasLegacyNeonSecrets, isNeonConnected } from "@/lib/schemas";
 
 interface NeonDisconnectButtonProps {
   className?: string;
@@ -10,6 +11,8 @@ interface NeonDisconnectButtonProps {
 export function NeonDisconnectButton({ className }: NeonDisconnectButtonProps) {
   const { t } = useTranslation("home");
   const { updateSettings, settings } = useSettings();
+  const canDisconnect =
+    hasLegacyNeonSecrets(settings) || isNeonConnected(settings);
 
   const handleDisconnect = async () => {
     try {
@@ -23,7 +26,7 @@ export function NeonDisconnectButton({ className }: NeonDisconnectButtonProps) {
     }
   };
 
-  if (!settings?.neon?.accessToken) {
+  if (!canDisconnect) {
     return null;
   }
 

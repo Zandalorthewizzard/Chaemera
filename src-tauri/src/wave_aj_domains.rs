@@ -128,7 +128,6 @@ struct MessageRecord {
     source_commit_hash: Option<String>,
     commit_hash: Option<String>,
     request_id: Option<String>,
-    using_free_agent_mode_quota: Option<bool>,
 }
 
 #[derive(Debug)]
@@ -241,7 +240,6 @@ fn sanitize_settings_for_debug(settings: &Value) -> Value {
         "selectedChatMode": get_settings_string(settings, "selectedChatMode"),
         "defaultChatMode": get_settings_string(settings, "defaultChatMode"),
         "autoApproveChanges": get_settings_bool(settings, "autoApproveChanges"),
-        "enableDyadPro": get_settings_bool(settings, "enableDyadPro"),
         "thinkingBudget": get_settings_string(settings, "thinkingBudget"),
         "maxChatTurnsInContext": get_settings_number(settings, "maxChatTurnsInContext"),
         "enableAutoFixProblems": get_settings_bool(settings, "enableAutoFixProblems"),
@@ -254,11 +252,11 @@ fn sanitize_settings_for_debug(settings: &Value) -> Value {
         "runtimeMode2": get_settings_string(settings, "runtimeMode2"),
         "zoomLevel": get_settings_string(settings, "zoomLevel"),
         "previewDeviceMode": get_settings_string(settings, "previewDeviceMode"),
-        "enableProLazyEditsMode": get_settings_bool(settings, "enableProLazyEditsMode"),
-        "proLazyEditsMode": get_settings_string(settings, "proLazyEditsMode"),
-        "enableProSmartFilesContextMode": get_settings_bool(settings, "enableProSmartFilesContextMode"),
-        "enableProWebSearch": get_settings_bool(settings, "enableProWebSearch"),
-        "proSmartContextOption": get_settings_string(settings, "proSmartContextOption"),
+        "enableTurboEditsV2": get_settings_bool(settings, "enableTurboEditsV2"),
+        "turboEditsMode": get_settings_string(settings, "turboEditsMode"),
+        "enableSmartFilesContextMode": get_settings_bool(settings, "enableSmartFilesContextMode"),
+        "enableWebSearch": get_settings_bool(settings, "enableWebSearch"),
+        "smartContextOption": get_settings_string(settings, "smartContextOption"),
         "enableSupabaseWriteSqlMigration": get_settings_bool(settings, "enableSupabaseWriteSqlMigration"),
         "agentToolConsents": settings.get("agentToolConsents").cloned(),
         "experiments": settings
@@ -601,7 +599,7 @@ fn query_messages(app: &AppHandle, chat_id: i64) -> Result<Vec<MessageRecord>, S
     let mut statement = connection
         .prepare(
             "SELECT id, role, content, created_at, ai_messages_json, model, max_tokens_used,
-                    approval_state, source_commit_hash, commit_hash, request_id, using_free_agent_mode_quota
+                    approval_state, source_commit_hash, commit_hash, request_id
              FROM messages
              WHERE chat_id = ?1
              ORDER BY created_at ASC, id ASC",
@@ -610,9 +608,6 @@ fn query_messages(app: &AppHandle, chat_id: i64) -> Result<Vec<MessageRecord>, S
 
     let rows = statement
         .query_map(params![chat_id], |row| {
-            let using_free_agent_mode_quota =
-                row.get::<_, Option<i64>>(11)?.map(|value| value != 0);
-
             Ok(MessageRecord {
                 id: row.get(0)?,
                 role: row.get(1)?,
@@ -625,7 +620,6 @@ fn query_messages(app: &AppHandle, chat_id: i64) -> Result<Vec<MessageRecord>, S
                 source_commit_hash: row.get(8)?,
                 commit_hash: row.get(9)?,
                 request_id: row.get(10)?,
-                using_free_agent_mode_quota,
             })
         })
         .map_err(|error| format!("failed to execute chat message query: {error}"))?;
@@ -756,13 +750,9 @@ pub fn get_session_debug_bundle(app: AppHandle, chat_id: i64) -> Result<Value, S
     let resolved_app_path = resolve_workspace_app_path(&app_record.path)?;
     let chat_context = parse_chat_context(app_record.chat_context_json.as_deref());
     let smart_context_enabled = settings
-        .get("enableDyadPro")
+        .get("enableSmartFilesContextMode")
         .and_then(Value::as_bool)
-        .unwrap_or(false)
-        && settings
-            .get("enableProSmartFilesContextMode")
-            .and_then(Value::as_bool)
-            .unwrap_or(false);
+        .unwrap_or(false);
 
     let codebase = if resolved_app_path.exists() {
         format_codebase(&collect_codebase_files(
@@ -837,7 +827,6 @@ pub fn get_session_debug_bundle(app: AppHandle, chat_id: i64) -> Result<Value, S
                         "sourceCommitHash": message.source_commit_hash,
                         "commitHash": message.commit_hash,
                         "requestId": message.request_id,
-                        "usingFreeAgentModeQuota": message.using_free_agent_mode_quota,
                     })
                 })
                 .collect::<Vec<_>>(),

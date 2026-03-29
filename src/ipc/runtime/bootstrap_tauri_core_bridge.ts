@@ -401,7 +401,6 @@ export function buildTauriInvokeArgs(
     case "cleanup-theme-images":
     case "apply-visual-editing-changes":
     case "analyze-component":
-    case "test:simulateQuotaTimeElapsed":
     case "leptos:render-route":
     case "add-log":
     case "clear-logs":
@@ -532,7 +531,6 @@ export function canInvokeViaTauri(channel: string, payload: unknown): boolean {
     case "chat:stream":
     case "chat:count-tokens":
     case "chat:cancel":
-    case "test:simulateQuotaTimeElapsed":
     case "test:set-node-mock":
     case "stop-app":
     case "respond-to-app-input":

@@ -10,6 +10,8 @@ import { useDeepLink } from "@/contexts/DeepLinkContext";
 import { ExternalLink } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { NeonDisconnectButton } from "@/components/NeonDisconnectButton";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { isNeonConnected, hasLegacyNeonSecrets } from "@/lib/schemas";
 
 export function NeonConnector() {
   const { t } = useTranslation("home");
@@ -17,6 +19,8 @@ export function NeonConnector() {
   const { lastDeepLink, clearLastDeepLink } = useDeepLink();
   const { isDarkMode } = useTheme();
   const navigate = useNavigate();
+  const hasLegacyCredentials = hasLegacyNeonSecrets(settings);
+  const isConnected = isNeonConnected(settings);
 
   useEffect(() => {
     const handleDeepLink = async () => {
@@ -29,7 +33,28 @@ export function NeonConnector() {
     handleDeepLink();
   }, [lastDeepLink?.timestamp]);
 
-  if (settings?.neon?.accessToken) {
+  if (hasLegacyCredentials) {
+    return (
+      <div className="flex flex-col space-y-4 p-4 border bg-white dark:bg-gray-800 max-w-100 rounded-md">
+        <div className="flex flex-col items-start justify-between gap-3">
+          <h2 className="text-lg font-medium">
+            {t("integrations.neon.database")}
+          </h2>
+          <Alert variant="destructive">
+            <AlertTitle>
+              {t("integrations.neon.legacyCredentialsTitle")}
+            </AlertTitle>
+            <AlertDescription>
+              {t("integrations.neon.legacyCredentialsDescription")}
+            </AlertDescription>
+          </Alert>
+          <NeonDisconnectButton />
+        </div>
+      </div>
+    );
+  }
+
+  if (isConnected) {
     return (
       <div className="flex flex-col space-y-4 p-4 border bg-white dark:bg-gray-800 max-w-100 rounded-md">
         <div className="flex flex-col items-start justify-between">

@@ -48,7 +48,7 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { useTheme } from "@/contexts/ThemeContext";
-import { isSupabaseConnected } from "@/lib/schemas";
+import { hasLegacySupabaseSecrets, isSupabaseConnected } from "@/lib/schemas";
 
 export function SupabaseConnector({ appId }: { appId: number }) {
   const { t } = useTranslation(["home", "common"]);
@@ -59,6 +59,7 @@ export function SupabaseConnector({ appId }: { appId: number }) {
   const navigate = useNavigate();
 
   // Check if there are any connected organizations
+  const hasLegacyCredentials = hasLegacySupabaseSecrets(settings);
   const isConnected = isSupabaseConnected(settings);
 
   const branchesProjectId =
@@ -116,7 +117,7 @@ export function SupabaseConnector({ appId }: { appId: number }) {
       await refreshApp();
     } catch (error) {
       toast.error(
-        t("integrations.supabase.failedConnectProject", {
+        t("integrations.supabase.failedDisconnect", {
           error: String(error),
         }),
       );
@@ -175,6 +176,50 @@ export function SupabaseConnector({ appId }: { appId: number }) {
       toast.error(t("integrations.supabase.failedDisconnect"));
     }
   };
+
+  const handleResetLegacyConnection = async () => {
+    try {
+      await ipc.settings.setUserSettings({
+        supabase: undefined,
+        enableSupabaseWriteSqlMigration: false,
+      });
+      toast.success(t("integrations.supabase.disconnectedAll"));
+      await refreshSettings();
+      await refetchOrganizations();
+      await refetchProjects();
+      await refreshApp();
+    } catch (error) {
+      toast.error(
+        t("integrations.supabase.failedConnectProject", {
+          error: String(error),
+        }),
+      );
+    }
+  };
+
+  if (hasLegacyCredentials) {
+    return (
+      <Card className="mt-1">
+        <CardHeader>
+          <CardTitle>{t("integrations.supabase.title")}</CardTitle>
+          <CardDescription>
+            {t("integrations.supabase.legacyCredentialsDescription")}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <Alert variant="destructive">
+            <Info className="h-4 w-4" />
+            <AlertDescription>
+              {t("integrations.supabase.legacyCredentialsTitle")}
+            </AlertDescription>
+          </Alert>
+          <Button variant="destructive" onClick={handleResetLegacyConnection}>
+            {t("integrations.supabase.resetLegacyConnection")}
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
 
   // Connected and has project set
   if (isConnected && app?.supabaseProjectName) {

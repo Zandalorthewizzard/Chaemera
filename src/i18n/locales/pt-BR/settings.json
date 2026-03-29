@@ -78,12 +78,12 @@
     "errorLoadingSettings": "Erro ao Carregar Configurações",
     "couldNotLoadProvider": "Não foi possível carregar os dados do provedor: {{message}}",
     "couldNotLoadSettings": "Não foi possível carregar os dados de configuração: {{message}}",
-    "enableDyadPro": "Ativar Cloud AI",
-    "toggleDyadPro": "Alternar para ativar o Cloud AI",
     "apiKeyEmpty": "A Chave de API não pode estar vazia.",
-    "errorTogglingPro": "Erro ao alternar Cloud AI: {{error}}",
     "failedSaveApiKey": "Falha ao salvar a chave de API.",
-    "failedDeleteApiKey": "Falha ao excluir a chave de API."
+    "failedDeleteApiKey": "Falha ao excluir a chave de API.",
+    "enableCloudAccess": "Ativar acesso ao provedor",
+    "toggleCloudAccess": "Alternar acesso ao provedor",
+    "errorTogglingCloudAccess": "Erro ao alternar acesso ao provedor: {{error}}"
   },
   "telemetry": {
     "title": "Telemetria",
@@ -255,6 +255,6 @@
     "updateProvider": "Atualizar Provedor",
     "failedCreate": "Falha ao criar provedor personalizado"
   },
-  "manageDyadPro": "Gerenciar Assinatura Cloud AI",
-  "setupDyadPro": "Configurar Assinatura Cloud AI"
+  "manageCloudAccess": "Gerenciar acesso ao provedor",
+  "setupCloudAccess": "Configurar acesso ao provedor"
 }

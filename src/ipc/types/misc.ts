@@ -86,8 +86,6 @@ const DebugSettingsSchema = z.object({
   defaultChatMode: z.string().nullable(),
   /** Whether changes are auto-approved without review */
   autoApproveChanges: z.boolean().nullable(),
-  /** Whether cloud AI access is enabled */
-  enableCloudAI: z.boolean().nullable(),
   /** Thinking budget level: "low" | "medium" | "high" */
   thinkingBudget: z.string().nullable(),
   /** Max chat turns kept in context window */

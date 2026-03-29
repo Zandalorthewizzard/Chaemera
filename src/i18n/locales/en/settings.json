@@ -78,12 +78,12 @@
     "errorLoadingSettings": "Error Loading Settings",
     "couldNotLoadProvider": "Could not load provider data: {{message}}",
     "couldNotLoadSettings": "Could not load configuration data: {{message}}",
-    "enableDyadPro": "Enable Cloud AI",
-    "toggleDyadPro": "Toggle to enable Cloud AI",
     "apiKeyEmpty": "API Key cannot be empty.",
-    "errorTogglingPro": "Error toggling Cloud AI: {{error}}",
     "failedSaveApiKey": "Failed to save API key.",
-    "failedDeleteApiKey": "Failed to delete API key."
+    "failedDeleteApiKey": "Failed to delete API key.",
+    "enableCloudAccess": "Enable provider access",
+    "toggleCloudAccess": "Toggle provider access",
+    "errorTogglingCloudAccess": "Error toggling provider access: {{error}}"
   },
   "telemetry": {
     "title": "Telemetry",
@@ -262,6 +262,6 @@
     "updateProvider": "Update Provider",
     "failedCreate": "Failed to create custom provider"
   },
-  "manageDyadPro": "Manage Cloud AI Subscription",
-  "setupDyadPro": "Setup Cloud AI Subscription"
+  "manageCloudAccess": "Manage provider access",
+  "setupCloudAccess": "Set up provider access"
 }

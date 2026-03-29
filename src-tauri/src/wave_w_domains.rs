@@ -345,15 +345,11 @@ fn resolve_theme_prompt(app: &AppHandle, theme_id: Option<&str>) -> Result<Strin
 
 fn is_turbo_edits_v2_enabled(settings: &Value) -> bool {
     settings
-        .get("enableDyadPro")
+        .get("enableTurboEditsV2")
         .and_then(Value::as_bool)
         .unwrap_or(false)
         && settings
-            .get("enableProLazyEditsMode")
-            .and_then(Value::as_bool)
-            .unwrap_or(false)
-        && settings
-            .get("proLazyEditsMode")
+            .get("turboEditsMode")
             .and_then(Value::as_str)
             .is_some_and(|mode| mode == "v2")
 }
@@ -617,13 +613,9 @@ pub fn chat_count_tokens(app: AppHandle, request: TokenCountRequest) -> Result<V
     let app_path = resolve_workspace_app_path(&chat.app_path)?;
     let chat_context = parse_chat_context(chat.chat_context_json.as_deref());
     let smart_context_enabled = settings
-        .get("enableDyadPro")
+        .get("enableSmartFilesContextMode")
         .and_then(Value::as_bool)
-        .unwrap_or(false)
-        && settings
-            .get("enableProSmartFilesContextMode")
-            .and_then(Value::as_bool)
-            .unwrap_or(false);
+        .unwrap_or(false);
 
     let message_history = messages
         .iter()
