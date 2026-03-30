@@ -20,6 +20,7 @@ related:
     [
       ../07-codex-logos-phase/2026-03-30-legacy-chat-runtime-audit-conclusions-and-codex-cut-line.md,
     ],
+    [../07-codex-logos-phase/2026-03-30-release-line-mvp-roadmap.md],
     [../07-logos-phase/README.md],
     [../../notes/README.md],
   ]
@@ -51,6 +52,7 @@ outline: []
 ## Current Canonical Context
 
 - [[../07-codex-logos-phase/2026-03-30-legacy-chat-runtime-audit-conclusions-and-codex-cut-line.md]]
+- [[../07-codex-logos-phase/2026-03-30-release-line-mvp-roadmap.md]]
 - [[../07-codex-logos-phase/2026-03-30-legacy-xml-release-mode-hardening-and-rust-reliability-plan.md]]
 - [[../07-codex-logos-phase/2026-03-30-dual-runtime-mode-shared-host-and-switch-boundary.md]]
 
@@ -70,6 +72,7 @@ outline: []
 - [[../03-templates/strict-spec.template.md]]
 - [[../07-codex-logos-phase/README.md]]
 - [[../07-codex-logos-phase/2026-03-30-legacy-chat-runtime-audit-conclusions-and-codex-cut-line.md]]
+- [[../07-codex-logos-phase/2026-03-30-release-line-mvp-roadmap.md]]
 - [[../07-logos-phase/README.md]]
 - [[../../notes/README.md]]
 - [[inventory.json]]

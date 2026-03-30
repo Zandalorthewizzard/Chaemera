@@ -123,6 +123,14 @@
       "source_of_truth": "code-audit"
     },
     {
+      "id": "chaemera-spec-release-line-mvp-roadmap-2026-03-30",
+      "path": "07-codex-logos-phase/2026-03-30-release-line-mvp-roadmap.md",
+      "type": "spec",
+      "focus": ["mvp roadmap", "release execution", "mcp phase"],
+      "status": "active",
+      "source_of_truth": "governance"
+    },
+    {
       "id": "chaemera-spec-dual-runtime-mode-shared-host-and-switch-boundary-2026-03-30",
       "path": "07-codex-logos-phase/2026-03-30-dual-runtime-mode-shared-host-and-switch-boundary.md",
       "type": "spec",

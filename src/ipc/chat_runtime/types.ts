@@ -1,3 +1,4 @@
+import type { UserSettings } from "@/lib/schemas";
 import type { ModelMessage, ToolSet } from "ai";
 
 import type {
@@ -38,6 +39,12 @@ export interface McpToolConsentRequest {
 export interface ChatRuntimeContext {
   /** The chat stream parameters */
   params: ChatStreamParams;
+
+  /** Host-authored runtime environment for the active session when available */
+  runtimeEnvironment?: {
+    appPath?: string;
+    settingsSnapshot?: UserSettings;
+  };
 
   /** Called when the stream starts */
   onStreamStart: (chatId: number) => void;

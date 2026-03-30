@@ -1,5 +1,7 @@
+use crate::{core_domains, sqlite_support};
+use rusqlite::{params, OptionalExtension};
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Value};
+use serde_json::{json, Map, Value};
 use std::collections::{HashMap, HashSet};
 use std::io::{BufRead, BufReader, Write};
 use std::path::{Path, PathBuf};
@@ -58,7 +60,11 @@ pub struct McpToolConsentResponse {
 }
 
 #[derive(Debug, Clone, Deserialize)]
-#[serde(tag = "type", rename_all = "snake_case")]
+#[serde(
+    tag = "type",
+    rename_all = "snake_case",
+    rename_all_fields = "camelCase"
+)]
 enum WorkerOutboundMessage {
     StreamStart {
         chat_id: i64,
@@ -102,7 +108,11 @@ enum WorkerOutboundMessage {
 }
 
 #[derive(Debug, Clone, Serialize)]
-#[serde(tag = "type", rename_all = "snake_case")]
+#[serde(
+    tag = "type",
+    rename_all = "snake_case",
+    rename_all_fields = "camelCase"
+)]
 enum WorkerInboundMessage {
     Start {
         chat_id: i64,
@@ -135,6 +145,9 @@ struct ChatWorkerSessionState {
 
 static ACTIVE_CHAT_WORKERS: OnceLock<Mutex<HashMap<i64, ChatWorkerSessionState>>> = OnceLock::new();
 static PENDING_CONSENT_REQUESTS: OnceLock<Mutex<HashMap<String, i64>>> = OnceLock::new();
+const TAURI_APP_DATA_DIR_ENV: &str = "CHAEMERA_TAURI_APP_DATA_DIR";
+const TAURI_USER_DATA_DIR_ENV: &str = "CHAEMERA_TAURI_USER_DATA_DIR";
+const TAURI_APPS_DIR_ENV: &str = "CHAEMERA_TAURI_CHAEMERA_APPS_DIR";
 
 fn active_chat_workers() -> &'static Mutex<HashMap<i64, ChatWorkerSessionState>> {
     ACTIVE_CHAT_WORKERS.get_or_init(|| Mutex::new(HashMap::new()))
@@ -149,6 +162,31 @@ fn workspace_root() -> PathBuf {
         .parent()
         .unwrap_or(Path::new(env!("CARGO_MANIFEST_DIR")))
         .to_path_buf()
+}
+
+fn worker_app_data_dir(app: &AppHandle) -> Result<PathBuf, String> {
+    let settings_path = core_domains::settings_file_path(app)?;
+    settings_path
+        .parent()
+        .map(Path::to_path_buf)
+        .ok_or_else(|| "failed to resolve worker app data dir".to_string())
+}
+
+fn resolve_chat_app_path(app: &AppHandle, chat_id: i64) -> Result<String, String> {
+    let connection = sqlite_support::open_db(app)?;
+    let raw_path = connection
+        .query_row(
+            "SELECT apps.path FROM chats INNER JOIN apps ON apps.id = chats.app_id WHERE chats.id = ?1",
+            params![chat_id],
+            |row| row.get::<_, String>(0),
+        )
+        .optional()
+        .map_err(|error| format!("failed to query chat app path: {error}"))?
+        .ok_or_else(|| format!("Chat {chat_id} is missing an associated app path"))?;
+
+    Ok(sqlite_support::resolve_workspace_app_path(&raw_path)?
+        .to_string_lossy()
+        .to_string())
 }
 
 fn resolve_runtime_asset(app: &AppHandle, relative_path: &str) -> Result<PathBuf, String> {
@@ -173,8 +211,8 @@ fn send_worker_message(
     stdin: &Arc<Mutex<ChildStdin>>,
     msg: &WorkerInboundMessage,
 ) -> Result<(), String> {
-    let serialized =
-        serde_json::to_vec(msg).map_err(|error| format!("failed to serialize worker message: {error}"))?;
+    let serialized = serde_json::to_vec(msg)
+        .map_err(|error| format!("failed to serialize worker message: {error}"))?;
     let mut locked = stdin
         .lock()
         .map_err(|_| "worker stdin mutex poisoned".to_string())?;
@@ -200,6 +238,24 @@ fn remove_pending_request_ids(request_ids: &[String]) {
             pending.remove(request_id);
         }
     }
+}
+
+fn try_mark_session_terminated(chat_id: i64) -> bool {
+    let terminated = {
+        let guard = match active_chat_workers().lock() {
+            Ok(guard) => guard,
+            Err(_) => return false,
+        };
+        guard
+            .get(&chat_id)
+            .map(|session| session.terminated.clone())
+    };
+
+    terminated.is_some_and(|terminated| {
+        terminated
+            .compare_exchange(false, true, Ordering::SeqCst, Ordering::SeqCst)
+            .is_ok()
+    })
 }
 
 fn cleanup_session(chat_id: i64) {
@@ -236,6 +292,10 @@ fn emit_stream_start(app: &AppHandle, chat_id: i64) {
     let _ = app.emit("chat:stream:start", json!({ "chatId": chat_id }));
 }
 
+fn emit_stream_end(app: &AppHandle, chat_id: i64) {
+    let _ = app.emit("chat:stream:end", json!({ "chatId": chat_id }));
+}
+
 fn emit_chunk(app: &AppHandle, chat_id: i64, messages: Value) {
     let _ = app.emit(
         "chat:response:chunk",
@@ -257,20 +317,29 @@ fn emit_end(
     chat_summary: Option<String>,
     was_cancelled: Option<bool>,
 ) {
-    let _ = app.emit(
-        "chat:response:end",
-        json!({
-            "chatId": chat_id,
-            "updatedFiles": updated_files,
-            "extraFiles": extra_files,
-            "extraFilesError": extra_files_error,
-            "totalTokens": total_tokens,
-            "contextWindow": context_window,
-            "chatSummary": chat_summary,
-            "wasCancelled": was_cancelled,
-        }),
-    );
-    let _ = app.emit("chat:stream:end", json!({ "chatId": chat_id }));
+    let mut payload = Map::new();
+    payload.insert("chatId".to_string(), json!(chat_id));
+    payload.insert("updatedFiles".to_string(), json!(updated_files));
+    if let Some(extra_files) = extra_files {
+        payload.insert("extraFiles".to_string(), json!(extra_files));
+    }
+    if let Some(extra_files_error) = extra_files_error {
+        payload.insert("extraFilesError".to_string(), json!(extra_files_error));
+    }
+    if let Some(total_tokens) = total_tokens {
+        payload.insert("totalTokens".to_string(), json!(total_tokens));
+    }
+    if let Some(context_window) = context_window {
+        payload.insert("contextWindow".to_string(), json!(context_window));
+    }
+    if let Some(chat_summary) = chat_summary {
+        payload.insert("chatSummary".to_string(), json!(chat_summary));
+    }
+    if let Some(was_cancelled) = was_cancelled {
+        payload.insert("wasCancelled".to_string(), json!(was_cancelled));
+    }
+
+    let _ = app.emit("chat:response:end", Value::Object(payload));
 }
 
 fn emit_error(app: &AppHandle, chat_id: i64, error: String) {
@@ -281,6 +350,46 @@ fn emit_error(app: &AppHandle, chat_id: i64, error: String) {
             "error": error,
         }),
     );
+}
+
+fn finalize_with_end(
+    app: &AppHandle,
+    chat_id: i64,
+    updated_files: bool,
+    extra_files: Option<Vec<String>>,
+    extra_files_error: Option<String>,
+    total_tokens: Option<i64>,
+    context_window: Option<i64>,
+    chat_summary: Option<String>,
+    was_cancelled: Option<bool>,
+) {
+    if !try_mark_session_terminated(chat_id) {
+        return;
+    }
+
+    emit_end(
+        app,
+        chat_id,
+        updated_files,
+        extra_files,
+        extra_files_error,
+        total_tokens,
+        context_window,
+        chat_summary,
+        was_cancelled,
+    );
+    emit_stream_end(app, chat_id);
+    cleanup_session(chat_id);
+}
+
+fn finalize_with_error(app: &AppHandle, chat_id: i64, error: String) {
+    if !try_mark_session_terminated(chat_id) {
+        return;
+    }
+
+    emit_error(app, chat_id, error);
+    emit_stream_end(app, chat_id);
+    cleanup_session(chat_id);
 }
 
 fn emit_agent_tool_consent_request(
@@ -327,7 +436,6 @@ fn emit_mcp_tool_consent_request(
     );
 }
 
-
 fn spawn_stdout_reader(app: AppHandle, chat_id: i64, stdout: impl std::io::Read + Send + 'static) {
     thread::spawn(move || {
         let reader = BufReader::new(stdout);
@@ -344,13 +452,11 @@ fn spawn_stdout_reader(app: AppHandle, chat_id: i64, stdout: impl std::io::Read 
             let msg: WorkerOutboundMessage = match serde_json::from_str(&line) {
                 Ok(msg) => msg,
                 Err(error) => {
-                    emit_error(
+                    finalize_with_error(
                         &app,
                         chat_id,
                         format!("Failed to parse chat worker output: {error}"),
                     );
-                    emit_end(&app, chat_id, false, None, None, None, None, None, None);
-                    cleanup_session(chat_id);
                     break;
                 }
             };
@@ -372,7 +478,7 @@ fn spawn_stdout_reader(app: AppHandle, chat_id: i64, stdout: impl std::io::Read 
                     chat_summary,
                     was_cancelled,
                 } => {
-                    emit_end(
+                    finalize_with_end(
                         &app,
                         chat_id,
                         updated_files,
@@ -383,13 +489,10 @@ fn spawn_stdout_reader(app: AppHandle, chat_id: i64, stdout: impl std::io::Read 
                         chat_summary,
                         was_cancelled,
                     );
-                    cleanup_session(chat_id);
                     break;
                 }
                 WorkerOutboundMessage::Error { chat_id, error } => {
-                    emit_error(&app, chat_id, error);
-                    emit_end(&app, chat_id, false, None, None, None, None, None, None);
-                    cleanup_session(chat_id);
+                    finalize_with_error(&app, chat_id, error);
                     break;
                 }
                 WorkerOutboundMessage::AgentToolConsentRequest {
@@ -482,7 +585,7 @@ fn spawn_exit_monitor(app: AppHandle, chat_id: i64, child: Arc<Mutex<Child>>) {
                 Ok(Some(status)) => Some(status.code().unwrap_or_default()),
                 Ok(None) => None,
                 Err(error) => {
-                    emit_error(
+                    finalize_with_error(
                         &app,
                         chat_id,
                         format!("Chat worker exit monitor failed: {error}"),
@@ -503,14 +606,15 @@ fn spawn_exit_monitor(app: AppHandle, chat_id: i64, child: Arc<Mutex<Child>>) {
 
             if should_emit_terminal {
                 if code != 0 {
-                    emit_error(
+                    finalize_with_error(
                         &app,
                         chat_id,
                         format!("Chat worker exited with code {code}"),
                     );
-                    emit_end(&app, chat_id, false, None, None, None, None, None, None);
+                } else if try_mark_session_terminated(chat_id) {
+                    emit_stream_end(&app, chat_id);
+                    cleanup_session(chat_id);
                 }
-                cleanup_session(chat_id);
             }
             break;
         }
@@ -522,16 +626,27 @@ fn start_worker_session(app: &AppHandle, request: &ChatStreamRequest) -> Result<
         .lock()
         .map_err(|_| "chat worker session mutex poisoned".to_string())?;
     if active.contains_key(&request.chat_id) {
-        return Err(format!("Chat worker session already active for chat {}", request.chat_id));
+        return Err(format!(
+            "Chat worker session already active for chat {}",
+            request.chat_id
+        ));
     }
     drop(active);
 
     let runner_path = resolve_runtime_asset(app, "worker/chat_worker_runner.js")?;
     let bundle_path = resolve_runtime_asset(app, ".vite/build/chat_worker.js")?;
+    let app_path = resolve_chat_app_path(app, request.chat_id)?;
+    let settings_snapshot = core_domains::read_settings(app)?;
+    let worker_user_data_dir = sqlite_support::user_data_dir(app)?;
+    let worker_app_data_dir = worker_app_data_dir(app)?;
+    let worker_apps_dir = sqlite_support::dyad_apps_base_directory()?;
 
     let mut child = Command::new("node")
         .arg(&runner_path)
         .env("CHAT_WORKER_BUNDLE", &bundle_path)
+        .env(TAURI_USER_DATA_DIR_ENV, &worker_user_data_dir)
+        .env(TAURI_APP_DATA_DIR_ENV, &worker_app_data_dir)
+        .env(TAURI_APPS_DIR_ENV, &worker_apps_dir)
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
@@ -578,19 +693,15 @@ fn start_worker_session(app: &AppHandle, request: &ChatStreamRequest) -> Result<
         redo: request.redo.unwrap_or(false),
         attachments: request.attachments.clone().unwrap_or_default(),
         selected_components: request.selected_components.clone().unwrap_or_default(),
-        app_path: String::new(),
-        settings_snapshot: json!({}),
+        app_path,
+        settings_snapshot,
     };
     send_worker_message(&stdin, &start_message)?;
 
     Ok(())
 }
 
-fn respond_to_session(
-    request_id: String,
-    approved: bool,
-    is_mcp: bool,
-) -> Result<(), String> {
+fn respond_to_session(request_id: String, approved: bool, is_mcp: bool) -> Result<(), String> {
     let chat_id = {
         let mut guard = pending_consent_requests()
             .lock()
@@ -639,7 +750,7 @@ fn respond_to_session(
 pub fn chat_stream(app: AppHandle, request: ChatStreamRequest) -> Result<(), String> {
     start_worker_session(&app, &request).or_else(|error| {
         emit_error(&app, request.chat_id, error);
-        emit_end(&app, request.chat_id, false, None, None, None, None, None, None);
+        emit_stream_end(&app, request.chat_id);
         Ok(())
     })
 }

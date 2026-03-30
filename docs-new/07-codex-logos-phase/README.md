@@ -11,6 +11,7 @@ related:
     [2026-03-29-legacy-chat-runtime-capability-audit-matrix.md],
     [2026-03-29-chat-ui-post-xml-surface-inventory.md],
     [2026-03-30-legacy-chat-runtime-audit-conclusions-and-codex-cut-line.md],
+    [2026-03-30-release-line-mvp-roadmap.md],
     [2026-03-30-dual-runtime-mode-shared-host-and-switch-boundary.md],
     [2026-03-30-legacy-xml-release-mode-hardening-and-rust-reliability-plan.md],
     [
@@ -41,24 +42,27 @@ It exists to keep three things cleanly separated:
 1. [[2026-03-29-codex-logos-daemon-first-roadmap.md]]
 2. [[2026-03-29-legacy-chat-runtime-capability-audit-matrix.md]]
 3. [[2026-03-30-legacy-chat-runtime-audit-conclusions-and-codex-cut-line.md]]
-4. [[2026-03-30-dual-runtime-mode-shared-host-and-switch-boundary.md]]
-5. [[2026-03-30-legacy-xml-release-mode-hardening-and-rust-reliability-plan.md]]
-6. [[2026-03-29-chat-ui-post-xml-surface-inventory.md]]
+4. [[2026-03-30-release-line-mvp-roadmap.md]]
+5. [[2026-03-30-dual-runtime-mode-shared-host-and-switch-boundary.md]]
+6. [[2026-03-30-legacy-xml-release-mode-hardening-and-rust-reliability-plan.md]]
+7. [[2026-03-29-chat-ui-post-xml-surface-inventory.md]]
 
 ## Purpose
 
 1. Lock the new architectural direction and roadmap.
 2. Record the capability-audit matrix needed before daemon integration work starts.
 3. Record the audit conclusions and Codex cut line after the first real Tauri runtime pass.
-4. Define the shared-host plus mode-switch boundary for `Legacy XML` and `Codex/Logos`.
-5. Define the release-line hardening plan for the legacy XML mode.
-6. Record the chat UI reuse/orphan/delete inventory after the XML parser layer is removed.
+4. Define the release-line MVP execution sequence through packaged Tauri, legacy XML stabilization, and final `MCP` completion.
+5. Define the shared-host plus mode-switch boundary for `Legacy XML` and `Codex/Logos`.
+6. Define the release-line hardening plan for the legacy XML mode.
+7. Record the chat UI reuse/orphan/delete inventory after the XML parser layer is removed.
 
 ## Links
 
 - [[2026-03-29-codex-logos-daemon-first-roadmap.md]]
 - [[2026-03-29-legacy-chat-runtime-capability-audit-matrix.md]]
 - [[2026-03-30-legacy-chat-runtime-audit-conclusions-and-codex-cut-line.md]]
+- [[2026-03-30-release-line-mvp-roadmap.md]]
 - [[2026-03-30-dual-runtime-mode-shared-host-and-switch-boundary.md]]
 - [[2026-03-30-legacy-xml-release-mode-hardening-and-rust-reliability-plan.md]]
 - [[2026-03-29-chat-ui-post-xml-surface-inventory.md]]

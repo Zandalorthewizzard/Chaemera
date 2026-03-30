@@ -1,5 +1,7 @@
 import * as crypto from "crypto";
 
+import { type UserSettings, UserSettingsSchema } from "@/lib/schemas";
+import { buildMcpToolSet } from "./mcp_tools";
 import type { ChatRuntimeContext } from "./types";
 import type { WorkerOutboundMessage, WorkerStartMessage } from "./types";
 
@@ -10,6 +12,17 @@ interface PendingConsent {
 interface ActiveSession {
   abortController: AbortController;
   consentPromises: Map<string, PendingConsent>;
+}
+
+function parseSettingsSnapshot(
+  settingsSnapshot: Record<string, unknown>,
+): UserSettings | undefined {
+  const parsed = UserSettingsSchema.safeParse(settingsSnapshot);
+  if (!parsed.success) {
+    return undefined;
+  }
+
+  return parsed.data;
 }
 
 export class ChatWorkerSessionManager {
@@ -33,9 +46,6 @@ export class ChatWorkerSessionManager {
     abortController: AbortController,
     consentMap: Map<string, PendingConsent>,
   ): ChatRuntimeContext {
-    // TODO(Phase 3): msg.appPath and msg.settingsSnapshot are carried here for
-    // when the Rust host provides the runtime environment. Currently
-    // runChatStreamSession calls readSettings()/getAppPath() internally.
     return {
       params: {
         chatId: msg.chatId,
@@ -43,6 +53,10 @@ export class ChatWorkerSessionManager {
         redo: msg.redo,
         attachments: msg.attachments,
         selectedComponents: msg.selectedComponents,
+      },
+      runtimeEnvironment: {
+        appPath: msg.appPath || undefined,
+        settingsSnapshot: parseSettingsSnapshot(msg.settingsSnapshot),
       },
       abortSignal: abortController.signal,
       cloudRequestId: undefined,
@@ -100,6 +114,29 @@ export class ChatWorkerSessionManager {
       recordLog: (level, message) => {
         this.log(level, message);
       },
+      getMcpTools: () =>
+        buildMcpToolSet({
+          requestConsent: (request) =>
+            new Promise<boolean>((resolve) => {
+              const requestId = crypto.randomUUID();
+              this.send({
+                type: "mcp_tool_consent_request",
+                requestId,
+                serverId: request.serverId,
+                serverName: request.serverName,
+                toolName: request.toolName,
+                toolDescription: request.toolDescription ?? "",
+                inputPreview: request.inputPreview ?? "",
+              });
+              consentMap.set(requestId, { resolve });
+            }),
+          recordLog: (level, message, error) => {
+            const suffix = error
+              ? `: ${error instanceof Error ? error.message : String(error)}`
+              : "";
+            this.log(level, `${message}${suffix}`);
+          },
+        }),
     };
   }
 

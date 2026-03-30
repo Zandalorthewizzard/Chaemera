@@ -14,6 +14,18 @@ outline: []
 
 # LOGOS Documentation Progress
 
+## 2026-03-30 Release-Line MVP Roadmap
+
+1. Added `07-codex-logos-phase/2026-03-30-release-line-mvp-roadmap.md` as the new execution roadmap from the completed runtime audit to the release-line MVP cut.
+2. Locked the current MVP definition in docs as:
+
+- ship-ready packaged Tauri,
+- stable `Legacy XML` runtime,
+- and `MCP` delivered as the final MVP workstream.
+
+3. Recorded explicit `in scope` versus `out of scope` boundaries so `local-agent`, full Rust rewrite, and future `Codex/Logos` work do not silently reenter the release line.
+4. Updated `07-codex-logos-phase/README.md`, `00-navigation/INDEX.md`, and `00-navigation/inventory.json` so the roadmap is part of the active canonical sequence.
+
 ## 2026-03-30 Docs Stabilization Pass
 
 1. Added `00-navigation/archive-map.md` to classify current canonical docs versus historical or superseded roadmap and sprint artifacts.

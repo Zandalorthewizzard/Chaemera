@@ -209,6 +209,16 @@ export async function runChatStreamSession(
       throw new Error(`Chat not found: ${req.chatId}`);
     }
 
+    const resolveAppPathForChat = (rawAppPath: string): string => {
+      if (ctx.runtimeEnvironment?.appPath && rawAppPath === chat.app.path) {
+        return ctx.runtimeEnvironment.appPath;
+      }
+
+      return getAppPath(rawAppPath);
+    };
+
+    const settings = ctx.runtimeEnvironment?.settingsSnapshot ?? readSettings();
+
     // =========================================================================
     // 2. Handle redo option
     // =========================================================================
@@ -315,7 +325,7 @@ export async function runChatStreamSession(
         implementPlanDisplayPrompt = userPrompt;
         const planSlug = implementPlanMatch[1];
         validatePlanId(planSlug);
-        const planAppPath = getAppPath(chat.app.path);
+        const planAppPath = resolveAppPathForChat(chat.app.path);
         const planFilePath = path.join(
           planAppPath,
           ".dyad",
@@ -349,7 +359,10 @@ You may update the plan at \`${planPath}\` to mark your progress.`;
         let componentSnippet = "[component snippet not available]";
         try {
           const componentFileContent = await readFile(
-            path.join(getAppPath(chat.app.path), component.relativePath),
+            path.join(
+              resolveAppPathForChat(chat.app.path),
+              component.relativePath,
+            ),
             "utf8",
           );
           const lines = componentFileContent.split(/\r?\n/);
@@ -394,7 +407,6 @@ ${componentSnippet}
     // =========================================================================
     // 6. Insert placeholder assistant message
     // =========================================================================
-    const settings = readSettings();
     const [placeholderAssistantMessage] = await db
       .insert(messages)
       .values({
@@ -404,7 +416,7 @@ ${componentSnippet}
         requestId: cloudRequestId,
         model: settings.selectedModel.name,
         sourceCommitHash: await getCurrentCommitHash({
-          path: getAppPath(chat.app.path),
+          path: resolveAppPathForChat(chat.app.path),
         }),
       })
       .returning();
@@ -454,7 +466,7 @@ ${componentSnippet}
       const { modelClient, isEngineEnabled, isSmartContextEnabled } =
         await getModelClient(settings.selectedModel, settings);
 
-      const appPath = getAppPath(updatedChat.app.path);
+      const appPath = resolveAppPathForChat(updatedChat.app.path);
       const chatContext =
         req.selectedComponents &&
         req.selectedComponents.length > 0 &&
@@ -530,7 +542,9 @@ ${componentSnippet}
       // =========================================================================
       // 10. System prompt construction
       // =========================================================================
-      const aiRules = await readAiRules(getAppPath(updatedChat.app.path));
+      const aiRules = await readAiRules(
+        resolveAppPathForChat(updatedChat.app.path),
+      );
       const themePrompt = await getThemePromptById(updatedChat.app.themeId);
       logger.log(
         `Theme for app ${updatedChat.app.id}: ${updatedChat.app.themeId ?? "none"}, prompt length: ${themePrompt.length} chars`,
@@ -880,6 +894,12 @@ This conversation includes one or more image attachments. When the user uploads 
             }
           },
           onError: (error: unknown) => {
+            if (ctx.abortSignal.aborted) {
+              logger.log(
+                `Ignoring stream error after cancellation for chat ${req.chatId}`,
+              );
+              return;
+            }
             let errorMessage = (error as any)?.error?.message;
             const responseBody = (error as any)?.error?.responseBody;
             if (errorMessage && responseBody) {
@@ -1035,7 +1055,9 @@ This conversation includes one or more image attachments. When the user uploads 
               },
             },
             systemPromptOverride: constructSystemPrompt({
-              aiRules: await readAiRules(getAppPath(updatedChat.app.path)),
+              aiRules: await readAiRules(
+                resolveAppPathForChat(updatedChat.app.path),
+              ),
               chatMode: "build",
               enableTurboEditsV2: false,
             }),
@@ -1090,7 +1112,7 @@ This conversation includes one or more image attachments. When the user uploads 
         ) {
           let issues = await dryRunSearchReplace({
             fullResponse,
-            appPath: getAppPath(updatedChat.app.path),
+            appPath: resolveAppPathForChat(updatedChat.app.path),
           });
 
           ctx.sendTelemetryEvent?.("search_replace:fix", {
@@ -1166,7 +1188,7 @@ ${formattedSearchReplaceIssues}`,
 
             issues = await dryRunSearchReplace({
               fullResponse: fixResult.incrementalResponse,
-              appPath: getAppPath(updatedChat.app.path),
+              appPath: resolveAppPathForChat(updatedChat.app.path),
             });
 
             ctx.sendTelemetryEvent?.("search_replace:fix", {
@@ -1236,7 +1258,7 @@ ${formattedSearchReplaceIssues}`,
           try {
             let problemReport = await generateProblemReport({
               fullResponse,
-              appPath: getAppPath(updatedChat.app.path),
+              appPath: resolveAppPathForChat(updatedChat.app.path),
             });
 
             let autoFixAttempts = 0;
@@ -1263,7 +1285,7 @@ ${problemReport.problems
               const problemFixPrompt = createProblemFixPrompt(problemReport);
 
               const virtualFileSystem = new AsyncVirtualFileSystem(
-                getAppPath(updatedChat.app.path),
+                resolveAppPathForChat(updatedChat.app.path),
                 {
                   fileExists: (fileName: string) => fileExists(fileName),
                   readFile: (fileName: string) => readFileWithCache(fileName),
@@ -1334,7 +1356,7 @@ ${problemReport.problems
 
               problemReport = await generateProblemReport({
                 fullResponse,
-                appPath: getAppPath(updatedChat.app.path),
+                appPath: resolveAppPathForChat(updatedChat.app.path),
               });
             }
           } catch (error) {
@@ -1398,7 +1420,6 @@ ${problemReport.problems
         .set({ content: fullResponse })
         .where(eq(messages.id, placeholderAssistantMessage.id));
 
-      const settings = readSettings();
       if (settings.autoApproveChanges && settings.selectedChatMode !== "ask") {
         const status = await processFullResponseActions(
           fullResponse,
@@ -1443,6 +1464,12 @@ ${problemReport.problems
 
     return req.chatId;
   } catch (error) {
+    if (ctx.abortSignal.aborted) {
+      logger.log(
+        `Ignoring terminal error after cancellation for chat ${req.chatId}`,
+      );
+      return req.chatId;
+    }
     logger.error("Error calling LLM:", error);
     ctx.onError(
       req.chatId,

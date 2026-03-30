@@ -40,6 +40,10 @@ The LOGOS repository now has a primary documentation system, agent entrypoint, n
 
 - verified by `archive-map.md`, `INDEX.md`, and `inventory.json`
 
+6. The release-line docs now include a dedicated MVP execution roadmap that locks packaged Tauri plus stable `Legacy XML` plus final-phase `MCP` as the current release target.
+
+- verified by `../07-codex-logos-phase/2026-03-30-release-line-mvp-roadmap.md`, `../07-codex-logos-phase/README.md`, and `inventory.json`
+
 ## Open / Deferred
 
 1. `UNKNOWN`: the long-term placement strategy for future provider-specific deep dives.

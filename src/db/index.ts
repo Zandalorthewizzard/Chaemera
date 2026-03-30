@@ -1,15 +1,15 @@
-﻿// db.ts
+// db.ts
+import fs from "node:fs";
+import path from "node:path";
+import { appLog as log } from "@/lib/app_logger";
+import Database from "better-sqlite3";
 import {
   type BetterSQLite3Database,
   drizzle,
 } from "drizzle-orm/better-sqlite3";
-import Database from "better-sqlite3";
-import * as schema from "./schema";
 import { migrate } from "drizzle-orm/better-sqlite3/migrator";
-import path from "node:path";
-import fs from "node:fs";
 import { getAppPath, getUserDataPath } from "../paths/paths";
-import { appLog as log } from "@/lib/app_logger";
+import * as schema from "./schema";
 
 const logger = log.scope("db");
 
@@ -20,6 +20,11 @@ let _db: ReturnType<typeof drizzle> | null = null;
  * Get the database path based on the current environment
  */
 export function getDatabasePath(): string {
+  const tauriSqliteOverride = process.env.CHAEMERA_TAURI_USER_DATA_DIR;
+  if (tauriSqliteOverride) {
+    return path.join(tauriSqliteOverride, "sqlite.db");
+  }
+
   return path.join(getUserDataPath(), "sqlite.db");
 }
 
@@ -47,7 +52,7 @@ export function initializeDatabase(): BetterSQLite3Database<typeof schema> & {
     logger.error("Error checking database file:", error);
   }
 
-  fs.mkdirSync(getUserDataPath(), { recursive: true });
+  fs.mkdirSync(path.dirname(dbPath), { recursive: true });
   fs.mkdirSync(getAppPath("."), { recursive: true });
 
   const sqlite = new Database(dbPath, { timeout: 10000 });

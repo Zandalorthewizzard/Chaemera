@@ -39,6 +39,43 @@ describe("ChatWorkerSessionManager", () => {
     const ctx = mockRun.mock.calls[0][0] as ChatRuntimeContext;
     expect(ctx.params.chatId).toBe(1);
     expect(ctx.params.prompt).toBe("hello");
+    expect(ctx.runtimeEnvironment?.appPath).toBe("/tmp/app");
+    expect(ctx.getMcpTools).toBeTypeOf("function");
+  });
+
+  it("parses host-authored settings snapshots into runtimeEnvironment", async () => {
+    const mockRun = vi.fn().mockResolvedValue(1);
+
+    await manager.handleStart(
+      makeStartMsg({
+        settingsSnapshot: {
+          selectedModel: { name: "auto", provider: "auto" },
+          providerSettings: {},
+          telemetryConsent: "unset",
+          telemetryUserId: "test-user",
+          hasRunBefore: false,
+          experiments: {},
+          enableTurboEditsV2: true,
+          enableSmartFilesContextMode: true,
+          selectedChatMode: "build",
+          enableAutoFixProblems: false,
+          enableAutoUpdate: true,
+          releaseChannel: "stable",
+          selectedTemplateId: "react",
+          selectedThemeId: "default",
+          isRunning: false,
+          enableNativeGit: true,
+          autoExpandPreviewPanel: true,
+          enableContextCompaction: true,
+        },
+      }),
+      mockRun,
+    );
+
+    const ctx = mockRun.mock.calls[0][0] as ChatRuntimeContext;
+    expect(ctx.runtimeEnvironment?.settingsSnapshot?.selectedChatMode).toBe(
+      "build",
+    );
   });
 
   it("sends error when session already active for chatId", async () => {

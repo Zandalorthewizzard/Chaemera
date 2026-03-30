@@ -1,24 +1,20 @@
-import { appLog as log } from "@/lib/app_logger";
 import type { ChatResponseEnd, ChatStreamParams } from "@/ipc/types";
-import type { ToolExecutionOptions, ToolSet } from "ai";
-import { eq } from "drizzle-orm";
-import { db } from "../../db";
-import { mcpServers } from "../../db/schema";
+import { appLog as log } from "@/lib/app_logger";
 import {
+  type ChatRuntimeContext,
   formatMessagesForSummary,
   hasUnclosedXmlWrite,
   removeProblemReportTags,
   removeXmlTags,
   runChatStreamSession,
-  type ChatRuntimeContext,
 } from "../chat_runtime";
+import { buildMcpToolSet } from "../chat_runtime/mcp_tools";
 import { chatContracts } from "../types/chat";
-import { mcpManager } from "../utils/mcp_manager";
 import { requireMcpToolConsent } from "../utils/mcp_consent";
 import { safeSend } from "../utils/safe_sender";
 import { sendTelemetryEvent } from "../utils/telemetry";
 import { createTypedHandler } from "./base";
-import { ipcMain, type IpcMainInvokeEvent } from "./electron_compat";
+import { type IpcMainInvokeEvent, ipcMain } from "./electron_compat";
 import { handleLocalAgentStream } from "./local_agent/local_agent_handler";
 import { getTestResponse, streamTestResponse } from "./testing_chat_handlers";
 
@@ -26,61 +22,30 @@ const logger = log.scope("chat_stream_handlers");
 
 const activeStreams = new Map<number, AbortController>();
 
-async function getMcpTools(event: IpcMainInvokeEvent): Promise<ToolSet> {
-  const mcpToolSet: ToolSet = {};
-
-  try {
-    const servers = await db
-      .select()
-      .from(mcpServers)
-      .where(eq(mcpServers.enabled, true as any));
-
-    for (const server of servers) {
-      const client = await mcpManager.getClient(server.id);
-      const toolSet = await client.tools();
-
-      for (const [name, mcpTool] of Object.entries(toolSet)) {
-        const serverKey = String(server.name || "").replace(
-          /[^a-zA-Z0-9_-]/g,
-          "-",
-        );
-        const toolKey = String(name).replace(/[^a-zA-Z0-9_-]/g, "-");
-        const key = `${serverKey}__${toolKey}`;
-
-        mcpToolSet[key] = {
-          description: mcpTool.description,
-          inputSchema: mcpTool.inputSchema,
-          execute: async (args: unknown, execCtx: ToolExecutionOptions) => {
-            const inputPreview =
-              typeof args === "string"
-                ? args
-                : Array.isArray(args)
-                  ? args.join(" ")
-                  : JSON.stringify(args).slice(0, 500);
-
-            const ok = await requireMcpToolConsent(event, {
-              serverId: server.id,
-              serverName: server.name ?? "",
-              toolName: name,
-              toolDescription: mcpTool.description,
-              inputPreview,
-            });
-
-            if (!ok) {
-              throw new Error(`User declined running tool ${key}`);
-            }
-
-            const result = await mcpTool.execute(args, execCtx);
-            return typeof result === "string" ? result : JSON.stringify(result);
-          },
-        };
+async function getMcpTools(event: IpcMainInvokeEvent) {
+  return buildMcpToolSet({
+    requestConsent: (request: {
+      serverId: number;
+      serverName: string;
+      toolName: string;
+      toolDescription?: string | null;
+      inputPreview?: string | null;
+    }) =>
+      requireMcpToolConsent(event, {
+        serverId: request.serverId,
+        serverName: request.serverName ?? "",
+        toolName: request.toolName,
+        toolDescription: request.toolDescription,
+        inputPreview: request.inputPreview,
+      }),
+    recordLog: (level: "warn" | "error", message: string, error?: unknown) => {
+      if (level === "error") {
+        logger.error(message, error);
+        return;
       }
-    }
-  } catch (error) {
-    logger.warn("Failed building MCP toolset", error);
-  }
-
-  return mcpToolSet;
+      logger.warn(message, error);
+    },
+  });
 }
 
 function buildChatRuntimeContext(
