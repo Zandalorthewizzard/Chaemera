@@ -9,6 +9,7 @@ related:
     [README.md],
     [2026-03-29-codex-logos-daemon-first-roadmap.md],
     [2026-03-29-chat-ui-post-xml-surface-inventory.md],
+    [2026-03-30-legacy-chat-runtime-audit-conclusions-and-codex-cut-line.md],
     [
       ../04-sprint-workflow/specs/2026-03-29-tauri-chat-runtime-migration-plan.md,
     ],
@@ -180,6 +181,8 @@ The audit table must include at least these rows:
 10. Promotion Artifacts
 
 - Filled audit worksheet or follow-up evidence note for each completed audit pass.
+- First completed conclusions pass:
+  - `2026-03-30-legacy-chat-runtime-audit-conclusions-and-codex-cut-line.md`
 - Future daemon planning docs may cite this matrix as the reason a capability is:
   - replaced,
   - preserved host-side,
@@ -221,6 +224,7 @@ The audit table must include at least these rows:
 - [[README.md]]
 - [[2026-03-29-codex-logos-daemon-first-roadmap.md]]
 - [[2026-03-29-chat-ui-post-xml-surface-inventory.md]]
+- [[2026-03-30-legacy-chat-runtime-audit-conclusions-and-codex-cut-line.md]]
 - [[../04-sprint-workflow/specs/2026-03-29-tauri-chat-runtime-migration-plan.md]]
 - [[../04-sprint-workflow/specs/2026-03-29-chat-runtime-service-layer-scope-and-boundaries.md]]
 - [[../05-discussion-templates/discussions/2026-03-29-tauri-chat-runtime-layer-reality-check.md]]

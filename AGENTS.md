@@ -2,6 +2,72 @@
 
 Please read `CONTRIBUTING.md` which includes information for human code contributors. Much of the information is applicable to you as well.
 
+## META-CONSENSUS
+
+This section records the current project-level strategic consensus so agents do not rely on chat memory or outdated assumptions.
+
+- Treat this section as the active planning stance unless the user explicitly supersedes it.
+- If canonical docs and this section diverge, surface the conflict and prefer the newer explicit user decision until docs are synchronized.
+
+### Before the current consensus
+
+- The project had drifted toward a stronger daemon-first or Codex-first planning stance while the Tauri refactor and legacy chat runtime were still unstable.
+- That earlier stance caused ambiguity about whether the release line should keep investing in the legacy XML runtime or treat it only as a failing temporary bridge.
+- The completed audit changed that understanding:
+  - the core Tauri legacy build-mode path is now live again,
+  - the biggest cutover failures were real but repairable,
+  - and the remaining gaps are narrow enough that release-line hardening is justified.
+- The project therefore moved from:
+  - `legacy runtime rescue may be low-value and possibly not worth finishing before Codex`,
+  - to:
+  - `finish the refactor, harden the release-line legacy XML mode, ship it if needed, and treat Codex/Logos as the next mainline update path.`
+- When reading older docs, branches, or notes, assume some of them were written under the earlier daemon-first urgency and may no longer reflect the current release priority.
+
+### Current consensus
+
+- Active working branch remains `origin/refactor/leptos-tauri2`.
+- The current release goal is to finish the Tauri/Leptos refactor and bring the legacy release-line runtime, including the legacy XML build-mode path, to shippable release quality.
+- `Legacy XML` remains an allowed release-line runtime and may ship as an explicit supported mode.
+- The current priority is not a full replacement of the legacy runtime with Codex/Logos before release.
+- `feature/legacy-chat-runtime-repair` is a reserve or isolation branch, not the primary branch of execution right now.
+- `feature/codex-logos-daemon` is the future feature branch for the Codex/Logos update path, not the current release branch.
+- The release-line strategy is:
+  - keep Chaemera host/UI,
+  - harden the Tauri host and legacy runtime seam,
+  - preserve the working XML build-mode lane for release,
+  - and defer Codex/Logos mainline runtime replacement to a later update.
+- The preferred long-term product direction remains dual-runtime support in one app:
+  - `Legacy XML` as compatibility or expert mode,
+  - `Codex/Logos` as the new structured runtime path.
+
+### Release-line Rust scope
+
+- Prefer targeted Rust ownership where Rust is already the natural host authority.
+- Prioritized Rust hardening scope for release:
+  - session terminal-state deduplication,
+  - cancellation outcome normalization,
+  - authoritative worker environment injection (`appPath`, `settingsSnapshot`, and runtime env ownership),
+  - consent and session bookkeeping hardening,
+  - startup, packaging, and worker-preflight normalization.
+- Avoid a full Rust rewrite of the legacy XML runtime brain on the current release line.
+
+### Canonical documents for this consensus
+
+- `docs-new/07-codex-logos-phase/2026-03-30-legacy-chat-runtime-audit-conclusions-and-codex-cut-line.md`
+- `docs-new/07-codex-logos-phase/2026-03-30-legacy-xml-release-mode-hardening-and-rust-reliability-plan.md`
+- `docs-new/07-codex-logos-phase/2026-03-30-dual-runtime-mode-shared-host-and-switch-boundary.md`
+- `docs-new/07-codex-logos-phase/2026-03-29-legacy-chat-runtime-capability-audit-matrix.md`
+- `docs-new/07-codex-logos-phase/2026-03-29-chat-ui-post-xml-surface-inventory.md`
+- `docs-new/04-sprint-workflow/specs/2026-03-29-tauri-chat-runtime-migration-plan.md`
+- `docs-new/04-sprint-workflow/specs/2026-03-29-chat-runtime-service-layer-scope-and-boundaries.md`
+- `docs-new/05-discussion-templates/discussions/2026-03-29-tauri-chat-runtime-layer-reality-check.md`
+- `docs-new/05-discussion-templates/discussions/2026-03-28-structured-agent-core-with-legacy-xml-mode.md`
+
+### Older context that may reflect the prior stance
+
+- `docs-new/07-codex-logos-phase/2026-03-29-codex-logos-daemon-first-roadmap.md`
+- older notes under `notes/` written before the completed legacy runtime audit pass
+
 ## Rules index
 
 > **IMPORTANT: BEFORE writing any code or making changes, you MUST read the relevant rule files from the table below.** Identify which areas your task touches and read those rule files first. Skipping this step leads to avoidable mistakes and rework.
@@ -83,7 +149,7 @@ This is the only supported way to type-check the project. It uses the correct co
 
 ## Project context
 
-- This is an Electron application with a secure IPC boundary.
+- This repository contains a desktop app mid-migration from Electron to Tauri with a secure IPC and runtime boundary.
 - Frontend is a React app that uses TanStack Router (not Next.js or React Router).
 - Data fetching/mutations should be handled with TanStack Query when touching IPC-backed endpoints.
 
