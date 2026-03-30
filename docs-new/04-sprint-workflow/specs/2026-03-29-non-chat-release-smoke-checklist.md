@@ -2,7 +2,7 @@
 id: chaemera-spec-non-chat-release-smoke-checklist-2026-03-29
 title: Non-Chat Release Smoke Checklist
 type: spec
-status: active
+status: historical
 tags: [spec, release, smoke, tauri, mvp]
 related:
   [
@@ -25,6 +25,9 @@ outline: []
 
 ## 1. Start Here
 
+- Historical notice:
+  - this document records the earlier non-chat release smoke stage before the legacy runtime audit re-centered the remaining release work around the chat/runtime lane;
+  - keep it as a completed release-stage checklist, not as the active release control document.
 - This document is the executable checklist for closing the current non-chat release stage.
 - The checklist assumes the packaged Tauri executable already exists and is the artifact under test.
 - The checklist intentionally excludes chat runtime migration work.

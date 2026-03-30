@@ -2,7 +2,7 @@
 id: chaemera-spec-tauri-chat-runtime-phase-1-foundation-2026-03-29
 title: Tauri Chat Runtime Phase 1 Foundation Spec
 type: spec
-status: active
+status: historical
 tags: [spec, tauri, chat, phase-1, runtime, extraction]
 related:
   [
@@ -25,6 +25,10 @@ outline: []
 
 ## 1. Start Here
 
+- Historical notice:
+  - this document records the first executable extraction slice for the Tauri chat-runtime migration;
+  - keep it as implementation history for the completed extraction phase, not as the current control document;
+  - the current controlling documents are the 2026-03-30 audit conclusions and legacy XML hardening plan together with the broader migration plan.
 - This spec defines the first executable implementation slice for restoring real packaged Tauri chat execution.
 - It is narrower than the full migration plan.
 - It exists to prevent Phase 1 from silently expanding into XML parity, MCP parity, or a full Rust rewrite.
