@@ -2,7 +2,7 @@
 id: chaemera-discussion-tauri-release-cutover-vs-regression-2026-03-01
 title: Tauri Release Cutover vs Wider Regression
 type: discussion
-status: active
+status: historical
 tags: [discussion, tauri, release, regression, sprint-11]
 related:
   [
@@ -23,6 +23,11 @@ outline: []
 ---
 
 # Tauri Release Cutover vs Wider Regression
+
+Historical notice:
+
+1. This discussion records an earlier release-cutover framing during the migration period.
+2. Keep it as migration history and reasoning context, not as the current release-line control discussion.
 
 User request:
 

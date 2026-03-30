@@ -2,7 +2,7 @@
 id: chaemera-discussion-upstream-patch-adaptation-workflow-2026-03-01
 title: Upstream Patch Adaptation Workflow
 type: discussion
-status: active
+status: historical
 tags: [discussion, upstream, adaptation, workflow, governance]
 related:
   [
@@ -25,6 +25,9 @@ outline: []
 
 1. Context
 
+- Historical notice:
+  - this document records an earlier migration-stage workflow for adapting upstream Dyad ideas and patches;
+  - keep it as historical process context, not as a current control document.
 - Chaemera is no longer in a state where raw upstream code synchronization is realistic.
 - Current migration path deliberately moves runtime and UI away from the original Electron + React stack toward Tauri 2 + Leptos.
 - That means future value from upstream Dyad will often come from behavioral ideas, bug fixes, security fixes, and product logic rather than from directly reusing implementation diffs.

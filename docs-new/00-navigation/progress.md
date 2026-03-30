@@ -25,6 +25,9 @@ outline: []
 
 3. Added the archive map and retained release-line documents back into `00-navigation/inventory.json` so the current nav layer can see both the active Logos lane and the audited legacy release-line lane.
 4. Marked the most misleading pre-audit documents as historical or superseded in-place rather than moving files.
+5. Extended the same historical labeling to the completed `non-chat smoke` checklist and the old `Phase 1 foundation` implementation slice so they remain readable as execution history without competing with the current post-audit release docs.
+6. Extended the stabilization pass to older release-cutover discussions, XML-surface audit discussions, Codex-reference transfer planning, and the completed `Sprint 1` artifact so they now read as historical context instead of active control documents.
+7. Added an explicit `Older Active Docs Intentionally Kept Active` section to `archive-map.md` so the remaining active migration and runtime documents are clearly justified rather than looking like missed cleanup.
 
 ## 2026-03-30
 

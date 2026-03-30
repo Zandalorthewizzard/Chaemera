@@ -2,7 +2,7 @@
 id: chaemera-discussion-tauri2-leptos-migration-strategy-2026-02-23
 title: Migration Strategy Discussion (Leptos + Tauri 2)
 type: discussion
-status: active
+status: historical
 tags: [discussion, migration, architecture, leptos, tauri2, oss]
 related:
   [
@@ -19,6 +19,11 @@ outline: []
 ---
 
 # Migration Strategy Discussion (Leptos + Tauri 2)
+
+1. Historical notice
+
+- this discussion records the original migration-strategy framing that later fed into the migration master plan;
+- keep it as background context and decision history, not as the current top-level release consensus.
 
 1. Context
 

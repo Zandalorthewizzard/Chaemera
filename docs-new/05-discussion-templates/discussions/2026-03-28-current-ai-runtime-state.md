@@ -2,7 +2,7 @@
 id: chaemera-discussion-current-ai-runtime-state-2026-03-28
 title: Current AI Runtime State
 type: discussion
-status: active
+status: historical
 tags: [discussion, ai, runtime, agent, oss]
 related:
   [
@@ -24,6 +24,9 @@ outline: []
 
 1. Context
 
+- Historical notice:
+  - this document captures the runtime-state snapshot before the completed legacy runtime audit pass and before the current release-line consensus was written down;
+  - keep it as discovery context and evidence for how the later audit started, not as the current final verdict.
 - This document captures the current AI and agent runtime state as implemented in code.
 - The goal is to distinguish what is actually live from what is only scaffolded in prompts, UI, or contracts.
 - This is a working discussion artifact for later decision-making, not a final architecture spec.

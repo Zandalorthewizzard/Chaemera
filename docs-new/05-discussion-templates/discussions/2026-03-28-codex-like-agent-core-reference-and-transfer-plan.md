@@ -2,7 +2,7 @@
 id: chaemera-discussion-codex-like-agent-core-reference-and-transfer-plan-2026-03-28
 title: Codex-Like Agent Core Reference and Transfer Plan
 type: discussion
-status: active
+status: historical
 tags: [discussion, ai, agent, codex, rust, transfer, terminal]
 related:
   [
@@ -24,6 +24,9 @@ outline: []
 
 1. Context
 
+- Historical notice:
+  - this document records the earlier Codex-reference transfer thinking before the completed legacy runtime audit tightened the release-line priority and the dual-runtime stance;
+  - keep it as historical architecture context, not as the current sequencing decision.
 - Codex is a useful reference not because Chaemera should clone its brand or UI, but because the OSS Rust implementation exposes a mature structured-tool agent runtime.
 - The transfer target should be the Codex capability envelope:
   - structured model-visible tools,

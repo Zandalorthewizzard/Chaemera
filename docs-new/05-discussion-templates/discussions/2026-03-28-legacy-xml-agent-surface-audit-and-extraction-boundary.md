@@ -2,7 +2,7 @@
 id: chaemera-discussion-legacy-xml-agent-surface-audit-and-extraction-boundary-2026-03-28
 title: Legacy XML Agent Surface Audit and Extraction Boundary
 type: discussion
-status: active
+status: historical
 tags: [discussion, ai, xml, legacy, extraction, runtime]
 related:
   [
@@ -24,6 +24,9 @@ outline: []
 
 1. Context
 
+- Historical notice:
+  - this document records the pre-cut-line XML surface audit that informed later dual-runtime and release-line decisions;
+  - keep it as extraction-boundary context, not as the current active planning document.
 - Chaemera needs a precise map of the current legacy XML-centered AI runtime before replacing the default agent path.
 - The goal of this document is not to redesign the future structured agent. The goal is to localize the XML surface so it can be isolated behind an expert wall and removed from the default runtime without guesswork.
 - This document therefore distinguishes:

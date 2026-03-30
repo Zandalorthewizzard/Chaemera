@@ -2,7 +2,7 @@
 id: chaemera-sprint-1-oss-detox
 title: Sprint 1 - OSS Detox
 type: sprint
-status: active
+status: historical
 tags: [sprint, migration, oss, license]
 related:
   [
@@ -22,6 +22,11 @@ outline: []
 ---
 
 # Sprint 1 - OSS Detox
+
+## Historical Notice
+
+1. This sprint is retained as completed implementation history for OSS detachment work.
+2. It is no longer an active planning artifact for the current release-line runtime finish work.
 
 ## Sprint Goal
 

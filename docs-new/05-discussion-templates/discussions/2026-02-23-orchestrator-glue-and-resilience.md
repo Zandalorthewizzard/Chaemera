@@ -2,7 +2,7 @@
 id: chaemera-discussion-orchestrator-glue-and-resilience-2026-02-23
 title: Orchestrator Glue Code and Resilience Discussion
 type: discussion
-status: active
+status: historical
 tags: [discussion, orchestrator, autonomy, resilience, multi-agent, pipeline]
 related:
   [
@@ -18,6 +18,11 @@ outline: []
 ---
 
 # Orchestrator Glue Code and Resilience Discussion
+
+## Historical Notice
+
+1. This discussion belongs to an earlier autonomous orchestration exploration track.
+2. Keep it as historical context, not as part of the current release-line or dual-runtime planning surface.
 
 ## User Observation (Verbatim)
 
