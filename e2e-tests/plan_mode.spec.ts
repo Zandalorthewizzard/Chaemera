@@ -78,4 +78,3 @@ test.skip("plan mode - questionnaire flow", async ({ po }) => {
   // Snapshot the messages
   await po.snapshotMessages();
 });
-

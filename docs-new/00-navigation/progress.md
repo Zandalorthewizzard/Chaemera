@@ -80,6 +80,77 @@ outline: []
 - defining the worker protocol early
 - explicitly not trying to solve full Tauri parity or a Rust rewrite in one pass
 
+14. Added a canonical architecture discussion for the release-line Tauri chat runtime layer:
+
+- `05-discussion-templates/discussions/2026-03-29-tauri-chat-runtime-layer-reality-check.md`
+
+15. The new discussion records a sober verdict on the current migration line:
+
+- Phase 1 extraction is real progress and worth keeping
+- Phase 2 worker infrastructure is valid as a transitional release-line shell
+- Phase 3 host work is directionally correct but must be proven through the real Tauri runtime lane
+- and the current result should be understood as `reused AI runtime brain + rebuilt execution shell`, not as a clean final architecture
+
+16. Added a canonical scope-and-boundaries inventory for the current chat runtime service layer:
+
+- `04-sprint-workflow/specs/2026-03-29-chat-runtime-service-layer-scope-and-boundaries.md`
+
+17. The new scope inventory explicitly records that this slice includes more than plain prompt streaming:
+
+- message persistence and placeholder lifecycle
+- redo handling
+- attachment and selected-component preparation
+- codebase extraction
+- BYOK provider invocation and canned test responses
+- XML cleanup, continuation, and auto-fix loops
+- local-agent and MCP hook points
+- completion metadata
+- worker protocol and worker session management
+- Rust/Tauri host supervision and runtime packaging
+
+18. Added a new separated documentation lane for the new mainline architecture phase:
+
+- `07-codex-logos-phase/README.md`
+- `07-codex-logos-phase/2026-03-29-codex-logos-daemon-first-roadmap.md`
+- `07-codex-logos-phase/2026-03-29-legacy-chat-runtime-capability-audit-matrix.md`
+- `07-codex-logos-phase/2026-03-29-chat-ui-post-xml-surface-inventory.md`
+
+19. The new mainline roadmap explicitly resets the architecture center of gravity to:
+
+- `Codex as-is headless daemon`
+- `Chaemera host/UI`
+- OpenCode Desktop as an explicit server-desktop inspiration reference
+- and a separate isolated branch for legacy chat-runtime repair
+
+20. The new roadmap also fixes the recommended branch strategy for the architecture split:
+
+- checkpoint tag: `checkpoint-2026-03-29-pre-codex-logos-pivot`
+- checkpoint branch: `checkpoint/2026-03-29-pre-codex-logos-pivot`
+- new mainline branch: `feature/codex-logos-daemon`
+- isolated legacy branch: `feature/legacy-chat-runtime-repair`
+
+21. Added a canonical capability-audit framework for the legacy chat-runtime slice:
+
+- matrix structure
+- strict status vocabulary
+- scenario matrix
+- execution order
+- and per-capability `Codex Lane Disposition`
+
+22. Added a canonical post-XML chat UI inventory that classifies current surfaces as:
+
+- `keep`
+- `adapter`
+- `delete-candidate`
+- or `unknown`
+
+23. The new UI inventory explicitly identifies `ActionMarkdownParser` and the XML repair pipeline as delete-candidate default-path debt while preserving the surrounding chat shell and many action-card surfaces as reusable or adapter candidates.
+
+24. Reclassified conflicting older docs as `historical` so the repository no longer presents both of these as active mainline truth at the same time:
+
+- `04-sprint-workflow/specs/2026-03-02-chaemera-next-phase-product-roadmap.md`
+- `04-sprint-workflow/specs/2026-03-28-post-release-agent-core-boundary-and-host-daemon-architecture.md`
+
 ## 2026-02-23
 
 1. Initialized `docs-new` with Pack 2.0 layered structure (`00..06`).

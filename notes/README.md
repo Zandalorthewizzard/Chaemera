@@ -17,6 +17,13 @@ This directory is the agent working-memory layer for Chaemera.
 5. Do not store secrets, tokens, credentials, or personal data here.
 6. If a note becomes a durable decision, accepted finding, or stable process rule, promote it into `docs-new/` with evidence.
 
+## Structured Decision Notes
+
+1. Short operational decision snapshots may live in `notes/Decisions/`.
+2. These decision notes are still non-canonical and must link to the accepted `docs-new/` artifact.
+3. Use `notes/Decisions/decision-template.md` for new decision records.
+4. If a decision changes status, update both the short note and the canonical doc.
+
 ## Suggested Structure
 
 1. Context

@@ -1,4 +1,4 @@
-import log from "electron-log";
+import { appLog as log } from "@/lib/app_logger";
 import { getAllTemplates } from "../utils/template_utils";
 import { localTemplatesData } from "../../shared/templates";
 import { createTypedHandler } from "./base";

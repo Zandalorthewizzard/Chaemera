@@ -1,4 +1,4 @@
-import log from "electron-log";
+import { appLog as log } from "@/lib/app_logger";
 import { lt } from "drizzle-orm";
 import { db } from "@/db";
 import { messages } from "@/db/schema";

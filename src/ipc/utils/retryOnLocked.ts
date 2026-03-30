@@ -1,4 +1,4 @@
-import log from "electron-log";
+import { appLog as log } from "@/lib/app_logger";
 
 export const logger = log.scope("retryOnLocked");
 

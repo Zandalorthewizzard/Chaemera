@@ -44,6 +44,3 @@ testSkipIfWindows(
     await po.previewPanel.snapshotProblemsPane();
   },
 );
-
-
-

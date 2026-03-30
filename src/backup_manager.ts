@@ -1,13 +1,15 @@
 import * as path from "path";
 import * as fs from "fs/promises";
-import { app } from "electron";
 import * as crypto from "crypto";
-import log from "electron-log";
+import { appLog as log } from "@/lib/app_logger";
 import Database from "better-sqlite3";
+import fsSync from "node:fs";
+import { getUserDataPath } from "./paths/paths";
 
 const logger = log.scope("backup_manager");
 
 const MAX_BACKUPS = 3;
+let cachedPackageVersion: string | null = null;
 
 interface BackupManagerOptions {
   settingsFile: string;
@@ -51,8 +53,7 @@ export class BackupManager {
   async initialize(): Promise<void> {
     logger.info("Initializing backup system...");
 
-    // Set paths after app is ready
-    this.userDataPath = app.getPath("userData");
+    this.userDataPath = getUserDataPath();
     this.backupBasePath = path.join(this.userDataPath, "backups");
 
     logger.info(
@@ -60,7 +61,7 @@ export class BackupManager {
     );
 
     // Check if this is a version upgrade
-    const currentVersion = app.getVersion();
+    const currentVersion = getPackageVersion();
     const lastVersion = await this.getLastRunVersion();
 
     if (lastVersion === null) {
@@ -95,7 +96,7 @@ export class BackupManager {
    */
   async createBackup(reason: string = "manual"): Promise<string> {
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-    const version = app.getVersion();
+    const version = getPackageVersion();
     const backupName = `v${version}_${timestamp}_${reason}`;
     const backupPath = path.join(this.backupBasePath, backupName);
 
@@ -387,4 +388,22 @@ export class BackupManager {
     await fs.writeFile(versionFile, version, "utf8");
     logger.debug(`Current version saved: ${version}`);
   }
+}
+
+function getPackageVersion(): string {
+  if (cachedPackageVersion) {
+    return cachedPackageVersion;
+  }
+
+  try {
+    const packageJsonPath = path.join(process.cwd(), "package.json");
+    const packageJson = JSON.parse(
+      fsSync.readFileSync(packageJsonPath, "utf8"),
+    ) as { version?: string };
+    cachedPackageVersion = packageJson.version ?? "unknown";
+  } catch {
+    cachedPackageVersion = "unknown";
+  }
+
+  return cachedPackageVersion;
 }

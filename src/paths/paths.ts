@@ -2,14 +2,14 @@
 import os from "node:os";
 
 /**
- * Gets the base dyad-apps directory path (without a specific app subdirectory)
+ * Gets the base chaemera-apps directory path (without a specific app subdirectory)
  */
 export function getAppsBaseDirectory(): string {
-  const overrideDir = process.env.CHAEMERA_TAURI_APPS_DIR;
+  const overrideDir = process.env.CHAEMERA_TAURI_CHAEMERA_APPS_DIR;
   if (overrideDir) {
     return overrideDir;
   }
-  return path.join(os.homedir(), "dyad-apps");
+  return path.join(os.homedir(), "chaemera-apps");
 }
 
 export function getAppPath(appPath: string): string {

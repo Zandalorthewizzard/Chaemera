@@ -59,6 +59,10 @@ export function getResolvedAppPath(appId: number): string | null {
   return appRuntimeMetadata.get(appId)?.resolvedPath ?? null;
 }
 
+export function hasResolvedAppPath(appId: number): boolean {
+  return appRuntimeMetadata.has(appId);
+}
+
 export function getAppRuntimeMetadata(
   appId: number,
 ): AppRuntimeMetadata | null {

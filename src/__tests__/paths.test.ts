@@ -11,16 +11,16 @@ import {
 
 describe("paths helpers", () => {
   const originalUserDataDir = process.env.CHAEMERA_TAURI_APP_DATA_DIR;
-  const originalDyadAppsDir = process.env.CHAEMERA_TAURI_APPS_DIR;
+  const originalChaemeraAppsDir = process.env.CHAEMERA_TAURI_CHAEMERA_APPS_DIR;
 
   afterEach(() => {
     process.env.CHAEMERA_TAURI_APP_DATA_DIR = originalUserDataDir;
-    process.env.CHAEMERA_TAURI_APPS_DIR = originalDyadAppsDir;
+    process.env.CHAEMERA_TAURI_CHAEMERA_APPS_DIR = originalChaemeraAppsDir;
   });
 
   it("uses Tauri override env vars when present", () => {
     process.env.CHAEMERA_TAURI_APP_DATA_DIR = "/tmp/chaemera-user-data";
-    process.env.CHAEMERA_TAURI_APPS_DIR = "/tmp/chaemera-apps";
+    process.env.CHAEMERA_TAURI_CHAEMERA_APPS_DIR = "/tmp/chaemera-apps";
 
     expect(getUserDataPath()).toBe("/tmp/chaemera-user-data");
     expect(getTypeScriptCachePath()).toBe(
@@ -32,9 +32,11 @@ describe("paths helpers", () => {
 
   it("falls back to the host home directory and local userData directory", () => {
     delete process.env.CHAEMERA_TAURI_APP_DATA_DIR;
-    delete process.env.CHAEMERA_TAURI_APPS_DIR;
+    delete process.env.CHAEMERA_TAURI_CHAEMERA_APPS_DIR;
 
-    expect(getAppsBaseDirectory()).toBe(path.join(os.homedir(), "dyad-apps"));
+    expect(getAppsBaseDirectory()).toBe(
+      path.join(os.homedir(), "chaemera-apps"),
+    );
     expect(getUserDataPath()).toBe(path.resolve("./userData"));
   });
 });

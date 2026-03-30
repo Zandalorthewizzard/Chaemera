@@ -25,10 +25,10 @@ pub fn reset_all(app: AppHandle) -> Result<(), String> {
     let dyad_apps_dir = dyad_apps_base_directory()?;
     if dyad_apps_dir.exists() {
         fs::remove_dir_all(&dyad_apps_dir)
-            .map_err(|error| format!("failed to remove dyad-apps directory: {error}"))?;
+            .map_err(|error| format!("failed to remove chaemera-apps directory: {error}"))?;
     }
     fs::create_dir_all(&dyad_apps_dir)
-        .map_err(|error| format!("failed to recreate dyad-apps directory: {error}"))?;
+        .map_err(|error| format!("failed to recreate chaemera-apps directory: {error}"))?;
 
     Ok(())
 }

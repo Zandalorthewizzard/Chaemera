@@ -2,12 +2,14 @@
 id: chaemera-spec-next-phase-product-roadmap-2026-03-02
 title: Chaemera Next-Phase Product Roadmap
 type: spec
-status: active
-tags: [spec, roadmap, product, oss, context, redesign, tauri, leptos]
+status: historical
+tags:
+  [spec, roadmap, product, oss, context, redesign, tauri, leptos, historical]
 related:
   [
     [../spec-template.md],
     [../../03-templates/strict-spec.template.md],
+    [../../07-codex-logos-phase/2026-03-29-codex-logos-daemon-first-roadmap.md],
     [2026-02-23-tauri2-leptos-migration-master-plan.md],
     [2026-03-01-post-migration-ui-redesign-track.md],
     [
@@ -31,6 +33,10 @@ outline: []
 
 1. Start Here
 
+- Historical notice:
+  - this document records the pre-pivot roadmap state before the 2026-03-29 `Codex-Logos daemon-first` reset;
+  - it is no longer the canonical mainline roadmap;
+  - the active mainline roadmap is `docs-new/07-codex-logos-phase/2026-03-29-codex-logos-daemon-first-roadmap.md`.
 - This roadmap defines the next product phase after the current Tauri migration checkpoint.
 - It does not replace the migration master plan. It narrows the next product direction into three explicit tracks.
 - The tracks are ordered and intentionally not parallelized as equal priorities.

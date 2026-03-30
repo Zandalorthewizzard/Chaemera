@@ -20,6 +20,3 @@ testSkipIfWindows("local-agent - read logs with filters", async ({ po }) => {
 
   await po.snapshotMessages();
 });
-
-
-

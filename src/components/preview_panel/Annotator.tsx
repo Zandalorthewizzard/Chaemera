@@ -11,11 +11,9 @@ async function screenshotToFile(dataUrl: string): Promise<File> {
   const response = await fetch(dataUrl);
   const blob = await response.blob();
   const extension = blob.type.split("/")[1] || "png";
-  return new File(
-    [blob],
-    `annotated-screenshot-${Date.now()}.${extension}`,
-    { type: blob.type || "image/png" },
-  );
+  return new File([blob], `annotated-screenshot-${Date.now()}.${extension}`, {
+    type: blob.type || "image/png",
+  });
 }
 
 export const Annotator = ({

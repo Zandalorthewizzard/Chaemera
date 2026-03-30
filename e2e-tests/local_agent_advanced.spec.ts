@@ -75,6 +75,3 @@ testSkipIfWindows("local-agent - mcp tool call", async ({ po }) => {
 
   await po.snapshotMessages();
 });
-
-
-

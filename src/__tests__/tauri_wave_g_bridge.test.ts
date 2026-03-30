@@ -45,7 +45,10 @@ describe("tauri Wave G bridge", () => {
     expect(canInvokeViaTauri("clear-session-data", undefined)).toBe(true);
     expect(canInvokeViaTauri("reload-env-path", undefined)).toBe(true);
     expect(canInvokeViaTauri("get-user-budget", undefined)).toBe(true);
-    expect(canInvokeViaTauri("restart-dyad", undefined)).toBe(true);
+    expect(canInvokeViaTauri("restart-desktop", undefined)).toBe(true);
+    expect(canInvokeViaTauri("test:set-node-mock", { installed: true })).toBe(
+      true,
+    );
   });
 
   it("rejects malformed payloads for mapped system utility commands", () => {

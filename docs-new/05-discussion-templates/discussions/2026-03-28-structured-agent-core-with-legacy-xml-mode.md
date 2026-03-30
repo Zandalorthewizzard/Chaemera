@@ -83,7 +83,7 @@ outline: []
   - an expert-facing legacy mode,
   - a backend-compatible batch application format behind a structured tool boundary.
 
-  5.1. Default runtime
+    5.1. Default runtime
 
 - The default agent should reason in structured tools, not in free-form XML actions.
 - The default context model should be retrieval-first, not whole-repo-first.
@@ -99,7 +99,7 @@ outline: []
   - transparent single-shot output,
   - deliberate token-cost control for BYOK users.
 
-  5.3. Batch execution layer
+    5.3. Batch execution layer
 
 - High-fanout operations should be modeled as a separate batch-application concern, not as proof that XML should stay the main control language.
 - A future structured agent may call a batch executor when it has enough confidence that a bulk operation is appropriate.

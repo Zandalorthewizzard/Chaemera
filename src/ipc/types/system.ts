@@ -238,6 +238,14 @@ export const systemContracts = {
     input: z.void(),
     output: z.void(),
   }),
+
+  testSetNodeMock: defineContract({
+    channel: "test:set-node-mock",
+    input: z.object({
+      installed: z.boolean(),
+    }),
+    output: z.void(),
+  }),
 } as const;
 
 // =============================================================================

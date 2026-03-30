@@ -12,13 +12,17 @@ describe("safeJoin", () => {
     it("should join simple relative paths", () => {
       const result = safeJoin(testBaseDir, "src", "components", "Button.tsx");
       expect(result).toBe(
-        normalizedPath(path.join(testBaseDir, "src", "components", "Button.tsx")),
+        normalizedPath(
+          path.join(testBaseDir, "src", "components", "Button.tsx"),
+        ),
       );
     });
 
     it("should handle single file names", () => {
       const result = safeJoin(testBaseDir, "package.json");
-      expect(result).toBe(normalizedPath(path.join(testBaseDir, "package.json")));
+      expect(result).toBe(
+        normalizedPath(path.join(testBaseDir, "package.json")),
+      );
     });
 
     it("should handle nested directories", () => {
@@ -30,7 +34,9 @@ describe("safeJoin", () => {
 
     it("should handle paths with dots in filename", () => {
       const result = safeJoin(testBaseDir, "config.test.js");
-      expect(result).toBe(normalizedPath(path.join(testBaseDir, "config.test.js")));
+      expect(result).toBe(
+        normalizedPath(path.join(testBaseDir, "config.test.js")),
+      );
     });
 
     it("should handle empty path segments", () => {
@@ -43,16 +49,16 @@ describe("safeJoin", () => {
     it("should handle multiple path segments", () => {
       const result = safeJoin(testBaseDir, "a", "b", "c", "d", "file.txt");
       expect(result).toBe(
-        normalizedPath(
-          path.join(testBaseDir, "a", "b", "c", "d", "file.txt"),
-        ),
+        normalizedPath(path.join(testBaseDir, "a", "b", "c", "d", "file.txt")),
       );
     });
 
     it("should work with actual temp directory", () => {
       const tempDir = os.tmpdir();
       const result = safeJoin(tempDir, "test", "file.txt");
-      expect(result).toBe(normalizedPath(path.join(tempDir, "test", "file.txt")));
+      expect(result).toBe(
+        normalizedPath(path.join(tempDir, "test", "file.txt")),
+      );
     });
 
     it("should handle Windows-style relative paths with backslashes", () => {

@@ -13,4 +13,3 @@ testSkipIfWindows("smart context balanced - simple", async ({ po }) => {
   await po.snapshotServerDump("request");
   await po.snapshotMessages({ replaceDumpPath: true });
 });
-

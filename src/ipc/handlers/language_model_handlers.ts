@@ -5,7 +5,7 @@ import type {
   CreateCustomLanguageModelParams,
 } from "@/ipc/types";
 import { createLoggedHandler } from "./safe_handle";
-import log from "electron-log";
+import { appLog as log } from "@/lib/app_logger";
 import {
   CUSTOM_PROVIDER_PREFIX,
   getLanguageModelProviders,

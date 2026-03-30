@@ -1,4 +1,4 @@
-import log from "electron-log";
+import { appLog as log } from "@/lib/app_logger";
 import fetch from "node-fetch";
 import { createTypedHandler } from "./base";
 import { systemContracts } from "../types/system";

@@ -195,7 +195,6 @@ fn remove_stream_cancel_flag(chat_id: i64) {
     guard.remove(&chat_id);
 }
 
-#[tauri::command]
 pub fn chat_stream(app: AppHandle, request: ChatStreamRequest) -> Result<(), String> {
     let chat_id = request.chat_id;
     let prompt = request.prompt.clone();
@@ -280,7 +279,6 @@ pub fn chat_stream(app: AppHandle, request: ChatStreamRequest) -> Result<(), Str
     Ok(())
 }
 
-#[tauri::command]
 pub fn chat_cancel(chat_id: i64) -> Result<bool, String> {
     let guard = active_chat_streams()
         .lock()
@@ -323,7 +321,6 @@ pub fn agent_tool_set_consent(
     write_json_file(&app, "agent-tool-consents.json", &consents)
 }
 
-#[tauri::command]
 pub fn agent_tool_consent_response(_request: AgentToolConsentResponse) -> Result<(), String> {
     Ok(())
 }
@@ -454,7 +451,6 @@ pub fn mcp_set_tool_consent(
         .map_err(|error| format!("failed to serialize mcp tool consent: {error}"))
 }
 
-#[tauri::command]
 pub fn mcp_tool_consent_response(_request: McpToolConsentResponse) -> Result<(), String> {
     Ok(())
 }

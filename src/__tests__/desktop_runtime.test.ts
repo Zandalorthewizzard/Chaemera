@@ -6,10 +6,7 @@ import {
 
 type ElectronRendererMock = {
   invoke: (channel: string, payload: unknown) => Promise<unknown>;
-  on: (
-    channel: string,
-    listener: (...args: unknown[]) => void,
-  ) => () => void;
+  on: (channel: string, listener: (...args: unknown[]) => void) => () => void;
 };
 
 type ElectronWindowMock = Window & {
@@ -71,15 +68,15 @@ describe("desktop runtime transport selection", () => {
       on: () => () => {},
     };
 
-    const transport = getInvokeTransport("test:set-node-mock", {
+    const transport = getInvokeTransport("legacy:test-channel", {
       nodePath: "C:/Program Files/nodejs",
     });
 
     expect(transport?.kind).toBe("electron");
-    await transport?.invoke("test:set-node-mock", {
+    await transport?.invoke("legacy:test-channel", {
       nodePath: "C:/Program Files/nodejs",
     });
-    expect(electronInvoke).toHaveBeenCalledWith("test:set-node-mock", {
+    expect(electronInvoke).toHaveBeenCalledWith("legacy:test-channel", {
       nodePath: "C:/Program Files/nodejs",
     });
   });

@@ -6,6 +6,9 @@ use std::path::{Component, Path, PathBuf};
 use std::process::Command;
 use walkdir::WalkDir;
 
+const TEST_SELECT_APP_FOLDER_ENV: &str = "CHAEMERA_TAURI_TEST_SELECT_APP_FOLDER";
+const TEST_SELECT_APP_LOCATION_ENV: &str = "CHAEMERA_TAURI_TEST_SELECT_APP_LOCATION";
+
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 struct TemplateDto {
@@ -147,20 +150,34 @@ fn run_git(app_path: &str, args: &[&str]) -> Result<String, String> {
     Ok(String::from_utf8_lossy(&output.stdout).to_string())
 }
 
+fn test_directory_override(env_key: &str) -> Option<PathBuf> {
+    if !std::env::var("E2E_TEST_BUILD").is_ok_and(|value| value == "true") {
+        return None;
+    }
+
+    std::env::var_os(env_key).map(PathBuf::from)
+}
+
+fn folder_result(path: PathBuf) -> Value {
+    let name = path
+        .file_name()
+        .and_then(|part| part.to_str())
+        .map(str::to_string);
+    json!({
+        "path": path.to_string_lossy().to_string(),
+        "name": name,
+    })
+}
+
 #[tauri::command]
 pub fn select_app_folder() -> Result<Value, String> {
+    if let Some(path) = test_directory_override(TEST_SELECT_APP_FOLDER_ENV) {
+        return Ok(folder_result(path));
+    }
+
     let selected = FileDialog::new().pick_folder();
     match selected {
-        Some(path) => {
-            let name = path
-                .file_name()
-                .and_then(|part| part.to_str())
-                .map(str::to_string);
-            Ok(json!({
-                "path": path.to_string_lossy().to_string(),
-                "name": name,
-            }))
-        }
+        Some(path) => Ok(folder_result(path)),
         None => Ok(json!({
             "path": null,
             "name": null,
@@ -170,6 +187,13 @@ pub fn select_app_folder() -> Result<Value, String> {
 
 #[tauri::command]
 pub fn select_app_location(default_path: Option<String>) -> Result<Value, String> {
+    if let Some(path) = test_directory_override(TEST_SELECT_APP_LOCATION_ENV) {
+        return Ok(json!({
+            "path": path.to_string_lossy().to_string(),
+            "canceled": false,
+        }));
+    }
+
     let dialog = match default_path {
         Some(path) => FileDialog::new().set_directory(path),
         None => FileDialog::new(),

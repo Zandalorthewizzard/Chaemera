@@ -20,4 +20,3 @@ test("mention app (oss setup helper)", async ({ po }) => {
 
   await po.snapshotServerDump("request");
 });
-

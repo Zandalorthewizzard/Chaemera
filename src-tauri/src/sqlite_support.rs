@@ -15,7 +15,7 @@ pub struct CopyDirOptions {
 }
 
 const USER_DATA_DIR_OVERRIDE_ENV: &str = "CHAEMERA_TAURI_USER_DATA_DIR";
-const DYAD_APPS_DIR_OVERRIDE_ENV: &str = "CHAEMERA_TAURI_DYAD_APPS_DIR";
+const CHAEMERA_APPS_DIR_OVERRIDE_ENV: &str = "CHAEMERA_TAURI_CHAEMERA_APPS_DIR";
 const DRIZZLE_MIGRATIONS_TABLE: &str = "__drizzle_migrations";
 
 #[derive(Debug, Deserialize)]
@@ -174,17 +174,17 @@ pub fn open_db(app: &AppHandle) -> Result<Connection, String> {
 }
 
 pub fn dyad_apps_base_directory() -> Result<PathBuf, String> {
-    let path = if let Some(override_dir) = override_dir(DYAD_APPS_DIR_OVERRIDE_ENV) {
+    let path = if let Some(override_dir) = override_dir(CHAEMERA_APPS_DIR_OVERRIDE_ENV) {
         override_dir
     } else {
         let home_dir = env::var_os("USERPROFILE")
             .or_else(|| env::var_os("HOME"))
             .map(PathBuf::from)
             .ok_or_else(|| "failed to resolve home directory".to_string())?;
-        home_dir.join("dyad-apps")
+        home_dir.join("chaemera-apps")
     };
 
-    create_directory(&path, "dyad-apps directory")?;
+    create_directory(&path, "chaemera-apps directory")?;
     Ok(path)
 }
 

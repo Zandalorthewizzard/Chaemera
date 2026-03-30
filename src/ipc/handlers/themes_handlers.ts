@@ -149,22 +149,25 @@ export function registerThemesHandlers() {
     },
   );
 
-  createTypedHandler(templateContracts.saveThemeImage, async (_event, params) => {
-    ensureThemeImagesDir();
-    const filename = sanitizeFilename(params.filename);
-    const filepath = path.join(
-      THEME_IMAGES_DIR,
-      `${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${filename}`,
-    );
+  createTypedHandler(
+    templateContracts.saveThemeImage,
+    async (_event, params) => {
+      ensureThemeImagesDir();
+      const filename = sanitizeFilename(params.filename);
+      const filepath = path.join(
+        THEME_IMAGES_DIR,
+        `${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${filename}`,
+      );
 
-    const base64Payload = params.data.includes(",")
-      ? params.data.split(",").at(-1)
-      : params.data;
-    const buffer = Buffer.from(base64Payload ?? "", "base64");
+      const base64Payload = params.data.includes(",")
+        ? params.data.split(",").at(-1)
+        : params.data;
+      const buffer = Buffer.from(base64Payload ?? "", "base64");
 
-    await fs.promises.writeFile(filepath, buffer);
-    return { path: filepath };
-  });
+      await fs.promises.writeFile(filepath, buffer);
+      return { path: filepath };
+    },
+  );
 
   createTypedHandler(
     templateContracts.cleanupThemeImages,

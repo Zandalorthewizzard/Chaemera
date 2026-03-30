@@ -19,6 +19,3 @@ testSkipIfWindows("local-agent - grep search", async ({ po }) => {
   await expect(po.page.getByTestId("dyad-grep").first()).toMatchAriaSnapshot();
   await expect(po.page.getByTestId("dyad-grep").nth(1)).toMatchAriaSnapshot();
 });
-
-
-

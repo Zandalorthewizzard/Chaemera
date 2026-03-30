@@ -17,7 +17,9 @@ outline: []
 
 Pack 2.0 baseline is initialized in `docs-new` for Chaemera.
 
-The current non-chat release smoke checklist is now present, linked through navigation, and manually passed for the current in-scope packaged Windows non-chat surface. Chat migration, brokered OAuth cleanup, large-repo import hardening, and the final docs-linked help entry remain deferred. A canonical chat-runtime migration spec now defines the next release-critical step.
+The current non-chat release smoke checklist is now present, linked through navigation, and manually passed for the current in-scope packaged Windows non-chat surface. Chat migration, brokered OAuth cleanup, large-repo import hardening, and the final docs-linked help entry remain deferred. A canonical chat-runtime migration spec now defines the next release-critical step, and a new architecture reality-check plus scope inventory now describe what the current runtime slice actually contains.
+
+A new separated `07-codex-logos-phase` documentation lane now exists for the mainline daemon-first reset on 2026-03-29. That lane fixes the new roadmap, capability-audit framework, and post-XML chat UI inventory while preserving older conflicting roadmap documents only as historical evidence.
 
 ## Verified Claims
 
@@ -287,6 +289,60 @@ The current non-chat release smoke checklist is now present, linked through navi
 - defining worker protocol types early
 - and refusing to expand Phase 1 into a full Rust or full-parity rewrite
 
+73. A new architecture discussion now exists for the release-line Tauri chat runtime layer, and it explicitly records that the current result should be interpreted as:
+
+- reused TypeScript build-mode runtime logic
+- plus a rebuilt worker and host execution shell for Tauri
+- not as a completed final architecture for post-release AI work
+
+74. A new scope inventory spec now exists for the chat runtime service layer, and it explicitly records that the current slice includes:
+
+- message persistence and placeholder lifecycle
+- redo behavior
+- attachment and selected-component preparation
+- codebase extraction
+- BYOK provider invocation and canned test-response handling
+- XML cleanup, continuation, and auto-fix loops
+- local-agent and MCP hook points
+- completion metadata
+- worker protocol and worker session management
+- Rust/Tauri host supervision and packaging
+
+75. A dedicated `07-codex-logos-phase` docs lane now exists for the new mainline architecture phase beginning on 2026-03-29.
+76. That lane explicitly fixes the new mainline topology as:
+
+- `Codex core taken as-is`
+- headless daemon
+- Chaemera as host/UI
+- OpenCode Desktop as explicit inspiration for server-desktop topology
+
+77. The same roadmap also explicitly isolates legacy chat-runtime repair on its own feature branch rather than leaving it as a hidden mainline prerequisite.
+78. A canonical branch proposal now exists for the split:
+
+- checkpoint tag `checkpoint-2026-03-29-pre-codex-logos-pivot`
+- checkpoint branch `checkpoint/2026-03-29-pre-codex-logos-pivot`
+- mainline branch `feature/codex-logos-daemon`
+- legacy branch `feature/legacy-chat-runtime-repair`
+
+79. A canonical capability-audit framework now exists for the legacy chat-runtime slice, and it fixes:
+
+- audit matrix structure
+- status vocabulary
+- scenario coverage
+- execution order
+- and per-capability `Codex Lane Disposition`
+
+80. A canonical post-XML chat UI inventory now exists, and it explicitly classifies existing chat surfaces as:
+
+- `keep`
+- `adapter`
+- `delete-candidate`
+- `unknown`
+
+81. The new UI inventory explicitly identifies `ActionMarkdownParser`, custom-tag parsing, unclosed-tag repair, and XML-specific remediation buttons as delete-candidate default-path debt.
+82. The same inventory also explicitly preserves the current chat shell, compose shell, queue UI, consent UI, selected-component UI, and much of the action-card presentation layer as reusable or adapter candidates.
+83. The previously conflicting roadmap and post-release-only agent architecture docs are now explicitly marked `historical` rather than remaining active mainline truth.
+
 ## Open / Deferred
 
 1. Full migration of prior docs from `docs/` is pending.
@@ -312,6 +368,10 @@ The current non-chat release smoke checklist is now present, linked through navi
 19. The help entrypoint/docs-link cleanup remains intentionally deferred until the public Chaemera docs surface is ready.
 20. Real packaged Tauri chat execution remains open until the new chat-runtime migration plan is implemented and validated.
 21. The detailed Phase 1 extraction slice remains open until the reusable runtime boundary and protocol types actually land in code.
+22. Real packaged Tauri chat runtime proof remains the next truth gate even though the architecture and scope documents now exist; those docs do not by themselves prove end-to-end chat execution.
+23. The new Codex-Logos lane now has roadmap, audit, and UI inventory foundations, but host/daemon protocol, session model, capability gateway, and first implementation slice specs are still open.
+24. The legacy capability audit framework is fixed, but the actual per-capability baseline-vs-current audit pass is still open.
+25. The post-XML chat UI inventory is fixed, but the actual structured event adapter contract is still open.
 
 ## Evidence
 
@@ -420,6 +480,24 @@ The current non-chat release smoke checklist is now present, linked through navi
 - path: `04-sprint-workflow/specs/2026-03-29-tauri-chat-runtime-phase-1-foundation-spec.md`
   symbol: `Canonical Tauri Chat Runtime Phase 1 Foundation Spec`
   lines: 1-220
+- path: `05-discussion-templates/discussions/2026-03-29-tauri-chat-runtime-layer-reality-check.md`
+  symbol: `Canonical architecture reality check for the release-line Tauri chat runtime layer`
+  lines: 1-180
+- path: `04-sprint-workflow/specs/2026-03-29-chat-runtime-service-layer-scope-and-boundaries.md`
+  symbol: `Canonical scope and boundaries inventory for the chat runtime service layer`
+  lines: 1-220
+- path: `07-codex-logos-phase/README.md`
+  symbol: `Separated documentation lane for the new mainline daemon-first phase`
+  lines: 1-80
+- path: `07-codex-logos-phase/2026-03-29-codex-logos-daemon-first-roadmap.md`
+  symbol: `Canonical mainline roadmap and branch strategy after the 2026-03-29 pivot`
+  lines: 1-260
+- path: `07-codex-logos-phase/2026-03-29-legacy-chat-runtime-capability-audit-matrix.md`
+  symbol: `Canonical audit matrix, status vocabulary, scenario matrix, and execution order`
+  lines: 1-220
+- path: `07-codex-logos-phase/2026-03-29-chat-ui-post-xml-surface-inventory.md`
+  symbol: `Canonical post-XML chat UI keep/adapter/delete inventory`
+  lines: 1-260
 - path: `../scripts/audit-electron-legacy-surface.js`
   symbol: `Electron legacy surface audit summary`
   lines: 159-175

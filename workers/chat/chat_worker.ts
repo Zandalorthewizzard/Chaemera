@@ -2,6 +2,10 @@ import { parentPort } from "node:worker_threads";
 
 import { initializeDatabase } from "../../src/db";
 import { runChatStreamSession } from "../../src/ipc/chat_runtime/run_chat_stream_session";
+import {
+  getTestResponse,
+  streamTestResponse,
+} from "../../src/ipc/chat_runtime/test_responses";
 import type { WorkerInboundMessage } from "../../src/ipc/chat_runtime/types";
 import { ChatWorkerSessionManager } from "../../src/ipc/chat_runtime/worker_session_manager";
 
@@ -10,6 +14,25 @@ initializeDatabase();
 const manager = new ChatWorkerSessionManager((msg) => {
   parentPort?.postMessage(msg);
 });
+
+const runSession = async (ctx: Parameters<typeof runChatStreamSession>[0]) =>
+  runChatStreamSession({
+    ...ctx,
+    getTestResponse,
+    streamTestResponse: async ({
+      chatId,
+      testResponse,
+      updatedChat,
+      placeholderMessageId,
+    }) =>
+      streamTestResponse({
+        ctx,
+        chatId,
+        testResponse,
+        updatedChat,
+        placeholderMessageId,
+      }),
+  });
 
 parentPort?.on(
   "message",
@@ -22,7 +45,7 @@ parentPort?.on(
 
       switch (msg.type) {
         case "start":
-          await manager.handleStart(msg, runChatStreamSession);
+          await manager.handleStart(msg, runSession);
           break;
         case "cancel":
           manager.handleCancel(msg.chatId);

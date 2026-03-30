@@ -73,4 +73,3 @@ testSkipIfWindows(
     expect(imagePart.image_url.url).toMatch(/^data:image\/png;base64,/);
   },
 );
-

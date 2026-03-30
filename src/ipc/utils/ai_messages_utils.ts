@@ -1,6 +1,6 @@
 import { AI_MESSAGES_SDK_VERSION, AiMessagesJsonV6 } from "@/db/schema";
 import type { ModelMessage } from "ai";
-import log from "electron-log";
+import { appLog as log } from "@/lib/app_logger";
 
 const logger = log.scope("ai_messages_utils");
 

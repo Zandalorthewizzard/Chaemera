@@ -34,7 +34,8 @@ import { useUserBudgetInfo } from "@/hooks/useUserBudgetInfo";
 import { type UserSettings } from "@/lib/schemas";
 import { type UserBudgetInfo } from "@/ipc/types/system";
 import { motion, AnimatePresence } from "framer-motion";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useRouterState } from "@tanstack/react-router";
+import { shouldNavigateToHelpRoute } from "@/lib/help_flow";
 
 // =============================================================================
 // Animation constants
@@ -240,6 +241,7 @@ export function HelpDialog({ isOpen, onClose }: HelpDialogProps) {
   const { settings } = useSettings();
   const { userBudget } = useUserBudgetInfo();
   const navigate = useNavigate();
+  const routerState = useRouterState();
 
   // ---------------------------------------------------------------------------
   // Navigation
@@ -345,7 +347,9 @@ ${formatLogsSection(debugInfo)}
 
   const handleOpenHelpPage = () => {
     handleClose();
-    navigate({ to: "/help" });
+    if (shouldNavigateToHelpRoute(routerState.location.pathname)) {
+      navigate({ to: "/help" });
+    }
   };
 
   // ---------------------------------------------------------------------------

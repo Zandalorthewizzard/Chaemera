@@ -46,6 +46,9 @@ related:
       ../05-discussion-templates/discussions/2026-03-28-current-ai-runtime-state.md,
     ],
     [
+      ../05-discussion-templates/discussions/2026-03-29-tauri-chat-runtime-layer-reality-check.md,
+    ],
+    [
       ../05-discussion-templates/discussions/2026-03-28-structured-agent-core-with-legacy-xml-mode.md,
     ],
     [
@@ -86,8 +89,17 @@ related:
       ../04-sprint-workflow/specs/2026-03-29-tauri-chat-runtime-phase-1-foundation-spec.md,
     ],
     [
+      ../04-sprint-workflow/specs/2026-03-29-chat-runtime-service-layer-scope-and-boundaries.md,
+    ],
+    [
       ../04-sprint-workflow/specs/2026-03-29-non-chat-release-smoke-checklist.md,
     ],
+    [../07-codex-logos-phase/README.md],
+    [../07-codex-logos-phase/2026-03-29-codex-logos-daemon-first-roadmap.md],
+    [
+      ../07-codex-logos-phase/2026-03-29-legacy-chat-runtime-capability-audit-matrix.md,
+    ],
+    [../07-codex-logos-phase/2026-03-29-chat-ui-post-xml-surface-inventory.md],
     [../04-sprint-workflow/sprints/README.md],
     [../04-sprint-workflow/sprints/partitioning-v2.md],
     [../04-sprint-workflow/sprints/sprint-slicing-rules.md],
@@ -107,9 +119,10 @@ outline: []
 2. Execution guides: `../02-guides/`.
 3. Templates: `../03-templates/`.
 4. Sprint and discussion authoring: `../04-sprint-workflow/`, `../05-discussion-templates/`.
-5. Optional experiments: `../06-experemental/`.
-6. Agent continuity notes: `../../notes/README.md`.
-7. Integration reference: `../02-guides/integrations-reference.md`.
+5. Codex-Logos mainline architecture lane: `../07-codex-logos-phase/`.
+6. Optional experiments: `../06-experemental/`.
+7. Agent continuity notes: `../../notes/README.md`.
+8. Integration reference: `../02-guides/integrations-reference.md`.
 
 ## Meta Files
 
@@ -138,6 +151,7 @@ outline: []
 - [[../05-discussion-templates/discussions/2026-03-01-tauri-release-cutover-vs-regression.md]]
 - [[../05-discussion-templates/discussions/2026-03-02-ts-rust-leptos-layer-boundaries.md]]
 - [[../05-discussion-templates/discussions/2026-03-28-current-ai-runtime-state.md]]
+- [[../05-discussion-templates/discussions/2026-03-29-tauri-chat-runtime-layer-reality-check.md]]
 - [[../05-discussion-templates/discussions/2026-03-28-structured-agent-core-with-legacy-xml-mode.md]]
 - [[../05-discussion-templates/discussions/2026-03-28-legacy-xml-agent-surface-audit-and-extraction-boundary.md]]
 - [[../05-discussion-templates/discussions/2026-03-28-codex-like-agent-core-reference-and-transfer-plan.md]]
@@ -152,7 +166,12 @@ outline: []
 - [[../04-sprint-workflow/specs/2026-03-28-prod-mvp-release-roadmap.md]]
 - [[../04-sprint-workflow/specs/2026-03-29-tauri-chat-runtime-migration-plan.md]]
 - [[../04-sprint-workflow/specs/2026-03-29-tauri-chat-runtime-phase-1-foundation-spec.md]]
+- [[../04-sprint-workflow/specs/2026-03-29-chat-runtime-service-layer-scope-and-boundaries.md]]
 - [[../04-sprint-workflow/specs/2026-03-29-non-chat-release-smoke-checklist.md]]
+- [[../07-codex-logos-phase/README.md]]
+- [[../07-codex-logos-phase/2026-03-29-codex-logos-daemon-first-roadmap.md]]
+- [[../07-codex-logos-phase/2026-03-29-legacy-chat-runtime-capability-audit-matrix.md]]
+- [[../07-codex-logos-phase/2026-03-29-chat-ui-post-xml-surface-inventory.md]]
 - [[../04-sprint-workflow/sprints/README.md]]
 - [[../04-sprint-workflow/sprints/partitioning-v2.md]]
 - [[../04-sprint-workflow/sprints/sprint-slicing-rules.md]]

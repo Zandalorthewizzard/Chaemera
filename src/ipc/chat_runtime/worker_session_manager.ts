@@ -130,6 +130,14 @@ export class ChatWorkerSessionManager {
 
     try {
       await runSession(ctx);
+      if (abortController.signal.aborted) {
+        this.send({
+          type: "end",
+          chatId: msg.chatId,
+          updatedFiles: false,
+          wasCancelled: true,
+        });
+      }
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       this.send({

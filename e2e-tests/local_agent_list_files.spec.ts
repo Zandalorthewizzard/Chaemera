@@ -31,6 +31,3 @@ testSkipIfWindows("local-agent - list_files include_hidden", async ({ po }) => {
   await listFiles.click();
   await expect(listFiles).toMatchAriaSnapshot();
 });
-
-
-

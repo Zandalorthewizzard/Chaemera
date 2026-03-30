@@ -7,12 +7,14 @@ import { chatMessagesByIdAtom, selectedChatIdAtom } from "@/atoms/chatAtoms";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/queryKeys";
 import { toast } from "sonner";
+import { hasResolvedAppPath } from "@/ipc/runtime/app_path_registry";
 
 export function useVersions(appId: number | null) {
   const [, setVersionsAtom] = useAtom(versionsListAtom);
   const selectedChatId = useAtomValue(selectedChatIdAtom);
   const setMessagesById = useSetAtom(chatMessagesByIdAtom);
   const queryClient = useQueryClient();
+  const canQueryVersions = appId !== null && hasResolvedAppPath(appId);
 
   const {
     data: versions,
@@ -27,7 +29,7 @@ export function useVersions(appId: number | null) {
       }
       return ipc.version.listVersions({ appId });
     },
-    enabled: appId !== null,
+    enabled: canQueryVersions,
     placeholderData: [],
     meta: { showErrorToast: true },
   });
@@ -97,5 +99,6 @@ export function useVersions(appId: number | null) {
     refreshVersions,
     revertVersion: revertVersionMutation.mutateAsync,
     isRevertingVersion: revertVersionMutation.isPending,
+    canQueryVersions,
   };
 }

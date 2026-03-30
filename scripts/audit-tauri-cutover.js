@@ -195,7 +195,9 @@ function extractTauriMappings() {
     throw new Error("Failed to parse Tauri migration channel definitions.");
   }
 
-  const invokeMappings = [...objectMatch[1].matchAll(/"([^"]+)":\s*"([^"]+)"/g)];
+  const invokeMappings = [
+    ...objectMatch[1].matchAll(/"([^"]+)":\s*"([^"]+)"/g),
+  ];
   const eventChannels = [...eventArrayMatch[1].matchAll(/"([^"]+)"/g)].map(
     (match) => match[1],
   );
@@ -208,7 +210,9 @@ function extractTauriMappings() {
     invokeChannels: Object.keys(channelToCommand).sort((left, right) =>
       left.localeCompare(right),
     ),
-    receiveChannels: eventChannels.sort((left, right) => left.localeCompare(right)),
+    receiveChannels: eventChannels.sort((left, right) =>
+      left.localeCompare(right),
+    ),
     commands: Object.values(channelToCommand).sort((left, right) =>
       left.localeCompare(right),
     ),
@@ -226,7 +230,9 @@ function extractRustInvokeHandlers() {
     throw new Error("Failed to parse Rust invoke handler list.");
   }
 
-  const handlerNames = [...handlerMatch[1].matchAll(/\b[A-Za-z0-9_]+::([A-Za-z0-9_]+)\b/g)]
+  const handlerNames = [
+    ...handlerMatch[1].matchAll(/\b[A-Za-z0-9_]+::([A-Za-z0-9_]+)\b/g),
+  ]
     .map((match) => match[1])
     .sort((left, right) => left.localeCompare(right));
 
@@ -286,7 +292,10 @@ function main() {
   console.log(JSON.stringify(summary, null, 2));
 
   printSection("Preload-only test invoke channels", preloadOnlyTestChannels);
-  printSection("Contract invoke channels missing from Tauri mapping", missingInvokeMappings);
+  printSection(
+    "Contract invoke channels missing from Tauri mapping",
+    missingInvokeMappings,
+  );
   printSection(
     "Contract receive channels missing from Tauri mapping",
     missingReceiveMappings,
@@ -299,7 +308,10 @@ function main() {
     "Mapped receive channels without a contract definition",
     mappedButUncontractedReceiveChannels,
   );
-  printSection("Mapped Tauri commands missing from Rust invoke handler", missingRustHandlers);
+  printSection(
+    "Mapped Tauri commands missing from Rust invoke handler",
+    missingRustHandlers,
+  );
   printSection(
     "Rust invoke handlers not referenced by the renderer Tauri mapping",
     unreferencedRustHandlers,

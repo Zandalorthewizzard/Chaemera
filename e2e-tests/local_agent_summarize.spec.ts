@@ -40,6 +40,3 @@ testSkipIfWindows(
     await po.snapshotMessages();
   },
 );
-
-
-

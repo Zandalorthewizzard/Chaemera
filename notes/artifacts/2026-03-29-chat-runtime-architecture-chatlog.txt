@@ -1,0 +1,255 @@
+  Архитектурный verdict: /C:/Work/proj/Chaemera/docs-new/05-discussion-templates/discussions/2026-03-29-tauri-chat-runtime-layer-reality-check.md. Там зафиксировано:
+
+  - что реально произошло с этим слоем после ухода от Electron,
+  - почему текущий результат это reuse AI runtime brain + rebuilt execution shell,
+  - что в Phase 1/2/3 стоит сохранять,
+  - и что нельзя путать с долгосрочной архитектурой.
+
+  Детальный scope inventory: /C:/Work/proj/Chaemera/docs-new/04-sprint-workflow/specs/2026-03-29-chat-runtime-service-layer-scope-and-boundaries.md. Там я разложил, что кроме твоего списка ещё реально сидит в
+  этом срезе:
+
+  - placeholder assistant lifecycle,
+  - redo,
+  - selected-components context,
+  - canned test-response path,
+  - XML continuation/search-replace/auto-fix loops,
+  - local-agent and MCP hooks,
+  - completion metadata,
+  - worker protocol/session management,
+  - Rust host supervision и packaging.
+
+  Короткий вывод по фазам:
+
+  - Phase 1 стоит держать, это реальное extraction improvement.
+  - Phase 2 стоит держать как transitional runtime shell, но не как “финальную архитектуру”.
+  - Phase 3 directionally right, но truth gate у него только один: реальный packaged/runtime proof, а не просто наличие Rust host кода.
+
+  Навигацию тоже синхронизировал:
+
+  - /C:/Work/proj/Chaemera/docs-new/00-navigation/INDEX.md
+  - /C:/Work/proj/Chaemera/docs-new/00-navigation/progress.md
+  - /C:/Work/proj/Chaemera/docs-new/00-navigation/validation.md
+  - /C:/Work/proj/Chaemera/docs-new/00-navigation/inventory.json
+  - /C:/Work/proj/Chaemera/docs-new/05-discussion-templates/README.md
+
+  Проверил, что inventory.json валиден. Код приложения не менял.
+
+  Если хочешь, следующий логичный шаг теперь не писать код вслепую, а на базе этих двух документов собрать новый жёсткий decision/spec:
+
+  1. что именно мы сохраняем из текущего Phase 1/2/3,
+  2. что считаем временным,
+  3. и какой путь берём дальше для полноценного Tauri chat runtime.
+
+
+› прежде чем писать спек скажи мне честно теперь наблюдая общую картину что проще написать все начисто на rust или работать в этом направлении? Исходя из твоего вывода по фазам можно выбросить 2-3 если не
+
+• Честно: зависит от того, что именно писать “с нуля на Rust”.
+
+  Если речь про полный перенос текущего build-mode поведения один в один, то нет, писать всё заново на Rust не проще. В /C:/Work/proj/Chaemera/src/ipc/chat_runtime/run_chat_stream_session.ts слишком много
+  накопленного поведения:
+
+  - persistence,
+  - prompt assembly,
+  - attachments,
+  - codebase extraction,
+  - XML cleanup,
+  - continuation/repair loops,
+  - auto-fix,
+  - MCP/local-agent hooks,
+  - completion metadata.
+
+  Повторить это же в Rust сейчас будет дороже и рискованнее, чем дожимать текущий путь.
+
+  Но если речь про не переносить весь старый brain, а сделать новый более узкий Tauri-native chat runtime, тогда картина меняется. В этом случае:
+
+  - Phase 2 и значительная часть Phase 3 действительно становятся временной инфраструктурой, которую можно выбросить;
+  - а Phase 1 остаётся полезным в основном как разведка и декомпозиция, а не как обязательный production layer.
+
+  Мой прямой вывод без смягчений:
+
+  1. Если цель: быстрее оживить текущий релизный чат — продолжать текущее направление проще.
+  2. Если цель: получить чистую архитектуру, с которой жить дальше — лучше проектировать новый Tauri-native runtime, но не как Rust-порт всего старого build-mode, а как более узкую и трезвую реализацию.
+  3. Phase 2 можно выбросить почти целиком, если вы pivot'ите.
+  4. Phase 3 можно выбросить в большой части тоже, кроме разве что идей про host authority и session ownership.
+  5. Phase 1 я бы не выбрасывал концептуально: он уже показал реальные boundaries и scope. Но как runtime-слой он не обязан пережить pivot.
+
+  - текущий путь проще для short-term ship
+  - новый Rust/Tauri-native путь проще для long-term sanity
+  - а “полный Rust rewrite текущего поведения” — худший из трёх вариантов
+
+  Если хочешь, следующим сообщением я могу разложить это в жёсткую таблицу:
+
+  - continue current direction
+  - clean Rust rewrite of same behavior
+  - new narrower Tauri-native runtime
+    с ценой, рисками и what gets thrown away.
+
+
+› ты сейчас можешь уверенно сказать что понимаешь как оживить текущий релизный чат и что мы не утонем в багах и проблемах?
+
+
+• Нет, уверенно я этого не скажу.
+
+  Я понимаю направление, понимаю границы слоя, понимаю что уже сделано и где реальные точки интеграции. Этого достаточно, чтобы продолжать работу осознанно. Но этого недостаточно, чтобы честно обещать: “сейчас
+  мы просто дожмем и не утонем”.
+
+  Причина простая:
+
+  - слой уже разросся,
+  - у него много скрытого поведения,
+  - transport/runtime shell уже стал заметно сложнее, чем планировалось,
+  - а главное, у нас пока нет железного packaged proof для полного real chat path.
+
+  То есть мой честный уровень уверенности такой:
+
+  - я понимаю систему достаточно, чтобы принять архитектурное решение
+  - я не готов гарантировать, что текущий путь будет дешевым и чистым в добивке
+
+  Если говорить жестко:
+
+  - оживить текущий релизный чат, вероятно, можно
+  - гарантировать, что мы не утонем в интеграционных багах, я не могу
+
+  Именно поэтому я сейчас и не хочу делать вид, что “ещё чуть-чуть и всё заработает”. После всей этой ревизии это было бы нечестно.
+
+  Мой текущий инженерный вывод:
+
+  - если для тебя приоритет минимум архитектурного долга, я бы уже очень серьёзно рассматривал смену направления;
+  - если приоритет самый короткий путь к working release-line chat, текущий путь ещё можно дожимать, но с пониманием, что это уже high-risk integration zone.
+
+  Если хочешь, я сейчас дам уже прямую рекомендацию, без нейтральности:
+
+  - какой путь я бы выбрал на вашем месте после этой ревизии.
+
+
+› что там так жестко было завязано на электрон что сейчас такая задница с переносом, транспорт на node? Мы ведь наоборот от этого хотели уйти верно?
+
+
+• Да. Проблема оказалась не в одном Electron API, а в том, что старый chat runtime был собран как монолитный main-process orchestration layer.
+
+  Что реально было завязано на Electron
+
+  - ipcMain registration и lifecycle в /C:/Work/proj/Chaemera/src/ipc/handlers/chat_stream_handlers.ts
+  - стриминг обратно в UI через event.sender / safeSend в /C:/Work/proj/Chaemera/src/ipc/handlers/chat_stream_handlers.ts
+  - MCP consent и tool execution через Electron event path там же
+  - local-agent hooks, telemetry hooks, cancel bookkeeping тоже там же
+  - implicit “всё доступно прямо здесь” модель:
+      - DB
+      - settings
+      - app path
+      - file system
+      - prompt builders
+      - provider clients
+      - XML post-processing
+      - auto-fix loops
+
+  То есть главная завязка была не “на Electron как библиотеку”, а на однопроцессную архитектуру Electron main process.
+
+  Почему перенос стал тяжелым
+  runChatStreamSession(...) в /C:/Work/proj/Chaemera/src/ipc/chat_runtime/run_chat_stream_session.ts делает слишком много сразу:
+
+  - пишет сообщения в БД
+  - собирает промпт
+  - вытаскивает codebase context
+  - готовит attachments
+  - вызывает модель
+  - стримит чанки
+  - чинит XML
+  - крутит continuation/auto-fix
+  - дёргает MCP/local-agent hooks
+  - финализирует summary и metadata
+
+
+  - renderer contract
+  - host authority
+  - runtime service
+  - worker transport
+  - consent/session lifecycle
+
+  Вот здесь и началась боль.
+
+  Про Node
+  Да, вы хотели уйти от Electron. Но вы не обязательно хотели уйти от Node как runtime для старого TS AI-brain.
+
+  Это важное различие:
+
+  - Electron = desktop shell / main-process platform
+  - Node = среда, в которой может жить существующий TS runtime
+
+  Текущий worker-путь не возвращает Electron. Он сохраняет Node, чтобы не переписывать весь AI brain сразу.
+
+  Значит ли это, что текущий путь противоречит изначальной цели
+  Если цель была:
+
+  - убрать Electron и быстрее оживить чат
+    то текущий путь логичен.
+
+  Если цель была:
+
+  - уйти и от Electron, и от Node transport/runtime зависимости
+    то да, текущий путь уже идёт не туда. Тогда нужен другой курс.
+
+  Коротко
+
+  - задница не потому, что там “много Electron API”
+  - задница потому, что старый chat runtime был архитектурно собран как толстый Electron main-process мозг
+  - Node worker сейчас это не ошибка сам по себе, а способ временно выжить
+  - но если стратегическая цель уже Tauri-native runtime, то этот путь действительно начинает расходиться с ней
+
+  Если хочешь, следующим сообщением я сделаю очень прямую таблицу:
+
+  - что было Electron-specific
+  - что было просто TS/Node-specific
+  - что было architectural monolith
+    чтобы было видно, что именно надо выкидывать, а что можно переносить.
+
+
+› А ведь это дерьмо мы планируем как легаси потому что идем в сторону Logos демона помнишь?
+
+
+• Да. Именно поэтому я и перестал смягчать вывод.
+
+  Если курс остаётся:
+
+  - Chaemera release line сейчас,
+  - Logos-style daemon/core потом,
+
+  то текущий build-mode chat runtime надо рассматривать как легаси release-line runtime, а не как фундамент будущей системы.
+
+  Практически это значит:
+
+  - runChatStreamSession(...) и весь XML-heavy orchestration слой — легаси.
+  - Phase 2 worker shell — тоже в основном легаси-мост.
+  - Phase 3 Tauri host work полезен только частично:
+      - session ownership,
+      - cancel semantics,
+      - consent routing,
+      - event authority у host.
+        Это можно переиспользовать концептуально, но не обязательно кодом.
+
+  Что из этого реально стоит тащить дальше:
+
+  - стабильный renderer contract, если он удобен
+  - понимание scope и boundaries
+  - host-authoritative модель в Tauri
+  - урок, что AI brain нельзя больше держать как толстый desktop-main-process monolith
+
+  Что не стоит тащить как основу:
+
+  - XML/build-mode orchestration
+  - Node worker вокруг старого chat brain
+  - попытку довести текущий runtime до “идеальной архитектуры”
+
+  То есть да: это легаси, и его надо так и трактовать.
+  Не как “почти наш новый core”, а как временный слой, который либо помогает дожить до следующего архитектурного этапа, либо вообще не стоит дальше полировать.
+
+  Отсюда и главный вопрос уже не технический, а продуктовый:
+
+  - вам нужен working release-line chat любой ценой в этом легаси-контуре,
+  - или вы готовы раньше свернуть в более чистую Tauri/Logos-compatible линию.
+
+  Если хочешь, я следующим сообщением дам уже жёсткий recommendation:
+
+  - что я бы заморозил как legacy,
+  - что добил бы только до минимального ship state,
+  - и что начал бы проектировать уже как pre-Logos core path.

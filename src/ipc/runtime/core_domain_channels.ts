@@ -133,7 +133,7 @@ export const TAURI_MIGRATION_CHANNEL_TO_COMMAND = {
   "does-release-note-exist": "does_release_note_exist",
   "get-user-budget": "get_user_budget",
   "upload-to-signed-url": "upload_to_signed_url",
-  "restart-dyad": "restart_dyad",
+  "restart-desktop": "restart_desktop",
   "add-to-favorite": "add_to_favorite",
   "update-app-commands": "update_app_commands",
   "plan:create": "plan_create",

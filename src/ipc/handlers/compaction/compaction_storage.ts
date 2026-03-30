@@ -6,7 +6,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import log from "electron-log";
+import { appLog as log } from "@/lib/app_logger";
 import { ensureDyadGitignored } from "@/ipc/handlers/planUtils";
 
 const logger = log.scope("compaction_storage");

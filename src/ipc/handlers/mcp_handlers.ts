@@ -1,4 +1,4 @@
-import log from "electron-log";
+import { appLog as log } from "@/lib/app_logger";
 import { db } from "../../db";
 import { mcpServers, mcpToolConsents } from "../../db/schema";
 import { eq, and } from "drizzle-orm";

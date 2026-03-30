@@ -122,7 +122,7 @@ outline: []
   - chat history as source of truth;
   - AI orchestration or agent memory.
 
-  7.3. Diagnostic Log vs Console Log
+    7.3. Diagnostic Log vs Console Log
 
 - `app_logger`-backed file logs are for host diagnostics and support bundles.
 - `src/lib/log_store.ts` is for per-app preview/runtime console entries.

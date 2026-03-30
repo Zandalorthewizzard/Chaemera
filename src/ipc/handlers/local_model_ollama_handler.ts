@@ -1,4 +1,4 @@
-import log from "electron-log";
+import { appLog as log } from "@/lib/app_logger";
 import { createTypedHandler } from "./base";
 import { languageModelContracts } from "../types/language-model";
 import type { LocalModel } from "../types/language-model";

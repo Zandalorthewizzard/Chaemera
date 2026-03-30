@@ -6,7 +6,9 @@ export interface SearchReplaceBlock {
 const BLOCK_REGEX =
   /(?:^|\n)<<<<<<<\s+SEARCH>?\s*\n([\s\S]*?)(?:\n)?(?:(?<=\n)(?<!\\)=======\s*\n)([\s\S]*?)(?:\n)?(?:(?<=\n)(?<!\\)>>>>>>>+\s+REPLACE)(?=\n|$)/g;
 
-export function parseSearchReplaceBlocks(content: string): SearchReplaceBlock[] {
+export function parseSearchReplaceBlocks(
+  content: string,
+): SearchReplaceBlock[] {
   const blocks: SearchReplaceBlock[] = [];
 
   for (const match of content.matchAll(BLOCK_REGEX)) {

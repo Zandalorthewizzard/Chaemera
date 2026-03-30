@@ -59,6 +59,3 @@ testSkipIfWindows("local-agent - upload file to codebase", async ({ po }) => {
   // Snapshot the messages
   await po.snapshotMessages();
 });
-
-
-

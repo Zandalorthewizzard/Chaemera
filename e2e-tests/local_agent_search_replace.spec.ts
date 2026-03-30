@@ -22,6 +22,3 @@ testSkipIfWindows("local-agent - search_replace edit", async ({ po }) => {
     files: ["src/App.tsx"],
   });
 });
-
-
-

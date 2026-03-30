@@ -42,6 +42,3 @@ testSkipIfWindows("local-agent - parallel tool calls", async ({ po }) => {
     files: ["src/utils/math.ts", "src/utils/string.ts"],
   });
 });
-
-
-

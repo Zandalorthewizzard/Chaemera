@@ -96,7 +96,7 @@ outline: []
   - writable boundaries,
   - and project-specific runtime metadata.
 
-  3.2. Terminal and console gap
+    3.2. Terminal and console gap
 
 - The current `shell_handler.ts` only opens external URLs and shows items in folders.
 - The current preview `Console.tsx` and `PreviewPanel.tsx` are app-log viewers attached to the preview/runtime panel, not a general coding terminal.
@@ -104,7 +104,7 @@ outline: []
   - a Codex-like structured agent core naturally wants shell and patch runtimes,
   - and the same work can satisfy the long-standing demand for real terminal support.
 
-  3.3. Current AI runtime gap
+    3.3. Current AI runtime gap
 
 - `ask`, `plan`, and `local-agent` are already routed away from the live XML build path, but OSS currently stubs them.
 - That gap should be treated as an insertion point for the new structured core rather than as a reason to extend XML further.

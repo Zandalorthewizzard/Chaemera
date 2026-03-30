@@ -3,7 +3,7 @@
 import { Worker } from "worker_threads";
 import path from "path";
 import { findAvailablePort } from "./port_utils";
-import log from "electron-log";
+import { appLog as log } from "@/lib/app_logger";
 
 const logger = log.scope("start_proxy_server");
 

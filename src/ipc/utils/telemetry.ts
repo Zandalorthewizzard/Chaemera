@@ -1,4 +1,4 @@
-import log from "electron-log";
+import { appLog as log } from "@/lib/app_logger";
 import { TelemetryEventPayload } from "@/ipc/types";
 import type { IpcSenderLike } from "./ipc_sender_types";
 

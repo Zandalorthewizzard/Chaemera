@@ -408,7 +408,7 @@ pub fn upload_to_signed_url(request: SignedUploadRequest) -> Result<(), String> 
 }
 
 #[tauri::command]
-pub fn restart_dyad(app: AppHandle) -> Result<(), String> {
+pub fn restart_desktop(app: AppHandle) -> Result<(), String> {
     app.request_restart();
     Ok(())
 }

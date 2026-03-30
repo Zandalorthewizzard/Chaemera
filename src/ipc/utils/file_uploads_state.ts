@@ -1,4 +1,4 @@
-import log from "electron-log";
+import { appLog as log } from "@/lib/app_logger";
 
 const logger = log.scope("file_uploads_state");
 

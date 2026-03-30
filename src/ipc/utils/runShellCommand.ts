@@ -1,5 +1,5 @@
 import { spawn } from "child_process";
-import log from "electron-log";
+import { appLog as log } from "@/lib/app_logger";
 
 const logger = log.scope("runShellCommand");
 

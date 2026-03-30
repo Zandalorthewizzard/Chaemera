@@ -2,12 +2,24 @@
 id: chaemera-spec-post-release-agent-core-boundary-and-host-daemon-architecture-2026-03-28
 title: Post-Release Agent Core Boundary and Host-Daemon Architecture
 type: spec
-status: active
-tags: [spec, agent, architecture, codex, logos, post-release, daemon, terminal]
+status: historical
+tags:
+  [
+    spec,
+    agent,
+    architecture,
+    codex,
+    logos,
+    post-release,
+    daemon,
+    terminal,
+    historical,
+  ]
 related:
   [
     [../spec-template.md],
     [../../03-templates/strict-spec.template.md],
+    [../../07-codex-logos-phase/2026-03-29-codex-logos-daemon-first-roadmap.md],
     [2026-03-02-chaemera-next-phase-product-roadmap.md],
     [2026-03-26-agent-access-foundation-and-hosted-entitlement-detachment.md],
     [
@@ -37,6 +49,10 @@ outline: []
 
 1. Start Here
 
+- Historical notice:
+  - this document records the pre-pivot assumption that the daemon architecture was `post-release only`;
+  - that timing assumption was superseded on 2026-03-29 by the active mainline roadmap in `docs-new/07-codex-logos-phase/2026-03-29-codex-logos-daemon-first-roadmap.md`;
+  - keep this file as historical evidence for the earlier boundary model, not as the active implementation sequence.
 - This document is the canonical source of truth for the future Chaemera agent-layer architecture after the current release line ships.
 - `NOT MVP SCOPE`: this spec does not expand the current MVP or release scope.
 - The current MVP remains the already accepted release line:
@@ -170,7 +186,7 @@ outline: []
   - the default tool orchestration loop,
   - core model/provider logic.
 
-  8.2. Agent Core Daemon
+    8.2. Agent Core Daemon
 
 - Owns:
   - session truth,
@@ -188,7 +204,7 @@ outline: []
   - hidden XML-first reasoning,
   - desktop-only state as its system contract.
 
-  8.3. Host Capability Gateway
+    8.3. Host Capability Gateway
 
 - Owns:
   - exposing host-side capabilities to the daemon,
@@ -210,7 +226,7 @@ outline: []
   - default edit semantics,
   - or the canonical structured agent contract.
 
-  8.5. Optional CLI or Headless Clients
+    8.5. Optional CLI or Headless Clients
 
 - May exist later as clients of the same daemon boundary.
 - Must not become the canonical owner of state or protocol.

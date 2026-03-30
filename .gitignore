@@ -101,6 +101,7 @@ out/
 # Tauri
 src-tauri/gen/
 src-tauri/target/
+.tauri-smoke-dist/
 
 sqlite.db
 userData/

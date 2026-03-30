@@ -14,6 +14,3 @@ testSkipIfWindows("local-agent - code search", async ({ po }) => {
 
   await po.snapshotMessages();
 });
-
-
-

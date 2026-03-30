@@ -169,7 +169,9 @@ function sanitizeAssistantMessage(message: ModelMessage): {
   };
 }
 
-export function prepareStepMessages<TOptions extends { messages: ModelMessage[] }>(
+export function prepareStepMessages<
+  TOptions extends { messages: ModelMessage[] },
+>(
   options: TOptions,
   pendingUserMessages: UserMessageContentPart[][],
   allInjectedMessages: InjectedMessage[],

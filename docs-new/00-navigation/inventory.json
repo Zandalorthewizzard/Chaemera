@@ -607,6 +607,38 @@
       "source_of_truth": "discussion"
     },
     {
+      "id": "chaemera-codex-logos-phase-hub",
+      "path": "07-codex-logos-phase/README.md",
+      "type": "hub",
+      "focus": ["Codex-Logos Phase Hub"],
+      "status": "active",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-spec-codex-logos-daemon-first-roadmap-2026-03-29",
+      "path": "07-codex-logos-phase/2026-03-29-codex-logos-daemon-first-roadmap.md",
+      "type": "spec",
+      "focus": ["Codex-Logos Daemon-First Roadmap"],
+      "status": "active",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-spec-legacy-chat-runtime-capability-audit-matrix-2026-03-29",
+      "path": "07-codex-logos-phase/2026-03-29-legacy-chat-runtime-capability-audit-matrix.md",
+      "type": "spec",
+      "focus": ["Legacy Chat Runtime Capability Audit Matrix"],
+      "status": "active",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-spec-chat-ui-post-xml-surface-inventory-2026-03-29",
+      "path": "07-codex-logos-phase/2026-03-29-chat-ui-post-xml-surface-inventory.md",
+      "type": "spec",
+      "focus": ["Chat UI Post-XML Surface Inventory"],
+      "status": "active",
+      "source_of_truth": "governance"
+    },
+    {
       "id": "chaemera-docs-readme",
       "path": "README.md",
       "type": "guide",
@@ -627,6 +659,14 @@
       "path": "05-discussion-templates/discussions/2026-03-28-current-ai-runtime-state.md",
       "type": "discussion",
       "focus": ["Current AI Runtime State"],
+      "status": "active",
+      "source_of_truth": "code-audit"
+    },
+    {
+      "id": "chaemera-discussion-tauri-chat-runtime-layer-reality-check-2026-03-29",
+      "path": "05-discussion-templates/discussions/2026-03-29-tauri-chat-runtime-layer-reality-check.md",
+      "type": "discussion",
+      "focus": ["Tauri Chat Runtime Layer Reality Check"],
       "status": "active",
       "source_of_truth": "code-audit"
     },
@@ -659,7 +699,7 @@
       "path": "04-sprint-workflow/specs/2026-03-02-chaemera-next-phase-product-roadmap.md",
       "type": "spec",
       "focus": ["Chaemera Next-Phase Product Roadmap"],
-      "status": "active",
+      "status": "historical",
       "source_of_truth": "governance"
     },
     {
@@ -677,7 +717,7 @@
       "focus": [
         "Post-Release Agent Core Boundary and Host-Daemon Architecture"
       ],
-      "status": "active",
+      "status": "historical",
       "source_of_truth": "governance"
     },
     {
@@ -719,6 +759,14 @@
       "focus": ["Tauri Chat Runtime Phase 1 Foundation Spec"],
       "status": "active",
       "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-spec-chat-runtime-service-layer-scope-and-boundaries-2026-03-29",
+      "path": "04-sprint-workflow/specs/2026-03-29-chat-runtime-service-layer-scope-and-boundaries.md",
+      "type": "spec",
+      "focus": ["Chat Runtime Service Layer Scope and Boundaries"],
+      "status": "active",
+      "source_of_truth": "code-audit"
     },
     {
       "id": "chaemera-spec-non-chat-release-smoke-checklist-2026-03-29",

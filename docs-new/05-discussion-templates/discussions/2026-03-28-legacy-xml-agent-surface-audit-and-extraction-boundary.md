@@ -70,7 +70,7 @@ outline: []
   - unclosed write continuation,
   - and XML-oriented auto-fix retries.
 
-  3.2. Remove from the future default structured agent runtime
+    3.2. Remove from the future default structured agent runtime
 
 - Any requirement that the assistant emit `dyad-*` tags as its primary control language.
 - Any generic response-processing path that assumes filesystem actions arrive embedded in assistant text.

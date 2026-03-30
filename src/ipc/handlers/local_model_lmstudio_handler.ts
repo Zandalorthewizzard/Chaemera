@@ -1,4 +1,4 @@
-import log from "electron-log";
+import { appLog as log } from "@/lib/app_logger";
 import { LM_STUDIO_BASE_URL } from "../utils/lm_studio_utils";
 import { createTypedHandler } from "./base";
 import { languageModelContracts } from "../types/language-model";

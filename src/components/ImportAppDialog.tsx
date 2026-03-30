@@ -35,6 +35,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSettings } from "@/hooks/useSettings";
 import { UnconnectedGitHubConnector } from "@/components/GitHubConnector";
+import { getImportedAppLandingRoute } from "@/lib/import_flow";
 
 interface ImportAppDialogProps {
   isOpen: boolean;
@@ -126,14 +127,16 @@ export function ImportAppDialog({ isOpen, onClose }: ImportAppDialogProps) {
       setSelectedAppId(result.app.id);
       showSuccess(t("home:successfullyImported", { name: result.app.name }));
       const chatId = await ipc.chat.createChat(result.app.id);
-      navigate({ to: "/chat", search: { id: chatId } });
+      await refreshApps();
+      onClose();
+      navigate(getImportedAppLandingRoute(result.app.id));
       if (!result.hasAiRules) {
         streamMessage({
           prompt: AI_RULES_PROMPT,
           chatId,
         });
       }
-      onClose();
+      void chatId;
     } catch (error: unknown) {
       showError(
         t("home:failedImportRepo", { error: (error as any).toString() }),
@@ -162,14 +165,16 @@ export function ImportAppDialog({ isOpen, onClose }: ImportAppDialogProps) {
       setSelectedAppId(result.app.id);
       showSuccess(t("home:successfullyImported", { name: result.app.name }));
       const chatId = await ipc.chat.createChat(result.app.id);
-      navigate({ to: "/chat", search: { id: chatId } });
+      await refreshApps();
+      onClose();
+      navigate(getImportedAppLandingRoute(result.app.id));
       if (!result.hasAiRules) {
         streamMessage({
           prompt: AI_RULES_PROMPT,
           chatId,
         });
       }
-      onClose();
+      void chatId;
     } catch (error: unknown) {
       showError(
         t("home:failedImportRepo", { error: (error as any).toString() }),
@@ -259,17 +264,16 @@ export function ImportAppDialog({ isOpen, onClose }: ImportAppDialogProps) {
       showSuccess(
         !hasAiRules ? t("home:appImportedWithRules") : t("home:appImported"),
       );
+      await refreshApps();
+      setSelectedAppId(result.appId);
       onClose();
-
-      navigate({ to: "/chat", search: { id: result.chatId } });
+      navigate(getImportedAppLandingRoute(result.appId));
       if (!hasAiRules) {
         streamMessage({
           prompt: AI_RULES_PROMPT,
           chatId: result.chatId,
         });
       }
-      setSelectedAppId(result.appId);
-      await refreshApps();
     },
     onError: (error: Error) => {
       showError(error.message);
@@ -394,7 +398,7 @@ export function ImportAppDialog({ isOpen, onClose }: ImportAppDialogProps) {
 
                     <div className="flex items-center space-x-2">
                       <Checkbox
-                        id="copy-to-dyad-apps"
+                        id="copy-to-chaemera-apps"
                         aria-label="Copy to the apps folder"
                         checked={copyToApps}
                         onCheckedChange={(checked) =>
@@ -403,7 +407,7 @@ export function ImportAppDialog({ isOpen, onClose }: ImportAppDialogProps) {
                         disabled={importAppMutation.isPending}
                       />
                       <label
-                        htmlFor="copy-to-dyad-apps"
+                        htmlFor="copy-to-chaemera-apps"
                         className="text-xs sm:text-sm cursor-pointer"
                       >
                         {t("home:copyToApps")}

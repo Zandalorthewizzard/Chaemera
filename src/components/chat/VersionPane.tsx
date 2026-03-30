@@ -30,6 +30,7 @@ export function VersionPane({ isVisible, onClose }: VersionPaneProps) {
     refreshVersions,
     revertVersion,
     isRevertingVersion,
+    canQueryVersions,
   } = useVersions(appId);
 
   const [selectedVersionId, setSelectedVersionId] = useAtom(
@@ -43,7 +44,7 @@ export function VersionPane({ isVisible, onClose }: VersionPaneProps) {
     async function updatePaneState() {
       // When pane becomes visible after being closed
       if (isVisible && !wasVisibleRef.current) {
-        if (appId) {
+        if (appId && canQueryVersions) {
           await refreshVersions();
           setCachedVersions(liveVersions);
         }
@@ -52,7 +53,7 @@ export function VersionPane({ isVisible, onClose }: VersionPaneProps) {
       // Reset when closing
       if (!isVisible && selectedVersionId) {
         setSelectedVersionId(null);
-        if (appId) {
+        if (appId && canQueryVersions) {
           await checkoutVersion({ appId, versionId: "main" });
           if (app?.neonProjectId) {
             await restartApp();
@@ -71,6 +72,7 @@ export function VersionPane({ isVisible, onClose }: VersionPaneProps) {
     checkoutVersion,
     refreshVersions,
     liveVersions,
+    canQueryVersions,
   ]);
 
   // Initial load of cached versions when live versions become available
@@ -85,7 +87,7 @@ export function VersionPane({ isVisible, onClose }: VersionPaneProps) {
   }
 
   const handleVersionClick = async (version: Version) => {
-    if (appId) {
+    if (appId && canQueryVersions) {
       setSelectedVersionId(version.oid);
       try {
         await checkoutVersion({ appId, versionId: version.oid });

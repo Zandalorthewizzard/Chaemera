@@ -1,4 +1,5 @@
 mod core_domains;
+mod chat_worker_host;
 mod leptos_shell;
 mod runtime_lifecycle;
 mod sqlite_support;
@@ -145,7 +146,7 @@ pub fn run() {
             wave_g_domains::does_release_note_exist,
             wave_g_domains::get_user_budget,
             wave_g_domains::upload_to_signed_url,
-            wave_g_domains::restart_dyad,
+            wave_g_domains::restart_desktop,
             wave_j_domains::add_to_favorite,
             wave_j_domains::update_app_commands,
             wave_l_domains::get_chat,
@@ -177,13 +178,13 @@ pub fn run() {
             wave_i_domains::plan_update,
             wave_i_domains::plan_delete,
             wave_f_domains::open_external_url,
-            wave_c_domains::chat_stream,
-            wave_c_domains::chat_cancel,
+            chat_worker_host::chat_stream,
+            chat_worker_host::chat_cancel,
             wave_w_domains::chat_count_tokens,
             wave_ai_domains::chat_add_dep,
             wave_c_domains::agent_tool_get_tools,
             wave_c_domains::agent_tool_set_consent,
-            wave_c_domains::agent_tool_consent_response,
+            chat_worker_host::agent_tool_consent_response,
             wave_c_domains::mcp_list_servers,
             wave_c_domains::mcp_create_server,
             wave_c_domains::mcp_update_server,
@@ -191,7 +192,7 @@ pub fn run() {
             wave_c_domains::mcp_list_tools,
             wave_c_domains::mcp_get_tool_consents,
             wave_c_domains::mcp_set_tool_consent,
-            wave_c_domains::mcp_tool_consent_response,
+            chat_worker_host::mcp_tool_consent_response,
             wave_d_domains::vercel_save_token,
             wave_d_domains::vercel_list_projects,
             wave_d_domains::vercel_is_project_available,

@@ -29,10 +29,24 @@ While continuing the Electron removal pass, I found two separate threads worth p
 ## Observations
 
 - `hasHostedAgentAccess()` remains hard-disabled by design, so `useFreeAgentQuota()` is dormant rather than accidentally inverted.
-- `e2e-tests/tauri-select_component.spec.ts` still needs more work before it can replace the legacy Electron version.
-- The current blocker appears to be the completion wait / app startup timing, not a missing contract mapping or missing provider catalog entry.
+- `e2e-tests/tauri-select_component.spec.ts` is still WIP and should not replace the legacy Electron version yet.
+- The Tauri flow does not reach a stable preview-ready state with the current harness:
+  - waiting for `Retry` fails because that button never appears in this path
+  - waiting for assistant text also fails
+  - waiting for `Cancel generation` to disappear still leaves the preview iframe absent
+- The latest error snapshot shows the app stuck in:
+  - `Chat in progress`
+  - `Cancel generation`
+  - `Starting your app server...`
+  - `Trying to restart app...`
+  - the setup banner is still present
+- The failure is therefore a readiness/timing mismatch in the browser-backed Tauri harness, not a missing IPC mapping or provider catalog entry.
 
 ## Follow-up
 
 - Keep the active runtime wording aligned with the BYOK-first product stance.
 - Revisit `select_component` only after a more reliable Tauri readiness signal is identified.
+- Keep the old Electron spec active until the Tauri path is actually reliable.
+- See also:
+  - `notes/2026-03-26-select-component-vs-visual-editing-status.md`
+  - this note separates `select component as chat context` from the stubbed `full visual editing` backend path.

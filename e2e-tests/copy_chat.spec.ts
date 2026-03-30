@@ -18,7 +18,6 @@ test("copy message content - basic functionality", async ({ po }) => {
     navigator.clipboard.readText(),
   );
 
-  // Test that copy functionality works
   expect(clipboardContent.length).toBeGreaterThan(0);
   expect(clipboardContent).not.toContain("<dyad-");
 });
@@ -42,7 +41,6 @@ test("copy message content - dyad-write conversion", async ({ po }) => {
     navigator.clipboard.readText(),
   );
 
-  // Should convert dyad-write to markdown format (flexible path matching)
   expect(clipboardContent).toContain("### File:");
   expect(clipboardContent).toContain("```");
   expect(clipboardContent).not.toContain("<dyad-write");
@@ -57,12 +55,10 @@ test.skip("copy button tooltip states", async ({ po }) => {
 
   const copyButton = po.page.getByTestId("copy-message-button").first();
 
-  // Check initial tooltip
   await copyButton.hover();
   const tooltip = po.page.locator('[role="tooltip"]');
   await expect(tooltip).toHaveText("Copy");
 
-  // Copy and check "Copied!" state
   await po.page
     .context()
     .grantPermissions(["clipboard-read", "clipboard-write"]);

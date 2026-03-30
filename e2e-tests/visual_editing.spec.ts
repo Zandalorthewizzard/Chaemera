@@ -223,4 +223,3 @@ testSkipIfWindows("discard changes", async ({ po }) => {
   // The file content should be the same as before
   expect(appFileAfter).toBe(appFileBefore);
 });
-
