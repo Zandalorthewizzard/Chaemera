@@ -2,7 +2,7 @@
 id: chaemera-spec-codex-logos-daemon-first-roadmap-2026-03-29
 title: Codex-Logos Daemon-First Roadmap
 type: spec
-status: active
+status: historical
 tags: [spec, roadmap, codex, logos, daemon, opencode, architecture]
 related:
   [
@@ -39,6 +39,10 @@ outline: []
 
 1. Start Here
 
+- Historical notice:
+  - this document records the stronger daemon-first planning stance from before the completed legacy runtime audit changed the release-line priority;
+  - it is retained as important historical context, not as the current project-level consensus;
+  - read it together with `docs-new/07-codex-logos-phase/2026-03-30-legacy-chat-runtime-audit-conclusions-and-codex-cut-line.md`, `docs-new/07-codex-logos-phase/2026-03-30-legacy-xml-release-mode-hardening-and-rust-reliability-plan.md`, and the `META-CONSENSUS` section in `AGENTS.md`.
 - This document is the canonical roadmap for the new mainline architecture phase beginning on 2026-03-29.
 - It supersedes the older assumption that the agent daemon and Codex-derived runtime are strictly `post-release only`.
 - The mainline architecture is now:

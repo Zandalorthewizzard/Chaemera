@@ -2,7 +2,7 @@
 id: chaemera-spec-prod-mvp-release-roadmap-2026-03-28
 title: Production MVP Release Roadmap
 type: spec
-status: active
+status: historical
 tags: [spec, roadmap, prod, mvp, release, tauri, detachment]
 related:
   [
@@ -30,6 +30,10 @@ outline: []
 
 1. Start Here
 
+- Historical notice:
+  - this document captures the pre-audit production-release framing from before the legacy runtime audit substantially changed the exact release-line understanding;
+  - keep it as historical release planning context, not as the current controlling roadmap for legacy XML release readiness;
+  - the current controlling release-line docs are `docs-new/07-codex-logos-phase/2026-03-30-legacy-chat-runtime-audit-conclusions-and-codex-cut-line.md` and `docs-new/07-codex-logos-phase/2026-03-30-legacy-xml-release-mode-hardening-and-rust-reliability-plan.md`.
 - This document is the canonical orientational roadmap for what still needs to be done before the first production MVP release of Chaemera.
 - It translates the current state of the repository, current release strategy, and current open gaps into one release-scoped checklist.
 - It is release scope, not post-release architecture work.

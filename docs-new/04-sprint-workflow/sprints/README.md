@@ -2,7 +2,7 @@
 id: chaemera-sprint-parallel-hub
 title: Sprint Execution Hub (Parallel 3-Agent)
 type: guide
-status: active
+status: historical
 tags: [sprint, workflow, parallel, agents]
 related:
   [
@@ -21,6 +21,12 @@ outline: []
 ---
 
 # Sprint Execution Hub (Parallel 3-Agent)
+
+## Historical Notice
+
+1. This hub is retained as execution history for the earlier multi-agent sprint planning system.
+2. It is no longer the primary control surface for the current post-audit release-line planning stance.
+3. Read it as implementation history and archive context unless a current active document explicitly sends you back here.
 
 ## Goal
 

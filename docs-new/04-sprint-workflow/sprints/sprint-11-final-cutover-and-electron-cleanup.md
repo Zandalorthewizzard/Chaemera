@@ -2,7 +2,7 @@
 id: chaemera-sprint-11-final-cutover-and-electron-cleanup
 title: Sprint 11 - Final Cutover and Electron Cleanup
 type: sprint
-status: active
+status: historical
 tags: [sprint, migration, cutover, cleanup]
 related:
   [
@@ -17,6 +17,12 @@ outline: []
 ---
 
 # Sprint 11 - Final Cutover and Electron Cleanup
+
+## Historical Notice
+
+1. This sprint records an earlier planning assumption that one final cutover sprint could close the migration line.
+2. The later runtime audit and release-line hardening work narrowed the real remaining work differently.
+3. Keep this file as historical execution context, not as the current release-line control document.
 
 ## Sprint Goal
 
