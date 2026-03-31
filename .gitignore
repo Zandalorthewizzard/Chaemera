@@ -116,3 +116,9 @@ __pycache__/
 
 # Storybook
 storybook-static/
+
+# Local audit / scratch artifacts
+docs-temp/
+manual-fixtures/
+Legacy-XML-Audit-checkpoint.md
+nul
