@@ -155,10 +155,10 @@ jobs:
         env:
           NODE_OPTIONS: "--max-old-space-size=4096"
         run: npm run build:renderer
-      - name: Build chat worker bundle
+      - name: Build worker bundles
         env:
           NODE_OPTIONS: "--max-old-space-size=4096"
-        run: npm run build:chat-worker
+        run: npm run build:workers
       - name: Check Tauri runtime
         run: npm run check:tauri
       - name: Build real Tauri runtime app

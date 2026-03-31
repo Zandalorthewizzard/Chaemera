@@ -5,7 +5,7 @@
   "identifier": "io.chaemera.app",
   "build": {
     "beforeDevCommand": "npm run dev:renderer",
-    "beforeBuildCommand": "npm run build:renderer && npm run build:chat-worker",
+    "beforeBuildCommand": "npm run build:renderer && npm run build:workers",
     "devUrl": "http://localhost:5173",
     "frontendDist": "../dist"
   },
