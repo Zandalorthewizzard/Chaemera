@@ -155,6 +155,10 @@ jobs:
         env:
           NODE_OPTIONS: "--max-old-space-size=4096"
         run: npm run build:renderer
+      - name: Build chat worker bundle
+        env:
+          NODE_OPTIONS: "--max-old-space-size=4096"
+        run: npm run build:chat-worker
       - name: Check Tauri runtime
         run: npm run check:tauri
       - name: Build real Tauri runtime app
@@ -332,17 +336,34 @@ jobs:
           pattern: blob-report-*
           merge-multiple: true
 
+      - name: Detect blob reports
+        id: blob-reports
+        shell: bash
+        run: |
+          if [ -d all-blob-reports ] && find all-blob-reports -type f | grep -q .; then
+            echo "has_reports=true" >> $GITHUB_OUTPUT
+          else
+            mkdir -p all-blob-reports
+            echo "has_reports=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Debug - List downloaded blob reports
         run: |
           echo "Contents of all-blob-reports directory:"
-          ls -la all-blob-reports/
+          ls -la all-blob-reports/ || true
           echo "File sizes and details:"
           find all-blob-reports/ -type f -exec ls -lh {} \; || echo "No files found"
 
       - name: Merge into HTML Report
+        if: steps.blob-reports.outputs.has_reports == 'true'
         run: PLAYWRIGHT_HTML_OUTPUT_DIR=playwright-report npx playwright merge-reports --config=merge.config.ts ./all-blob-reports
 
+      - name: Skip HTML merge when no blob reports exist
+        if: steps.blob-reports.outputs.has_reports != 'true'
+        run: echo "No blob reports were uploaded; skipping Playwright report merge."
+
       - name: Debug - List playwright-report contents
+        if: steps.blob-reports.outputs.has_reports == 'true'
         run: |
           echo "Contents of playwright-report directory:"
           ls -la playwright-report/ || echo "playwright-report directory does not exist"
@@ -350,6 +371,7 @@ jobs:
           ls -la
 
       - name: Upload HTML report
+        if: steps.blob-reports.outputs.has_reports == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: html-report
@@ -358,6 +380,7 @@ jobs:
           overwrite: true
 
       - name: Generate Playwright summary
+        if: steps.blob-reports.outputs.has_reports == 'true'
         uses: actions/github-script@v7
         env:
           PLAYWRIGHT_RUN_ID: ${{ github.run_id }}
