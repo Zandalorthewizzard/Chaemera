@@ -124,6 +124,7 @@ jobs:
         run: |
           cargo install tauri-driver --locked
           cargo install --git https://github.com/chippers/msedgedriver-tool
+          Set-Location "$HOME/.cargo/bin"
           & "$HOME/.cargo/bin/msedgedriver-tool.exe"
       - name: Presubmit check (e.g. lint, format)
         # do not run this on Windows (it fails and not necessary)
