@@ -1,27 +1,27 @@
-import { useAtom, useAtomValue } from "jotai";
 import { selectedAppIdAtom } from "@/atoms/appAtoms";
-import { useLoadApps } from "@/hooks/useLoadApps";
-import { useRouter } from "@tanstack/react-router";
-import { Button } from "@/components/ui/button";
-// @ts-ignore
-import logo from "../../assets/logo.svg";
-import { useCallback } from "react";
-import { useTheme } from "@/contexts/ThemeContext";
-import { ipc } from "@/ipc/types";
-import { useSystemPlatform } from "@/hooks/useSystemPlatform";
-import { ChatTabs } from "@/components/chat/ChatTabs";
 import { selectedChatIdAtom } from "@/atoms/chatAtoms";
-import { Wrench, Cog, Trash2 } from "lucide-react";
+import { ChatTabs } from "@/components/chat/ChatTabs";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useTheme } from "@/contexts/ThemeContext";
+import { useLoadApps } from "@/hooks/useLoadApps";
 import { useRunApp } from "@/hooks/useRunApp";
+import { useSystemPlatform } from "@/hooks/useSystemPlatform";
+import { ipc } from "@/ipc/types";
 import { showError, showSuccess } from "@/lib/toast";
 import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "@tanstack/react-router";
+import { useAtom, useAtomValue } from "jotai";
+import { Cog, Trash2, Wrench } from "lucide-react";
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
+// @ts-ignore
+import logo from "../../assets/logo.svg";
 
 export const TitleBar = () => {
   const [selectedAppId] = useAtom(selectedAppIdAtom);
@@ -48,7 +48,11 @@ export const TitleBar = () => {
       <div className="@container z-11 w-full h-11 pt-3 bg-(--sidebar) absolute top-0 left-0 app-region-drag flex items-center">
         <div className={`${showWindowControls ? "pl-2" : "pl-18"}`}></div>
 
-        <img src={logo} alt="Chaemera Logo" className="w-6 h-6 mr-0.5 ml-2" />
+        <img
+          src={logo}
+          alt="Chaemera Logo"
+          className="w-8 h-8 mr-1 ml-2 shrink-0"
+        />
         <Button
           data-testid="title-bar-app-name-button"
           variant="outline"

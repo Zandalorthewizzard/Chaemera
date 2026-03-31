@@ -18,11 +18,13 @@
         "height": 800,
         "minWidth": 800,
         "minHeight": 500,
+        "decorations": false,
         "resizable": true
       }
     ]
   },
   "bundle": {
+    "icon": ["icons/icon.ico", "icons/icon.png", "icons/icon.icns"],
     "resources": [
       "../worker/dyad_logs.js",
       "../worker/dyad-component-selector-client.js",

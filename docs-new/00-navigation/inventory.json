@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-03-30",
+  "generated_at": "2026-03-31",
   "scope": "logos-docs",
   "docs": [
     {
@@ -131,6 +131,19 @@
       "source_of_truth": "governance"
     },
     {
+      "id": "chaemera-spec-github-promotion-roadmap-2026-03-31",
+      "path": "07-codex-logos-phase/2026-03-31-github-promotion-roadmap.md",
+      "type": "spec",
+      "focus": [
+        "github promotion",
+        "public landing surface",
+        "release messaging",
+        "community health"
+      ],
+      "status": "active",
+      "source_of_truth": "governance"
+    },
+    {
       "id": "chaemera-spec-dual-runtime-mode-shared-host-and-switch-boundary-2026-03-30",
       "path": "07-codex-logos-phase/2026-03-30-dual-runtime-mode-shared-host-and-switch-boundary.md",
       "type": "spec",
@@ -145,6 +158,40 @@
       "focus": ["legacy xml hardening", "rust reliability"],
       "status": "active",
       "source_of_truth": "code-audit"
+    },
+    {
+      "id": "chaemera-spec-legacy-xml-tag-namespace-compatibility-migration-2026-03-31",
+      "path": "04-sprint-workflow/specs/2026-03-31-legacy-xml-tag-namespace-compatibility-migration-spec.md",
+      "type": "spec",
+      "focus": [
+        "legacy xml tag migration",
+        "compatibility",
+        "branding cleanup"
+      ],
+      "status": "active",
+      "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-discussion-legacy-xml-mcp-post-release-heavy-server-readiness-2026-03-31",
+      "path": "07-codex-logos-phase/2026-03-31-legacy-xml-mcp-post-release-heavy-server-readiness.md",
+      "type": "discussion",
+      "focus": [
+        "mcp readiness",
+        "legacy xml",
+        "post-release validation",
+        "vercel",
+        "supabase"
+      ],
+      "status": "active",
+      "source_of_truth": "discussion"
+    },
+    {
+      "id": "chaemera-spec-agent-oriented-mvp-release-cut-checklist-2026-03-31",
+      "path": "07-codex-logos-phase/2026-03-31-agent-oriented-mvp-release-cut-checklist.md",
+      "type": "spec",
+      "focus": ["release cut", "agent workflow", "triage", "mvp checklist"],
+      "status": "active",
+      "source_of_truth": "governance"
     }
   ]
 }

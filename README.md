@@ -1,37 +1,33 @@
-# Dyad
+# Chaemera
 
-Dyad is a local, open-source AI app builder. It's fast, private, and fully under your control — like Lovable, v0, or Bolt, but running right on your machine.
+Chaemera is a Tauri-native, BYOK-first, open-source AI app builder for people who want the Dyad / v0 / Lovable workflow to be lightweight and local-first.
 
-[![Image](https://github.com/user-attachments/assets/f6c83dfc-6ffd-4d32-93dd-4b9c46d17790)](https://dyad.sh/)
+It started as a fork of Dyad because I genuinely like the kind of app-building experience Dyad unlocked. Chaemera exists because I want to take that experience in a more Tauri-native, BYOK-first direction and make room for ideas I want to use myself.
 
-More info at: [https://dyad.sh/](https://dyad.sh/)
+## Why This Fork Exists
 
-## 🚀 Features
+I'm building Chaemera solo.
 
-- ⚡️ **Local**: Fast, private and no lock-in.
-- 🛠 **Bring your own keys**: Use your own AI API keys — no vendor lock-in.
-- 🖥️ **Cross-platform**: Easy to run on Mac or Windows.
+I liked the app-building experience Dyad unlocked, and I used it myself across a few projects after moving over from v0.
 
-## 📦 Download
+Chaemera started as a fork I was building for myself. Over time, it turned into something bigger: my own take on what this kind of tool could be.
 
-No sign-up required. Just download and go.
+I want it to stay lightweight, fast, and genuinely native across platforms, without losing the feeling that made this workflow exciting in the first place.
 
-### [👉 Download for your platform](https://www.dyad.sh/#download)
+Now I'm building it for people who are on the same wavelength.
 
-## 🤝 Community
+## Future Direction
 
-Join our growing community of AI app builders on **Reddit**: [r/dyadbuilders](https://www.reddit.com/r/dyadbuilders/) - share your projects and get help from the community!
+The current MVP is focused on shipping a solid desktop release line.
 
-## 🛠️ Contributing
+After that, the main directions I want to explore are:
 
-**Dyad** is open-source (see License info below).
+- an alternative agent-oriented mode as a real counterpart to the current XML-based workflow
+- a gradual shift of more host-critical behavior into Rust where it makes the product more reliable
+- better visual editing and richer app-aware workflows ~~I'll try really hard...~~
 
-If you're interested in contributing to dyad, please read our [contributing](./CONTRIBUTING.md) doc.
+## Feedback
 
-## Temporary Migration Note
+If these ideas resonate with you, feedback, criticism, and strange good ideas are welcome.
 
-- Current temporary status after the first OSS cleanup commit: [docs/TEMP_POST_FIRST_COMMIT_STATUS.md](./docs/TEMP_POST_FIRST_COMMIT_STATUS.md)
-
-## License
-
-- This repository is licensed under Apache 2.0 - see [LICENSE](./LICENSE).
+Issues, discussions, feature requests, design notes, and thoughtful "what if it could do this?" messages all belong here.

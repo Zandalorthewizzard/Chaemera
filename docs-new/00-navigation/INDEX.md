@@ -21,6 +21,7 @@ related:
       ../07-codex-logos-phase/2026-03-30-legacy-chat-runtime-audit-conclusions-and-codex-cut-line.md,
     ],
     [../07-codex-logos-phase/2026-03-30-release-line-mvp-roadmap.md],
+    [../07-codex-logos-phase/2026-03-31-github-promotion-roadmap.md],
     [../07-logos-phase/README.md],
     [../../notes/README.md],
   ]
@@ -53,6 +54,8 @@ outline: []
 
 - [[../07-codex-logos-phase/2026-03-30-legacy-chat-runtime-audit-conclusions-and-codex-cut-line.md]]
 - [[../07-codex-logos-phase/2026-03-30-release-line-mvp-roadmap.md]]
+- [[../07-codex-logos-phase/2026-03-31-github-promotion-roadmap.md]]
+- [[../07-codex-logos-phase/2026-03-31-agent-oriented-mvp-release-cut-checklist.md]]
 - [[../07-codex-logos-phase/2026-03-30-legacy-xml-release-mode-hardening-and-rust-reliability-plan.md]]
 - [[../07-codex-logos-phase/2026-03-30-dual-runtime-mode-shared-host-and-switch-boundary.md]]
 
@@ -73,6 +76,10 @@ outline: []
 - [[../07-codex-logos-phase/README.md]]
 - [[../07-codex-logos-phase/2026-03-30-legacy-chat-runtime-audit-conclusions-and-codex-cut-line.md]]
 - [[../07-codex-logos-phase/2026-03-30-release-line-mvp-roadmap.md]]
+- [[../07-codex-logos-phase/2026-03-31-github-promotion-roadmap.md]]
+- [[../07-codex-logos-phase/2026-03-31-agent-oriented-mvp-release-cut-checklist.md]]
+- [[../04-sprint-workflow/specs/2026-03-31-legacy-xml-tag-namespace-compatibility-migration-spec.md]]
+- [[../07-codex-logos-phase/2026-03-31-legacy-xml-mcp-post-release-heavy-server-readiness.md]]
 - [[../07-logos-phase/README.md]]
 - [[../../notes/README.md]]
 - [[inventory.json]]
