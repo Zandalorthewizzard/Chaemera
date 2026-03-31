@@ -168,7 +168,11 @@ jobs:
         run: npm run pre:e2e:tauri-runtime
       - name: Run real Tauri runtime gate
         if: contains(matrix.os.name, 'windows')
-        run: npm run e2e:tauri-runtime
+      - name: Build real Tauri runtime app
+        if: contains(matrix.os.name, 'windows')
+        env:
+          NODE_OPTIONS: "--max-old-space-size=4096"
+        run: npm run pre:e2e:tauri-runtime
       - name: Prep test server
         run: cd testing/fake-llm-server && npm install && npm run build && cd -
       # macOS: Archive app bundle with tar to preserve metadata (code signatures, extended attributes)
