@@ -99,7 +99,7 @@ describe("tauri build config", () => {
       "npm run build:tauri-regression",
     );
     expect(packageJson.scripts["pre:e2e:tauri-runtime"]).toBe(
-      "npm run build:chat-worker && npm run build:tauri-runtime-app",
+      "npm run build:workers && npm run build:tauri-runtime-app",
     );
     expect(packageJson.scripts["pre:e2e:tauri-smoke"]).toBe(
       "npm run pre:e2e:tauri-regression",

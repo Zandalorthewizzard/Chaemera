@@ -161,6 +161,8 @@ jobs:
         run: npm run build:workers
       - name: Check Tauri runtime
         run: npm run check:tauri
+      - name: Prep test server
+        run: cd testing/fake-llm-server && npm install && npm run build && cd -
       - name: Build real Tauri runtime app
         if: contains(matrix.os.name, 'windows')
         env:
@@ -173,8 +175,6 @@ jobs:
       - name: Run real Tauri runtime gate
         if: contains(matrix.os.name, 'windows')
         run: npm run e2e:tauri-runtime
-      - name: Prep test server
-        run: cd testing/fake-llm-server && npm install && npm run build && cd -
       # macOS: Archive app bundle with tar to preserve metadata (code signatures, extended attributes)
       # This is necessary because GitHub artifact upload/download loses these attributes
       - name: Archive macOS app bundle
