@@ -1,4 +1,4 @@
-﻿import { readSettings } from "../../main/settings";
+import { readSettings } from "../../main/settings";
 import {
   gitMergeAbort,
   gitFetch,

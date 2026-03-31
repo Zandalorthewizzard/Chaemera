@@ -1,22 +1,19 @@
+import { createServer } from "node:http";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
-import { createServer } from "node:http";
-import { z } from "zod";
+import { z } from "zod/v3";
 
-const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3002;
+const PORT = process.env.PORT ? Number.parseInt(process.env.PORT, 10) : 3002;
 
 const server = new McpServer({
   name: "fake-http-mcp",
   version: "0.1.0",
 });
 
-server.registerTool(
+server.tool(
   "calculator_add",
-  {
-    title: "Calculator Add",
-    description: "Add two numbers and return the sum",
-    inputSchema: { a: z.number(), b: z.number() },
-  },
+  "Add two numbers and return the sum",
+  { a: z.number(), b: z.number() },
   async ({ a, b }) => {
     const sum = a + b;
     return {
@@ -25,13 +22,9 @@ server.registerTool(
   },
 );
 
-server.registerTool(
+server.tool(
   "print_envs",
-  {
-    title: "Print Envs",
-    description: "Print the environment variables received by the server",
-    inputSchema: {},
-  },
+  "Print the environment variables received by the server",
   async () => {
     const envObject = Object.fromEntries(
       Object.entries(process.env).map(([key, value]) => [key, value ?? ""]),

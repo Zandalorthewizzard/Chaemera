@@ -1,4 +1,4 @@
-﻿import * as path from "node:path";
+import * as path from "node:path";
 import { Worker } from "node:worker_threads";
 
 import { ProblemReport } from "@/ipc/types";

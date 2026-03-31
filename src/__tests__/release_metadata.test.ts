@@ -52,8 +52,8 @@ describe("release metadata", () => {
     }>("package.json");
 
     expect(packageJson.scripts.package).toBe("npm run package:tauri");
-    expect(packageJson.scripts["package:tauri"]).toContain(
-      "@tauri-apps/cli build",
+    expect(packageJson.scripts["package:tauri"]).toBe(
+      "node scripts/run-tauri-cli.js build",
     );
     expect(packageJson.scripts["start:electron"]).toBeUndefined();
     expect(packageJson.scripts["package:electron"]).toBeUndefined();

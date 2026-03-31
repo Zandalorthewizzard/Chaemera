@@ -1,4 +1,4 @@
-﻿import { db } from "../../db";
+import { db } from "../../db";
 import { chats, messages } from "../../db/schema";
 import { and, eq } from "drizzle-orm";
 import fs from "node:fs";

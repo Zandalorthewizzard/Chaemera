@@ -1,4 +1,4 @@
-﻿/**
+/**
  * DO NOT USE LOGGER HERE.
  * Environment variables are sensitive and should not be logged.
  */

@@ -1,4 +1,4 @@
-﻿import { Vercel } from "@vercel/sdk";
+import { Vercel } from "@vercel/sdk";
 import { writeSettings, readSettings } from "../../main/settings";
 import * as schema from "../../db/schema";
 import { db } from "../../db";

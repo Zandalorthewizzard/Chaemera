@@ -1,4 +1,4 @@
-﻿import fs from "node:fs";
+import fs from "node:fs";
 import path from "node:path";
 import { db } from "../../db";
 import { apps } from "../../db/schema";

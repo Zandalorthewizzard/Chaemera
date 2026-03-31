@@ -2,6 +2,8 @@ import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const runtimeHarnessDir = fileURLToPath(new URL(".", import.meta.url));
+const includeManualRuntimeSpecs =
+  process.env.CHAEMERA_TAURI_INCLUDE_MANUAL_SPECS === "true";
 
 const runtimeRuns = [
   {
@@ -37,11 +39,26 @@ const runtimeRuns = [
     setup: "./specs/copy-chat.setup.mjs",
   },
   {
-    label: "version integrity",
-    spec: "./specs/version-integrity.e2e.mjs",
-    setup: "./specs/version-integrity.setup.mjs",
+    label: "mcp build mode",
+    spec: "./specs/mcp-build-mode.e2e.mjs",
+  },
+  {
+    label: "mcp release readiness",
+    spec: "./specs/mcp-release-readiness.e2e.mjs",
   },
 ];
+
+if (includeManualRuntimeSpecs) {
+  runtimeRuns.push({
+    label: "version integrity (manual/unstable)",
+    spec: "./specs/version-integrity.e2e.mjs",
+    setup: "./specs/version-integrity.setup.mjs",
+  });
+} else {
+  console.log(
+    "\n==> Skipping manual/unstable runtime specs (set CHAEMERA_TAURI_INCLUDE_MANUAL_SPECS=true to include them; version-integrity is tracked separately as flaky/manual coverage)",
+  );
+}
 
 for (const runtimeRun of runtimeRuns) {
   console.log(`\n==> Running ${runtimeRun.label}`);

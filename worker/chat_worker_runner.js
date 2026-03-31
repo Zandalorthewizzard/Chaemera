@@ -13,7 +13,18 @@ const WORKER_PATH = path.join(
 function main() {
   const workerFile = process.env.CHAT_WORKER_BUNDLE || WORKER_PATH;
 
-  const worker = new Worker(workerFile);
+  const worker = new Worker(workerFile, {
+    stdout: true,
+    stderr: true,
+  });
+
+  worker.stdout?.on("data", (chunk) => {
+    process.stderr.write(chunk);
+  });
+
+  worker.stderr?.on("data", (chunk) => {
+    process.stderr.write(chunk);
+  });
 
   worker.on("message", (message) => {
     process.stdout.write(JSON.stringify(message) + "\n");

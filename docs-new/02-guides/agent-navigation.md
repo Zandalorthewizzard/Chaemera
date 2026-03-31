@@ -1,8 +1,8 @@
 ---
-id: chaemera-guide-agent-navigation
+id: logos-guide-agent-navigation
 title: Agent Navigation Guide
 type: guide
-status: draft
+status: active
 tags: [agent, navigation]
 related:
   [
@@ -10,6 +10,7 @@ related:
     [../01-concepts/ai-driven-development.md],
     [../03-templates/strict-spec.template.md],
     [working-notes.md],
+    [../07-logos-phase/README.md],
   ]
 depends_on: []
 generated: false
@@ -26,13 +27,14 @@ outline: []
 3. `../01-concepts/strict-specs.md`
 4. `../01-concepts/discussion-first.md`
 5. `working-notes.md`
+6. `../../notes/README.md`
 
 ## Resume / Replacement Chain
 
 1. Complete the Empty-Context Chain.
-2. Read the active task spec or sprint artifact.
+2. Read the active task spec or architecture artifact.
 3. Read the relevant files in `../../notes/`.
-4. Resume from confirmed state and evidence, not recollection alone.
+4. Resume only from confirmed state and evidence.
 
 ## Task Chain
 
@@ -46,6 +48,9 @@ outline: []
 - path: `../00-navigation/INDEX.md`
   symbol: `Quick Start`
   lines: 1-200
+- path: `working-notes.md`
+  symbol: `Recovery Flow`
+  lines: 1-200
 
 ## Links
 
@@ -53,3 +58,4 @@ outline: []
 - [[../01-concepts/ai-driven-development.md]]
 - [[../03-templates/strict-spec.template.md]]
 - [[working-notes.md]]
+- [[../07-logos-phase/README.md]]

@@ -35,12 +35,12 @@ describe("tauri build config", () => {
     );
     expect(packageJson.scripts.start).toBe("npm run start:tauri");
     expect(packageJson.scripts["start:tauri"]).toBe(
-      "npx @tauri-apps/cli dev --config src-tauri/tauri.conf.json",
+      "node scripts/run-tauri-cli.js dev",
     );
     expect(packageJson.scripts["start:electron"]).toBeUndefined();
     expect(packageJson.scripts.package).toBe("npm run package:tauri");
     expect(packageJson.scripts["package:tauri"]).toBe(
-      "npx @tauri-apps/cli build --config src-tauri/tauri.conf.json",
+      "node scripts/run-tauri-cli.js build",
     );
     expect(packageJson.main).toBeUndefined();
     expect(packageJson.scripts["check:tauri"]).toBe(
@@ -99,7 +99,7 @@ describe("tauri build config", () => {
       "npm run build:tauri-regression",
     );
     expect(packageJson.scripts["pre:e2e:tauri-runtime"]).toBe(
-      "npm run build:tauri-runtime-app",
+      "npm run build:chat-worker && npm run build:tauri-runtime-app",
     );
     expect(packageJson.scripts["pre:e2e:tauri-smoke"]).toBe(
       "npm run pre:e2e:tauri-regression",
@@ -138,7 +138,7 @@ describe("tauri build config", () => {
     );
     expect(srcTauriConfig.build.beforeDevCommand).toBe("npm run dev:renderer");
     expect(srcTauriConfig.build.beforeBuildCommand).toBe(
-      "npm run build:renderer",
+      "npm run build:renderer && npm run build:chat-worker",
     );
     expect(rootTauriConfig.build.beforeBuildCommand).not.toBe("npm run build");
     expect(srcTauriConfig.build.beforeBuildCommand).not.toBe("npm run build");

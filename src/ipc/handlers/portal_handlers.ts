@@ -1,4 +1,4 @@
-﻿import { createLoggedHandler } from "./safe_handle";
+import { createLoggedHandler } from "./safe_handle";
 import { appLog as log } from "@/lib/app_logger";
 import { db } from "../../db";
 import { apps } from "../../db/schema";

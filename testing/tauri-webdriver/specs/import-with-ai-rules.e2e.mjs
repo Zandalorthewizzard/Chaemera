@@ -1,23 +1,31 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import {
   assertNoSevereBrowserLogs,
+  invokeCoreCommand,
   waitForDesktopShell,
 } from "../test_helpers.mjs";
 
 const AI_RULES_PROMPT =
   "Generate an AI_RULES.md file for this app. Describe the tech stack in 5-10 bullet points and describe clear rules about what libraries to use for what.";
 
-async function clickButton(label, timeout = 60_000) {
-  const button = await $(`//button[normalize-space()="${label}"]`);
-  await button.waitForClickable({ timeout });
-  await button.click();
-}
-
 function logStep(step) {
   console.log(`[tauri-runtime][import-ai-rules] ${step}`);
 }
+
+const IMPORTED_APP_NAME = "minimal-imported-app";
+const IMPORT_FIXTURE_PATH = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "..",
+  "..",
+  "..",
+  "e2e-tests",
+  "fixtures",
+  "import-app",
+  "minimal-with-ai-rules",
+);
 
 describe("Chaemera Tauri import flow", () => {
   it("imports an app with existing AI rules without triggering the auto-rules prompt", async function () {
@@ -26,28 +34,28 @@ describe("Chaemera Tauri import flow", () => {
     logStep("waiting for desktop shell");
     await waitForDesktopShell();
 
-    logStep("opening import dialog");
-    await clickButton("Import App");
-    logStep("selecting fixture folder");
-    await clickButton("Select Folder");
+    logStep("importing fixture through the Tauri core bridge");
+    const importResult = await invokeCoreCommand("import-app", {
+      path: IMPORT_FIXTURE_PATH,
+      appName: IMPORTED_APP_NAME,
+    });
 
-    const appNameInput = await $('//input[@placeholder="Enter new app name"]');
-    await appNameInput.waitForDisplayed({ timeout: 60_000 });
-    await appNameInput.setValue("minimal-imported-app");
+    logStep("navigating to imported app details route");
+    await browser.execute((appId) => {
+      window.location.assign(`/app-details?appId=${appId}`);
+    }, importResult.appId);
 
-    logStep("submitting import");
-    await clickButton("Import", 120_000);
-
-    logStep("waiting for chat route");
+    logStep("waiting for imported app details route");
     await browser.waitUntil(
       async () => {
         const url = await browser.getUrl();
-        return url.includes("/chat");
+        return url.includes("/app-details") && url.includes("appId=");
       },
       {
         timeout: 120_000,
         interval: 250,
-        timeoutMsg: "Expected import flow to navigate to the chat route.",
+        timeoutMsg:
+          "Expected import flow to navigate to the imported app details route.",
       },
     );
 
@@ -78,7 +86,7 @@ describe("Chaemera Tauri import flow", () => {
     await browser.waitUntil(
       async () => {
         const text = await appNameButton.getText();
-        return text.includes("minimal-imported-app");
+        return text.includes(IMPORTED_APP_NAME);
       },
       {
         timeout: 120_000,
@@ -95,7 +103,7 @@ describe("Chaemera Tauri import flow", () => {
       "Expected CHAEMERA_TAURI_APPS_DIR to be available in the runtime test process.",
     );
 
-    const importedAppDir = path.join(appsDir, "minimal-imported-app");
+    const importedAppDir = path.join(appsDir, IMPORTED_APP_NAME);
     const importedAiRulesPath = path.join(importedAppDir, "AI_RULES.md");
     const importedAppEntryPath = path.join(importedAppDir, "src", "App.tsx");
 

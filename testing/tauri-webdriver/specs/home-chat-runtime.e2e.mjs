@@ -1,90 +1,19 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+
 import {
   assertNoSevereBrowserLogs,
   invokeCoreCommand,
   waitForDesktopShell,
 } from "../test_helpers.mjs";
 
-const IMPORTED_APP_NAME = "copy-chat-app";
 const CUSTOM_PROVIDER_ID = "custom::testing";
 const CUSTOM_PROVIDER_BASE_URL = `http://127.0.0.1:${
   process.env.FAKE_LLM_PORT ?? "3500"
 }/v1`;
-const IMPORT_FIXTURE_PATH = path.resolve(
-  path.dirname(fileURLToPath(import.meta.url)),
-  "..",
-  "..",
-  "..",
-  "e2e-tests",
-  "fixtures",
-  "import-app",
-  "minimal-with-ai-rules",
-);
 
 function logStep(step) {
-  console.log(`[tauri-runtime][copy-chat] ${step}`);
-}
-
-async function clickButton(label, timeout = 60_000) {
-  let visibleButton = null;
-  const escapedLabel = label.replaceAll('"', '\\"');
-
-  await browser.waitUntil(
-    async () => {
-      const buttons = await $$(
-        `//button[normalize-space()="${escapedLabel}" or @aria-label="${escapedLabel}"]`,
-      );
-
-      for (const button of buttons) {
-        if ((await button.isDisplayed()) && (await button.isEnabled())) {
-          visibleButton = button;
-          return true;
-        }
-      }
-
-      return false;
-    },
-    {
-      timeout,
-      interval: 250,
-      timeoutMsg: `Expected a visible enabled button labeled "${label}".`,
-    },
-  );
-
-  await visibleButton.click();
-}
-
-async function waitForChatRoute() {
-  await browser.waitUntil(
-    async () => {
-      const url = await browser.getUrl();
-      return url.includes("/chat") && url.includes("id=");
-    },
-    {
-      timeout: 120_000,
-      interval: 250,
-      timeoutMsg: "Expected the app to be on a chat route with a chat id.",
-    },
-  );
-}
-
-async function waitForImportedAppSelection() {
-  const appNameButton = await $('[data-testid="title-bar-app-name-button"]');
-
-  await browser.waitUntil(
-    async () => {
-      const text = await appNameButton.getText();
-      return text.includes(IMPORTED_APP_NAME);
-    },
-    {
-      timeout: 120_000,
-      interval: 250,
-      timeoutMsg: `Expected ${IMPORTED_APP_NAME} to become the selected app.`,
-    },
-  );
+  console.log(`[tauri-runtime][home-chat-runtime] ${step}`);
 }
 
 async function configureTestingModel() {
@@ -123,14 +52,10 @@ async function configureTestingModel() {
 
 async function assertConfiguredTestingModel() {
   const storedSettings = await invokeCoreCommand("get-user-settings");
-  assert.deepEqual(
-    storedSettings.selectedModel,
-    {
-      provider: CUSTOM_PROVIDER_ID,
-      name: "test-model",
-    },
-    "Expected runtime settings to persist the selected custom testing model.",
-  );
+  assert.deepEqual(storedSettings.selectedModel, {
+    provider: CUSTOM_PROVIDER_ID,
+    name: "test-model",
+  });
 
   const models = await invokeCoreCommand("get-language-models", {
     providerId: CUSTOM_PROVIDER_ID,
@@ -142,8 +67,10 @@ async function assertConfiguredTestingModel() {
   );
 }
 
-async function submitPrompt(prompt) {
-  const chatInput = await $('[data-lexical-editor="true"]');
+async function submitHomePrompt(prompt) {
+  const chatInput = await $(
+    '[data-testid="home-chat-input-container"] [data-lexical-editor="true"]',
+  );
   await chatInput.waitForDisplayed({ timeout: 60_000 });
   await chatInput.click();
 
@@ -162,6 +89,20 @@ async function submitPrompt(prompt) {
   );
 
   await sendButton.click();
+}
+
+async function waitForChatRoute() {
+  await browser.waitUntil(
+    async () => {
+      const url = await browser.getUrl();
+      return url.includes("/chat") && url.includes("id=");
+    },
+    {
+      timeout: 120_000,
+      interval: 250,
+      timeoutMsg: "Expected the home submit flow to navigate to a chat route.",
+    },
+  );
 }
 
 async function waitForAssistantCopyButton() {
@@ -191,8 +132,8 @@ async function waitForClipboardText() {
   return readClipboardText();
 }
 
-describe("Chaemera Tauri copy message flow", () => {
-  it("copies chat output without raw dyad tags", async function () {
+describe("Chaemera Tauri home chat runtime", () => {
+  it("creates a new app and streams a chat response from the home composer", async function () {
     this.timeout(300_000);
 
     logStep("waiting for desktop shell");
@@ -200,40 +141,25 @@ describe("Chaemera Tauri copy message flow", () => {
 
     logStep("configuring custom test model");
     await configureTestingModel();
+    await assertConfiguredTestingModel();
 
-    logStep("importing minimal fixture with AI rules through core bridge");
-    const importResult = await invokeCoreCommand("import-app", {
-      path: IMPORT_FIXTURE_PATH,
-      appName: IMPORTED_APP_NAME,
-    });
+    logStep("typing a canned prompt into the home composer");
+    await submitHomePrompt("[dyad-qa=write]");
 
-    logStep("navigating to imported app details workspace");
-    await browser.execute((appId) => {
-      window.location.assign(`/app-details?appId=${appId}`);
-    }, importResult.appId);
+    logStep("waiting for the home submit flow to reach a chat route");
+    await waitForChatRoute();
 
-    logStep("waiting for imported app details workspace");
+    const appNameButton = await $('[data-testid="title-bar-app-name-button"]');
     await browser.waitUntil(
-      async () => {
-        const url = await browser.getUrl();
-        return url.includes("/app-details");
-      },
+      async () =>
+        !(await appNameButton.getText()).includes("(no app selected)"),
       {
         timeout: 120_000,
         interval: 250,
         timeoutMsg:
-          "Expected the import flow to navigate to the app-details route.",
+          "Expected the home submit flow to select a real app in the title bar.",
       },
     );
-    await waitForImportedAppSelection();
-    await assertConfiguredTestingModel();
-
-    logStep("opening imported app in chat");
-    await clickButton("Open in Chat", 120_000);
-    await waitForChatRoute();
-
-    logStep("sending canned write prompt through the UI");
-    await submitPrompt("[dyad-qa=write]");
 
     const copyButton = await waitForAssistantCopyButton();
     await copyButton.click();

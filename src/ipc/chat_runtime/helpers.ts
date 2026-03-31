@@ -41,7 +41,31 @@ export async function isTextFile(filePath: string): Promise<boolean> {
  * Replaces "<dyad" with Cyrillic look-alikes so the parser ignores them.
  */
 export function escapeDyadTags(text: string): string {
-  return text.replace(/<dyad/g, "пјњdyad").replace(/<\/dyad/g, "пјњ/dyad");
+  const normalizedText = stringifyDyadTagContent(text);
+  return normalizedText
+    .replace(/<dyad/g, "пјњdyad")
+    .replace(/<\/dyad/g, "пјњ/dyad");
+}
+
+export function stringifyDyadTagContent(value: unknown): string {
+  if (typeof value === "string") {
+    return value;
+  }
+
+  if (value == null) {
+    return "";
+  }
+
+  try {
+    const json = JSON.stringify(value);
+    if (typeof json === "string") {
+      return json;
+    }
+  } catch {
+    // Fall through to String coercion below.
+  }
+
+  return String(value);
 }
 
 export function hasUnclosedXmlWrite(text: string): boolean {

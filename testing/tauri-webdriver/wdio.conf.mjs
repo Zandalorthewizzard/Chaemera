@@ -1,7 +1,7 @@
+import { spawn } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { spawn } from "node:child_process";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
@@ -248,6 +248,7 @@ export const config = {
     process.env.CHAEMERA_TAURI_LOCAL_DATA_DIR = tauriLocalDataDir;
     process.env.CHAEMERA_TAURI_USER_DATA_DIR = tauriUserDataDir;
     process.env.CHAEMERA_TAURI_APPS_DIR = tauriAppsDir;
+    process.env.CHAEMERA_TAURI_CHAEMERA_APPS_DIR = tauriAppsDir;
     process.env.FAKE_LLM_PORT = fakeLlmPort;
     process.env.TEST_AZURE_BASE_URL = `http://127.0.0.1:${fakeLlmPort}/azure`;
 
@@ -270,6 +271,7 @@ export const config = {
           CHAEMERA_TAURI_LOCAL_DATA_DIR: tauriLocalDataDir,
           CHAEMERA_TAURI_USER_DATA_DIR: tauriUserDataDir,
           CHAEMERA_TAURI_APPS_DIR: tauriAppsDir,
+          CHAEMERA_TAURI_CHAEMERA_APPS_DIR: tauriAppsDir,
           FAKE_LLM_PORT: fakeLlmPort,
           TEST_AZURE_BASE_URL: `http://127.0.0.1:${fakeLlmPort}/azure`,
           OPENAI_API_KEY: "sk-test",
@@ -299,6 +301,7 @@ export const config = {
     delete process.env.CHAEMERA_TAURI_LOCAL_DATA_DIR;
     delete process.env.CHAEMERA_TAURI_USER_DATA_DIR;
     delete process.env.CHAEMERA_TAURI_APPS_DIR;
+    delete process.env.CHAEMERA_TAURI_CHAEMERA_APPS_DIR;
     delete process.env.FAKE_LLM_PORT;
     delete process.env.TEST_AZURE_BASE_URL;
     if (keepRuntimeProfile) {

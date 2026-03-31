@@ -1,4 +1,4 @@
-﻿import { appLog as log } from "@/lib/app_logger";
+import { appLog as log } from "@/lib/app_logger";
 import { db } from "../../db";
 import { apps } from "../../db/schema";
 import { eq } from "drizzle-orm";

@@ -1,4 +1,4 @@
-﻿import { CodebaseFile, CodebaseFileReference } from "@/utils/codebase";
+import { CodebaseFile, CodebaseFileReference } from "@/utils/codebase";
 import { ModelMessage } from "@ai-sdk/provider-utils";
 import crypto from "node:crypto";
 import { appLog as log } from "@/lib/app_logger";

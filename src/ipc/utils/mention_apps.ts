@@ -1,4 +1,4 @@
-﻿import { db } from "../../db";
+import { db } from "../../db";
 import { getAppPath } from "../../paths/paths";
 import { CodebaseFile, extractCodebase } from "../../utils/codebase";
 import { validateChatContext } from "../utils/context_paths_utils";

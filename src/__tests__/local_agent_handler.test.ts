@@ -1,4 +1,4 @@
-﻿import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vitest";
 import { handleLocalAgentStream } from "@/ipc/handlers/local_agent/local_agent_handler";
 import type { ChatStreamParams } from "@/ipc/types";
 

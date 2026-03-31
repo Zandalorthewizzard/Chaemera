@@ -1,34 +1,38 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { selectMock, getClientMock, executeMock } = vi.hoisted(() => {
-  const executeMock = vi.fn();
-  const whereMock = vi.fn(async () => [
-    {
-      id: 1,
-      name: "Test Server",
-      enabled: true,
-    },
-  ]);
-  const fromMock = vi.fn(() => ({ where: whereMock }));
-  const selectMock = vi.fn(() => ({ from: fromMock }));
-  const getClientMock = vi.fn(async () => ({
-    tools: async () => ({
-      read_file: {
-        description: "Read a file",
-        inputSchema: { type: "object" },
-        execute: executeMock,
+const { selectMock, getClientMock, executeMock, disposeMock } = vi.hoisted(
+  () => {
+    const executeMock = vi.fn();
+    const disposeMock = vi.fn();
+    const whereMock = vi.fn(async () => [
+      {
+        id: 1,
+        name: "Test Server",
+        enabled: true,
       },
-    }),
-  }));
+    ]);
+    const fromMock = vi.fn(() => ({ where: whereMock }));
+    const selectMock = vi.fn(() => ({ from: fromMock }));
+    const getClientMock = vi.fn(async () => ({
+      tools: async () => ({
+        read_file: {
+          description: "Read a file",
+          inputSchema: { type: "object" },
+          execute: executeMock,
+        },
+      }),
+    }));
 
-  return {
-    selectMock,
-    fromMock,
-    whereMock,
-    getClientMock,
-    executeMock,
-  };
-});
+    return {
+      selectMock,
+      fromMock,
+      whereMock,
+      getClientMock,
+      executeMock,
+      disposeMock,
+    };
+  },
+);
 
 vi.mock("../../../db", () => ({
   db: {
@@ -39,6 +43,7 @@ vi.mock("../../../db", () => ({
 vi.mock("../../utils/mcp_manager", () => ({
   mcpManager: {
     getClient: getClientMock,
+    dispose: disposeMock,
   },
 }));
 
@@ -82,5 +87,50 @@ describe("buildMcpToolSet", () => {
       tool.execute?.({ path: "src/app.ts" }, {} as never),
     ).rejects.toThrow("User declined running tool Test-Server__read_file");
     expect(executeMock).not.toHaveBeenCalled();
+  });
+
+  it("skips broken servers and keeps healthy MCP tools", async () => {
+    getClientMock
+      .mockRejectedValueOnce(new Error("Connection closed"))
+      .mockResolvedValueOnce({
+        tools: async () => ({
+          read_file: {
+            description: "Read a file",
+            inputSchema: { type: "object" },
+            execute: executeMock,
+          },
+        }),
+      });
+
+    selectMock.mockImplementationOnce(() => ({
+      from: vi.fn(() => ({
+        where: vi.fn(async () => [
+          {
+            id: 1,
+            name: "Broken Server",
+            enabled: true,
+          },
+          {
+            id: 2,
+            name: "Healthy Server",
+            enabled: true,
+          },
+        ]),
+      })),
+    }));
+
+    const recordLog = vi.fn();
+    const requestConsent = vi.fn().mockResolvedValue(true);
+
+    const toolSet = await buildMcpToolSet({ requestConsent, recordLog });
+
+    expect(toolSet["Healthy-Server__read_file"]).toBeDefined();
+    expect(toolSet["Broken-Server__read_file"]).toBeUndefined();
+    expect(disposeMock).toHaveBeenCalledWith(1);
+    expect(recordLog).toHaveBeenCalledWith(
+      "warn",
+      "Failed building MCP toolset for server 1",
+      expect.any(Error),
+    );
   });
 });

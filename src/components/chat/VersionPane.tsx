@@ -1,18 +1,18 @@
-import { useAtom, useAtomValue } from "jotai";
 import { selectedAppIdAtom, selectedVersionIdAtom } from "@/atoms/appAtoms";
-import { useVersions } from "@/hooks/useVersions";
-import { formatDistanceToNow } from "date-fns";
-import { RotateCcw, X, Database, Loader2 } from "lucide-react";
-import type { Version } from "@/ipc/types";
-import { cn } from "@/lib/utils";
-import { useEffect, useRef, useState } from "react";
-import { useCheckoutVersion } from "@/hooks/useCheckoutVersion";
-import { useLoadApp } from "@/hooks/useLoadApp";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useCheckoutVersion } from "@/hooks/useCheckoutVersion";
+import { useLoadApp } from "@/hooks/useLoadApp";
+import { useVersions } from "@/hooks/useVersions";
+import type { Version } from "@/ipc/types";
+import { cn } from "@/lib/utils";
+import { formatDistanceToNow } from "date-fns";
+import { useAtom, useAtomValue } from "jotai";
+import { Database, Loader2, RotateCcw, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 import { useRunApp } from "@/hooks/useRunApp";
 
@@ -45,8 +45,8 @@ export function VersionPane({ isVisible, onClose }: VersionPaneProps) {
       // When pane becomes visible after being closed
       if (isVisible && !wasVisibleRef.current) {
         if (appId && canQueryVersions) {
-          await refreshVersions();
-          setCachedVersions(liveVersions);
+          const refreshedVersions = await refreshVersions();
+          setCachedVersions(refreshedVersions.data ?? []);
         }
       }
 

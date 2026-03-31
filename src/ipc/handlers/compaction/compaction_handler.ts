@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Context Compaction Handler
  * Orchestrates the compaction of long conversations to stay within context limits.
  */

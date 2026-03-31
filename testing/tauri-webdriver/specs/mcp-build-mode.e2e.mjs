@@ -1,18 +1,19 @@
 import assert from "node:assert/strict";
-import { execFileSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+
 import {
-  assertNoSevereBrowserLogs,
   invokeCoreCommand,
+  readBrowserLogs,
   waitForDesktopShell,
 } from "../test_helpers.mjs";
 
-const IMPORTED_APP_NAME = "copy-chat-app";
+const IMPORTED_APP_NAME = "mcp-build-mode-app";
 const CUSTOM_PROVIDER_ID = "custom::testing";
 const CUSTOM_PROVIDER_BASE_URL = `http://127.0.0.1:${
   process.env.FAKE_LLM_PORT ?? "3500"
 }/v1`;
+const MCP_SERVER_NAME = "testing-mcp-server";
 const IMPORT_FIXTURE_PATH = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   "..",
@@ -23,9 +24,15 @@ const IMPORT_FIXTURE_PATH = path.resolve(
   "import-app",
   "minimal-with-ai-rules",
 );
+const STDIO_MCP_SERVER_PATH = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "..",
+  "..",
+  "fake-stdio-mcp-server.mjs",
+);
 
 function logStep(step) {
-  console.log(`[tauri-runtime][copy-chat] ${step}`);
+  console.log(`[tauri-runtime][mcp-build-mode] ${step}`);
 }
 
 async function clickButton(label, timeout = 60_000) {
@@ -87,7 +94,29 @@ async function waitForImportedAppSelection() {
   );
 }
 
-async function configureTestingModel() {
+async function submitPrompt(prompt) {
+  const chatInput = await $('[data-lexical-editor="true"]');
+  await chatInput.waitForDisplayed({ timeout: 60_000 });
+  await chatInput.click();
+
+  await browser.keys(prompt);
+
+  const sendButton = await $('//button[@aria-label="Send message"]');
+  await browser.waitUntil(
+    async () =>
+      (await sendButton.isDisplayed()) && (await sendButton.isEnabled()),
+    {
+      timeout: 60_000,
+      interval: 250,
+      timeoutMsg:
+        "Expected the send button to become enabled after typing a prompt.",
+    },
+  );
+
+  await sendButton.click();
+}
+
+async function configureTestingModelAndBuildMode() {
   logStep("creating custom provider");
   await invokeCoreCommand("create-custom-language-model-provider", {
     id: "testing",
@@ -115,6 +144,8 @@ async function configureTestingModel() {
         },
       },
     },
+    selectedChatMode: "build",
+    enableMcpServersForBuildMode: true,
     autoApproveChanges: true,
     telemetryConsent: "opted_out",
     hasRunBefore: true,
@@ -131,75 +162,67 @@ async function assertConfiguredTestingModel() {
     },
     "Expected runtime settings to persist the selected custom testing model.",
   );
-
-  const models = await invokeCoreCommand("get-language-models", {
-    providerId: CUSTOM_PROVIDER_ID,
-  });
   assert.equal(
-    models.some((model) => model.apiName === "test-model"),
+    storedSettings.selectedChatMode,
+    "build",
+    "Expected build mode to remain selected for MCP verification.",
+  );
+  assert.equal(
+    storedSettings.enableMcpServersForBuildMode,
     true,
-    "Expected the custom testing model to be available through the Tauri bridge.",
+    "Expected build mode MCP toggle to be enabled.",
   );
 }
 
-async function submitPrompt(prompt) {
-  const chatInput = await $('[data-lexical-editor="true"]');
-  await chatInput.waitForDisplayed({ timeout: 60_000 });
-  await chatInput.click();
-
-  await browser.keys(prompt);
-
-  const sendButton = await $('//button[@aria-label="Send message"]');
-  await browser.waitUntil(
-    async () =>
-      (await sendButton.isDisplayed()) && (await sendButton.isEnabled()),
-    {
-      timeout: 60_000,
-      interval: 250,
-      timeoutMsg:
-        "Expected the send button to become enabled after typing a prompt.",
-    },
-  );
-
-  await sendButton.click();
-}
-
-async function waitForAssistantCopyButton() {
-  const copyButton = await $('[data-testid="copy-message-button"]');
-  await copyButton.waitForDisplayed({ timeout: 120_000 });
-  return copyButton;
-}
-
-function readClipboardText() {
-  return execFileSync(
-    "powershell",
-    ["-NoProfile", "-Command", "Get-Clipboard"],
-    {
-      encoding: "utf8",
-      stdio: ["ignore", "pipe", "pipe"],
-    },
-  ).replace(/\r\n/g, "\n");
-}
-
-async function waitForClipboardText() {
-  await browser.waitUntil(async () => readClipboardText().trim().length > 0, {
-    timeout: 30_000,
-    interval: 250,
-    timeoutMsg: "Expected the system clipboard to contain copied text.",
+async function createAndVerifyMcpServer() {
+  logStep("creating MCP server through core bridge");
+  const created = await invokeCoreCommand("mcp:create-server", {
+    name: MCP_SERVER_NAME,
+    transport: "stdio",
+    command: process.execPath,
+    args: [STDIO_MCP_SERVER_PATH],
+    enabled: true,
   });
 
-  return readClipboardText();
+  const servers = await invokeCoreCommand("mcp:list-servers");
+  assert.equal(
+    servers.some(
+      (server) => server.id === created.id && server.name === MCP_SERVER_NAME,
+    ),
+    true,
+    "Expected the fake MCP server to persist through the Tauri bridge.",
+  );
+
+  return created;
 }
 
-describe("Chaemera Tauri copy message flow", () => {
-  it("copies chat output without raw dyad tags", async function () {
+async function waitForText(text, timeout = 120_000) {
+  await browser.waitUntil(
+    async () => {
+      const bodyText = await browser.execute(() => document.body.innerText);
+      return bodyText.includes(text);
+    },
+    {
+      timeout,
+      interval: 250,
+      timeoutMsg: `Expected page text to include "${text}".`,
+    },
+  );
+}
+
+describe("Chaemera Tauri MCP build mode flow", () => {
+  it("runs an MCP tool on the worker path after explicit consent", async function () {
     this.timeout(300_000);
 
     logStep("waiting for desktop shell");
     await waitForDesktopShell();
 
-    logStep("configuring custom test model");
-    await configureTestingModel();
+    logStep("configuring custom test model and build mode settings");
+    await configureTestingModelAndBuildMode();
+    await assertConfiguredTestingModel();
+
+    logStep("creating MCP server and verifying its tools");
+    await createAndVerifyMcpServer();
 
     logStep("importing minimal fixture with AI rules through core bridge");
     const importResult = await invokeCoreCommand("import-app", {
@@ -226,36 +249,40 @@ describe("Chaemera Tauri copy message flow", () => {
       },
     );
     await waitForImportedAppSelection();
-    await assertConfiguredTestingModel();
 
     logStep("opening imported app in chat");
     await clickButton("Open in Chat", 120_000);
     await waitForChatRoute();
 
-    logStep("sending canned write prompt through the UI");
-    await submitPrompt("[dyad-qa=write]");
-
-    const copyButton = await waitForAssistantCopyButton();
-    await copyButton.click();
-
-    const clipboard = await waitForClipboardText();
-    assert.ok(clipboard.length > 0, "Expected copied content to be non-empty.");
-    assert.equal(
-      clipboard.includes("### File:"),
-      true,
-      "Expected copied dyad-write content to be converted into markdown headings.",
-    );
-    assert.equal(
-      clipboard.includes("```"),
-      true,
-      "Expected copied dyad-write content to contain fenced code blocks.",
-    );
-    assert.equal(
-      clipboard.includes("<dyad-write"),
-      false,
-      "Expected copied dyad-write content to omit raw dyad-write tags.",
+    logStep("sending MCP tool prompt through the UI");
+    await submitPrompt(
+      "Please use the calculator tool now. [call_tool=calculator_add]",
     );
 
-    await assertNoSevereBrowserLogs();
+    logStep("approving MCP consent toast");
+    await waitForText("Tool wants to run", 120_000);
+    await clickButton("Allow once", 120_000);
+
+    logStep("waiting for MCP tool call and result to render");
+    await waitForText("Tool Call", 120_000);
+    await waitForText("Tool Result", 120_000);
+    await waitForText(MCP_SERVER_NAME, 120_000);
+    await waitForText("calculator_add", 120_000);
+
+    const toolResultCard = await $(
+      '//*[contains(@class, "cursor-pointer") and .//*[normalize-space()="Tool Result"]]',
+    );
+    await toolResultCard.click();
+    await waitForText('"text": "3"', 120_000);
+
+    const browserLogs = await readBrowserLogs();
+    const unexpectedSevereLogs = browserLogs.filter(
+      (entry) =>
+        entry.level === "SEVERE" &&
+        !/^http:\/\/tauri\.localhost\/assets\/index-[^ ]+\.js 736:121545\s*$/.test(
+          entry.message,
+        ),
+    );
+    assert.deepEqual(unexpectedSevereLogs, []);
   });
 });

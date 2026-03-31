@@ -1,41 +1,41 @@
-import { useTranslation } from "react-i18next";
-import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogDescription,
   DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { ipc } from "@/ipc/types";
-import { useMutation } from "@tanstack/react-query";
-import { showError, showSuccess } from "@/lib/toast";
-import { Folder, X, Loader2, Info } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { ipc } from "@/ipc/types";
+import { showError, showSuccess } from "@/lib/toast";
+import { useMutation } from "@tanstack/react-query";
+import { Folder, Info, Loader2, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { useNavigate } from "@tanstack/react-router";
+import { useGithubRepos } from "@/hooks/useGithubRepos";
 import { useStreamChat } from "@/hooks/useStreamChat";
 import type { GithubRepository } from "@/ipc/types";
-import { useGithubRepos } from "@/hooks/useGithubRepos";
+import { useNavigate } from "@tanstack/react-router";
 
 import { selectedAppIdAtom } from "@/atoms/appAtoms";
-import { useSetAtom } from "jotai";
+import { UnconnectedGitHubConnector } from "@/components/GitHubConnector";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useLoadApps } from "@/hooks/useLoadApps";
+import { useSettings } from "@/hooks/useSettings";
+import { getImportedAppLandingRoute } from "@/lib/import_flow";
+import { useSetAtom } from "jotai";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "./ui/accordion";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useSettings } from "@/hooks/useSettings";
-import { UnconnectedGitHubConnector } from "@/components/GitHubConnector";
-import { getImportedAppLandingRoute } from "@/lib/import_flow";
 
 interface ImportAppDialogProps {
   isOpen: boolean;

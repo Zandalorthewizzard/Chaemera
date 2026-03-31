@@ -1,4 +1,4 @@
-﻿import { db } from "../../db";
+import { db } from "../../db";
 import { apps, messages, versions } from "../../db/schema";
 import { desc, eq, and, gt, gte } from "drizzle-orm";
 import type { GitCommit } from "../git_types";

@@ -1,4 +1,4 @@
-﻿import { OpenAICompatibleChatLanguageModel } from "@ai-sdk/openai-compatible";
+import { OpenAICompatibleChatLanguageModel } from "@ai-sdk/openai-compatible";
 import { OpenAIResponsesLanguageModel } from "@ai-sdk/openai/internal";
 import {
   FetchFunction,

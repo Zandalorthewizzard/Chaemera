@@ -1,5 +1,5 @@
-mod core_domains;
 mod chat_worker_host;
+mod core_domains;
 mod leptos_shell;
 mod runtime_lifecycle;
 mod sqlite_support;

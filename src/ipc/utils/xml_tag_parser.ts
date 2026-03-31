@@ -1,4 +1,4 @@
-﻿import { normalizePath } from "../../../shared/normalizePath";
+import { normalizePath } from "../../../shared/normalizePath";
 import { unescapeXmlAttr, unescapeXmlContent } from "../../../shared/xmlEscape";
 import { appLog as log } from "@/lib/app_logger";
 import { SqlQuery } from "../../lib/schemas";

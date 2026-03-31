@@ -1,31 +1,19 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+
 import {
   assertNoSevereBrowserLogs,
   invokeCoreCommand,
   waitForDesktopShell,
 } from "../test_helpers.mjs";
 
-const IMPORTED_APP_NAME = "copy-chat-app";
 const CUSTOM_PROVIDER_ID = "custom::testing";
 const CUSTOM_PROVIDER_BASE_URL = `http://127.0.0.1:${
   process.env.FAKE_LLM_PORT ?? "3500"
 }/v1`;
-const IMPORT_FIXTURE_PATH = path.resolve(
-  path.dirname(fileURLToPath(import.meta.url)),
-  "..",
-  "..",
-  "..",
-  "e2e-tests",
-  "fixtures",
-  "import-app",
-  "minimal-with-ai-rules",
-);
 
 function logStep(step) {
-  console.log(`[tauri-runtime][copy-chat] ${step}`);
+  console.log(`[tauri-runtime][chat-from-app-details] ${step}`);
 }
 
 async function clickButton(label, timeout = 60_000) {
@@ -71,22 +59,6 @@ async function waitForChatRoute() {
   );
 }
 
-async function waitForImportedAppSelection() {
-  const appNameButton = await $('[data-testid="title-bar-app-name-button"]');
-
-  await browser.waitUntil(
-    async () => {
-      const text = await appNameButton.getText();
-      return text.includes(IMPORTED_APP_NAME);
-    },
-    {
-      timeout: 120_000,
-      interval: 250,
-      timeoutMsg: `Expected ${IMPORTED_APP_NAME} to become the selected app.`,
-    },
-  );
-}
-
 async function configureTestingModel() {
   logStep("creating custom provider");
   await invokeCoreCommand("create-custom-language-model-provider", {
@@ -123,14 +95,10 @@ async function configureTestingModel() {
 
 async function assertConfiguredTestingModel() {
   const storedSettings = await invokeCoreCommand("get-user-settings");
-  assert.deepEqual(
-    storedSettings.selectedModel,
-    {
-      provider: CUSTOM_PROVIDER_ID,
-      name: "test-model",
-    },
-    "Expected runtime settings to persist the selected custom testing model.",
-  );
+  assert.deepEqual(storedSettings.selectedModel, {
+    provider: CUSTOM_PROVIDER_ID,
+    name: "test-model",
+  });
 
   const models = await invokeCoreCommand("get-language-models", {
     providerId: CUSTOM_PROVIDER_ID,
@@ -191,9 +159,10 @@ async function waitForClipboardText() {
   return readClipboardText();
 }
 
-describe("Chaemera Tauri copy message flow", () => {
-  it("copies chat output without raw dyad tags", async function () {
+describe("Chaemera Tauri chat runtime from app details", () => {
+  it("opens an app-details route and streams a chat response in the real desktop app", async function () {
     this.timeout(300_000);
+    const appName = `chat-runtime-audit-app-${Date.now()}`;
 
     logStep("waiting for desktop shell");
     await waitForDesktopShell();
@@ -201,18 +170,19 @@ describe("Chaemera Tauri copy message flow", () => {
     logStep("configuring custom test model");
     await configureTestingModel();
 
-    logStep("importing minimal fixture with AI rules through core bridge");
-    const importResult = await invokeCoreCommand("import-app", {
-      path: IMPORT_FIXTURE_PATH,
-      appName: IMPORTED_APP_NAME,
+    logStep("creating app through the Tauri bridge");
+    const createdApp = await invokeCoreCommand("create-app", {
+      name: appName,
     });
 
-    logStep("navigating to imported app details workspace");
-    await browser.execute((appId) => {
-      window.location.assign(`/app-details?appId=${appId}`);
-    }, importResult.appId);
+    assert.equal(typeof createdApp.app.id, "number");
+    assert.ok(createdApp.chatId);
 
-    logStep("waiting for imported app details workspace");
+    logStep("opening the created app-details route directly");
+    await browser.url(
+      `http://tauri.localhost/app-details?appId=${createdApp.app.id}`,
+    );
+
     await browser.waitUntil(
       async () => {
         const url = await browser.getUrl();
@@ -222,15 +192,25 @@ describe("Chaemera Tauri copy message flow", () => {
         timeout: 120_000,
         interval: 250,
         timeoutMsg:
-          "Expected the import flow to navigate to the app-details route.",
+          "Expected the sidebar app selection to navigate to app-details.",
       },
     );
-    await waitForImportedAppSelection();
-    await assertConfiguredTestingModel();
+
+    const appNameButton = await $('[data-testid="title-bar-app-name-button"]');
+    await browser.waitUntil(
+      async () => (await appNameButton.getText()).includes(appName),
+      {
+        timeout: 120_000,
+        interval: 250,
+        timeoutMsg:
+          "Expected the app-details route to synchronize the selected app in the desktop shell.",
+      },
+    );
 
     logStep("opening imported app in chat");
     await clickButton("Open in Chat", 120_000);
     await waitForChatRoute();
+    await assertConfiguredTestingModel();
 
     logStep("sending canned write prompt through the UI");
     await submitPrompt("[dyad-qa=write]");

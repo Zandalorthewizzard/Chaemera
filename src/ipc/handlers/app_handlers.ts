@@ -1,4 +1,4 @@
-﻿import { db, getDatabasePath } from "../../db";
+import { db, getDatabasePath } from "../../db";
 import { apps, chats, messages } from "../../db/schema";
 import { desc, eq, like } from "drizzle-orm";
 import { createTypedHandler } from "./base";

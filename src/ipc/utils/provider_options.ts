@@ -1,4 +1,4 @@
-﻿import type { SmartContextMode, UserSettings } from "../../lib/schemas";
+import type { SmartContextMode, UserSettings } from "../../lib/schemas";
 import type { CodebaseFile } from "../../utils/codebase";
 import type { VersionedFiles } from "./versioned_codebase_context";
 import { GoogleGenerativeAIProviderOptions } from "@ai-sdk/google";

@@ -89,6 +89,7 @@ import {
   prepareMessageWithAttachments,
   removeNonEssentialTags,
   removeXmlTags,
+  stringifyDyadTagContent,
 } from "./helpers";
 
 import type { ChatRuntimeContext } from "./types";
@@ -146,11 +147,11 @@ async function processStreamChunks({
       chunk += escapeDyadTags(part.text);
     } else if (part.type === "tool-call") {
       const { serverName, toolName } = parseMcpToolKey(part.toolName);
-      const content = escapeDyadTags(JSON.stringify(part.input));
+      const content = escapeDyadTags(stringifyDyadTagContent(part.input));
       chunk = `<dyad-mcp-tool-call server="${serverName}" tool="${toolName}">\n${content}\n</dyad-mcp-tool-call>\n`;
     } else if (part.type === "tool-result") {
       const { serverName, toolName } = parseMcpToolKey(part.toolName);
-      const content = escapeDyadTags(part.output);
+      const content = escapeDyadTags(stringifyDyadTagContent(part.output));
       chunk = `<dyad-mcp-tool-result server="${serverName}" tool="${toolName}">\n${content}\n</dyad-mcp-tool-result>\n`;
     }
 

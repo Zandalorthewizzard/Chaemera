@@ -1,30 +1,10 @@
-import { useNavigate, useRouter, useSearch } from "@tanstack/react-router";
-import { normalizePath } from "../../shared/normalizePath";
-import { useSetAtom } from "jotai";
 import { selectedAppIdAtom } from "@/atoms/appAtoms";
-import { ipc } from "@/ipc/types";
-import { useLoadApps } from "@/hooks/useLoadApps";
-import { useState } from "react";
+import { AppUpgrades } from "@/components/AppUpgrades";
+import { CapacitorControls } from "@/components/CapacitorControls";
+import { GitHubConnector } from "@/components/GitHubConnector";
+import { GithubCollaboratorManager } from "@/components/GithubCollaboratorManager";
+import { SupabaseConnector } from "@/components/SupabaseConnector";
 import { Button } from "@/components/ui/button";
-import {
-  ArrowLeft,
-  MoreVertical,
-  MessageCircle,
-  Pencil,
-  Folder,
-  Star,
-} from "lucide-react";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-} from "@/components/ui/tooltip";
-import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
@@ -33,19 +13,39 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { GitHubConnector } from "@/components/GitHubConnector";
-import { SupabaseConnector } from "@/components/SupabaseConnector";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { useAddAppToFavorite } from "@/hooks/useAddAppToFavorite";
+import { useCheckName } from "@/hooks/useCheckName";
+import { useDebounce } from "@/hooks/useDebounce";
+import { invalidateAppQuery } from "@/hooks/useLoadApp";
+import { useLoadApps } from "@/hooks/useLoadApps";
+import { ipc } from "@/ipc/types";
 import { showError, showSuccess } from "@/lib/toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Label } from "@/components/ui/label";
+import { useNavigate, useRouter, useSearch } from "@tanstack/react-router";
+import { useSetAtom } from "jotai";
+import {
+  ArrowLeft,
+  Folder,
+  MessageCircle,
+  MoreVertical,
+  Pencil,
+  Star,
+} from "lucide-react";
 import { Loader2 } from "lucide-react";
-import { invalidateAppQuery } from "@/hooks/useLoadApp";
-import { useDebounce } from "@/hooks/useDebounce";
-import { useCheckName } from "@/hooks/useCheckName";
-import { AppUpgrades } from "@/components/AppUpgrades";
-import { CapacitorControls } from "@/components/CapacitorControls";
-import { GithubCollaboratorManager } from "@/components/GithubCollaboratorManager";
-import { useAddAppToFavorite } from "@/hooks/useAddAppToFavorite";
+import { useEffect, useState } from "react";
+import { normalizePath } from "../../shared/normalizePath";
 
 export default function AppDetailsPage() {
   const navigate = useNavigate();
@@ -83,6 +83,10 @@ export default function AppDetailsPage() {
   // Get the appId from search params and find the corresponding app
   const appId = search.appId ? Number(search.appId) : null;
   const selectedApp = appId ? appsList.find((app) => app.id === appId) : null;
+
+  useEffect(() => {
+    setSelectedAppId(appId);
+  }, [appId, setSelectedAppId]);
 
   const handleDeleteApp = async () => {
     if (!appId) return;

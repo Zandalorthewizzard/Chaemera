@@ -262,13 +262,13 @@ pub fn get_system_debug_info(app: AppHandle) -> Result<Value, String> {
 #[tauri::command]
 pub fn nodejs_status(app: AppHandle) -> Result<Value, String> {
     if let Ok(guard) = node_mock_state().lock() {
-      if let Some(installed) = *guard {
-        return Ok(json!({
-            "nodeVersion": if installed { Some("v24.0.0") } else { None::<&str> },
-            "pnpmVersion": if installed { Some("9.0.0") } else { None::<&str> },
-            "nodeDownloadUrl": node_download_url(),
-        }));
-      }
+        if let Some(installed) = *guard {
+            return Ok(json!({
+                "nodeVersion": if installed { Some("v24.0.0") } else { None::<&str> },
+                "pnpmVersion": if installed { Some("9.0.0") } else { None::<&str> },
+                "nodeDownloadUrl": node_download_url(),
+            }));
+        }
     }
 
     Ok(json!({

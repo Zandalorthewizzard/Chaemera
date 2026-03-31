@@ -1,4 +1,4 @@
-﻿import {
+import {
   parseFilesFromMessage,
   processChatMessagesWithVersionedFiles,
 } from "@/ipc/utils/versioned_codebase_context";

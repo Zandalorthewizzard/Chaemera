@@ -48,10 +48,12 @@ export function getRuntimeUserDataDir() {
 }
 
 export function getRuntimeAppsDir() {
-  const appsDir = process.env.CHAEMERA_TAURI_APPS_DIR;
+  const appsDir =
+    process.env.CHAEMERA_TAURI_CHAEMERA_APPS_DIR ??
+    process.env.CHAEMERA_TAURI_APPS_DIR;
   if (!appsDir) {
     throw new Error(
-      "CHAEMERA_TAURI_APPS_DIR is not set for the runtime session.",
+      "CHAEMERA_TAURI_CHAEMERA_APPS_DIR / CHAEMERA_TAURI_APPS_DIR is not set for the runtime session.",
     );
   }
   return appsDir;

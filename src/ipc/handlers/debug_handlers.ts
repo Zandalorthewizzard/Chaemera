@@ -1,4 +1,4 @@
-﻿import { platform, arch } from "os";
+import { platform, arch } from "os";
 import { readSettings } from "../../main/settings";
 import { createTypedHandler } from "./base";
 import { systemContracts } from "../types/system";

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Utility functions for normalizing test data to ensure deterministic snapshots.
  */
 

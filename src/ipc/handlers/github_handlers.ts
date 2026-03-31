@@ -1,45 +1,100 @@
-﻿import fetch from "node-fetch"; // Use node-fetch for making HTTP requests in main process
-import { writeSettings, readSettings } from "../../main/settings";
-import {
-  gitSetRemoteUrl,
-  gitPush,
-  gitClone,
-  gitPull,
-  gitRebaseAbort,
-  gitRebaseContinue,
-  gitRebase,
-  gitFetch,
-  gitCreateBranch,
-  gitCheckout,
-  gitGetMergeConflicts,
-  gitCurrentBranch,
-  gitListBranches,
-  gitListRemoteBranches,
-  isGitStatusClean,
-  gitAddAll,
-  gitCommit,
-  getCurrentCommitHash,
-  isGitMergeInProgress,
-  isGitRebaseInProgress,
-  GitConflictError,
-} from "../utils/git_utils";
-import * as schema from "../../db/schema";
 import fs from "node:fs";
-import { getAppPath } from "../../paths/paths";
-import { db } from "../../db";
-import { apps } from "../../db/schema";
-import { eq } from "drizzle-orm";
-import { GithubUser } from "../../lib/schemas";
-import { appLog as log } from "@/lib/app_logger";
-import { IS_TEST_BUILD } from "../utils/test_utils";
 import path from "node:path";
-import { withLock } from "../utils/lock_utils";
-import { createTypedHandler } from "./base";
+import { appLog as log } from "@/lib/app_logger";
+import { eq } from "drizzle-orm";
+import fetch from "node-fetch"; // Use node-fetch for making HTTP requests in main process
+import { db } from "../../db";
+import * as schema from "../../db/schema";
+import { apps } from "../../db/schema";
+import type { GithubUser } from "../../lib/schemas";
+import { readSettings, writeSettings } from "../../main/settings";
+import { getAppPath } from "../../paths/paths";
 import { githubContracts } from "../types/github";
 import type { CloneRepoParams, CloneRepoResult } from "../types/github";
+import {
+  GitConflictError,
+  getCurrentCommitHash,
+  gitAddAll,
+  gitCheckout,
+  gitClone,
+  gitCommit,
+  gitCreateBranch,
+  gitCurrentBranch,
+  gitFetch,
+  gitGetMergeConflicts,
+  gitListBranches,
+  gitListRemoteBranches,
+  gitPull,
+  gitPush,
+  gitRebase,
+  gitRebaseAbort,
+  gitRebaseContinue,
+  gitSetRemoteUrl,
+  isGitMergeInProgress,
+  isGitRebaseInProgress,
+  isGitStatusClean,
+} from "../utils/git_utils";
+import { withLock } from "../utils/lock_utils";
+import { IS_TEST_BUILD } from "../utils/test_utils";
+import { createTypedHandler } from "./base";
 import { BrowserWindow, type IpcMainInvokeEvent } from "./electron_compat";
 
 const logger = log.scope("github_handlers");
+
+type GithubPrimaryEmail = {
+  email?: string;
+  primary?: boolean;
+};
+
+type GithubDeviceTokenResponse = {
+  access_token?: string;
+  error?: string;
+  error_description?: string;
+};
+
+type GithubDeviceCodeResponse = {
+  device_code: string;
+  interval?: number;
+  user_code: string;
+  verification_uri: string;
+};
+
+type GithubApiErrorResponse = {
+  message?: string;
+  error?: string;
+  error_description?: string;
+  errors?: Array<
+    | string
+    | {
+        message?: string;
+        code?: string;
+        field?: string;
+      }
+  >;
+};
+
+type GithubRepoSummary = {
+  name: string;
+  full_name: string;
+  private: boolean;
+};
+
+type GithubBranchSummary = {
+  name: string;
+  commit: {
+    sha: string;
+  };
+};
+
+type GithubUserProfile = {
+  login: string;
+};
+
+type GithubCollaborator = {
+  login: string;
+  avatar_url: string;
+  permissions: unknown;
+};
 
 /**
  * Normalizes a GitHub repository name to match GitHub's automatic normalization rules.
@@ -104,8 +159,8 @@ export async function getGithubUser(): Promise<GithubUser | null> {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     if (!res.ok) return null;
-    const emails = await res.json();
-    const email = emails.find((e: any) => e.primary)?.email;
+    const emails = (await res.json()) as GithubPrimaryEmail[];
+    const email = emails.find((entry) => entry.primary)?.email;
     if (!email) return null;
 
     writeSettings({
@@ -352,7 +407,7 @@ async function pollForAccessToken(event: IpcMainInvokeEvent) {
       }),
     });
 
-    const data = await response.json();
+    const data = (await response.json()) as GithubDeviceTokenResponse;
 
     if (response.ok && data.access_token) {
       logger.log("Successfully obtained GitHub Access Token.");
@@ -492,14 +547,15 @@ function handleStartGithubFlow(
     .then((res) => {
       if (!res.ok) {
         return res.json().then((errData) => {
+          const errorData = errData as GithubApiErrorResponse;
           throw new Error(
-            `GitHub API Error: ${errData.error_description || res.statusText}`,
+            `GitHub API Error: ${errorData.error_description || res.statusText}`,
           );
         });
       }
-      return res.json();
+      return res.json() as Promise<GithubDeviceCodeResponse>;
     })
-    .then((data) => {
+    .then((data: GithubDeviceCodeResponse) => {
       logger.info("Received device code response");
       if (!currentFlowState) return; // Flow might have been cancelled
 
@@ -554,14 +610,14 @@ async function handleListGithubRepos(): Promise<
     );
 
     if (!response.ok) {
-      const errorData = await response.json();
+      const errorData = (await response.json()) as GithubApiErrorResponse;
       throw new Error(
         `GitHub API error: ${errorData.message || response.statusText}`,
       );
     }
 
-    const repos = await response.json();
-    return repos.map((repo: any) => ({
+    const repos = (await response.json()) as GithubRepoSummary[];
+    return repos.map((repo) => ({
       name: repo.name,
       full_name: repo.full_name,
       private: repo.private,
@@ -597,14 +653,14 @@ async function handleGetRepoBranches(
     );
 
     if (!response.ok) {
-      const errorData = await response.json();
+      const errorData = (await response.json()) as GithubApiErrorResponse;
       throw new Error(
         `GitHub API error: ${errorData.message || response.statusText}`,
       );
     }
 
-    const branches = await response.json();
-    return branches.map((branch: any) => ({
+    const branches = (await response.json()) as GithubBranchSummary[];
+    return branches.map((branch) => ({
       name: branch.name,
       commit: { sha: branch.commit.sha },
     }));
@@ -635,8 +691,8 @@ async function handleIsRepoAvailable(
       (await fetch(`${GITHUB_API_BASE}/user`, {
         headers: { Authorization: `Bearer ${accessToken}` },
       })
-        .then((r) => r.json())
-        .then((u) => u.login));
+        .then((r) => r.json() as Promise<GithubUserProfile>)
+        .then((user) => user.login));
     // Check if repo exists (using normalized name)
     const url = `${GITHUB_API_BASE}/repos/${encodeURIComponent(owner)}/${encodeURIComponent(normalizedRepo)}`;
     const res = await fetch(url, {
@@ -647,7 +703,7 @@ async function handleIsRepoAvailable(
     } else if (res.ok) {
       return { available: false, error: "Repository already exists." };
     } else {
-      const data = await res.json();
+      const data = (await res.json()) as GithubApiErrorResponse;
       return { available: false, error: data.message || "Unknown error" };
     }
   } catch (err: any) {
@@ -681,7 +737,7 @@ async function handleCreateRepo(
     const userRes = await fetch(`${GITHUB_API_BASE}/user`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
-    const user = await userRes.json();
+    const user = (await userRes.json()) as GithubUserProfile;
     owner = user.login;
   }
   // Create repo
@@ -703,7 +759,7 @@ async function handleCreateRepo(
   if (!res.ok) {
     let errorMessage = `Failed to create repository (${res.status} ${res.statusText})`;
     try {
-      const data = await res.json();
+      const data = (await res.json()) as GithubApiErrorResponse;
       logger.error("GitHub API error when creating repo:", {
         status: res.status,
         statusText: res.statusText,
@@ -718,7 +774,7 @@ async function handleCreateRepo(
       // Handle validation errors with more details
       if (data.errors && Array.isArray(data.errors)) {
         const errorDetails = data.errors
-          .map((err: any) => {
+          .map((err) => {
             if (typeof err === "string") return err;
             if (err.message) return err.message;
             if (err.code) return `${err.field || "field"}: ${err.code}`;
@@ -793,7 +849,7 @@ async function handleConnectToExistingRepo(
     );
 
     if (!repoResponse.ok) {
-      const errorData = await repoResponse.json();
+      const errorData = (await repoResponse.json()) as GithubApiErrorResponse;
       throw new Error(
         `Repository not found or access denied: ${errorData.message}`,
       );
@@ -1047,8 +1103,8 @@ async function handleListCollaborators(
       );
     }
 
-    const collaborators = await response.json();
-    return collaborators.map((c: any) => ({
+    const collaborators = (await response.json()) as GithubCollaborator[];
+    return collaborators.map((c) => ({
       login: c.login,
       avatar_url: c.avatar_url,
       permissions: c.permissions,
@@ -1115,7 +1171,7 @@ async function handleInviteCollaborator(
     );
 
     if (!response.ok) {
-      const data = await response.json();
+      const data = (await response.json()) as GithubApiErrorResponse;
       throw new Error(
         data.message ||
           `Failed to invite collaborator: ${response.status} ${response.statusText}`,
@@ -1155,7 +1211,7 @@ async function handleRemoveCollaborator(
     );
 
     if (!response.ok) {
-      const data = await response.json();
+      const data = (await response.json()) as GithubApiErrorResponse;
       throw new Error(
         data.message ||
           `Failed to remove collaborator: ${response.status} ${response.statusText}`,

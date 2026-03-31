@@ -1,2 +1,2 @@
-﻿["even json is included"]
+["even json is included"]
 

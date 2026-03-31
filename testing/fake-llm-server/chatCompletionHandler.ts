@@ -1,10 +1,10 @@
-import { Request, Response } from "express";
 import fs from "fs";
 import path from "path";
+import type { Request, Response } from "express";
 import { CANNED_MESSAGE, createStreamChunk } from ".";
 import {
-  handleLocalAgentFixture,
   extractLocalAgentFixture,
+  handleLocalAgentFixture,
 } from "./localAgentHandler";
 
 let globalCounter = 0;
@@ -88,6 +88,12 @@ export const createChatCompletionHandler =
     ) {
       messageContent =
         "## Key Decisions Made\n- Completed initial task as requested\n\n## Current Task State\nConversation was compacted to save context space.";
+    }
+
+    const qaWriteMatch = userTextContent.match(/\[dyad-qa=write:([^\]]+)\]/);
+    if (qaWriteMatch) {
+      const fileStem = qaWriteMatch[1].trim().replace(/[^a-zA-Z0-9_-]/g, "-");
+      messageContent = `<dyad-write path="${fileStem}.txt">\n${fileStem}\n</dyad-write>`;
     }
 
     // Check for upload image to codebase using lastUserMessage (which already handles both string and array content)
@@ -339,12 +345,21 @@ export default Index;
       messageContent = `[[STRING_IS_FINISHED]]";</dyad-write>\nFinished writing file.`;
       messageContent += "\n\n" + generateDump(req);
     }
+    const hasCompletedToolResult = messages.some(
+      (message: any) => message?.role === "tool",
+    );
+    if (hasCompletedToolResult) {
+      messageContent = "The calculator result is 3.";
+    }
+    if (lastMessage?.content === "OK.") {
+      messageContent = "Done.";
+    }
     const isToolCall = !!(
       lastMessage &&
       lastMessage.content &&
       lastMessage.content.includes("[call_tool=calculator_add]")
     );
-    let message = {
+    const message = {
       role: "assistant",
       content: messageContent,
     } as any;
@@ -470,7 +485,7 @@ export default Index;
       !lastMessage?.content.startsWith("Summarize the following chat:") &&
       lastMessage?.content?.match?.(/\[high-tokens=(\d+)\]/);
     const highTokensValue = highTokensMatch
-      ? parseInt(highTokensMatch[1], 10)
+      ? Number.parseInt(highTokensMatch[1], 10)
       : null;
 
     // Split the message into characters to simulate streaming

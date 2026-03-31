@@ -1,4 +1,4 @@
-﻿import { db } from "../../db";
+import { db } from "../../db";
 import { versions, apps } from "../../db/schema";
 import { eq, and } from "drizzle-orm";
 import { getAppPath } from "../../paths/paths";

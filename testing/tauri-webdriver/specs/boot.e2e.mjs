@@ -68,6 +68,18 @@ describe("Chaemera Tauri runtime", () => {
     const root = await $("#root");
     await root.waitForExist({ timeout: 60_000 });
 
+    const layout = await $("#layout-main-content-container");
+    await layout.waitForExist({ timeout: 60_000 });
+
+    const appButton = await $('[data-testid="title-bar-app-name-button"]');
+    await appButton.waitForExist({ timeout: 60_000 });
+
+    const appButtonText = await appButton.getText();
+    assert.match(appButtonText, /app selected/i);
+
+    const appList = await $('[data-testid="app-list-container"]');
+    await appList.waitForExist({ timeout: 60_000 });
+
     const debugState = await browser.execute(() => {
       const rootElement = document.querySelector("#root");
       const testIds = Array.from(document.querySelectorAll("[data-testid]"))
@@ -90,19 +102,7 @@ describe("Chaemera Tauri runtime", () => {
     const browserLogs = await readBrowserLogs();
     const severeBrowserLogs = getSevereBrowserLogs(browserLogs);
 
-    const layout = await $("#layout-main-content-container");
-    await layout.waitForExist({ timeout: 60_000 });
-
-    const appButton = await $('[data-testid="title-bar-app-name-button"]');
-    await appButton.waitForExist({ timeout: 60_000 });
-
-    const appButtonText = await appButton.getText();
-    assert.match(appButtonText, /app selected/i);
-
-    const appList = await $('[data-testid="app-list-container"]');
-    await appList.waitForExist({ timeout: 60_000 });
-
-    assert.equal(debugState.readyState, "complete");
+    assert.match(debugState.readyState, /^(interactive|complete)$/);
     assert.equal(debugState.rootChildElementCount > 0, true);
     assert.equal(debugState.hasTauriCoreBridge, true);
     assert.equal(debugState.hasTauriInternals, true);

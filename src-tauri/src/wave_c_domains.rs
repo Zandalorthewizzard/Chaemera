@@ -1,3 +1,5 @@
+use crate::sqlite_support::open_db;
+use rusqlite::params;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::collections::HashMap;
@@ -145,6 +147,68 @@ where
     let raw = fs::read_to_string(&path)
         .map_err(|error| format!("failed to read {}: {error}", filename))?;
     serde_json::from_str(&raw).map_err(|error| format!("failed to parse {}: {error}", filename))
+}
+
+fn decode_json_column<T>(raw: Option<String>, label: &str) -> Result<Option<T>, String>
+where
+    T: DeserializeOwned,
+{
+    raw.map(|value| {
+        serde_json::from_str::<T>(&value)
+            .map_err(|error| format!("failed to decode {label}: {error}"))
+    })
+    .transpose()
+}
+
+fn read_mcp_server_record(row: &rusqlite::Row<'_>) -> Result<McpServerRecord, String> {
+    let args = decode_json_column::<Vec<String>>(
+        row.get(4).map_err(|error| error.to_string())?,
+        "mcp server args",
+    )?;
+    let env_json = decode_json_column::<HashMap<String, String>>(
+        row.get(5).map_err(|error| error.to_string())?,
+        "mcp server env_json",
+    )?;
+    let headers_json = decode_json_column::<HashMap<String, String>>(
+        row.get(6).map_err(|error| error.to_string())?,
+        "mcp server headers_json",
+    )?;
+
+    Ok(McpServerRecord {
+        id: row.get(0).map_err(|error| error.to_string())?,
+        name: row.get(1).map_err(|error| error.to_string())?,
+        transport: row.get(2).map_err(|error| error.to_string())?,
+        command: row.get(3).map_err(|error| error.to_string())?,
+        args,
+        env_json,
+        headers_json,
+        url: row.get(7).map_err(|error| error.to_string())?,
+        enabled: row.get::<_, bool>(8).map_err(|error| error.to_string())?,
+        created_at: row.get(9).map_err(|error| error.to_string())?,
+        updated_at: row.get(10).map_err(|error| error.to_string())?,
+    })
+}
+
+fn load_mcp_server_record(app: &AppHandle, server_id: i64) -> Result<McpServerRecord, String> {
+    let connection = open_db(app)?;
+    let mut statement = connection
+        .prepare(
+            "SELECT id, name, transport, command, args, env_json, headers_json, url, enabled, created_at, updated_at
+             FROM mcp_servers
+             WHERE id = ?1",
+        )
+        .map_err(|error| format!("failed to prepare mcp server query: {error}"))?;
+
+    let mut rows = statement
+        .query(params![server_id])
+        .map_err(|error| format!("failed to execute mcp server query: {error}"))?;
+
+    let row = rows
+        .next()
+        .map_err(|error| format!("failed to read mcp server row: {error}"))?
+        .ok_or_else(|| format!("MCP server not found: {server_id}"))?;
+
+    read_mcp_server_record(row)
 }
 
 fn write_json_file<T>(app: &AppHandle, filename: &str, value: &T) -> Result<(), String>
@@ -327,43 +391,80 @@ pub fn agent_tool_consent_response(_request: AgentToolConsentResponse) -> Result
 
 #[tauri::command]
 pub fn mcp_list_servers(app: AppHandle) -> Result<Value, String> {
-    let servers: Vec<McpServerRecord> = read_json_file(&app, "mcp-servers.json")?;
+    let connection = open_db(&app)?;
+    let mut statement = connection
+        .prepare(
+            "SELECT id, name, transport, command, args, env_json, headers_json, url, enabled, created_at, updated_at
+             FROM mcp_servers
+             ORDER BY id ASC",
+        )
+        .map_err(|error| format!("failed to prepare mcp servers query: {error}"))?;
+
+    let rows = statement
+        .query_map([], |row| {
+            read_mcp_server_record(row).map_err(|error| {
+                rusqlite::Error::FromSqlConversionFailure(
+                    0,
+                    rusqlite::types::Type::Text,
+                    Box::new(std::io::Error::new(std::io::ErrorKind::InvalidData, error)),
+                )
+            })
+        })
+        .map_err(|error| format!("failed to execute mcp servers query: {error}"))?;
+
+    let servers = rows
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(|error| format!("failed to decode mcp servers: {error}"))?;
+
     serde_json::to_value(servers)
         .map_err(|error| format!("failed to serialize mcp servers: {error}"))
 }
 
 #[tauri::command]
 pub fn mcp_create_server(app: AppHandle, request: McpServerCreateRequest) -> Result<Value, String> {
-    let mut servers: Vec<McpServerRecord> = read_json_file(&app, "mcp-servers.json")?;
-    let next_id = servers.iter().map(|server| server.id).max().unwrap_or(0) + 1;
-    let now = now_millis();
+    let connection = open_db(&app)?;
+    let args_json = request
+        .args
+        .map(|value| serde_json::to_string(&value))
+        .transpose()
+        .map_err(|error| format!("failed to encode mcp server args: {error}"))?;
+    let env_json = request
+        .env_json
+        .map(|value| serde_json::to_string(&value))
+        .transpose()
+        .map_err(|error| format!("failed to encode mcp server env_json: {error}"))?;
+    let headers_json = request
+        .headers_json
+        .map(|value| serde_json::to_string(&value))
+        .transpose()
+        .map_err(|error| format!("failed to encode mcp server headers_json: {error}"))?;
+    let transport = request.transport.unwrap_or_else(|| "stdio".to_string());
+    let enabled = request.enabled.unwrap_or(false);
 
-    let server = McpServerRecord {
-        id: next_id,
-        name: request.name,
-        transport: request.transport.unwrap_or_else(|| "stdio".to_string()),
-        command: request.command,
-        args: request.args,
-        env_json: request.env_json,
-        headers_json: request.headers_json,
-        url: request.url,
-        enabled: request.enabled.unwrap_or(false),
-        created_at: now,
-        updated_at: now,
-    };
+    connection
+        .execute(
+            "INSERT INTO mcp_servers (name, transport, command, args, env_json, headers_json, url, enabled)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)",
+            params![
+                request.name,
+                transport,
+                request.command,
+                args_json,
+                env_json,
+                headers_json,
+                request.url,
+                enabled,
+            ],
+        )
+        .map_err(|error| format!("failed to insert mcp server: {error}"))?;
 
-    servers.push(server.clone());
-    write_json_file(&app, "mcp-servers.json", &servers)?;
+    let server = load_mcp_server_record(&app, connection.last_insert_rowid())?;
     serde_json::to_value(server).map_err(|error| format!("failed to serialize mcp server: {error}"))
 }
 
 #[tauri::command]
 pub fn mcp_update_server(app: AppHandle, request: McpServerUpdateRequest) -> Result<Value, String> {
-    let mut servers: Vec<McpServerRecord> = read_json_file(&app, "mcp-servers.json")?;
-    let server = servers
-        .iter_mut()
-        .find(|server| server.id == request.id)
-        .ok_or_else(|| format!("MCP server not found: {}", request.id))?;
+    let mut server = load_mcp_server_record(&app, request.id)?;
 
     if let Some(name) = request.name {
         server.name = name;
@@ -371,36 +472,82 @@ pub fn mcp_update_server(app: AppHandle, request: McpServerUpdateRequest) -> Res
     if let Some(transport) = request.transport {
         server.transport = transport;
     }
-    if request.command.is_some() {
-        server.command = request.command;
+    if let Some(command) = request.command {
+        server.command = Some(command);
     }
-    if request.args.is_some() {
-        server.args = request.args;
+    if let Some(args) = request.args {
+        server.args = Some(args);
     }
-    if request.env_json.is_some() {
-        server.env_json = request.env_json;
+    if let Some(env_json) = request.env_json {
+        server.env_json = Some(env_json);
     }
-    if request.headers_json.is_some() {
-        server.headers_json = request.headers_json;
+    if let Some(headers_json) = request.headers_json {
+        server.headers_json = Some(headers_json);
     }
-    if request.url.is_some() {
-        server.url = request.url;
+    if let Some(url) = request.url {
+        server.url = Some(url);
     }
     if let Some(enabled) = request.enabled {
         server.enabled = enabled;
     }
-    server.updated_at = now_millis();
 
-    let result = server.clone();
-    write_json_file(&app, "mcp-servers.json", &servers)?;
+    let connection = open_db(&app)?;
+    let args_json = server
+        .args
+        .clone()
+        .map(|value| serde_json::to_string(&value))
+        .transpose()
+        .map_err(|error| format!("failed to encode mcp server args: {error}"))?;
+    let env_json = server
+        .env_json
+        .clone()
+        .map(|value| serde_json::to_string(&value))
+        .transpose()
+        .map_err(|error| format!("failed to encode mcp server env_json: {error}"))?;
+    let headers_json = server
+        .headers_json
+        .clone()
+        .map(|value| serde_json::to_string(&value))
+        .transpose()
+        .map_err(|error| format!("failed to encode mcp server headers_json: {error}"))?;
+
+    connection
+        .execute(
+            "UPDATE mcp_servers
+             SET name = ?1,
+                 transport = ?2,
+                 command = ?3,
+                 args = ?4,
+                 env_json = ?5,
+                 headers_json = ?6,
+                 url = ?7,
+                 enabled = ?8,
+                 updated_at = unixepoch()
+             WHERE id = ?9",
+            params![
+                server.name,
+                server.transport,
+                server.command,
+                args_json,
+                env_json,
+                headers_json,
+                server.url,
+                server.enabled,
+                request.id,
+            ],
+        )
+        .map_err(|error| format!("failed to update mcp server: {error}"))?;
+
+    let result = load_mcp_server_record(&app, request.id)?;
     serde_json::to_value(result).map_err(|error| format!("failed to serialize mcp server: {error}"))
 }
 
 #[tauri::command]
 pub fn mcp_delete_server(app: AppHandle, server_id: i64) -> Result<Value, String> {
-    let mut servers: Vec<McpServerRecord> = read_json_file(&app, "mcp-servers.json")?;
-    servers.retain(|server| server.id != server_id);
-    write_json_file(&app, "mcp-servers.json", &servers)?;
+    let connection = open_db(&app)?;
+    connection
+        .execute("DELETE FROM mcp_servers WHERE id = ?1", params![server_id])
+        .map_err(|error| format!("failed to delete mcp server: {error}"))?;
     Ok(json!({ "success": true }))
 }
 
@@ -411,7 +558,31 @@ pub fn mcp_list_tools(_server_id: i64) -> Result<Value, String> {
 
 #[tauri::command]
 pub fn mcp_get_tool_consents(app: AppHandle) -> Result<Value, String> {
-    let consents: Vec<McpToolConsentRecord> = read_json_file(&app, "mcp-tool-consents.json")?;
+    let connection = open_db(&app)?;
+    let mut statement = connection
+        .prepare(
+            "SELECT id, server_id, tool_name, consent, updated_at
+             FROM mcp_tool_consents
+             ORDER BY id ASC",
+        )
+        .map_err(|error| format!("failed to prepare mcp tool consents query: {error}"))?;
+
+    let rows = statement
+        .query_map([], |row| {
+            Ok(McpToolConsentRecord {
+                id: row.get(0)?,
+                server_id: row.get(1)?,
+                tool_name: row.get(2)?,
+                consent: row.get(3)?,
+                updated_at: row.get(4)?,
+            })
+        })
+        .map_err(|error| format!("failed to execute mcp tool consents query: {error}"))?;
+
+    let consents = rows
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(|error| format!("failed to decode mcp tool consents: {error}"))?;
+
     serde_json::to_value(consents)
         .map_err(|error| format!("failed to serialize mcp tool consents: {error}"))
 }
@@ -421,32 +592,42 @@ pub fn mcp_set_tool_consent(
     app: AppHandle,
     request: McpToolConsentRequest,
 ) -> Result<Value, String> {
-    let mut consents: Vec<McpToolConsentRecord> = read_json_file(&app, "mcp-tool-consents.json")?;
-    let now = now_millis();
+    let connection = open_db(&app)?;
+    connection
+        .execute(
+            "INSERT INTO mcp_tool_consents (server_id, tool_name, consent)
+             VALUES (?1, ?2, ?3)
+             ON CONFLICT(server_id, tool_name)
+             DO UPDATE SET consent = excluded.consent, updated_at = unixepoch()",
+            params![request.server_id, request.tool_name, request.consent],
+        )
+        .map_err(|error| format!("failed to upsert mcp tool consent: {error}"))?;
 
-    if let Some(existing) = consents
-        .iter_mut()
-        .find(|entry| entry.server_id == request.server_id && entry.tool_name == request.tool_name)
-    {
-        existing.consent = request.consent;
-        existing.updated_at = now;
-        let result = existing.clone();
-        write_json_file(&app, "mcp-tool-consents.json", &consents)?;
-        return serde_json::to_value(result)
-            .map_err(|error| format!("failed to serialize mcp tool consent: {error}"));
-    }
+    let mut statement = connection
+        .prepare(
+            "SELECT id, server_id, tool_name, consent, updated_at
+             FROM mcp_tool_consents
+             WHERE server_id = ?1 AND tool_name = ?2",
+        )
+        .map_err(|error| format!("failed to prepare mcp tool consent query: {error}"))?;
 
-    let next_id = consents.iter().map(|entry| entry.id).max().unwrap_or(0) + 1;
+    let mut rows = statement
+        .query(params![request.server_id, request.tool_name])
+        .map_err(|error| format!("failed to execute mcp tool consent query: {error}"))?;
+
+    let row = rows
+        .next()
+        .map_err(|error| format!("failed to read mcp tool consent row: {error}"))?
+        .ok_or_else(|| "MCP tool consent not found after upsert".to_string())?;
+
     let record = McpToolConsentRecord {
-        id: next_id,
-        server_id: request.server_id,
-        tool_name: request.tool_name,
-        consent: request.consent,
-        updated_at: now,
+        id: row.get(0).map_err(|error| error.to_string())?,
+        server_id: row.get(1).map_err(|error| error.to_string())?,
+        tool_name: row.get(2).map_err(|error| error.to_string())?,
+        consent: row.get(3).map_err(|error| error.to_string())?,
+        updated_at: row.get(4).map_err(|error| error.to_string())?,
     };
 
-    consents.push(record.clone());
-    write_json_file(&app, "mcp-tool-consents.json", &consents)?;
     serde_json::to_value(record)
         .map_err(|error| format!("failed to serialize mcp tool consent: {error}"))
 }
