@@ -132,9 +132,7 @@ jobs:
     needs: [check-changes]
     if: needs.check-changes.outputs.should_run_tests == 'true'
     # Why Mac and Windows?
-    # I can't run electron playwright on ubuntu-latest and
-    # Linux support for Dyad is experimental so not as important
-    # as Mac + Windows
+    # Linux desktop coverage is still less important here than Mac + Windows.
     strategy:
       fail-fast: false
       matrix:

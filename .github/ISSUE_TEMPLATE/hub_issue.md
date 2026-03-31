@@ -1,6 +1,6 @@
 ---
-name: Dyad Hub Issue
-about: Found an issue with dyad.sh/hub?
+name: Template Catalog Issue
+about: Report an issue with the Chaemera template catalog or related template metadata
 title: "[hub]"
 labels: "hub"
 assignees: ""

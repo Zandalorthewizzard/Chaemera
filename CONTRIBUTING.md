@@ -1,18 +1,18 @@
 # Contributing
 
-Before opening a pull request, please open an issue and discuss whether the change makes sense in Dyad. Ensuring a cohesive user experience sometimes means we can't include every possible feature or we need to consider the long-term design of how we want to support a feature area.
+Before opening a pull request, please open an issue or discussion and confirm that the proposed change fits the current direction of Chaemera. Keeping the product cohesive sometimes means narrowing scope, deferring work, or choosing a smaller first step.
 
-- For a high-level overview of how Dyad works, please see the [Architecture Guide](./docs/architecture.md). Understanding the architecture will help ensure your contributions align with the overall design of the project.
-- For a detailed architecture on how the new local agent mode (aka Agent v2) works, please read the [Agent Architecture Guide](./docs/agent_architecture.md)
-- For an in-depth overview of the Dyad codebase, see the DeepWiki documentation [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/dyad-sh/dyad)
+- For a high-level overview of the app architecture, see the [Architecture Guide](./docs/architecture.md).
+- For a detailed architecture on the newer agent-oriented runtime work, see the [Agent Architecture Guide](./docs/agent_architecture.md).
+- For the repository-specific guidance used during active development, also review `AGENTS.md` and the relevant files under `rules/`.
 
 ## More than code contributions
 
-Something that I really appreciate are all the non-code contributions, such as reporting bugs, writing feature requests and participating on [Dyad's sub-reddit](https://www.reddit.com/r/dyadbuilders).
+Non-code contributions are welcome too: bug reports, feature requests, documentation fixes, design feedback, testing notes, and careful reproduction steps all help.
 
 ## Development
 
-Dyad is an Electron app.
+Chaemera is a desktop app in active migration to a Tauri-native architecture.
 
 **Install dependencies:**
 
@@ -48,6 +48,22 @@ npm run db:generate
 ```sh
 npm start
 ```
+
+Depending on what you are working on, you may also need the Tauri build and runtime flows described in `AGENTS.md`.
+
+## Contribution Terms
+
+By submitting a contribution to this repository, you agree that your contribution will be licensed under the repository license, Apache 2.0.
+
+This repository uses the Developer Certificate of Origin (DCO) instead of a Contributor License Agreement.
+
+Please sign your commits with a `Signed-off-by:` line, for example:
+
+```sh
+git commit -s -m "your message"
+```
+
+The sign-off certifies that you have the right to submit the change under the project's open-source license terms. See `DCO.md` for the full text.
 
 ## Setup
 
@@ -97,7 +113,7 @@ npm run e2e e2e-tests/context_manage.spec.ts -- --update-snapshots
 
 ## Code reviews
 
-Dyad relies on several AI code reviewers to catch issues. If a comment is irrelevant please leave a brief comment and mark the comment as resolved.
+Code review should stay practical and product-focused. If a review comment is not applicable, leave a brief explanation and resolve it when appropriate.
 
 You can also do local code reviews with the following tools:
 
