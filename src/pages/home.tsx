@@ -1,21 +1,23 @@
-import { useTranslation } from "react-i18next";
-import { useNavigate, useSearch } from "@tanstack/react-router";
-import { useAtom, useSetAtom } from "jotai";
-import { homeChatInputValueAtom } from "../atoms/chatAtoms";
-import { ipc } from "@/ipc/types";
-import { generateCuteAppName } from "@/lib/utils";
+import { isPreviewOpenAtom } from "@/atoms/viewAtoms";
+import { SetupBanner } from "@/components/SetupBanner";
+import { PrivacyBanner } from "@/components/TelemetryBanner";
+import { HomeChatInput } from "@/components/chat/HomeChatInput";
+import { useAppVersion } from "@/hooks/useAppVersion";
 import { useLoadApps } from "@/hooks/useLoadApps";
 import { useSettings } from "@/hooks/useSettings";
-import { SetupBanner } from "@/components/SetupBanner";
-import { isPreviewOpenAtom } from "@/atoms/viewAtoms";
-import { useState, useEffect, useCallback, useRef } from "react";
 import { useStreamChat } from "@/hooks/useStreamChat";
-import { HomeChatInput } from "@/components/chat/HomeChatInput";
-import { usePostHog } from "posthog-js/react";
-import { PrivacyBanner } from "@/components/TelemetryBanner";
+import { ipc } from "@/ipc/types";
+import { generateCuteAppName } from "@/lib/utils";
 import { INSPIRATION_PROMPTS } from "@/prompts/inspiration_prompts";
-import { useAppVersion } from "@/hooks/useAppVersion";
+import { useNavigate, useSearch } from "@tanstack/react-router";
+import { useAtom, useSetAtom } from "jotai";
+import { usePostHog } from "posthog-js/react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { homeChatInputValueAtom } from "../atoms/chatAtoms";
 
+import { ImportAppButton } from "@/components/ImportAppButton";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -23,20 +25,17 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useTheme } from "@/contexts/ThemeContext";
-import { Button } from "@/components/ui/button";
-import { ExternalLink } from "lucide-react";
-import { ImportAppButton } from "@/components/ImportAppButton";
-import { showError } from "@/lib/toast";
 import { invalidateAppQuery } from "@/hooks/useLoadApp";
-import { useQueryClient } from "@tanstack/react-query";
-import { queryKeys } from "@/lib/queryKeys";
-import { ForceCloseDialog } from "@/components/ForceCloseDialog";
 import { useSelectChat } from "@/hooks/useSelectChat";
+import { queryKeys } from "@/lib/queryKeys";
+import { showError } from "@/lib/toast";
+import { useQueryClient } from "@tanstack/react-query";
+import { ExternalLink } from "lucide-react";
 
-import type { FileAttachment } from "@/ipc/types";
-import { NEON_TEMPLATE_IDS } from "@/shared/templates";
 import { neonTemplateHook } from "@/client_logic/template_hook";
+import type { FileAttachment } from "@/ipc/types";
 import { getEffectiveDefaultChatMode } from "@/lib/schemas";
+import { NEON_TEMPLATE_IDS } from "@/shared/templates";
 
 // Adding an export for attachments
 export interface HomeSubmitOptions {
@@ -54,8 +53,6 @@ export default function HomePage() {
   const setIsPreviewOpen = useSetAtom(isPreviewOpenAtom);
   const { selectChat } = useSelectChat();
   const [isLoading, setIsLoading] = useState(false);
-  const [forceCloseDialogOpen, setForceCloseDialogOpen] = useState(false);
-  const [performanceData, setPerformanceData] = useState<any>(undefined);
   const { streamMessage } = useStreamChat({ hasChatId: false });
   const posthog = usePostHog();
   const appVersion = useAppVersion();
@@ -63,15 +60,6 @@ export default function HomePage() {
   const [releaseUrl, setReleaseUrl] = useState("");
   const { theme } = useTheme();
   const queryClient = useQueryClient();
-
-  // Listen for force-close events
-  useEffect(() => {
-    const unsubscribe = ipc.events.system.onForceCloseDetected((data) => {
-      setPerformanceData(data.performanceData);
-      setForceCloseDialogOpen(true);
-    });
-    return () => unsubscribe();
-  }, []);
 
   useEffect(() => {
     const updateLastVersionLaunched = async () => {
@@ -232,11 +220,6 @@ export default function HomePage() {
   // Main Home Page Content
   return (
     <div className="flex flex-col items-center justify-center max-w-3xl w-full m-auto p-8 relative">
-      <ForceCloseDialog
-        isOpen={forceCloseDialogOpen}
-        onClose={() => setForceCloseDialogOpen(false)}
-        performanceData={performanceData}
-      />
       <SetupBanner />
 
       <div className="w-full">

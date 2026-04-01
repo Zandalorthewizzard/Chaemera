@@ -1,26 +1,33 @@
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
-import { ThemeProvider } from "../contexts/ThemeContext";
-import { DeepLinkProvider } from "../contexts/DeepLinkContext";
-import { Toaster } from "sonner";
-import { TitleBar } from "./TitleBar";
-import { useEffect, type ReactNode } from "react";
-import { useRunApp, useAppOutputSubscription } from "@/hooks/useRunApp";
-import { useAtomValue, useSetAtom } from "jotai";
 import {
   appConsoleEntriesAtom,
   previewModeAtom,
   selectedAppIdAtom,
 } from "@/atoms/appAtoms";
-import { useSettings } from "@/hooks/useSettings";
-import { DEFAULT_ZOOM_LEVEL } from "@/lib/schemas";
-import { selectedComponentsPreviewAtom } from "@/atoms/previewAtoms";
 import { chatInputValueAtom } from "@/atoms/chatAtoms";
+import { selectedComponentsPreviewAtom } from "@/atoms/previewAtoms";
+import { ForceCloseDialog } from "@/components/ForceCloseDialog";
+import { AppSidebar } from "@/components/app-sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { usePlanEvents } from "@/hooks/usePlanEvents";
+import { useAppOutputSubscription, useRunApp } from "@/hooks/useRunApp";
+import { useSettings } from "@/hooks/useSettings";
 import { useZoomShortcuts } from "@/hooks/useZoomShortcuts";
 import i18n from "@/i18n";
-import { LanguageSchema } from "@/lib/schemas";
+import { ipc } from "@/ipc/types";
 import { applyAppZoom } from "@/lib/app_zoom";
+import { DEFAULT_ZOOM_LEVEL } from "@/lib/schemas";
+import { LanguageSchema } from "@/lib/schemas";
+import { useAtomValue, useSetAtom } from "jotai";
+import {
+  type ComponentProps,
+  type ReactNode,
+  useEffect,
+  useState,
+} from "react";
+import { Toaster } from "sonner";
+import { DeepLinkProvider } from "../contexts/DeepLinkContext";
+import { ThemeProvider } from "../contexts/ThemeContext";
+import { TitleBar } from "./TitleBar";
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   const { refreshAppIframe } = useRunApp();
@@ -34,6 +41,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   const setChatInput = useSetAtom(chatInputValueAtom);
   const selectedAppId = useAtomValue(selectedAppIdAtom);
   const setConsoleEntries = useSetAtom(appConsoleEntriesAtom);
+  const [forceCloseDialogOpen, setForceCloseDialogOpen] = useState(false);
+  const [forceClosePerformanceData, setForceClosePerformanceData] =
+    useState<ComponentProps<typeof ForceCloseDialog>["performanceData"]>();
 
   // Initialize plan events listener
   usePlanEvents();
@@ -81,11 +91,23 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     setConsoleEntries([]);
   }, [selectedAppId]);
 
+  useEffect(() => {
+    return ipc.events.system.onForceCloseDetected((data) => {
+      setForceClosePerformanceData(data.performanceData);
+      setForceCloseDialogOpen(true);
+    });
+  }, []);
+
   return (
     <>
       <ThemeProvider>
         <DeepLinkProvider>
           <SidebarProvider>
+            <ForceCloseDialog
+              isOpen={forceCloseDialogOpen}
+              onClose={() => setForceCloseDialogOpen(false)}
+              performanceData={forceClosePerformanceData}
+            />
             <TitleBar />
             <AppSidebar />
             <div
