@@ -17,7 +17,7 @@ jobs:
         include:
           - name: windows
             platform: windows-latest
-            args: --config src-tauri/tauri.conf.json
+            args: --config tauri.conf.json
 
     runs-on: ${{ matrix.platform }}
 
