@@ -18,15 +18,6 @@ jobs:
           - name: windows
             platform: windows-latest
             args: --config src-tauri/tauri.conf.json
-          - name: linux
-            platform: ubuntu-22.04
-            args: --config src-tauri/tauri.conf.json
-          - name: macos-intel
-            platform: macos-15-intel
-            args: --target x86_64-apple-darwin --config src-tauri/tauri.conf.json
-          - name: macos
-            platform: macos-latest
-            args: --target aarch64-apple-darwin --config src-tauri/tauri.conf.json
 
     runs-on: ${{ matrix.platform }}
 
@@ -66,14 +57,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and publish Tauri release
-        uses: tauri-apps/tauri-action@v1
+        uses: tauri-apps/tauri-action@action-v0.6.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           args: ${{ matrix.args }}
-          tagName: chaemera-v__VERSION__
-          releaseName: Chaemera v__VERSION__
+          tagName: chaemera-__VERSION__
+          releaseName: Chaemera __VERSION__
           releaseBody: See the assets to download this version and install.
           releaseDraft: true
-          prerelease: false
+          prerelease: true
           uploadUpdaterJson: false
