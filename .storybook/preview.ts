@@ -1,5 +1,5 @@
 import type { Preview } from "@storybook/react";
-import "../src/styles/globals.css";
+import "../src/styles/chaemera-theme.css";
 
 const preview: Preview = {
   parameters: {

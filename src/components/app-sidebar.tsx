@@ -1,17 +1,17 @@
+import { dropdownOpenAtom } from "@/atoms/uiAtoms";
+import { useSidebar } from "@/components/ui/sidebar"; // import useSidebar hook
+import { Link, useRouterState } from "@tanstack/react-router";
+import { useRouter } from "@tanstack/react-router";
+import { useAtom } from "jotai";
 import {
+  BookOpen,
+  HelpCircle,
   Home,
   Inbox,
   Settings,
-  HelpCircle,
   Store,
-  BookOpen,
 } from "lucide-react";
-import { Link, useRouterState } from "@tanstack/react-router";
-import { useRouter } from "@tanstack/react-router";
-import { useSidebar } from "@/components/ui/sidebar"; // import useSidebar hook
-import { useEffect, useState, useRef } from "react";
-import { useAtom } from "jotai";
-import { dropdownOpenAtom } from "@/atoms/uiAtoms";
+import { useEffect, useRef, useState } from "react";
 
 import {
   Sidebar,
@@ -25,12 +25,12 @@ import {
   SidebarRail,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { ChatList } from "./ChatList";
-import { AppList } from "./AppList";
-import { HelpDialog } from "./HelpDialog"; // Import the new dialog
-import { SettingsList } from "./SettingsList";
-import { LibraryList } from "./LibraryList";
 import { hasTauriLeptosShellSupport } from "@/lib/leptos_shell";
+import { AppList } from "./AppList";
+import { ChatList } from "./ChatList";
+import { HelpDialog } from "./HelpDialog"; // Import the new dialog
+import { LibraryList } from "./LibraryList";
+import { SettingsList } from "./SettingsList";
 
 // Menu items.
 const items = [
@@ -148,7 +148,7 @@ export function AppSidebar() {
             <AppIcons onHoverChange={setHoverState} />
           </div>
           {/* Right Column: Chat List Section */}
-          <div className="w-[272px]">
+          <div className="w-[248px] border-r border-sidebar-border">
             <AppList show={selectedItem === "Apps"} />
             <ChatList show={selectedItem === "Chat"} />
             <SettingsList show={selectedItem === "Settings"} />
@@ -163,7 +163,7 @@ export function AppSidebar() {
             {/* Change button to open dialog instead of linking */}
             <SidebarMenuButton
               size="sm"
-              className={`font-medium w-14 flex flex-col items-center gap-1 h-14 mb-2 rounded-2xl ${
+              className={`font-medium w-12 flex flex-col items-center gap-0.5 h-12 mb-1.5 rounded-md ${
                 isHelpRoute ? "bg-sidebar-accent" : ""
               }`}
               onClick={() => {
@@ -174,7 +174,7 @@ export function AppSidebar() {
                 setIsHelpDialogOpen(true);
               }}
             >
-              <HelpCircle className="h-5 w-5" />
+              <HelpCircle className="h-4 w-4" />
               <span className={"text-xs"}>Help</span>
             </SidebarMenuButton>
             <HelpDialog
@@ -214,7 +214,7 @@ function AppIcons({
                   as={Link}
                   to={item.to}
                   size="sm"
-                  className={`font-medium w-14 flex flex-col items-center gap-1 h-14 mb-2 rounded-2xl ${
+                  className={`font-medium w-12 flex flex-col items-center gap-0.5 h-12 mb-1.5 rounded-md ${
                     isActive ? "bg-sidebar-accent" : ""
                   }`}
                   onMouseEnter={() => {
@@ -230,7 +230,7 @@ function AppIcons({
                   }}
                 >
                   <div className="flex flex-col items-center gap-1">
-                    <item.icon className="h-5 w-5" />
+                    <item.icon className="h-4 w-4" />
                     <span className={"text-xs"}>{item.title}</span>
                   </div>
                 </SidebarMenuButton>

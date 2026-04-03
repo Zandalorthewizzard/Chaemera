@@ -45,13 +45,16 @@ export const TitleBar = () => {
 
   return (
     <>
-      <div className="@container z-11 w-full h-11 pt-3 bg-(--sidebar) absolute top-0 left-0 app-region-drag flex items-center">
+      <div
+        data-slot="titlebar"
+        className="@container z-11 w-full h-11 pt-2 bg-(--sidebar) absolute top-0 left-0 app-region-drag flex items-center"
+      >
         <div className={`${showWindowControls ? "pl-2" : "pl-18"}`}></div>
 
         <img
           src={logo}
           alt="Chaemera Logo"
-          className="w-8 h-8 mr-1 ml-2 shrink-0"
+          className="w-7 h-7 mr-1 ml-2 shrink-0"
         />
         <Button
           data-testid="title-bar-app-name-button"

@@ -1,20 +1,20 @@
-import { useState, useRef, useEffect } from "react";
+import { selectedAppIdAtom } from "@/atoms/appAtoms";
+import { isChatPanelHiddenAtom, isPreviewOpenAtom } from "@/atoms/viewAtoms";
+import { useChats } from "@/hooks/useChats";
+import { usePlanImplementation } from "@/hooks/usePlanImplementation";
+import { cn } from "@/lib/utils";
+import { useNavigate, useSearch } from "@tanstack/react-router";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useEffect, useRef, useState } from "react";
 import {
-  PanelGroup,
-  Panel,
-  PanelResizeHandle,
   type ImperativePanelHandle,
+  Panel,
+  PanelGroup,
+  PanelResizeHandle,
 } from "react-resizable-panels";
 import { ChatPanel } from "../components/ChatPanel";
-import { PreviewPanel } from "../components/preview_panel/PreviewPanel";
 import { RightActionSidebar } from "../components/RightActionSidebar";
-import { useNavigate, useSearch } from "@tanstack/react-router";
-import { cn } from "@/lib/utils";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import { isPreviewOpenAtom, isChatPanelHiddenAtom } from "@/atoms/viewAtoms";
-import { useChats } from "@/hooks/useChats";
-import { selectedAppIdAtom } from "@/atoms/appAtoms";
-import { usePlanImplementation } from "@/hooks/usePlanImplementation";
+import { PreviewPanel } from "../components/preview_panel/PreviewPanel";
 
 const DEFAULT_CHAT_PANEL_SIZE = 50;
 
@@ -126,7 +126,7 @@ export default function ChatPage() {
           }
         }}
         className={cn(
-          "relative bg-gray-200 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors cursor-col-resize",
+          "relative cursor-col-resize bg-transparent transition-colors after:absolute after:inset-y-0 after:left-1/2 after:w-px after:-translate-x-1/2 after:bg-border after:content-[''] hover:after:bg-primary/70",
           isChatPanelHidden ? "w-2" : "w-1",
         )}
       />
