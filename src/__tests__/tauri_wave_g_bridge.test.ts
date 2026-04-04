@@ -14,11 +14,11 @@ describe("tauri Wave G bridge", () => {
 
     expect(
       buildTauriInvokeArgs("does-release-note-exist", {
-        version: "0.37.0-beta.2",
+        version: "0.37.0-beta.3",
       }),
     ).toEqual({
       request: {
-        version: "0.37.0-beta.2",
+        version: "0.37.0-beta.3",
       },
     });
 
@@ -55,7 +55,7 @@ describe("tauri Wave G bridge", () => {
     expect(
       canInvokeViaTauri("show-item-in-folder", { path: "C:/Apps/demo" }),
     ).toBe(false);
-    expect(canInvokeViaTauri("does-release-note-exist", "0.37.0-beta.2")).toBe(
+    expect(canInvokeViaTauri("does-release-note-exist", "0.37.0-beta.3")).toBe(
       false,
     );
     expect(

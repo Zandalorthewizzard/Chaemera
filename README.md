@@ -6,9 +6,9 @@ It started as a fork of Dyad because I genuinely like the kind of app-building e
 
 ## Download
 
-The current public build is the prerelease [Chaemera 0.37.0-beta.2](https://github.com/Zandalorthewizzard/Chaemera/releases/tag/chaemera-0.37.0-beta.2).
+The current public build is the prerelease [Chaemera 0.37.0-beta.3](https://github.com/Zandalorthewizzard/Chaemera/releases/tag/chaemera-0.37.0-beta.3).
 
-- Windows installer: [Chaemera_0.37.0-beta.2_x64-setup.exe](https://github.com/Zandalorthewizzard/Chaemera/releases/download/chaemera-0.37.0-beta.2/Chaemera_0.37.0-beta.2_x64-setup.exe)
+- Windows installer: [Chaemera_0.37.0-beta.3_x64-setup.exe](https://github.com/Zandalorthewizzard/Chaemera/releases/download/chaemera-0.37.0-beta.3/Chaemera_0.37.0-beta.3_x64-setup.exe)
 - All releases: [GitHub Releases](https://github.com/Zandalorthewizzard/Chaemera/releases)
 
 ## Why This Fork Exists

@@ -814,7 +814,7 @@ export const test = base.extend<{
               return state.settings;
             }
             case "get-app-version":
-              return { version: "0.37.0-beta.2-tauri-smoke" };
+              return { version: "0.37.0-beta.3-tauri-smoke" };
             case "get-system-platform":
               return "tauri-smoke";
             case "get-system-debug-info": {
@@ -828,7 +828,7 @@ export const test = base.extend<{
                 telemetryId: "tauri-smoke-user",
                 telemetryConsent: "unset",
                 telemetryUrl: "https://us.i.posthog.com",
-                dyadVersion: "0.37.0-beta.2-tauri-smoke",
+                dyadVersion: "0.37.0-beta.3-tauri-smoke",
                 platform: "tauri-smoke",
                 architecture: "x64",
                 logs: "",
@@ -852,7 +852,7 @@ export const test = base.extend<{
                 schemaVersion: 2,
                 exportedAt: "2026-03-01T00:05:00Z",
                 system: {
-                  dyadVersion: "0.37.0-beta.2-tauri-smoke",
+                  dyadVersion: "0.37.0-beta.3-tauri-smoke",
                   platform: "tauri-smoke",
                   architecture: "x64",
                   nodeVersion: nodeStatus.nodeVersion,

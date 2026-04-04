@@ -1,6 +1,6 @@
 [package]
 name = "chaemera-tauri"
-version = "0.37.0-beta.2"
+version = "0.37.0-beta.3"
 description = "Chaemera Tauri core domain shell"
 authors = ["Chaemera"]
 edition = "2021"
