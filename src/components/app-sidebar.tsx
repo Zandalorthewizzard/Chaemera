@@ -141,6 +141,7 @@ export function AppSidebar() {
           {/* Left Column: Menu items */}
           <div className="">
             <SidebarTrigger
+              className="mt-3"
               onMouseEnter={() => {
                 setHoverState("clear-hover");
               }}
@@ -148,7 +149,7 @@ export function AppSidebar() {
             <AppIcons onHoverChange={setHoverState} />
           </div>
           {/* Right Column: Chat List Section */}
-          <div className="w-[248px] border-r border-sidebar-border">
+          <div className="w-[272px]">
             <AppList show={selectedItem === "Apps"} />
             <ChatList show={selectedItem === "Chat"} />
             <SettingsList show={selectedItem === "Settings"} />
@@ -163,7 +164,7 @@ export function AppSidebar() {
             {/* Change button to open dialog instead of linking */}
             <SidebarMenuButton
               size="sm"
-              className={`font-medium w-12 flex flex-col items-center gap-0.5 h-12 mb-1.5 rounded-md ${
+              className={`font-medium w-14 flex flex-col items-center gap-1 h-14 mb-2 rounded-2xl ${
                 isHelpRoute ? "bg-sidebar-accent" : ""
               }`}
               onClick={() => {
@@ -174,7 +175,7 @@ export function AppSidebar() {
                 setIsHelpDialogOpen(true);
               }}
             >
-              <HelpCircle className="h-4 w-4" />
+              <HelpCircle className="h-5 w-5" />
               <span className={"text-xs"}>Help</span>
             </SidebarMenuButton>
             <HelpDialog
@@ -214,7 +215,7 @@ function AppIcons({
                   as={Link}
                   to={item.to}
                   size="sm"
-                  className={`font-medium w-12 flex flex-col items-center gap-0.5 h-12 mb-1.5 rounded-md ${
+                  className={`font-medium w-14 flex flex-col items-center gap-1 h-14 mb-2 rounded-2xl ${
                     isActive ? "bg-sidebar-accent" : ""
                   }`}
                   onMouseEnter={() => {
@@ -230,7 +231,7 @@ function AppIcons({
                   }}
                 >
                   <div className="flex flex-col items-center gap-1">
-                    <item.icon className="h-4 w-4" />
+                    <item.icon className="h-5 w-5" />
                     <span className={"text-xs"}>{item.title}</span>
                   </div>
                 </SidebarMenuButton>

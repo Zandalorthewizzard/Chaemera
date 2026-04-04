@@ -1,10 +1,10 @@
-import { isPreviewOpenAtom } from "@/atoms/viewAtoms";
-import { useCheckProblems } from "@/hooks/useCheckProblems";
-import { motion } from "framer-motion";
 import { useAtom, useAtomValue } from "jotai";
-import { AlertTriangle, Code, Eye, Globe, Shield, Wrench } from "lucide-react";
-import { useTranslation } from "react-i18next";
 import { previewModeAtom, selectedAppIdAtom } from "../atoms/appAtoms";
+import { Eye, Code, AlertTriangle, Wrench, Globe, Shield } from "lucide-react";
+import { motion } from "framer-motion";
+import { useCheckProblems } from "@/hooks/useCheckProblems";
+import { isPreviewOpenAtom } from "@/atoms/viewAtoms";
+import { useTranslation } from "react-i18next";
 import type { PreviewMode } from "./preview_panel/ActionHeader";
 
 // Right Action Sidebar component - mirrors the left sidebar when collapsed
@@ -36,7 +36,7 @@ export const RightActionSidebar = () => {
 
   const displayCount = formatProblemCount(problemCount);
 
-  const iconSize = 16;
+  const iconSize = 18;
 
   const renderButton = (
     mode: PreviewMode,
@@ -49,7 +49,7 @@ export const RightActionSidebar = () => {
     return (
       <button
         data-testid={testId}
-        className={`no-app-region-drag cursor-pointer relative flex flex-col items-center justify-center w-11 h-11 rounded-md font-medium transition-colors duration-150 active:scale-90 ${
+        className={`no-app-region-drag cursor-pointer relative flex flex-col items-center justify-center w-12 h-12 rounded-lg font-medium transition-colors duration-150 active:scale-90 ${
           isActive
             ? "text-sidebar-accent-foreground"
             : "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
@@ -59,7 +59,7 @@ export const RightActionSidebar = () => {
         {isActive && (
           <motion.div
             layoutId="active-sidebar-indicator"
-            className="absolute inset-0 rounded-md bg-sidebar-accent"
+            className="absolute inset-0 rounded-lg bg-sidebar-accent"
             transition={{ type: "spring", stiffness: 500, damping: 35 }}
           />
         )}
@@ -67,7 +67,7 @@ export const RightActionSidebar = () => {
           {icon}
           {badge}
         </div>
-        <span className="relative z-10 text-[9px] leading-tight mt-0.5 truncate max-w-full">
+        <span className="relative z-10 text-[10px] leading-tight mt-0.5 truncate max-w-full">
           {text}
         </span>
       </button>
@@ -75,7 +75,7 @@ export const RightActionSidebar = () => {
   };
 
   return (
-    <div className="flex flex-col h-full w-14 pl-0 bg-sidebar border-l border-sidebar-border">
+    <div className="flex flex-col h-full w-16 pl-1 -mr-1.5 bg-sidebar border-l border-sidebar-border">
       {/* Main action buttons */}
       <div className="flex flex-col items-center gap-1 pt-2 flex-1">
         {renderButton(
