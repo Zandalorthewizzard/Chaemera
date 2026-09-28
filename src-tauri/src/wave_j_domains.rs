@@ -208,6 +208,50 @@ fn listed_app_json(app: &DbApp) -> Result<Value, String> {
     }))
 }
 
+fn missing_managed_app_ids(
+    connection: &rusqlite::Connection,
+    apps_base_dir: &Path,
+) -> Result<Vec<i64>, String> {
+    let mut statement = connection
+        .prepare("SELECT id, path FROM apps")
+        .map_err(|error| format!("failed to prepare stale-app query: {error}"))?;
+
+    let rows = statement
+        .query_map([], |row| {
+            Ok((row.get::<_, i64>(0)?, row.get::<_, String>(1)?))
+        })
+        .map_err(|error| format!("failed to execute stale-app query: {error}"))?;
+
+    let mut missing_app_ids = Vec::new();
+    for row in rows {
+        let (app_id, app_path) =
+            row.map_err(|error| format!("failed to decode stale-app row: {error}"))?;
+        if Path::new(&app_path).is_absolute() {
+            continue;
+        }
+
+        let resolved_path = apps_base_dir.join(&app_path);
+        if !resolved_path.exists() {
+            missing_app_ids.push(app_id);
+        }
+    }
+
+    Ok(missing_app_ids)
+}
+
+fn prune_missing_managed_apps(connection: &rusqlite::Connection) -> Result<(), String> {
+    let apps_base_dir = dyad_apps_base_directory()?;
+    let missing_app_ids = missing_managed_app_ids(connection, &apps_base_dir)?;
+
+    for app_id in missing_app_ids {
+        connection
+            .execute("DELETE FROM apps WHERE id = ?1", params![app_id])
+            .map_err(|error| format!("failed to delete stale app: {error}"))?;
+    }
+
+    Ok(())
+}
+
 fn trimmed_or_null(value: Option<String>) -> Option<String> {
     value.and_then(|candidate| {
         let trimmed = candidate.trim();
@@ -242,6 +286,7 @@ pub fn list_apps(app: AppHandle) -> Result<Value, String> {
         Err(error) if error == "sqlite database not found" => return Ok(json!({ "apps": [] })),
         Err(error) => return Err(error),
     };
+    prune_missing_managed_apps(&connection)?;
     let mut statement = connection
         .prepare(&format!(
             "SELECT {APP_COLUMNS} FROM apps ORDER BY created_at DESC"
@@ -348,4 +393,65 @@ pub fn check_app_name(app: AppHandle, request: CheckAppNameRequest) -> Result<Va
         .map_err(|error| format!("failed to check app name: {error}"))?;
 
     Ok(json!({ "exists": exists.is_some() }))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::missing_managed_app_ids;
+    use rusqlite::{params, Connection};
+    use std::fs;
+    use std::time::{SystemTime, UNIX_EPOCH};
+
+    fn unique_temp_dir(label: &str) -> std::path::PathBuf {
+        let unique = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_nanos();
+        let dir = std::env::temp_dir().join(format!("chaemera-{label}-{unique}"));
+        fs::create_dir_all(&dir).expect("create temp dir");
+        dir
+    }
+
+    #[test]
+    fn prune_missing_managed_apps_removes_only_missing_relative_paths() {
+        let apps_dir = unique_temp_dir("apps-base");
+        let existing_app_dir = apps_dir.join("existing-app");
+        let external_app_dir = unique_temp_dir("external-app");
+
+        fs::create_dir_all(&existing_app_dir).expect("create existing app dir");
+
+        let connection = Connection::open_in_memory().expect("open sqlite");
+        connection
+            .execute(
+                "CREATE TABLE apps (id INTEGER PRIMARY KEY, path TEXT NOT NULL)",
+                [],
+            )
+            .expect("create apps table");
+        connection
+            .execute(
+                "INSERT INTO apps (id, path) VALUES (?1, ?2)",
+                params![1, "existing-app"],
+            )
+            .expect("insert existing managed app");
+        connection
+            .execute(
+                "INSERT INTO apps (id, path) VALUES (?1, ?2)",
+                params![2, "missing-app"],
+            )
+            .expect("insert missing managed app");
+        connection
+            .execute(
+                "INSERT INTO apps (id, path) VALUES (?1, ?2)",
+                params![3, external_app_dir.to_string_lossy().to_string()],
+            )
+            .expect("insert external app");
+
+        let missing_ids =
+            missing_managed_app_ids(&connection, &apps_dir).expect("find missing apps");
+
+        assert_eq!(missing_ids, vec![2]);
+
+        fs::remove_dir_all(apps_dir).ok();
+        fs::remove_dir_all(external_app_dir).ok();
+    }
 }

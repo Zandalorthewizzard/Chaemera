@@ -14,6 +14,26 @@ outline: []
 
 # LOGOS Documentation Progress
 
+## 2026-04-20 Aura Visual Edit Research Lane
+
+1. Added `08-aura-visual-edit-research/` as a separate documentation lane for external `Aura` reverse-engineering work.
+2. Imported the source discussion artifact `08-aura-visual-edit-research/re_pipeline.txt` from `C:\Users\zand\Desktop\edit sys\re_pipeline.txt` without rewriting the original discussion body.
+3. Added `08-aura-visual-edit-research/README.md` so the lane has an explicit scope:
+
+- preserve imported research artifacts;
+- keep the track separate from active release-line guidance;
+- and support later comparative analysis against Chaemera's future editing surfaces.
+
+4. Added `08-aura-visual-edit-research/2026-04-20-aura-visual-edit-reverse-engineering-pipeline-plan.md` as the bounded execution plan for the first `Aura` RE wave.
+5. Locked the current tooling stance in docs as:
+
+- `Codex CLI + browser MCP` as the baseline execution lane;
+- dedicated `Aura` browser profile as required setup;
+- `button` as the primary specimen with `heading` and `container/div` as contrast probes;
+- and no custom desktop app required for the first serious wave.
+
+6. Updated `00-navigation/INDEX.md`, `00-navigation/inventory.json`, and `00-navigation/validation.md` so the plan is part of the governed docs layer instead of living only in the imported discussion.
+
 ## 2026-03-31 GitHub Promotion Roadmap
 
 1. Added `07-codex-logos-phase/2026-03-31-github-promotion-roadmap.md` as the public GitHub-shell roadmap for the release-line MVP.

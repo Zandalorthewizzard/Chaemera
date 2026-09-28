@@ -12,6 +12,8 @@ use std::thread;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use tauri::{AppHandle, Emitter, Manager};
 
+use crate::sqlite_support;
+
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct AppRuntimeRequest {
@@ -130,31 +132,6 @@ fn now_millis() -> i64 {
         .duration_since(UNIX_EPOCH)
         .unwrap_or_default()
         .as_millis() as i64
-}
-
-fn workspace_root() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR"))
-        .parent()
-        .unwrap_or(Path::new(env!("CARGO_MANIFEST_DIR")))
-        .to_path_buf()
-}
-
-fn resolve_runtime_asset(app: &AppHandle, relative_path: &str) -> Result<PathBuf, String> {
-    let dev_path = workspace_root().join(relative_path);
-    if dev_path.exists() {
-        return Ok(dev_path);
-    }
-
-    let resource_dir = app
-        .path()
-        .resource_dir()
-        .map_err(|error| format!("failed to resolve resource dir: {error}"))?;
-    let packaged_path = resource_dir.join(relative_path);
-    if packaged_path.exists() {
-        return Ok(packaged_path);
-    }
-
-    Err(format!("failed to resolve runtime asset: {relative_path}"))
 }
 
 fn get_app_port(app_id: i64) -> i64 {
@@ -309,7 +286,7 @@ fn spawn_proxy_process(
     app_id: i64,
     target_origin: &str,
 ) -> Result<RunningProxyState, String> {
-    let script_path = resolve_runtime_asset(app, "worker/proxy_server_cli.js")?;
+    let script_path = sqlite_support::resolve_runtime_asset(app, "worker/proxy_server_cli.js")?;
     let port = find_available_port()?;
 
     let mut child = Command::new("node")
@@ -593,7 +570,7 @@ fn typescript_cache_dir(app: &AppHandle) -> Result<PathBuf, String> {
 }
 
 fn run_tsc_problem_check(app: &AppHandle, app_path: &str) -> Result<ProblemReport, String> {
-    let runner_path = resolve_runtime_asset(app, "worker/tsc_worker_runner.js")?;
+    let runner_path = sqlite_support::resolve_runtime_asset(app, "worker/tsc_worker_runner.js")?;
     let ts_build_info_cache_dir = typescript_cache_dir(app)?;
     let payload = json!({
         "appPath": app_path,

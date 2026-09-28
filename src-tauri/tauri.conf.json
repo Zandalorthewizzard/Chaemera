@@ -26,6 +26,7 @@
   "bundle": {
     "icon": ["icons/icon.ico", "icons/icon.png", "icons/icon.icns"],
     "resources": [
+      "../drizzle",
       "../worker/dyad_logs.js",
       "../worker/dyad-component-selector-client.js",
       "../worker/dyad-screenshot-client.js",

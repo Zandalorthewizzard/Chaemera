@@ -60,11 +60,24 @@ The LOGOS repository now has a primary documentation system, agent entrypoint, n
 
 - verified by `../07-codex-logos-phase/2026-03-31-github-promotion-roadmap.md`, `../07-codex-logos-phase/README.md`, and `inventory.json`
 
+11. The docs now include a separate external-comparative research lane for `Aura` visual-edit reverse engineering instead of mixing that work into the active release-line folders.
+
+- verified by `../08-aura-visual-edit-research/README.md`, `INDEX.md`, and `inventory.json`
+
+12. The `Aura` research lane now preserves the imported reverse-engineering pipeline discussion from `C:\Users\zand\Desktop\edit sys\re_pipeline.txt` as a repository-local artifact.
+
+- verified by `../08-aura-visual-edit-research/re_pipeline.txt`, `../08-aura-visual-edit-research/README.md`, and `inventory.json`
+
+13. The `Aura` research lane now includes a bounded execution plan that fixes the baseline stack and first-wave scope as `Codex CLI + browser MCP`, one deep `button` specimen, and short `heading` plus `container/div` contrast probes.
+
+- verified by `../08-aura-visual-edit-research/2026-04-20-aura-visual-edit-reverse-engineering-pipeline-plan.md`, `../08-aura-visual-edit-research/README.md`, and `inventory.json`
+
 ## Open / Deferred
 
 1. `UNKNOWN`: the long-term placement strategy for future provider-specific deep dives.
 2. Deferred: converting imported working docs into narrower canonical implementation specs.
 3. Deferred: project-specific coding and testing rules once the LOGOS codebase exists.
+4. Deferred: narrowing the imported `Aura` reverse-engineering discussion into bounded task docs, matrices, and evidence-backed findings.
 
 ## Evidence
 

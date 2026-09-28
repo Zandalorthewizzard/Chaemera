@@ -41,24 +41,49 @@ fn override_dir(env_key: &str) -> Option<PathBuf> {
     env::var_os(env_key).map(PathBuf::from)
 }
 
-fn drizzle_dir() -> PathBuf {
-    workspace_root().join("drizzle")
+fn resolve_existing_asset_path(relative_path: &str, roots: &[PathBuf]) -> Option<PathBuf> {
+    let relative_candidates = [
+        PathBuf::from(relative_path),
+        PathBuf::from("_up_").join(relative_path),
+    ];
+
+    for root in roots {
+        for candidate in &relative_candidates {
+            let full_path = root.join(candidate);
+            if full_path.exists() {
+                return Some(full_path);
+            }
+        }
+    }
+
+    None
 }
 
-fn migration_journal_path() -> PathBuf {
-    drizzle_dir().join("meta").join("_journal.json")
+pub fn resolve_runtime_asset(app: &AppHandle, relative_path: &str) -> Result<PathBuf, String> {
+    let mut roots = vec![workspace_root()];
+
+    if let Ok(resource_dir) = app.path().resource_dir() {
+        roots.push(resource_dir);
+    }
+
+    resolve_existing_asset_path(relative_path, &roots)
+        .ok_or_else(|| format!("failed to resolve runtime asset: {relative_path}"))
 }
 
-fn migration_sql_path(tag: &str) -> PathBuf {
-    drizzle_dir().join(format!("{tag}.sql"))
+fn migration_journal_path(app: &AppHandle) -> Result<PathBuf, String> {
+    resolve_runtime_asset(app, "drizzle/meta/_journal.json")
+}
+
+fn migration_sql_path(app: &AppHandle, tag: &str) -> Result<PathBuf, String> {
+    resolve_runtime_asset(app, &format!("drizzle/{tag}.sql"))
 }
 
 fn create_directory(path: &Path, label: &str) -> Result<(), String> {
     fs::create_dir_all(path).map_err(|error| format!("failed to create {label}: {error}"))
 }
 
-fn read_migration_journal() -> Result<Vec<MigrationJournalEntry>, String> {
-    let raw = fs::read_to_string(migration_journal_path())
+fn read_migration_journal(app: &AppHandle) -> Result<Vec<MigrationJournalEntry>, String> {
+    let raw = fs::read_to_string(migration_journal_path(app)?)
         .map_err(|error| format!("failed to read migration journal: {error}"))?;
     let mut journal: MigrationJournal = serde_json::from_str(&raw)
         .map_err(|error| format!("failed to parse migration journal: {error}"))?;
@@ -80,6 +105,7 @@ fn table_exists(connection: &Connection, table_name: &str) -> Result<bool, Strin
 }
 
 fn apply_pending_migrations(
+    app: &AppHandle,
     connection: &Connection,
     database_preexisted: bool,
 ) -> Result<(), String> {
@@ -111,12 +137,12 @@ fn apply_pending_migrations(
         return Ok(());
     }
 
-    for entry in read_migration_journal()? {
+    for entry in read_migration_journal(app)? {
         if last_applied.is_some_and(|timestamp| timestamp >= entry.when) {
             continue;
         }
 
-        let migration_sql = fs::read_to_string(migration_sql_path(&entry.tag))
+        let migration_sql = fs::read_to_string(migration_sql_path(app, &entry.tag)?)
             .map_err(|error| format!("failed to read migration {}: {error}", entry.tag))?;
 
         connection
@@ -168,9 +194,89 @@ pub fn open_db(app: &AppHandle) -> Result<Connection, String> {
     connection
         .execute_batch("PRAGMA foreign_keys = ON;")
         .map_err(|error| format!("failed to configure sqlite pragmas: {error}"))?;
-    apply_pending_migrations(&connection, database_preexisted)?;
+    apply_pending_migrations(app, &connection, database_preexisted)?;
 
     Ok(connection)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::resolve_existing_asset_path;
+    use std::fs;
+    use std::path::PathBuf;
+    use std::time::{SystemTime, UNIX_EPOCH};
+
+    fn temp_test_dir(label: &str) -> PathBuf {
+        let unique = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_nanos();
+        let dir = std::env::temp_dir().join(format!("chaemera-{label}-{unique}"));
+        fs::create_dir_all(&dir).expect("create temp dir");
+        dir
+    }
+
+    #[test]
+    fn resolve_existing_asset_path_prefers_first_existing_root() {
+        let first_root = temp_test_dir("asset-first");
+        let second_root = temp_test_dir("asset-second");
+        let relative_path = PathBuf::from("drizzle/meta/_journal.json");
+
+        fs::create_dir_all(first_root.join("drizzle/meta")).expect("create first asset dir");
+        fs::create_dir_all(second_root.join("drizzle/meta")).expect("create second asset dir");
+        fs::write(first_root.join(&relative_path), "first").expect("write first asset");
+        fs::write(second_root.join(&relative_path), "second").expect("write second asset");
+
+        let resolved = resolve_existing_asset_path(
+            "drizzle/meta/_journal.json",
+            &[first_root.clone(), second_root.clone()],
+        )
+        .expect("resolve asset");
+
+        assert_eq!(resolved, first_root.join(&relative_path));
+
+        fs::remove_dir_all(first_root).ok();
+        fs::remove_dir_all(second_root).ok();
+    }
+
+    #[test]
+    fn resolve_existing_asset_path_uses_packaged_root_when_dev_root_missing() {
+        let missing_root = temp_test_dir("asset-missing");
+        let packaged_root = temp_test_dir("asset-packaged");
+        let relative_path = PathBuf::from("drizzle/0025_lush_stark_industries.sql");
+
+        fs::create_dir_all(packaged_root.join("drizzle")).expect("create packaged asset dir");
+        fs::write(packaged_root.join(&relative_path), "select 1;").expect("write packaged asset");
+        fs::remove_dir_all(&missing_root).ok();
+
+        let resolved = resolve_existing_asset_path(
+            "drizzle/0025_lush_stark_industries.sql",
+            &[missing_root, packaged_root.clone()],
+        )
+        .expect("resolve packaged asset");
+
+        assert_eq!(resolved, packaged_root.join(&relative_path));
+
+        fs::remove_dir_all(packaged_root).ok();
+    }
+
+    #[test]
+    fn resolve_existing_asset_path_falls_back_to_up_directory() {
+        let packaged_root = temp_test_dir("asset-up");
+        let relative_path = PathBuf::from("drizzle/meta/_journal.json");
+
+        fs::create_dir_all(packaged_root.join("_up_/drizzle/meta")).expect("create up asset dir");
+        fs::write(packaged_root.join("_up_").join(&relative_path), "journal")
+            .expect("write up asset");
+
+        let resolved =
+            resolve_existing_asset_path("drizzle/meta/_journal.json", &[packaged_root.clone()])
+                .expect("resolve up asset");
+
+        assert_eq!(resolved, packaged_root.join("_up_").join(&relative_path));
+
+        fs::remove_dir_all(packaged_root).ok();
+    }
 }
 
 pub fn dyad_apps_base_directory() -> Result<PathBuf, String> {

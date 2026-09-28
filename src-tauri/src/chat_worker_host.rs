@@ -12,7 +12,7 @@ use std::sync::{
 };
 use std::thread;
 use std::time::Duration;
-use tauri::{AppHandle, Emitter, Manager};
+use tauri::{AppHandle, Emitter};
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -157,13 +157,6 @@ fn pending_consent_requests() -> &'static Mutex<HashMap<String, i64>> {
     PENDING_CONSENT_REQUESTS.get_or_init(|| Mutex::new(HashMap::new()))
 }
 
-fn workspace_root() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR"))
-        .parent()
-        .unwrap_or(Path::new(env!("CARGO_MANIFEST_DIR")))
-        .to_path_buf()
-}
-
 fn worker_app_data_dir(app: &AppHandle) -> Result<PathBuf, String> {
     let settings_path = core_domains::settings_file_path(app)?;
     settings_path
@@ -187,24 +180,6 @@ fn resolve_chat_app_path(app: &AppHandle, chat_id: i64) -> Result<String, String
     Ok(sqlite_support::resolve_workspace_app_path(&raw_path)?
         .to_string_lossy()
         .to_string())
-}
-
-fn resolve_runtime_asset(app: &AppHandle, relative_path: &str) -> Result<PathBuf, String> {
-    let dev_path = workspace_root().join(relative_path);
-    if dev_path.exists() {
-        return Ok(dev_path);
-    }
-
-    let resource_dir = app
-        .path()
-        .resource_dir()
-        .map_err(|error| format!("failed to resolve resource dir: {error}"))?;
-    let packaged_path = resource_dir.join(relative_path);
-    if packaged_path.exists() {
-        return Ok(packaged_path);
-    }
-
-    Err(format!("failed to resolve runtime asset: {relative_path}"))
 }
 
 fn send_worker_message(
@@ -633,8 +608,8 @@ fn start_worker_session(app: &AppHandle, request: &ChatStreamRequest) -> Result<
     }
     drop(active);
 
-    let runner_path = resolve_runtime_asset(app, "worker/chat_worker_runner.js")?;
-    let bundle_path = resolve_runtime_asset(app, ".vite/build/chat_worker.js")?;
+    let runner_path = sqlite_support::resolve_runtime_asset(app, "worker/chat_worker_runner.js")?;
+    let bundle_path = sqlite_support::resolve_runtime_asset(app, ".vite/build/chat_worker.js")?;
     let app_path = resolve_chat_app_path(app, request.chat_id)?;
     let settings_snapshot = core_domains::read_settings(app)?;
     let worker_user_data_dir = sqlite_support::user_data_dir(app)?;

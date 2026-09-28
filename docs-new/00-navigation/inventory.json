@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-03-31",
+  "generated_at": "2026-04-20",
   "scope": "logos-docs",
   "docs": [
     {
@@ -192,6 +192,30 @@
       "focus": ["release cut", "agent workflow", "triage", "mvp checklist"],
       "status": "active",
       "source_of_truth": "governance"
+    },
+    {
+      "id": "chaemera-aura-visual-edit-research-hub",
+      "path": "08-aura-visual-edit-research/README.md",
+      "type": "hub",
+      "focus": ["Aura reverse engineering", "visual edit research", "comparative study"],
+      "status": "active",
+      "source_of_truth": "research"
+    },
+    {
+      "id": "chaemera-spec-aura-visual-edit-re-pipeline-plan-2026-04-20",
+      "path": "08-aura-visual-edit-research/2026-04-20-aura-visual-edit-reverse-engineering-pipeline-plan.md",
+      "type": "spec",
+      "focus": ["Aura reverse-engineering pipeline", "required stack", "MCP baseline"],
+      "status": "active",
+      "source_of_truth": "research-plan"
+    },
+    {
+      "id": "chaemera-aura-re-pipeline-import-2026-04-20",
+      "path": "08-aura-visual-edit-research/re_pipeline.txt",
+      "type": "discussion",
+      "focus": ["pipeline import", "Aura reverse engineering"],
+      "status": "draft",
+      "source_of_truth": "imported-discussion"
     }
   ]
 }

@@ -23,6 +23,7 @@ related:
     [../07-codex-logos-phase/2026-03-30-release-line-mvp-roadmap.md],
     [../07-codex-logos-phase/2026-03-31-github-promotion-roadmap.md],
     [../07-logos-phase/README.md],
+    [../08-aura-visual-edit-research/README.md],
     [../../notes/README.md],
   ]
 depends_on: []
@@ -40,8 +41,9 @@ outline: []
 3. Templates: `../03-templates/`.
 4. Current architecture lane: `../07-logos-phase/`.
 5. Release-line and legacy runtime context: `../07-codex-logos-phase/`.
-6. Archive map for older roadmap and sprint artifacts: `archive-map.md`.
-7. Agent continuity notes: `../../notes/README.md`.
+6. Comparative external research: `../08-aura-visual-edit-research/`.
+7. Archive map for older roadmap and sprint artifacts: `archive-map.md`.
+8. Agent continuity notes: `../../notes/README.md`.
 
 ## Meta Files
 
@@ -64,6 +66,11 @@ outline: []
 - [[archive-map.md]]
 - [[../07-codex-logos-phase/README.md]]
 
+## Comparative Research
+
+- [[../08-aura-visual-edit-research/README.md]]
+- [[../08-aura-visual-edit-research/2026-04-20-aura-visual-edit-reverse-engineering-pipeline-plan.md]]
+
 ## Primary Links
 
 - [[archive-map.md]]
@@ -81,6 +88,8 @@ outline: []
 - [[../04-sprint-workflow/specs/2026-03-31-legacy-xml-tag-namespace-compatibility-migration-spec.md]]
 - [[../07-codex-logos-phase/2026-03-31-legacy-xml-mcp-post-release-heavy-server-readiness.md]]
 - [[../07-logos-phase/README.md]]
+- [[../08-aura-visual-edit-research/README.md]]
+- [[../08-aura-visual-edit-research/2026-04-20-aura-visual-edit-reverse-engineering-pipeline-plan.md]]
 - [[../../notes/README.md]]
 - [[inventory.json]]
 - [[progress.md]]

@@ -1,0 +1,575 @@
+Да. Скриншотный разбор — это детский сад. Для такой системы нужен не “посмотрела и догадалась”, а **инструментальный black-box reverse engineering pipeline**.
+
+С учётом того, что у тебя уже есть **Codex CLI** и **Codex app**, я бы строила пайплайн не вокруг скринов, а вокруг двух режимов:
+
+**1. Exploratory lane** — быстрый ручной проход через Codex app с Computer Use.
+Codex app умеет видеть экран, делать скриншоты и взаимодействовать с окнами, меню, клавиатурой и буфером обмена. Это удобно для первичного картирования UI и сценариев. ([OpenAI Developers][1])
+
+**2. Instrumented lane** — воспроизводимый исследовательский harness через Codex CLI + MCP/browser tooling.
+Codex поддерживает MCP в CLI и IDE, хранит конфиг серверов в `config.toml`, и этот конфиг разделяется между клиентами. Через MCP Codex можно подключать к браузеру и другим dev tools. ([OpenAI Developers][2])
+
+Вот какой пайплайн я бы предложила.
+
+---
+
+## 1. Цель пайплайна
+
+Не “понять как выглядит кнопка”, а построить **доказательную модель**:
+
+* как Aura идентифицирует выбранный узел;
+* что именно считается “элементом” в их редакторе;
+* какие поля панели читаются из runtime;
+* какие — из внутренней модели/metadata;
+* что меняется при редактировании:
+
+  * DOM,
+  * class string,
+  * inline style,
+  * internal JSON state,
+  * data binding config,
+  * network payload,
+  * persisted project file;
+* какие действия являются локальными, а какие структурными.
+
+Иначе ты получишь не reverse engineering, а фанфик.
+
+---
+
+## 2. Общая архитектура пайплайна
+
+Я бы делила исследование на **3 слоя**.
+
+### Слой A — Session capture
+
+Нужно фиксировать каждую исследовательскую сессию как артефакт:
+
+* видео/скриншоты до и после действия,
+* DOM snapshot выбранного узла,
+* computed styles,
+* список атрибутов,
+* outerHTML / subtree snapshot,
+* network log,
+* localStorage / sessionStorage diff,
+* IndexedDB / project-state diff, если доступно,
+* заметка: “что я сделал руками”.
+
+### Слой B — Stimulus/response probing
+
+Ты не просто кликаешь, а даёшь системе **контрольные воздействия**:
+
+* ставишь редкие значения: `13px`, `17px`, `29px`, `41px`;
+* меняешь текст на маркерный;
+* задаёшь уникальный URL;
+* биндишь к collection;
+* переключаешь family element;
+* редактируешь Tailwind classes;
+* редактируешь Inline CSS;
+* смотришь, где именно это всплывает.
+
+Это позволяет вычислить write-path.
+
+### Слой C — Knowledge graph / matrix
+
+Каждый control панели должен лечь в таблицу:
+
+* `control_name`
+* `visible_when`
+* `input_type`
+* `source_of_truth_guess`
+* `observed_effect`
+* `DOM mutation`
+* `style mutation`
+* `network mutation`
+* `persisted after reload`
+* `scope guess`
+* `confidence`
+* `evidence refs`
+
+Без такой матрицы ты утонешь в мусоре.
+
+---
+
+## 3. Роли Codex: что чем делать
+
+### Codex app
+
+Использовать для:
+
+* первичного исследования UI;
+* Computer Use сценариев;
+* быстрых проходов по вкладкам;
+* снятия “операторской рутины” — открыть, кликнуть, пройти в панель, сделать серию одинаковых действий.
+  Computer Use требует явных разрешений и подходит именно для узких, контролируемых задач. ([OpenAI Developers][1])
+
+### Codex CLI
+
+Использовать для:
+
+* воспроизводимых скриптов;
+* браузерных MCP-инструментов;
+* логирования;
+* генерации анализирующих скриптов;
+* диффов артефактов;
+* построения итоговой документации.
+
+### App Server
+
+Если ты захочешь сделать уже не просто “использовать Codex”, а свой исследовательский клиент/панель поверх него, то App Server — зрелый путь. OpenAI прямо позиционирует его как первый класс интеграции для полного harness с bidirectional JSON-RPC и event stream. ([OpenAI Developers][3])
+
+---
+
+## 4. Практический setup, который я бы делала
+
+### A. Отдельный research workspace
+
+Создай отдельный репозиторий, например:
+
+```text
+aura-re/
+  README.md
+  /notes
+  /tasks
+  /captures
+    /sessions
+    /screens
+    /dom
+    /styles
+    /network
+    /storage
+  /scripts
+  /matrices
+  /findings
+```
+
+### B. Отдельный браузерный профиль
+
+Обязательно отдельный профиль браузера только под Aura:
+
+* чтобы storage и extension noise не мешали;
+* чтобы можно было стабильно повторять сценарии;
+* чтобы не смешивать личные сессии.
+
+### C. Подключить browser MCP к Codex
+
+MCP в Codex есть и для CLI, и для IDE; конфиг общий, так что один раз поднял — дальше можешь гонять из обеих поверхностей. ([OpenAI Developers][2])
+
+Тут логика такая:
+
+* **Codex app** — для exploratory работы;
+* **Codex CLI + browser MCP** — для воспроизводимых проходов и съемки артефактов.
+
+### D. Approval policy
+
+Для такого исследования не надо сразу жить в `--yolo`.
+OpenAI отдельно описывает режимы sandbox/approval: read-only, workspace-write, full-auto, dangerously bypass. Для исследования оптимально начать с read-only или workspace-write с approval на сомнительные действия, а не с отключения всех ограничений. ([OpenAI Developers][4])
+
+---
+
+## 5. Исследовательские проходы
+
+Нужно не “изучить кнопку”, а разбить задачу на bounded passes.
+
+### Pass 1 — Surface inventory
+
+Задача: перечислить всё, что вообще есть у панели выбранной кнопки.
+
+Codex получает задачу:
+
+* открыть Aura;
+* выбрать кнопку;
+* пройти по вкладкам `EDIT / PROMPT / CODE`;
+* раскрыть все accordion sections;
+* зафиксировать названия controls;
+* сделать screenshot каждой секции;
+* сохранить в markdown инвентарь.
+
+Результат:
+
+* `button_panel_inventory.md`
+* `button_panel_full.png`
+
+### Pass 2 — Static UI schema reconstruction
+
+Задача: понять состав панели как формы.
+
+Для каждого control определить:
+
+* текстовый input, number input, dropdown, chips, button, accordion;
+* дефолтное значение;
+* disabled/hidden state;
+* появляется ли после выбора другого типа узла.
+
+Результат:
+
+* `button_edit_schema.json`
+* `button_edit_schema.md`
+
+### Pass 3 — Stimulus mapping
+
+Задача: определить, что реально делает каждый control.
+
+Метод:
+
+* меняешь только один control;
+* используешь уникальное маркерное значение;
+* после действия снимаешь:
+
+  * DOM snapshot,
+  * computed styles diff,
+  * class diff,
+  * network diff,
+  * storage diff,
+  * reload persistence check.
+
+Это главный проход.
+
+### Pass 4 — Identity and ownership
+
+Задача: понять, как Aura знает, что выбран именно этот элемент.
+
+Ищешь:
+
+* data attributes;
+* служебные id;
+* комментарии/anchors в DOM;
+* overlay node relation;
+* внутренние selection markers;
+* связь между canvas overlay и правой панелью.
+
+### Pass 5 — Persistence model
+
+Задача: выяснить, куда пишется edit.
+
+После изменения:
+
+* reload page;
+* reopen project;
+* duplicate page;
+* inspect network;
+* inspect local storage / project export;
+* сравнить persisted state.
+
+Здесь быстро выясняется, это raw DOM editor, style abstraction или JSON-backed builder.
+
+### Pass 6 — Semantics vs implementation
+
+Задача: отделить “semantic controls” от “direct implementation knobs”.
+
+Например:
+
+* `Text Content` — почти наверняка semantic/content layer;
+* `Tailwind Classes` — low-level implementation layer;
+* `Inline CSS` — ещё более низкий;
+* `Collection Loop` — structural/data layer.
+
+Именно этот проход покажет, где Aura сильна, а где это просто красивый inspector.
+
+---
+
+## 6. Как именно использовать Codex в этих проходах
+
+Я бы ставила Codex не как “магического наблюдателя”, а как **оператора исследования**.
+
+### Роль 1 — сценарист
+
+Пусть он генерирует task files вида:
+
+```md
+Task: Button Settings Reverse Engineering / Pass 03 / Tailwind Classes
+Goal:
+- determine whether edits write to class string, component config, or intermediate model
+
+Steps:
+1. open project X
+2. select button Y
+3. open Tailwind Classes
+4. append marker class ZZZ-TEST-17
+5. capture DOM before/after
+6. capture screenshot before/after
+7. inspect persistence after reload
+8. write matrix row
+```
+
+### Роль 2 — оператор браузера
+
+Через Computer Use в app или browser MCP в CLI.
+
+### Роль 3 — артефактный аналитик
+
+После прохода Codex сравнивает:
+
+* before/after screenshots;
+* before/after DOM;
+* before/after storage dump;
+* before/after network logs.
+
+### Роль 4 — синтезатор модели
+
+На выходе он пишет не пересказ, а:
+
+* hypothesis;
+* evidence;
+* contradictions;
+* confidence.
+
+---
+
+## 7. Что именно стоит снимать для каждой настройки кнопки
+
+Для **каждой** настройки:
+
+1. имя поля
+2. тип поля
+3. доступно ли всегда
+4. текущее значение
+5. можно ли очистить
+6. видимый эффект в canvas
+7. эффект в DOM
+8. effect in computed style
+9. effect in class list
+10. effect in network
+11. effect in storage/persistence
+12. переживает ли reload
+13. меняет ли структуру узла
+14. меняет ли только preview или source model
+15. есть ли side effects на sibling/parent/collection
+16. что говорит вкладка `CODE` после изменения
+17. что предлагает `PROMPT` на тот же кейс
+
+Вот это уже reverse engineering, а не эстетическое описание.
+
+---
+
+## 8. Минимальный зрелый pipeline, который реально стоит собрать
+
+Мой вариант minimum viable RE pipeline:
+
+### Шаг 1
+
+Поднять отдельный repo `aura-re`.
+
+### Шаг 2
+
+Подключить к Codex browser MCP и работать из CLI; конфиг MCP у Codex живёт в `config.toml` и шарится между клиентами. ([OpenAI Developers][2])
+
+### Шаг 3
+
+Использовать Codex app Computer Use для exploratory navigation там, где браузерный harness неудобен. ([OpenAI Developers][1])
+
+### Шаг 4
+
+Сделать 3 базовых capture-скрипта:
+
+* `capture_dom_state`
+* `capture_visual_state`
+* `capture_storage_and_network_state`
+
+### Шаг 5
+
+Сделать task templates для каждого pass.
+
+### Шаг 6
+
+Вести один master matrix:
+
+* `controls_matrix.csv` или `.md`
+
+### Шаг 7
+
+После каждого pass писать findings-док:
+
+* observed
+* inferred
+* not yet proven
+* next probes
+
+---
+
+## 9. Где тонкая грань, чтобы не сделать мусор
+
+Самая тупая ошибка здесь — пытаться сразу “автоматически изучить всё”.
+Нет. Сначала нужен **bounded target**:
+
+**“Полностью разобрать settings panel одного BUTTON element.”**
+
+Не hero section. Не whole editor. Не Aura architecture.
+Один button. Но до конца:
+
+* все controls,
+* все write paths,
+* все persistence paths,
+* все cross-mode relations.
+
+Если ты это закроешь качественно, дальше pipeline масштабируется на text, image, container, loop, section.
+
+---
+
+## 10. Мой итоговый recommendation
+
+Я бы делала так:
+
+**Phase 1 — exploratory**
+
+* Codex app + Computer Use
+* руками и полуавтоматом собрать полный inventory панели кнопки
+
+**Phase 2 — instrumented**
+
+* Codex CLI + browser MCP
+* прогнать контролируемые probes по каждому полю
+
+**Phase 3 — structured synthesis**
+
+* matrix + findings docs
+* реконструкция внутренней модели Aura для button editing
+
+**Phase 4 — comparative analysis**
+
+* сравнить эту модель с вашим semantic edit spec:
+
+  * где Aura runtime-first,
+  * где model-first,
+  * где у них сильная practical UX,
+  * где у них архитектурный долг.
+
+Если хочешь, следующим сообщением я могу дать тебе уже **конкретный рабочий blueprint repo**: структуру папок, шаблон task-файла, шаблон findings-дока и шаблон matrix для первого reverse engineering pass по кнопке.
+
+[1]: https://developers.openai.com/codex/app/computer-use "Computer Use – Codex app | OpenAI Developers"
+[2]: https://developers.openai.com/codex/mcp "Model Context Protocol – Codex | OpenAI Developers"
+[3]: https://developers.openai.com/codex/app-server "App Server – Codex | OpenAI Developers"
+[4]: https://developers.openai.com/codex/agent-approvals-security "Agent approvals & security – Codex | OpenAI Developers"
+
+>а там visual edit ui не меняется в зависимости от выбранного елемента, кнопка это или div или заголовок, все поля настройки и вкладки будут идентичными, просто как я погнимаю часть будет недоступна к использованию но отображаться будет, так что в теории проход по кнопке будет достаточным
+
+Да, **для первого прохода этого достаточно**. Но только если ты честно ограничишь цель.
+
+Правильная формулировка не такая:
+
+**“разобрать visual edit Aura целиком через кнопку”**
+
+а такая:
+
+**“восстановить полный surface schema edit panel и базовый write-path controls на одном representative element”**
+
+Это уже здравая постановка.
+
+Где ты прав:
+
+* если вкладки и поля **структурно одинаковы** для `button / div / heading`,
+* если UI панели не перестраивается радикально,
+* если часть controls просто disabled / inert / no-op,
+
+то **один полный проход по кнопке** действительно может дать:
+
+* полный список вкладок;
+* полный список секций;
+* полный список полей;
+* типы контролов;
+* общую логику disabled/available state;
+* общую механику записи изменений;
+* связь `EDIT / PROMPT / CODE`.
+
+То есть **surface reverse engineering** можно начать с кнопки и не расползаться.
+
+Но вот где опасная ловушка:
+**одинаковый UI не равен одинаковой семантике.**
+
+Например:
+
+* `Text Content` у button и heading может писать в разные узлы;
+* `Link` у button может быть активным, у `div` — декоративно бесполезным;
+* `Collection Loop` у container может реально менять структуру, а у button быть просто доступной, но бессмысленной оболочкой;
+* `Margin / Padding / Position` могут визуально выглядеть одинаково, но писать в разные места модели;
+* `Tailwind Classes` может быть общим low-level escape hatch, а остальное — metadata-driven.
+
+Поэтому я бы делила работу так.
+
+## Что можно закрыть одной кнопкой
+
+Это **Pass A — Panel Surface + Control Contract**:
+
+* все вкладки;
+* все секции;
+* все поля;
+* их типы;
+* дефолтное состояние;
+* disabled/enabled logic;
+* tooltip/help/placeholder;
+* что меняется визуально при вводе значения;
+* что пишет `CODE` после изменения;
+* что делает `PROMPT` на том же узле.
+
+Это уже мощный результат.
+
+## Что нельзя честно доказать одной кнопкой
+
+Это **Pass B — Cross-element semantic variance**:
+
+* одинаков ли write-path для text-like, container-like, media-like nodes;
+* одинакова ли persistence model;
+* одинаков ли binding behavior;
+* одинакова ли структура внутренних target nodes;
+* где control общий, а где это fake-universal UI.
+
+То есть **кнопка достаточна для реконструкции формы панели**, но **недостаточна для полной реконструкции модели редактора**.
+
+Нормальный план такой:
+
+### Phase 1 — Button as canonical probe
+
+Один элемент, но проходишь его до костей:
+
+* inventory;
+* stimulus tests;
+* DOM/class/style/storage/network diffs;
+* reload persistence;
+* compare EDIT vs CODE vs PROMPT.
+
+### Phase 2 — Minimal contrast probes
+
+Потом берёшь **ещё 2 контрольных типа**, не полный разбор, а короткие верификационные удары:
+
+* `heading`
+* `container/div`
+
+И проверяешь только:
+
+* что из controls реально оживает;
+* меняется ли write-path;
+* есть ли иная цель записи;
+* есть ли структурные отличия.
+
+Вот это уже зрелый pipeline.
+Не “разбирать всё”, а:
+
+* **1 глубокий canonical specimen**
+* **2–3 коротких contrast specimens**
+
+Это дешево и достаточно научно.
+
+Я бы даже зафиксировала так:
+
+## Recommended RE scope
+
+**Primary specimen:** button
+**Contrast specimens:** heading, container
+
+Почему именно так:
+
+* `button` покрывает text + action + link + style;
+* `heading` покрывает text-centric case;
+* `container` покрывает layout/loop/structural case.
+
+Эта тройка уже быстро покажет, Aura — это:
+
+* реально универсальная element model,
+* или универсальная панель поверх разных внутренних write-path,
+* или вообще mostly cosmetic inspector с разными скрытыми исключениями.
+
+Так что твоя мысль верная, но в более жёсткой формулировке:
+
+**Да, кнопки достаточно для первого полного reverse engineering прохода панели.
+Нет, кнопки недостаточно для доказательства, что вся система действительно едина по внутренней модели.**
+
+Именно поэтому кнопка — хороший **anchor specimen**, но не финальная истина.
+
